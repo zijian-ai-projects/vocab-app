@@ -645,10 +645,10 @@ class Card(QWidget):
         fb = QHBoxLayout(self.front_bar)
         fb.setContentsMargins(0, 0, 0, 0)
         fb.setSpacing(10)
-        self.btn_forget = QPushButton("不记得")
+        self.btn_forget = QPushButton("不认识")
         self.btn_forget.setObjectName("forget")
         self.btn_forget.clicked.connect(lambda: self.act("forget"))
-        self.btn_remember = QPushButton("记得")
+        self.btn_remember = QPushButton("认识")
         self.btn_remember.setObjectName("remember")
         self.btn_remember.clicked.connect(lambda: self.act("remember"))
         for b in (self.btn_forget, self.btn_remember):
@@ -1207,6 +1207,7 @@ class Card(QWidget):
     def _welcome_test(self):
         self.progress["welcome_done"] = True
         self.progress.pop("quiz_declined", None)
+        self.progress["quiz_from_welcome"] = True   # 测完先去选词书
         self.save()
         self.start_quiz()
 
@@ -1267,6 +1268,8 @@ class Card(QWidget):
     def _result_primary(self):
         if self.result_ctx == "history":
             self.open_settings()
+        elif self.result_ctx == "welcome_test":
+            self.open_books("welcome")       # 首次引导的测试结束后先选词书
         else:
             self._leave_result()
 
@@ -1407,7 +1410,7 @@ class Card(QWidget):
         self._show_back(w, remember=(action == "remember"))
 
     def correct(self):
-        """选错了：把刚才的「记得」改判成「不记得」，然后直接下一个。"""
+        """选错了：把刚才的「认识」改判成「不认识」，然后直接下一个。"""
         if not self.last_action or self.corrected or self.mode != "back":
             return
         _, key = self.last_action
@@ -1517,13 +1520,17 @@ class Card(QWidget):
         self.save()
 
     def skip_test(self):
-        """跳过本次测试：丢弃当前进度，明天再说。"""
+        """跳过本次测试：丢弃当前进度，明天再说；首次引导里选的测试则直接去选词书。"""
         self.quiz_timer.stop()
         self.progress.pop("quiz_session", None)
         self.progress["snooze_until"] = int(time.time()) + SKIP_SNOOZE
+        from_welcome = bool(self.progress.pop("quiz_from_welcome", False))
         self.save()
         self.setFixedSize(CARD_W, CARD_H)
-        self._new_session()
+        if from_welcome:
+            self.open_books("welcome")
+        else:
+            self._new_session()
 
     def _quiz_status(self, delta=None):
         txt = "词汇量测试 %d/%d   ·   严谨度 %d" % (
@@ -1646,11 +1653,12 @@ class Card(QWidget):
         }
         history.append(rec)
         self.progress["history"] = history
+        from_welcome = bool(self.progress.pop("quiz_from_welcome", False))
         self.progress.pop("quiz_session", None)
         self.progress.pop("snooze_until", None)
         self.last_test = (rec, is_baseline)
         self.save()
-        self._show_result(rec, is_baseline)
+        self._show_result(rec, is_baseline, from_welcome)
 
     def _set_theta(self, theta):
         """记下决定「测试判定已会」的 θ（基准测试 / 手排时用）。"""
@@ -1692,9 +1700,9 @@ class Card(QWidget):
         self.chart.points = [(h["ts"], h["vocab"]) for h in hist][-12:]
         self.chart.update()
 
-    def _show_result(self, rec, is_baseline):
-        self.result_ctx = "test"
-        self.btn_start.setText("继续背单词")
+    def _show_result(self, rec, is_baseline, from_welcome=False):
+        self.result_ctx = "welcome_test" if from_welcome else "test"
+        self.btn_start.setText("选择词书" if from_welcome else "继续背单词")
         self.btn_rebase.setVisible(not is_baseline)
         self._fill_result(rec, self.progress.get("history", []), is_baseline)
         self._set_mode("result")

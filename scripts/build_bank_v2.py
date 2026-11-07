@@ -32,6 +32,10 @@ BANK = os.path.join(DATA, "bank.json")
 LOG = os.path.join(DATA, "build_bank_v2.log")
 DROPPED = os.path.join(BUILD, "bank_dropped.txt")
 BANDS = 15
+# 手工修订：个别词的释义以这里为准（覆盖 ECDICT / 词书来源，重建后仍生效）
+OVERRIDES = {
+    "encephalomyeloradiculitis": "脑脊髓神经根炎",
+}
 CJK = re.compile(r"[\u4e00-\u9fff]")
 ALIAS = re.compile(r"^.*?=\s*([a-z][a-z'\-]*)\s*$", re.I)
 POS_LABELS = r"(?:n|v|vt|vi|adj|adv|prep|conj|pron|num|art|int|aux)"
@@ -256,6 +260,10 @@ def main():
 
     entries, stat = build_entries(needed, rows, old, gloss, raw)
     for x in entries:
+        if x["w"] in OVERRIDES:
+            x["s"] = OVERRIDES[x["w"]]
+            x["pos"] = []
+            x["raw"] = OVERRIDES[x["w"]]
         x["s"] = fit_two_lines(x["s"])
     missing = bb.assign_difficulty(entries, rows)
     entries.sort(key=lambda x: x["w"])

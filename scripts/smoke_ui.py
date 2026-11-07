@@ -70,6 +70,9 @@ lv = [0] * 15
 for x in bank:
     lv[x["lvl"]] += 1
 check(all(n > 0 for n in lv), "难度 15 档分布：%s" % lv)
+emr = next((x for x in bank if x["w"] == "encephalomyeloradiculitis"), None)
+check(emr is not None and emr["s"] == "脑脊髓神经根炎",
+      "指定词释义：%s" % (emr or {}).get("s"))
 
 # ---- 2. 三级目录数据（8 主类 / 41 分组 / 175 词书） ----
 mains = bk.mains()
@@ -261,16 +264,18 @@ check(len(w.queue_words) == bk.size("cet6-all"),
 check(w.queue_words[0]["w"] == bk.words("cet6-all")[0],
       "顺序书从数据第一个词开始：%s" % w.queue_words[0]["w"])
 
-# ---- 10. 学习：记得 / 释义 / 选错了跳下一个 ----
+# ---- 10. 学习：认识 / 释义 / 选错了跳下一个 ----
+check(w.btn_remember.text() == "认识" and w.btn_forget.text() == "不认识",
+      "学习按钮是「认识 / 不认识」：%s / %s" % (w.btn_remember.text(), w.btn_forget.text()))
 first = w.queue[w.qi]["w"]["w"]
 qi0 = w.qi
 w.act("remember")
-check(w.mode == "back" and w.meaning.text() != "", "记得 -> 翻面有释义")
+check(w.mode == "back" and w.meaning.text() != "", "认识 -> 翻面有释义")
 w.correct()
 check(w.qi == qi0 + 1, "选错了 -> 直接跳到下一个（qi %d -> %d）" % (qi0, w.qi))
 st = w.states.get(first) or {}
 check(st.get("st") == "learning" and st.get("lapse", 0) >= 1,
-      "选错了把状态改成不记得（lapse=%s）" % st.get("lapse"))
+      "选错了把状态改成不认识（lapse=%s）" % st.get("lapse"))
 check(w.mode == "front", "选错了之后回到正面")
 
 # ---- 11. 换书 + 乱序 + seed 持久化 ----
@@ -456,8 +461,58 @@ w5._show_empty()
 check(w5.word.text().startswith(w5._book_name(w5.book_id)),
       "学习页空状态显示当前词书名称：%s" % w5.word.text())
 
-# ---- 23. 主题完整性 ----
+# ---- 23. 首次引导选测试：结束 / 跳过都去选词书 ----
+w6 = app_main.Card()
+w6.progress["welcome_done"] = False
+w6.progress.pop("snooze_until", None)
+w6.progress.pop("quiz_session", None)
+w6.save()
+w6._startup(force=True)
+check(w6.mode == "welcome", "重新进入首次引导")
+w6._welcome_test()
+check(w6.mode == "quiz" and w6.progress.get("quiz_from_welcome") is True,
+      "引导里点测试 -> 进入测试，并记下来源")
+w6.skip_test()
+check(w6.mode == "books" and w6.nav_level == 1 and not w6.progress.get("quiz_from_welcome"),
+      "跳过首次测试 -> 直接进词书选择（第 1 级）")
+w6.progress["welcome_done"] = False
+w6.progress.pop("snooze_until", None)
+w6.save()
+w6._startup(force=True)
+w6._welcome_test()
+w6.quiz_timer.stop()
+while len(w6.quiz_resp) < app_main.QUIZ_N:
+    it = w6.quiz_items[w6.quiz_i]
+    w6._quiz_answer(it["correct"] if it["lvl"] <= 6 else (it["correct"] + 1) % 4)
+    w6.quiz_timer.stop()
+    if len(w6.quiz_resp) < app_main.QUIZ_N:
+        w6._quiz_next()
+w6._finish_quiz()
+check(w6.mode == "result", "走完首次测试 -> 结果页")
+check(w6.btn_start.text() == "选择词书" and w6.result_ctx == "welcome_test",
+      "首次测试结果主按钮是「选择词书」")
+w6._result_primary()
+check(w6.mode == "books" and w6.nav_level == 1, "首次测试结束 -> 词书选择（第 1 级）")
+stop_timer(w6)
+
+# ---- 24. 主题完整性 ----
 check(not th.missing(), "所有主题颜色齐全（缺 %s）" % (th.missing(),))
+
+
+def _lum(hexcol):
+    c = hexcol.lstrip("#")
+    ch = [int(c[i:i + 2], 16) / 255.0 for i in (0, 2, 4)]
+
+    def f(v):
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    return 0.2126 * f(ch[0]) + 0.7152 * f(ch[1]) + 0.0722 * f(ch[2])
+
+
+g = th.get("green")
+_lg, _lf = _lum(g["bg"]), _lum(g["fg_mean"])
+check(_lg > 0.6, "护眼绿是浅色纸感底：%s" % g["bg"])
+check((max(_lg, _lf) + 0.05) / (min(_lg, _lf) + 0.05) >= 7,
+      "护眼绿正文对比度 %.1f:1（≥7）" % ((max(_lg, _lf) + 0.05) / (min(_lg, _lf) + 0.05)))
 for key, t in th.THEMES.items():
     s = th.qss(t)
     check("%(" not in s and "#" in s, "主题 %s 的 QSS 渲染正常" % key)
