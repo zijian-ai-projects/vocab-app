@@ -71,27 +71,29 @@ for x in bank:
     lv[x["lvl"]] += 1
 check(all(n > 0 for n in lv), "难度 15 档分布：%s" % lv)
 
-# ---- 2. 三级目录数据（8 主类 / 41 分组 / 168 词书） ----
+# ---- 2. 三级目录数据（8 主类 / 41 分组 / 175 词书） ----
 mains = bk.mains()
 groups = bk.groups()
 items = [it for g in groups for it in g["items"]]
 bank_words = {x["w"] for x in bank}
 check(len(mains) == 8, "主类 %d 个" % len(mains))
 check(len(groups) == 41, "分组 %d 个" % len(groups))
-check(len(items) == 168, "词书 %d 本" % len(items))
+check(len(items) == 175, "词书 %d 本" % len(items))
 check(len(bk.all()) == len(groups) + len(items),
       "扁平目录 %d = %d 个并集 + %d 本词书" % (len(bk.all()), len(groups), len(items)))
 check(len({b["id"] for b in bk.all()}) == len(bk.all()), "词书 id 无重复")
-check(bk.DEFAULT == "cet6-all" and bk.get("cet6")["id"] == "cet6-all",
-      "默认词书 = 六级并集（旧 id 可映射）")
+check(bk.DEFAULT == "cet6-dg" and bk.get("cet6")["id"] == "cet6-all",
+      "默认词书 = 六级大纲；旧 id cet6 仍映射到六级并集")
 check(bk.size("cet6") == bk.size("cet6-all"),
       "旧 id 兼容：cet6 -> cet6-all，%s 词" % format(bk.size("cet6"), ","))
 check(bk.size("kaobo") == bk.size("kaoyan-all"),
       "旧 id 兼容：kaobo -> kaoyan-all，%s 词" % format(bk.size("kaobo"), ","))
 check(bk.size("xiaoxue") == bk.size("xx-ci-all"),
       "旧 id 兼容：xiaoxue -> xx-ci-all，%s 词" % format(bk.size("xiaoxue"), ","))
-check(all(b["count"] == len(b["words"]) for b in bk.all()), "209 个条目 count = words 长度")
-check(all(len(b["words"]) == len(set(b["words"])) for b in bk.all()), "209 个条目内无重复词")
+check(all(b["count"] == len(b["words"]) for b in bk.all()),
+      "%d 个条目 count = words 长度" % len(bk.all()))
+check(all(len(b["words"]) == len(set(b["words"])) for b in bk.all()),
+      "%d 个条目内无重复词" % len(bk.all()))
 check(all(set(g["union"]["words"]) ==
           set().union(*(set(it["words"]) for it in g["items"])) for g in groups),
       "每个分组并集 = 各词书 words 去重并集")
@@ -120,9 +122,12 @@ check(len(w.book_btns) == 8, "第 1 级列出 %d 个主类" % len(w.book_btns))
 check(all(r["kind"] == "main" for r in w.nav_rows), "第 1 级每行都是主类")
 check(all(m["name"] in r["text"] for m, r in zip(mains, w.nav_rows)),
       "第 1 级主类名称全部来自数据")
-check(w.books_lead.text().startswith("选择主类") and "8 类" in w.books_lead.text()
-      and "41 组" in w.books_lead.text() and "168 本词书" in w.books_lead.text(),
-      "第 1 级小字：%s" % w.books_lead.text())
+check(w.books_lead.text() == "选择主类", "第 1 级小字只有「选择主类」：%s" % w.books_lead.text())
+check([r["text"] for r in w.nav_rows] == [m["name"] for m in mains],
+      "第 1 级每行只有主类名（不显示分组数/词数）")
+check(not any(("个分组" in t) or ("本词书" in t) or ("词" in t) for t in
+              [r["text"] for r in w.nav_rows] + [w.books_lead.text()]),
+      "第 1 级没有词书数/词数")
 check(w.book_scroll.isVisible(), "第 1 级列表可滚动")
 check(w.status.text().startswith("已学 "),
       "顶部显示当前选择统计：%s" % w.status.text())
@@ -135,43 +140,91 @@ check(w.chip_seq.text() == "顺序" and w.chip_shuf.text() == "乱序", "保留 
 w._nav_into_main("university")
 check(w.nav_level == 2 and len(w.book_btns) == len(bk.groups("university")),
       "进入大学 -> 第 2 级 %d 个分组" % len(w.book_btns))
-check("大学" in w.books_lead.text() and
-      ("%d 个分组" % len(bk.groups("university"))) in w.books_lead.text(),
-      "第 2 级小字：%s" % w.books_lead.text())
-check(all("本词书" in r["text"] for r in w.nav_rows), "第 2 级显示分组名 + 词书数")
+check(w.books_lead.text() == "大学", "第 2 级小字只有主类名：%s" % w.books_lead.text())
+check([r["text"] for r in w.nav_rows] == [g["name"] for g in bk.groups("university")],
+      "第 2 级只显示分组名（不显示词书数/词数）")
 w._nav_back()
 check(w.nav_level == 1 and len(w.book_btns) == 8, "第 2 级返回键 -> 主类列表")
 
-# ---- 6. 第 2 级 -> 第 3 级（含分组全选并集） ----
+# ---- 6. 第 2 级 -> 第 3 级（不再有「全选」行） ----
 w._nav_into_main("highschool")
 check(w.nav_level == 2 and len(w.book_btns) == len(bk.groups("highschool")),
       "进入高中 -> 第 2 级列出 %d 个分组" % len(w.book_btns))
 w._nav_into_group("gz-text")
 gz = next(g for g in groups if g["id"] == "gz-text")
-expect_rows = 1 + len(gz["series"]) + len(gz["items"])
-check(w.nav_level == 3 and len(w.book_btns) == expect_rows,
-      "教材分组第 3 级 %d 行（1 全选 + %d 版本 + %d 分册）" %
-      (len(w.book_btns), len(gz["series"]), len(gz["items"])))
-check(w.nav_sections == ["%s · %d 册" % (s, sum(1 for it in gz["items"] if it.get("series") == s))
+check(w.nav_level == 3 and len(w.book_btns) == len(gz["items"]),
+      "教材分组第 3 级 %d 行 = %d 个分册（无全选行）" %
+      (len(w.book_btns), len(gz["items"])))
+check(w.books_lead.text() == "高中教材", "第 3 级小字只有分组名：%s" % w.books_lead.text())
+check(w.nav_sections == ["%s · %d 册" % (app_main.series_label(s),
+                                         sum(1 for it in gz["items"] if it.get("series") == s))
                          for s in gz["series"]],
       "教材分组按 series 分节：%s" % w.nav_sections)
-union_row = w.book_btns[gz["union"]["id"]]
-check(union_row.text().startswith(gz["union"]["display"]) and
-      ("%s 词" % format(gz["union"]["count"], ",")) in union_row.text(),
-      "顶部全选并集行用 union_name：%s" % union_row.text())
+check(gz["union"]["id"] not in w.book_btns, "第 3 级没有分组全选并集行")
+check(not any("全选" in r["text"] for r in w.nav_rows), "第 3 级没有任何「全选」选项")
 
-# ---- 7. 教材系列全选 = 各分册 words 按序去重 ----
+# ---- 7. 系列并集仍在数据/兼容层可用，但界面不展示 ----
 for s in gz["series"]:
     pid = app_main.series_pseudo_id("gz-text", s)
     exp = series_words("gz-text", s)
     got = app_main.series_union_words("gz-text", s)
-    check(pid in w.book_btns and "本版本全选" in w.book_btns[pid].text(),
-          "系列行 %s：%s" % (s, w.book_btns[pid].text()))
+    check(pid not in w.book_btns and not any("本版本全选" in r["text"] for r in w.nav_rows),
+          "界面不显示系列全选行：%s" % s)
     check(got == exp and len(exp) == len(set(exp)) and len(exp) > 0,
           "系列并集 %s = %d 个分册按序去重（%s 词）" %
           (s, sum(1 for it in gz["items"] if it.get("series") == s), format(len(exp), ",")))
 
-# ---- 8. 选择并集 / 选择系列 -> 开始学习 ----
+# ---- 7b. 新大纲词书：7 本，数据正确且排在分组第一位 ----
+DG = [("zhongkao", "zk-dg", "中考大纲英语词汇"),
+      ("gaokao", "gk-dg", "高考大纲英语词汇"),
+      ("cet4", "cet4-dg", "四级大纲英语词汇"),
+      ("cet6", "cet6-dg", "六级大纲英语词汇"),
+      ("kaoyan", "ky-dg", "考研大纲英语词汇"),
+      ("yingzhuan", "yz-t4-dg", "专四大纲英语词汇"),
+      ("yingzhuan", "yz-t8-dg", "专八大纲英语词汇")]
+for gid, iid, name in DG:
+    it = bk.get(iid)
+    check(it["name"] == name and it["count"] == len(it["words"]) and it["count"] > 1000,
+          "%s：%s 词" % (name, format(it["count"], ",")))
+    g = next(g for g in groups if g["id"] == gid)
+    pos = 1 if iid == "yz-t8-dg" else 0
+    check(g["items"][pos]["id"] == iid, "%s 分组第 %d 本是「%s」" % (g["name"], pos + 1, name))
+
+# ---- 7c. 小学教材命名：xx版xx（三年级起点） ----
+xxg = next(g for g in groups if g["id"] == "xx-text")
+check(len(xxg["items"]) == 24, "小学教材 %d 册" % len(xxg["items"]))
+check(all(it["name"].endswith("（三年级起点）") for it in xxg["items"]),
+      "小学教材每册都以（三年级起点）结尾")
+for prefix in ("人教PEP版", "外研版", "译林版"):
+    check(any(it["name"].startswith(prefix) for it in xxg["items"]),
+          "小学教材有 %s 分册" % prefix)
+w.open_books("welcome")
+w._nav_into_main("primary")
+w._nav_into_group("xx-text")
+check(len(w.book_btns) == 24 and not any("全选" in r["text"] for r in w.nav_rows),
+      "小学教材第 3 级 24 行、没有全选")
+first_xx = w.nav_rows[0]["text"]
+check("人教PEP版" in first_xx and "（三年级起点）" in first_xx and first_xx.endswith("词"),
+      "小学教材首行：%s" % first_xx)
+
+# ---- 7d. 界面点选大纲词书开始学习 ----
+w.open_books("welcome")
+w._nav_into_main("university")
+w._nav_into_group("cet4")
+rows4 = [r["text"] for r in w.nav_rows]
+check(rows4[0].startswith("四级大纲英语词汇") and rows4[0].endswith("词"),
+      "四级分组首行是大纲词书：%s" % rows4[0])
+check("全选" not in " ".join(rows4), "四级第 3 级没有全选行")
+w.book_btns["cet4-dg"].click()
+check(w.sel_book == "cet4-dg", "点选四级大纲词书")
+w._set_order("seq")
+w._start_learning()
+check(w.book_id == "cet4-dg" and len(w.queue_words) == bk.size("cet4-dg"),
+      "用四级大纲开始：%s 词" % format(len(w.queue_words), ","))
+check(w.queue_words[0]["w"] == bk.words("cet4-dg")[0],
+      "大纲词书按源顺序从第一个词开始：%s" % w.queue_words[0]["w"])
+
+# ---- 8. 旧并集 / 系列伪 id 仍可解析（界面不再展示，但旧进度兼容） ----
 w._pick_book(gz["union"]["id"])
 check(w.sel_book == gz["union"]["id"] and w.lab_book_stat.text().endswith(
       format(bk.size(gz["union"]["id"]), ",") + " 词"), "选中分组并集：%s" % w.lab_book_stat.text())

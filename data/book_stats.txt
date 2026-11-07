@@ -1,10 +1,10 @@
 V2 books（三级目录）
 
-大学   四级     cet4       items= 6 union= 6612  max= 5817
-大学   六级     cet6       items= 5 union= 6791  max= 5347
-大学   考研     kaoyan     items= 7 union= 9923  max= 8086
+大学   四级     cet4       items= 7 union= 6615  max= 5817
+大学   六级     cet6       items= 6 union= 6818  max= 5347
+大学   考研     kaoyan     items= 8 union= 9923  max= 8086
 大学   专升本    zhuansheng items= 3 union= 5333  max= 4276
-大学   英专     yingzhuan  items= 4 union=10673  max= 5121
+大学   英专     yingzhuan  items= 6 union=13324  max=12726
 大学   新视野    xinshiye   items= 4 union= 2099  max=  538
 大学   高职     gaozhi     items= 1 union= 3036  max= 3036
 大学   成人自考英语 zikao      items= 2 union= 5137  max= 4915
@@ -13,11 +13,11 @@ V2 books（三级目录）
 大学   BEC    bec        items= 3 union= 4545  max= 2451
 大学   PETS   pets       items= 5 union= 7791  max= 7728
 高中   高中教材   gz-text    items=21 union= 3229  max=  376
-高中   高考     gaokao     items= 4 union= 5434  max= 4721
+高中   高考     gaokao     items= 5 union= 5621  max= 4721
 高中   中职     zhongzhi   items= 1 union= 2572  max= 2572
 高中   新概念    nce        items= 4 union= 3255  max= 1035
 初中   初中教材   cz-text    items=17 union= 2773  max=  567
-初中   中考     zhongkao   items= 3 union= 2703  max= 2418
+初中   中考     zhongkao   items= 4 union= 2783  max= 2418
 小学   小学教材   xx-text    items=24 union= 1264  max=  146
 小学   小学词汇   xx-ci      items= 4 union=  921  max=  802
 留学   雅思     ielts      items= 4 union= 6803  max= 3686
@@ -42,18 +42,18 @@ V2 books（三级目录）
 专业   计算机    computer   items= 2 union= 1760  max= 1699
 专业   工程     engineering items= 1 union=  285  max=  285
 
-主类=8 分组=41 词书=168  bank=34825
-被 bank 剔除的词（无释义/单字母）共 296 个，涉及 77 本
+主类=8 分组=41 词书=175  bank=34963
+被 bank 剔除的词（无释义/单字母）共 314 个，涉及 84 本
   bec3         e-sale news-agent toe-dipping workset
   catti3       braintrust resituate waxcandle x-eyed x-radiate yeasaying
   cet4-cg      a i
+  cet4-dg      a i
   cet4-sg      a i
   cet4-xh      a i
+  cet6-dg      a i
   cet6-sg      a
   cg-aomi      agitatress agro-town cruisette condutor occidentialist negrodom negroite negrolet abnormalist inumbrate demi-fixed dysopsy
   cg-sd1       demi-fixed piggie
-  cg-sd2       softlanding
-  cg-sd3       multimetre jcct
 整本被排除：['nce-smart-1', 'nce-smart-2', 'nce-smart-3', 'nce-smart-4', 'zk-db', 'lsx-adv', 'dev-phrases']
 校验问题：无
-文件大小=6.47 MB
+文件大小=6.97 MB

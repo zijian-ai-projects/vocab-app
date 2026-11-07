@@ -87,17 +87,9 @@ def series_union_words(group_id, series):
     return out
 
 
-_MAIN_WORD_CACHE = {}
-
-
-def main_word_count(main_id):
-    """主类下各分组并集的去重词数（从数据现算，不硬编码）。"""
-    if main_id not in _MAIN_WORD_CACHE:
-        seen = set()
-        for g in bk.groups(main_id):
-            seen.update(g["union"]["words"])
-        _MAIN_WORD_CACHE[main_id] = len(seen)
-    return _MAIN_WORD_CACHE[main_id]
+def series_label(series):
+    """教材版本在界面上的写法（数据里人教 PEP 统一显示成人教PEP版）。"""
+    return "人教PEP版" if series == "人教 PEP" else series
 
 
 class ChartCanvas(QWidget):
@@ -931,13 +923,9 @@ class Card(QWidget):
         self._clear_book_rows()
         if self.nav_level == 1:
             mains = bk.mains()
-            self.books_lead.setText("选择主类　%d 类 · %d 组 · %d 本词书" %
-                                    (len(mains), len(bk.groups()),
-                                     len(bk.all()) - len(bk.groups())))
+            self.books_lead.setText("选择主类")
             for m in mains:
-                text = "%s　%d 个分组 · %s 词" % (
-                    m["name"], len(m["groups"]), format(main_word_count(m["id"]), ","))
-                self._add_nav_row(text, m["id"],
+                self._add_nav_row(m["name"], m["id"],
                                   lambda _=False, mid=m["id"]: self._nav_into_main(mid),
                                   "main")
         elif self.nav_level == 2:
@@ -945,11 +933,9 @@ class Card(QWidget):
             if not main:
                 self.nav_level = 1
                 return self._build_nav_level()
-            self.books_lead.setText("%s　%d 个分组" % (main["name"], len(main["groups"])))
+            self.books_lead.setText(main["name"])
             for g in main["groups"]:
-                text = "%s　%d 本词书 · %s 词" % (
-                    g["name"], len(g["items"]), format(g["union"]["count"], ","))
-                self._add_nav_row(text, g["id"],
+                self._add_nav_row(g["name"], g["id"],
                                   lambda _=False, gid=g["id"]: self._nav_into_group(gid),
                                   "group")
         else:
@@ -957,31 +943,13 @@ class Card(QWidget):
             if not g:
                 self.nav_level = 1
                 return self._build_nav_level()
-            self.books_lead.setText("%s　%d 本词书 · 全选 %s 词" %
-                                    (g["name"], len(g["items"]),
-                                     format(g["union"]["count"], ",")))
+            self.books_lead.setText(g["name"])
 
-            # 顶部：分组「全选并集」（名称用数据里的 union_name / display）
-            u = g["union"]
-            ulabel = u.get("display") or u["name"]
-            if "全选" not in ulabel:
-                ulabel += "（全选）"
-            self._add_nav_row("%s　%s 词" % (ulabel, format(u["count"], ",")),
-                              u["id"],
-                              lambda _=False, bid=u["id"]: self._pick_book(bid),
-                              "union")
-
-            # 教材类分组：按 series 分节，每节一行「本版本全选」
+            # 教材类分组：按版本分节（只列具体分册，不再提供「全选」）
             if g.get("series"):
                 for s in g["series"]:
                     items = [it for it in g["items"] if (it.get("series") or "") == s]
-                    self._add_nav_section("%s · %d 册" % (s, len(items)))
-                    pid = series_pseudo_id(g["id"], s)
-                    s_text = "%s · 本版本全选　%s 词" % (
-                        s, format(len(series_union_words(g["id"], s)), ","))
-                    self._add_nav_row(s_text, pid,
-                                      lambda _=False, b=pid: self._pick_book(b),
-                                      "series")
+                    self._add_nav_section("%s · %d 册" % (series_label(s), len(items)))
                     for it in items:
                         self._add_nav_item_row(it)
                 for it in g["items"]:

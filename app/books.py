@@ -98,7 +98,8 @@ def _build(data):
 
 _data = _load()
 BY_ID, MAINS, GROUPS = _build(_data)
-DEFAULT = "cet6-all" if "cet6-all" in BY_ID else next(iter(BY_ID))
+# 新用户默认用「六级大纲英语词汇」（分组并集已不在界面展示）
+DEFAULT = "cet6-dg" if "cet6-dg" in BY_ID else next(iter(BY_ID))
 
 
 def mains():

@@ -1,18 +1,23 @@
-  OK   大词库 34825 词（目标 30,000+）
+  OK   大词库 34963 词（目标 30,000+）
   OK   大词库无重复
   OK   大词库按字母序 A–Z 排列
   OK   每个词都有卡面释义
-  OK   缺音标的词 2718 个（<=3000，ECDICT 本身缺）
-  OK   难度 15 档分布均匀：[2322, 2322, 2321, 2322, 2322, 2321, 2322, 2322, 2321, 2322, 2322, 2321, 2322, 2322, 2321]
+  OK   缺音标的词 2746 个（<=3000，ECDICT 本身缺）
+  OK   难度 15 档分布均匀：[2331, 2331, 2331, 2331, 2331, 2331, 2331, 2330, 2331, 2331, 2331, 2331, 2331, 2331, 2330]
   OK   难度 b 都在 [-3.2, 3.2]
   OK   词性字段有内容
   OK   词书 schema=2
   OK   主类 8 个：大学、高中、初中、小学、留学、实用、职场、专业
   OK   分组 41 个
-  OK   词书 168 本
-  OK   cet4 并集词数标记一致：6612
+  OK   词书 175 本
+  OK   cet4 并集词数标记一致：6615
   OK   cet4 并集无重复
   OK   cet4 并集的词都在大词库里
+  OK   cet4-dg 词数标记一致：4074
+  OK   cet4-dg 无重复
+  OK   cet4-dg 的词都在大词库里
+  OK   cet4-dg 有名称
+  OK   cet4-dg id 唯一
   OK   cet4-core 词数标记一致：1897
   OK   cet4-core 无重复
   OK   cet4-core 的词都在大词库里
@@ -45,9 +50,14 @@
   OK   cet4-cg id 唯一
   OK   cet4 并集 = 各词书按序去重
   OK   cet4 有并集名
-  OK   cet6 并集词数标记一致：6791
+  OK   cet6 并集词数标记一致：6818
   OK   cet6 并集无重复
   OK   cet6 并集的词都在大词库里
+  OK   cet6-dg 词数标记一致：5338
+  OK   cet6-dg 无重复
+  OK   cet6-dg 的词都在大词库里
+  OK   cet6-dg 有名称
+  OK   cet6-dg id 唯一
   OK   cet6-core 词数标记一致：1934
   OK   cet6-core 无重复
   OK   cet6-core 的词都在大词库里
@@ -78,6 +88,11 @@
   OK   kaoyan 并集词数标记一致：9923
   OK   kaoyan 并集无重复
   OK   kaoyan 并集的词都在大词库里
+  OK   ky-dg 词数标记一致：5656
+  OK   ky-dg 无重复
+  OK   ky-dg 的词都在大词库里
+  OK   ky-dg 有名称
+  OK   ky-dg id 唯一
   OK   ky-hbs 词数标记一致：6701
   OK   ky-hbs 无重复
   OK   ky-hbs 的词都在大词库里
@@ -135,9 +150,19 @@
   OK   zs-xh id 唯一
   OK   zhuansheng 并集 = 各词书按序去重
   OK   zhuansheng 有并集名
-  OK   yingzhuan 并集词数标记一致：10673
+  OK   yingzhuan 并集词数标记一致：13324
   OK   yingzhuan 并集无重复
   OK   yingzhuan 并集的词都在大词库里
+  OK   yz-t4-dg 词数标记一致：8677
+  OK   yz-t4-dg 无重复
+  OK   yz-t4-dg 的词都在大词库里
+  OK   yz-t4-dg 有名称
+  OK   yz-t4-dg id 唯一
+  OK   yz-t8-dg 词数标记一致：12726
+  OK   yz-t8-dg 无重复
+  OK   yz-t8-dg 的词都在大词库里
+  OK   yz-t8-dg 有名称
+  OK   yz-t8-dg id 唯一
   OK   yz-t4 词数标记一致：4479
   OK   yz-t4 无重复
   OK   yz-t4 的词都在大词库里
@@ -391,9 +416,14 @@
   OK   gz-text 并集 = 各词书按序去重
   OK   gz-text 有并集名
   OK   gz-text 是教材分册（21 册/3 版本）
-  OK   gaokao 并集词数标记一致：5434
+  OK   gaokao 并集词数标记一致：5621
   OK   gaokao 并集无重复
   OK   gaokao 并集的词都在大词库里
+  OK   gk-dg 词数标记一致：3647
+  OK   gk-dg 无重复
+  OK   gk-dg 的词都在大词库里
+  OK   gk-dg 有名称
+  OK   gk-dg id 唯一
   OK   gk-sg 词数标记一致：3039
   OK   gk-sg 无重复
   OK   gk-sg 的词都在大词库里
@@ -542,9 +572,14 @@
   OK   cz-text 并集 = 各词书按序去重
   OK   cz-text 有并集名
   OK   cz-text 是教材分册（17 册/3 版本）
-  OK   zhongkao 并集词数标记一致：2703
+  OK   zhongkao 并集词数标记一致：2783
   OK   zhongkao 并集无重复
   OK   zhongkao 并集的词都在大词库里
+  OK   zk-dg 词数标记一致：1660
+  OK   zk-dg 无重复
+  OK   zk-dg 的词都在大词库里
+  OK   zk-dg 有名称
+  OK   zk-dg id 唯一
   OK   zk-sg 词数标记一致：2003
   OK   zk-sg 无重复
   OK   zk-sg 的词都在大词库里
@@ -1058,6 +1093,6 @@
   OK   arch id 唯一
   OK   engineering 并集 = 各词书按序去重
   OK   engineering 有并集名
-  OK   所有词书并集 = 大词库（34825 vs 34825）
+  OK   所有词书并集 = 大词库（34963 vs 34963）
 
 FAILS 0
