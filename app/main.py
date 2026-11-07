@@ -55,6 +55,50 @@ TEST_INTERVAL = 30 * 86400        # 每满 30 天再测一次
 SKIP_SNOOZE = 86400               # 跳过本次：明天再问
 LETTERS = "ABCD"
 
+# 教材「某个版本全选」是 UI 层现算的并集，books.py 里没有对应 id，
+# 这里用伪 id 存进 progress（book / cursors / orders），重启时再解析回词表。
+SERIES_PREFIX = "series:"
+
+
+def series_pseudo_id(group_id, series):
+    return "%s%s:%s" % (SERIES_PREFIX, group_id, series)
+
+
+def parse_series_id(book_id):
+    """伪 id -> (group_id, series)；真实词书返回 (None, None)。"""
+    if not isinstance(book_id, str) or not book_id.startswith(SERIES_PREFIX):
+        return None, None
+    parts = book_id.split(":", 2)
+    if len(parts) == 3 and parts[1] and parts[2]:
+        return parts[1], parts[2]
+    return None, None
+
+
+def series_union_words(group_id, series):
+    """某版本各分册按册序拼接后去重（保留首次出现的顺序）。"""
+    seen, out = set(), []
+    for b in bk.items(group_id):
+        if (b.get("series") or "") != series:
+            continue
+        for w in b["words"]:
+            if w not in seen:
+                seen.add(w)
+                out.append(w)
+    return out
+
+
+_MAIN_WORD_CACHE = {}
+
+
+def main_word_count(main_id):
+    """主类下各分组并集的去重词数（从数据现算，不硬编码）。"""
+    if main_id not in _MAIN_WORD_CACHE:
+        seen = set()
+        for g in bk.groups(main_id):
+            seen.update(g["union"]["words"])
+        _MAIN_WORD_CACHE[main_id] = len(seen)
+    return _MAIN_WORD_CACHE[main_id]
+
 
 class ChartCanvas(QWidget):
     """词汇量历史折线图。points: [(timestamp, vocab), ...]"""
@@ -237,13 +281,20 @@ class Card(QWidget):
 
         self.theme_key = self.progress.get("theme") or th.DEFAULT
         self.t = th.get(self.theme_key)
-        self.book_id = bk.get(self.progress.get("book") or bk.DEFAULT)["id"]
+        self.book_id = self._resolve_saved_book(self.progress.get("book") or bk.DEFAULT)
         self.sel_book = self.book_id
         self.sel_order = (self.orders.get(self.book_id) or {}).get("mode", "shuffle")
         self.order_mode = self.sel_order
         self.books_src = "welcome"
         self.pre_settings_mode = "front"
         self.result_ctx = "test"
+        self.nav_level = 1
+        self.nav_main = None
+        self.nav_group = None
+        self.nav_rows = []
+        self.nav_sections = []
+        self._nav_labels = []
+        self.book_btns = {}
         self._reg = []
 
         # 大词库（A–Z，唯一一份词条）+ 当前词书的 A–Z 单词列表
@@ -298,6 +349,14 @@ class Card(QWidget):
         p.setdefault("cursors", {})
         p.setdefault("orders", {})
         p.pop("cursor", None)          # v1.0 的全局游标，v1.1 改为每本书一个
+        # V1.1 的 11 个词书 id 已并入 V2 的分组并集：把旧游标 / 词序顺到新 id 上
+        if p.get("book") in bk.LEGACY:
+            p["book"] = bk.LEGACY[p["book"]]
+        for old_id, new_id in bk.LEGACY.items():
+            if old_id in p["orders"] and new_id not in p["orders"]:
+                p["orders"][new_id] = p["orders"][old_id]
+            if old_id in p["cursors"] and new_id not in p["cursors"]:
+                p["cursors"][new_id] = p["cursors"][old_id]
         if "welcome_done" not in p:
             # 老用户（已经有学习记录）直接当引导已经走完
             p["welcome_done"] = bool(p.get("states") or p.get("history"))
@@ -327,8 +386,63 @@ class Card(QWidget):
             raise last
 
     # ---------- 大词库 / 词书 ----------
+    def _resolve_saved_book(self, saved):
+        """progress 里的 book 可能来自 V1.1（旧 id）或教材系列伪 id。"""
+        if saved in bk.BY_ID:
+            return saved
+        gid, series = parse_series_id(saved)
+        if gid and series_union_words(gid, series):
+            return saved
+        return bk.get(saved)["id"]
+
+    def _book_word_strs(self, book_id):
+        """词书 / 并集 / 教材系列并集 -> A–Z 以外的原始词序（UI 层解析伪 id）。"""
+        gid, series = parse_series_id(book_id)
+        if gid:
+            if gid not in bk.GROUPS:
+                return bk.words(bk.DEFAULT)
+            words = series_union_words(gid, series)
+            return words or bk.words(gid)      # 系列失效时退回分组并集
+        return bk.words(book_id)
+
     def _book_words(self, book_id):
-        return [self.bank_map[w] for w in bk.words(book_id) if w in self.bank_map]
+        return [self.bank_map[w] for w in self._book_word_strs(book_id) if w in self.bank_map]
+
+    def _book_meta(self, book_id):
+        """统一的词书显示信息：伪 id 不写进 books.py，显示名 / 路径在这里现算。"""
+        gid, series = parse_series_id(book_id)
+        if gid:
+            g = bk.GROUPS.get(gid)
+            if g:
+                main = next((m for m in bk.mains() if m["id"] == g["main"]), None)
+                name = "%s · 本版本全选" % series
+                return {"id": book_id, "name": name, "display": name,
+                        "count": len(series_union_words(gid, series)),
+                        "path": [main["name"] if main else "", g["name"]],
+                        "group": gid, "series": series,
+                        "is_union": False, "is_series": True}
+        b = dict(bk.get(book_id))
+        b["is_series"] = False
+        return b
+
+    def _book_name(self, book_id):
+        m = self._book_meta(book_id)
+        return m.get("display") or m.get("name") or book_id
+
+    def _book_path(self, book_id):
+        m = self._book_meta(book_id)
+        parts = [p for p in (m.get("path") or []) if p]
+        parts.append(m.get("display") or m.get("name") or book_id)
+        return " · ".join(parts)
+
+    def _book_short_name(self, book_id):
+        """结果页里的一小段名字：真实书用所属分组名（六级/GRE…）。"""
+        gid, series = parse_series_id(book_id)
+        if gid:
+            return "%s 全选" % series
+        b = bk.get(book_id)
+        g = bk.GROUPS.get(b.get("group"))
+        return g["name"] if g else (b.get("display") or b["name"])
 
     def _seed(self, book_id):
         rec = self.orders.setdefault(book_id, {"mode": "shuffle"})
@@ -354,7 +468,8 @@ class Card(QWidget):
 
     def _book_stats(self, book_id):
         learned = mastered = known = 0
-        for w in bk.words(book_id):
+        words = self._book_word_strs(book_id)
+        for w in words:
             st = (self.states.get(w) or {}).get("st")
             if st == "learning":
                 learned += 1
@@ -363,7 +478,7 @@ class Card(QWidget):
                 mastered += 1
             if w in self.known:
                 known += 1
-        return learned, known, mastered, bk.size(book_id)
+        return learned, known, mastered, len(words)
 
     # ---------- 学习队列：先复习（跨书），再一个个学新词（当前书） ----------
     def _new_session(self):
@@ -707,19 +822,21 @@ class Card(QWidget):
         self.welcome_page.hide()
 
     def _build_books(self):
+        """三级导航：主类 → 分组 → 词书（分组全选 / 教材按版本全选）。"""
         self.books_page = QWidget()
         bv = QVBoxLayout(self.books_page)
         bv.setContentsMargins(0, 0, 0, 0)
         bv.setSpacing(0)
-        bv.addSpacing(4)
-        lead = QLabel("选一本词书，再选顺序")
-        self.reg(lead, "note", 12)
-        bv.addWidget(lead)
-        bv.addSpacing(8)
+        bv.addSpacing(2)
+
+        self.books_lead = QLabel("")
+        self.reg(self.books_lead, "note", 12)
+        bv.addWidget(self.books_lead)
+        bv.addSpacing(5)
 
         self.book_scroll = QScrollArea()
         self.book_scroll.setWidgetResizable(True)
-        self.book_scroll.setFixedHeight(238)
+        self.book_scroll.setFixedHeight(280)
         self.book_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.book_scroll.setStyleSheet(
             "QScrollArea{border:none;background:transparent;}"
@@ -728,53 +845,184 @@ class Card(QWidget):
         holder.setObjectName("booklist")
         self.book_list_layout = QVBoxLayout(holder)
         self.book_list_layout.setContentsMargins(0, 0, 6, 0)
-        self.book_list_layout.setSpacing(6)
-        self.book_btns = {}
-        for b in bk.all():
-            btn = QPushButton("")
-            btn.setObjectName("book")
-            btn.setCursor(Qt.PointingHandCursor)
-            btn.setMinimumHeight(48)
-            btn.clicked.connect(lambda _=False, bid=b["id"]: self._pick_book(bid))
-            self.book_list_layout.addWidget(btn)
-            self.book_btns[b["id"]] = btn
+        self.book_list_layout.setSpacing(3)
         self.book_list_layout.addStretch(1)
         self.book_scroll.setWidget(holder)
         bv.addWidget(self.book_scroll)
-        bv.addSpacing(6)
+        bv.addSpacing(4)
 
         self.lab_book_stat = QLabel("")
         self.reg(self.lab_book_stat, "note", 12)
         bv.addWidget(self.lab_book_stat)
-        bv.addSpacing(6)
+        bv.addSpacing(3)
 
-        orow = QHBoxLayout()
-        orow.setSpacing(8)
+        bottom = QHBoxLayout()
+        bottom.setSpacing(8)
         lab_order = QLabel("词序")
         self.reg(lab_order, "note", 12)
-        orow.addWidget(lab_order)
+        bottom.addWidget(lab_order)
         self.chip_seq = QPushButton("顺序")
         self.chip_shuf = QPushButton("乱序")
         for b, mode in ((self.chip_seq, "seq"), (self.chip_shuf, "shuffle")):
             b.setObjectName("chip")
             b.setCursor(Qt.PointingHandCursor)
-            b.setMinimumHeight(28)
+            b.setFixedHeight(28)
             b.clicked.connect(lambda _=False, m=mode: self._set_order(m))
-            orow.addWidget(b)
-        orow.addStretch(1)
-        bv.addLayout(orow)
-        bv.addSpacing(6)
-
+            bottom.addWidget(b)
+        bottom.addStretch(1)
         self.btn_learn = QPushButton("开始学习")
         self.btn_learn.setObjectName("remember")
         self.btn_learn.setCursor(Qt.PointingHandCursor)
-        self.btn_learn.setMinimumHeight(44)
+        self.btn_learn.setMinimumHeight(40)
+        self.btn_learn.setMinimumWidth(132)
         self.btn_learn.clicked.connect(self._start_learning)
-        bv.addWidget(self.btn_learn)
+        bottom.addWidget(self.btn_learn)
+        bv.addLayout(bottom)
         bv.addSpacing(2)
 
         self.root.addWidget(self.books_page, 1)
         self.books_page.hide()
+
+    # ---------- 三级词书导航 ----------
+    def _clear_book_rows(self):
+        # 分节标题登记过主题样式，重建前要从登记表里摘掉，避免主题切换时碰到已删除控件
+        if self._nav_labels:
+            dead = {id(x) for x in self._nav_labels}
+            self._reg = [it for it in self._reg if id(it[0]) not in dead]
+            self._nav_labels = []
+        while self.book_list_layout.count():
+            it = self.book_list_layout.takeAt(0)
+            wgt = it.widget()
+            if wgt is not None:
+                wgt.hide()                 # deleteLater 要等事件循环；先立刻从界面移除
+                wgt.setParent(None)
+                wgt.deleteLater()
+        self.book_btns = {}
+        self.nav_rows = []
+        self.nav_sections = []
+
+    def _add_nav_row(self, text, key, slot, kind):
+        btn = QPushButton(text)
+        btn.setObjectName("book")
+        btn.setCursor(Qt.PointingHandCursor)
+        btn.setFixedHeight(32)
+        btn.setToolTip(text)
+        btn.clicked.connect(slot)
+        self.book_list_layout.addWidget(btn)
+        self.book_btns[key] = btn
+        self.nav_rows.append({"kind": kind, "id": key, "text": text})
+        return btn
+
+    def _add_nav_section(self, text):
+        lbl = QLabel(text)
+        lbl.setContentsMargins(6, 5, 0, 0)
+        self.reg(lbl, "note", 11)
+        self.book_list_layout.addWidget(lbl)
+        self.nav_sections.append(text)
+        self._nav_labels.append(lbl)
+
+    def _add_nav_item_row(self, it):
+        text = "%s　%s 词" % (it.get("display") or it["name"], format(it["count"], ","))
+        self._add_nav_row(text, it["id"],
+                          lambda _=False, bid=it["id"]: self._pick_book(bid), "book")
+
+    def _build_nav_level(self):
+        """按当前层级重建列表：1 主类 / 2 分组 / 3 词书 + 并集。"""
+        self._clear_book_rows()
+        if self.nav_level == 1:
+            mains = bk.mains()
+            self.books_lead.setText("选择主类　%d 类 · %d 组 · %d 本词书" %
+                                    (len(mains), len(bk.groups()),
+                                     len(bk.all()) - len(bk.groups())))
+            for m in mains:
+                text = "%s　%d 个分组 · %s 词" % (
+                    m["name"], len(m["groups"]), format(main_word_count(m["id"]), ","))
+                self._add_nav_row(text, m["id"],
+                                  lambda _=False, mid=m["id"]: self._nav_into_main(mid),
+                                  "main")
+        elif self.nav_level == 2:
+            main = next((m for m in bk.mains() if m["id"] == self.nav_main), None)
+            if not main:
+                self.nav_level = 1
+                return self._build_nav_level()
+            self.books_lead.setText("%s　%d 个分组" % (main["name"], len(main["groups"])))
+            for g in main["groups"]:
+                text = "%s　%d 本词书 · %s 词" % (
+                    g["name"], len(g["items"]), format(g["union"]["count"], ","))
+                self._add_nav_row(text, g["id"],
+                                  lambda _=False, gid=g["id"]: self._nav_into_group(gid),
+                                  "group")
+        else:
+            g = bk.GROUPS.get(self.nav_group)
+            if not g:
+                self.nav_level = 1
+                return self._build_nav_level()
+            self.books_lead.setText("%s　%d 本词书 · 全选 %s 词" %
+                                    (g["name"], len(g["items"]),
+                                     format(g["union"]["count"], ",")))
+
+            # 顶部：分组「全选并集」（名称用数据里的 union_name / display）
+            u = g["union"]
+            ulabel = u.get("display") or u["name"]
+            if "全选" not in ulabel:
+                ulabel += "（全选）"
+            self._add_nav_row("%s　%s 词" % (ulabel, format(u["count"], ",")),
+                              u["id"],
+                              lambda _=False, bid=u["id"]: self._pick_book(bid),
+                              "union")
+
+            # 教材类分组：按 series 分节，每节一行「本版本全选」
+            if g.get("series"):
+                for s in g["series"]:
+                    items = [it for it in g["items"] if (it.get("series") or "") == s]
+                    self._add_nav_section("%s · %d 册" % (s, len(items)))
+                    pid = series_pseudo_id(g["id"], s)
+                    s_text = "%s · 本版本全选　%s 词" % (
+                        s, format(len(series_union_words(g["id"], s)), ","))
+                    self._add_nav_row(s_text, pid,
+                                      lambda _=False, b=pid: self._pick_book(b),
+                                      "series")
+                    for it in items:
+                        self._add_nav_item_row(it)
+                for it in g["items"]:
+                    if not (it.get("series") or ""):
+                        self._add_nav_item_row(it)
+            else:
+                for it in g["items"]:
+                    self._add_nav_item_row(it)
+        self.book_list_layout.addStretch(1)
+
+    def _nav_into_main(self, main_id):
+        self.nav_main = main_id
+        self.nav_level = 2
+        self._build_nav_level()
+        self._refresh_books()
+        self.book_scroll.verticalScrollBar().setValue(0)
+
+    def _nav_into_group(self, group_id):
+        self.nav_group = group_id
+        self.nav_level = 3
+        self._build_nav_level()
+        self._refresh_books()
+        self.book_scroll.verticalScrollBar().setValue(0)
+
+    def _nav_back(self):
+        if self.nav_level == 3:
+            self.nav_level = 2
+            self.nav_group = None
+            self._build_nav_level()
+            self._refresh_books()
+        elif self.nav_level == 2:
+            self.nav_level = 1
+            self.nav_main = None
+            self._build_nav_level()
+            self._refresh_books()
+        else:
+            self._page_back()
+        try:
+            self.book_scroll.verticalScrollBar().setValue(0)
+        except Exception:
+            pass
 
     def _build_settings(self):
         self.settings_page = QWidget()
@@ -805,7 +1053,7 @@ class Card(QWidget):
         row2 = QHBoxLayout()
         row2.setSpacing(8)
         self.lab_book = QLabel("")
-        self.reg(self.lab_book, "mean", 14)
+        self.reg(self.lab_book, "mean", 13)
         row2.addWidget(self.lab_book)
         row2.addStretch(1)
         self.lab_book_num = QLabel("")
@@ -874,8 +1122,13 @@ class Card(QWidget):
     def _page_back(self):
         if self.mode == "settings":
             self.close_settings()
-        elif self.mode == "books" and self.books_src == "settings":
-            self.open_settings()
+        elif self.mode == "books":
+            if self.nav_level > 1:
+                self._nav_back()
+            elif self.books_src == "settings":
+                self.open_settings()
+            else:
+                self.close()          # 从引导/学习页进来：返回键 = 关闭，跟 V1.1 的 Esc 一致
 
     def open_settings(self):
         if self.mode in ("front", "back", "empty"):
@@ -897,29 +1150,27 @@ class Card(QWidget):
         return self._book_stats(self.book_id)
 
     def _refresh_books(self):
+        learned, known, mastered, total = self._book_stats(self.sel_book)
         for bid, btn in self.book_btns.items():
-            learned, known, mastered, total = self._book_stats(bid)
-            b = bk.get(bid)
-            btn.setText("%s　%s 词 · 已学 %s / %s" %
-                        (b["name"], format(total, ","), format(learned, ","), format(total, ",")))
             btn.setProperty("on", "1" if bid == self.sel_book else "0")
             btn.style().unpolish(btn)
             btn.style().polish(btn)
-        learned, known, mastered, total = self._book_stats(self.sel_book)
-        b = bk.get(self.sel_book)
-        self.lab_book_stat.setText("%s · 已学 %s / %s · 已掌握 %s" %
-                                   (b["name"], format(learned, ","), format(total, ","),
-                                    format(mastered, ",")))
+        self.lab_book_stat.setText("%s · %s 词" %
+                                   (self._book_path(self.sel_book), format(total, ",")))
+        self.status.setText("已学 %s / %s · 已会 %s · 已掌握 %s" %
+                            (format(learned, ","), format(total, ","),
+                             format(known, ","), format(mastered, ",")))
         for chip, mode in ((self.chip_seq, "seq"), (self.chip_shuf, "shuffle")):
             chip.setProperty("on", "1" if mode == self.sel_order else "0")
             chip.style().unpolish(chip)
             chip.style().polish(chip)
         same = (self.sel_book == self.book_id and self.sel_order == self.order_mode)
         self.btn_learn.setText("开始学习" if same else "用这本开始")
-        try:
-            self.book_scroll.ensureWidgetVisible(self.book_btns[self.sel_book], 0, 6)
-        except Exception:
-            pass
+        if self.nav_level == 3 and self.sel_book in self.book_btns:
+            try:
+                self.book_scroll.ensureWidgetVisible(self.book_btns[self.sel_book], 0, 6)
+            except Exception:
+                pass
 
     def _pick_book(self, bid):
         self.sel_book = bid
@@ -934,7 +1185,10 @@ class Card(QWidget):
         self.books_src = src
         self.sel_book = self.book_id
         self.sel_order = self.order_mode
-        self._refresh_books()
+        self.nav_level = 1
+        self.nav_main = None
+        self.nav_group = None
+        self._build_nav_level()
         self._set_mode("books")
 
     def _start_learning(self):
@@ -997,8 +1251,8 @@ class Card(QWidget):
     # ---------- 设置内容 ----------
     def _refresh_settings(self):
         learned, known, mastered, total = self._stats()
-        b = bk.get(self.book_id)
-        self.lab_book.setText(b["name"])
+        self.lab_book.setText(self._book_path(self.book_id))
+        self.lab_book.setToolTip(self._book_path(self.book_id))
         self.lab_book_num.setText("已学 %s / %s" % (format(learned, ","), format(total, ",")))
         self.lab_progress.setText("已掌握 %s · 测试判定已会 %s" %
                                   (format(mastered, ","), format(known, ",")))
@@ -1085,8 +1339,7 @@ class Card(QWidget):
         study = mode in ("front", "back", "empty")
         self.btn_min.setVisible(study)
         self.btn_gear.setVisible(study and not self.compact)
-        self.btn_back.setVisible(mode == "settings" or
-                                 (mode == "books" and self.books_src == "settings"))
+        self.btn_back.setVisible(mode == "settings" or mode == "books")
         self.page_title.setVisible(mode in ("settings", "books"))
         self.page_title.setText({"settings": "设置", "books": "选择词书"}.get(mode, ""))
         self.stage.setVisible(study)
@@ -1098,6 +1351,11 @@ class Card(QWidget):
         self.books_page.setVisible(mode == "books")
         self.settings_page.setVisible(mode == "settings")
         self.btn_skip.setVisible(mode == "quiz")
+        # 词书页：底部/顶部信息随当前选择刷新；其它页面不留词书页的统计文字
+        if mode == "books":
+            self._refresh_books()
+        elif mode == "settings":
+            self.status.setText("")
         # 所有页面都锁在固定尺寸里：避免长释义/历史结果把窗口撑大
         if mode == "quiz":
             pass                                # start_quiz 已经 setFixedSize(QUIZ_W, QUIZ_H)
@@ -1130,7 +1388,7 @@ class Card(QWidget):
 
     def _show_empty(self):
         self.status.setText("")
-        self.word.setText("这本书过完了 ✓")
+        self.word.setText("%s 过完了 ✓" % self._book_name(self.book_id))
         self.word.setStyleSheet(th.label_qss(self.t, "empty", 18 if self.compact else 24))
         self.ipa.setText("")
         self.answer_effect.setOpacity(0.0)
@@ -1447,8 +1705,8 @@ class Card(QWidget):
             line += "  ·  不认识 %d 题" % rec["dontknow"]
 
         learned, known, mastered, total = self._book_stats(self.book_id)
-        book = bk.get(self.book_id)
-        tail = "%s已会 %s / %s" % (book["short"], format(known, ","), format(total, ","))
+        tail = "%s已会 %s / %s" % (self._book_short_name(self.book_id),
+                                   format(known, ","), format(total, ","))
 
         if is_baseline:
             known_n = rec.get("known", len(self.known))
@@ -1520,7 +1778,7 @@ class Card(QWidget):
             return
         if self.mode == "books":
             if k == Qt.Key_Escape:
-                self._page_back() if self.books_src == "settings" else self.close()
+                self._nav_back()
             return
         if self.mode == "welcome":
             if k == Qt.Key_Escape:

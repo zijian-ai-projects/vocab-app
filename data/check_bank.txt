@@ -1,65 +1,1063 @@
-  OK   大词库 15212 词（目标 15,000+）
+  OK   大词库 34825 词（目标 30,000+）
   OK   大词库无重复
   OK   大词库按字母序 A–Z 排列
   OK   每个词都有卡面释义
-  OK   缺音标的词 28 个（<=30）
-  OK   难度 15 档分布均匀：[1015, 1014, 1014, 1014, 1014, 1014, 1014, 1015, 1014, 1014, 1014, 1014, 1014, 1014, 1014]
+  OK   缺音标的词 2718 个（<=3000，ECDICT 本身缺）
+  OK   难度 15 档分布均匀：[2322, 2322, 2321, 2322, 2322, 2321, 2322, 2322, 2321, 2322, 2322, 2321, 2322, 2322, 2321]
   OK   难度 b 都在 [-3.2, 3.2]
-  OK   词书 11 本：xiaoxue、chuzhong、gaokao、cet4、cet6、kaoyan、kaobo、ielts、toefl、gre、all
-  OK   xiaoxue 词数标记一致：1006
-  OK   xiaoxue 按字母序
-  OK   xiaoxue 无重复
-  OK   xiaoxue 的词都在大词库里
-  OK   xiaoxue 有名称/描述
-  OK   chuzhong 词数标记一致：2239
-  OK   chuzhong 按字母序
-  OK   chuzhong 无重复
-  OK   chuzhong 的词都在大词库里
-  OK   chuzhong 有名称/描述
-  OK   gaokao 词数标记一致：3671
-  OK   gaokao 按字母序
-  OK   gaokao 无重复
-  OK   gaokao 的词都在大词库里
-  OK   gaokao 有名称/描述
-  OK   cet4 词数标记一致：3846
-  OK   cet4 按字母序
-  OK   cet4 无重复
-  OK   cet4 的词都在大词库里
-  OK   cet4 有名称/描述
-  OK   cet6 词数标记一致：5406
-  OK   cet6 按字母序
-  OK   cet6 无重复
-  OK   cet6 的词都在大词库里
-  OK   cet6 有名称/描述
-  OK   kaoyan 词数标记一致：4801
-  OK   kaoyan 按字母序
-  OK   kaoyan 无重复
-  OK   kaoyan 的词都在大词库里
-  OK   kaoyan 有名称/描述
-  OK   kaobo 词数标记一致：10556
-  OK   kaobo 按字母序
-  OK   kaobo 无重复
-  OK   kaobo 的词都在大词库里
-  OK   kaobo 有名称/描述
-  OK   ielts 词数标记一致：5038
-  OK   ielts 按字母序
-  OK   ielts 无重复
-  OK   ielts 的词都在大词库里
-  OK   ielts 有名称/描述
-  OK   toefl 词数标记一致：6970
-  OK   toefl 按字母序
-  OK   toefl 无重复
-  OK   toefl 的词都在大词库里
-  OK   toefl 有名称/描述
-  OK   gre 词数标记一致：7504
-  OK   gre 按字母序
-  OK   gre 无重复
-  OK   gre 的词都在大词库里
-  OK   gre 有名称/描述
-  OK   all 词数标记一致：15212
-  OK   all 按字母序
-  OK   all 无重复
-  OK   all 的词都在大词库里
-  OK   all 有名称/描述
+  OK   词性字段有内容
+  OK   词书 schema=2
+  OK   主类 8 个：大学、高中、初中、小学、留学、实用、职场、专业
+  OK   分组 41 个
+  OK   词书 168 本
+  OK   cet4 并集词数标记一致：6612
+  OK   cet4 并集无重复
+  OK   cet4 并集的词都在大词库里
+  OK   cet4-core 词数标记一致：1897
+  OK   cet4-core 无重复
+  OK   cet4-core 的词都在大词库里
+  OK   cet4-core 有名称
+  OK   cet4-core id 唯一
+  OK   cet4-high 词数标记一致：1719
+  OK   cet4-high 无重复
+  OK   cet4-high 的词都在大词库里
+  OK   cet4-high 有名称
+  OK   cet4-high id 唯一
+  OK   cet4-xh 词数标记一致：4548
+  OK   cet4-xh 无重复
+  OK   cet4-xh 的词都在大词库里
+  OK   cet4-xh 有名称
+  OK   cet4-xh id 唯一
+  OK   cet4-nihai 词数标记一致：2262
+  OK   cet4-nihai 无重复
+  OK   cet4-nihai 的词都在大词库里
+  OK   cet4-nihai 有名称
+  OK   cet4-nihai id 唯一
+  OK   cet4-sg 词数标记一致：5817
+  OK   cet4-sg 无重复
+  OK   cet4-sg 的词都在大词库里
+  OK   cet4-sg 有名称
+  OK   cet4-sg id 唯一
+  OK   cet4-cg 词数标记一致：4443
+  OK   cet4-cg 无重复
+  OK   cet4-cg 的词都在大词库里
+  OK   cet4-cg 有名称
+  OK   cet4-cg id 唯一
+  OK   cet4 并集 = 各词书按序去重
+  OK   cet4 有并集名
+  OK   cet6 并集词数标记一致：6791
+  OK   cet6 并集无重复
+  OK   cet6 并集的词都在大词库里
+  OK   cet6-core 词数标记一致：1934
+  OK   cet6-core 无重复
+  OK   cet6-core 的词都在大词库里
+  OK   cet6-core 有名称
+  OK   cet6-core id 唯一
+  OK   cet6-high 词数标记一致：2091
+  OK   cet6-high 无重复
+  OK   cet6-high 的词都在大词库里
+  OK   cet6-high 有名称
+  OK   cet6-high id 唯一
+  OK   cet6-xh 词数标记一致：2740
+  OK   cet6-xh 无重复
+  OK   cet6-xh 的词都在大词库里
+  OK   cet6-xh 有名称
+  OK   cet6-xh id 唯一
+  OK   cet6-sg 词数标记一致：5347
+  OK   cet6-sg 无重复
+  OK   cet6-sg 的词都在大词库里
+  OK   cet6-sg 有名称
+  OK   cet6-sg id 唯一
+  OK   cet6-cg 词数标记一致：2490
+  OK   cet6-cg 无重复
+  OK   cet6-cg 的词都在大词库里
+  OK   cet6-cg 有名称
+  OK   cet6-cg id 唯一
+  OK   cet6 并集 = 各词书按序去重
+  OK   cet6 有并集名
+  OK   kaoyan 并集词数标记一致：9923
+  OK   kaoyan 并集无重复
+  OK   kaoyan 并集的词都在大词库里
+  OK   ky-hbs 词数标记一致：6701
+  OK   ky-hbs 无重复
+  OK   ky-hbs 的词都在大词库里
+  OK   ky-hbs 有名称
+  OK   ky-hbs id 唯一
+  OK   ky-sg 词数标记一致：5550
+  OK   ky-sg 无重复
+  OK   ky-sg 的词都在大词库里
+  OK   ky-sg 有名称
+  OK   ky-sg id 唯一
+  OK   ky-cg 词数标记一致：6255
+  OK   ky-cg 无重复
+  OK   ky-cg 的词都在大词库里
+  OK   ky-cg 有名称
+  OK   ky-cg id 唯一
+  OK   ky-ll 词数标记一致：8086
+  OK   ky-ll 无重复
+  OK   ky-ll 的词都在大词库里
+  OK   ky-ll 有名称
+  OK   ky-ll id 唯一
+  OK   ky-xh 词数标记一致：7988
+  OK   ky-xh 无重复
+  OK   ky-xh 的词都在大词库里
+  OK   ky-xh 有名称
+  OK   ky-xh id 唯一
+  OK   ky-nn 词数标记一致：5943
+  OK   ky-nn 无重复
+  OK   ky-nn 的词都在大词库里
+  OK   ky-nn 有名称
+  OK   ky-nn id 唯一
+  OK   ky-nihai 词数标记一致：5956
+  OK   ky-nihai 无重复
+  OK   ky-nihai 的词都在大词库里
+  OK   ky-nihai 有名称
+  OK   ky-nihai id 唯一
+  OK   kaoyan 并集 = 各词书按序去重
+  OK   kaoyan 有并集名
+  OK   zhuansheng 并集词数标记一致：5333
+  OK   zhuansheng 并集无重复
+  OK   zhuansheng 并集的词都在大词库里
+  OK   zs-40 词数标记一致：2961
+  OK   zs-40 无重复
+  OK   zs-40 的词都在大词库里
+  OK   zs-40 有名称
+  OK   zs-40 id 唯一
+  OK   zs-nihai 词数标记一致：2605
+  OK   zs-nihai 无重复
+  OK   zs-nihai 的词都在大词库里
+  OK   zs-nihai 有名称
+  OK   zs-nihai id 唯一
+  OK   zs-xh 词数标记一致：4276
+  OK   zs-xh 无重复
+  OK   zs-xh 的词都在大词库里
+  OK   zs-xh 有名称
+  OK   zs-xh id 唯一
+  OK   zhuansheng 并集 = 各词书按序去重
+  OK   zhuansheng 有并集名
+  OK   yingzhuan 并集词数标记一致：10673
+  OK   yingzhuan 并集无重复
+  OK   yingzhuan 并集的词都在大词库里
+  OK   yz-t4 词数标记一致：4479
+  OK   yz-t4 无重复
+  OK   yz-t4 的词都在大词库里
+  OK   yz-t4 有名称
+  OK   yz-t4 id 唯一
+  OK   yz-t8 词数标记一致：4951
+  OK   yz-t8 无重复
+  OK   yz-t8 的词都在大词库里
+  OK   yz-t8 有名称
+  OK   yz-t8 id 唯一
+  OK   yz-ry-t4 词数标记一致：5121
+  OK   yz-ry-t4 无重复
+  OK   yz-ry-t4 的词都在大词库里
+  OK   yz-ry-t4 有名称
+  OK   yz-ry-t4 id 唯一
+  OK   yz-ry-t8 词数标记一致：4334
+  OK   yz-ry-t8 无重复
+  OK   yz-ry-t8 的词都在大词库里
+  OK   yz-ry-t8 有名称
+  OK   yz-ry-t8 id 唯一
+  OK   yingzhuan 并集 = 各词书按序去重
+  OK   yingzhuan 有并集名
+  OK   xinshiye 并集词数标记一致：2099
+  OK   xinshiye 并集无重复
+  OK   xinshiye 并集的词都在大词库里
+  OK   xsy-1 词数标记一致：538
+  OK   xsy-1 无重复
+  OK   xsy-1 的词都在大词库里
+  OK   xsy-1 有名称
+  OK   xsy-1 id 唯一
+  OK   xsy-2 词数标记一致：512
+  OK   xsy-2 无重复
+  OK   xsy-2 的词都在大词库里
+  OK   xsy-2 有名称
+  OK   xsy-2 id 唯一
+  OK   xsy-3 词数标记一致：524
+  OK   xsy-3 无重复
+  OK   xsy-3 的词都在大词库里
+  OK   xsy-3 有名称
+  OK   xsy-3 id 唯一
+  OK   xsy-4 词数标记一致：527
+  OK   xsy-4 无重复
+  OK   xsy-4 的词都在大词库里
+  OK   xsy-4 有名称
+  OK   xsy-4 id 唯一
+  OK   xinshiye 并集 = 各词书按序去重
+  OK   xinshiye 有并集名
+  OK   gaozhi 并集词数标记一致：3036
+  OK   gaozhi 并集无重复
+  OK   gaozhi 并集的词都在大词库里
+  OK   gz 词数标记一致：3036
+  OK   gz 无重复
+  OK   gz 的词都在大词库里
+  OK   gz 有名称
+  OK   gz id 唯一
+  OK   gaozhi 并集 = 各词书按序去重
+  OK   gaozhi 有并集名
+  OK   zikao 并集词数标记一致：5137
+  OK   zikao 并集无重复
+  OK   zikao 并集的词都在大词库里
+  OK   zk2 词数标记一致：4915
+  OK   zk2 无重复
+  OK   zk2 的词都在大词库里
+  OK   zk2 有名称
+  OK   zk2 id 唯一
+  OK   zk-high 词数标记一致：1964
+  OK   zk-high 无重复
+  OK   zk-high 的词都在大词库里
+  OK   zk-high 有名称
+  OK   zk-high id 唯一
+  OK   zikao 并集 = 各词书按序去重
+  OK   zikao 有并集名
+  OK   tongli 并集词数标记一致：5823
+  OK   tongli 并集无重复
+  OK   tongli 并集的词都在大词库里
+  OK   tl 词数标记一致：5823
+  OK   tl 无重复
+  OK   tl 的词都在大词库里
+  OK   tl 有名称
+  OK   tl id 唯一
+  OK   tongli 并集 = 各词书按序去重
+  OK   tongli 有并集名
+  OK   catti 并集词数标记一致：3365
+  OK   catti 并集无重复
+  OK   catti 并集的词都在大词库里
+  OK   catti3 词数标记一致：3365
+  OK   catti3 无重复
+  OK   catti3 的词都在大词库里
+  OK   catti3 有名称
+  OK   catti3 id 唯一
+  OK   catti 并集 = 各词书按序去重
+  OK   catti 有并集名
+  OK   bec 并集词数标记一致：4545
+  OK   bec 并集无重复
+  OK   bec 并集的词都在大词库里
+  OK   bec1 词数标记一致：1798
+  OK   bec1 无重复
+  OK   bec1 的词都在大词库里
+  OK   bec1 有名称
+  OK   bec1 id 唯一
+  OK   bec2 词数标记一致：2098
+  OK   bec2 无重复
+  OK   bec2 的词都在大词库里
+  OK   bec2 有名称
+  OK   bec2 id 唯一
+  OK   bec3 词数标记一致：2451
+  OK   bec3 无重复
+  OK   bec3 的词都在大词库里
+  OK   bec3 有名称
+  OK   bec3 id 唯一
+  OK   bec 并集 = 各词书按序去重
+  OK   bec 有并集名
+  OK   pets 并集词数标记一致：7791
+  OK   pets 并集无重复
+  OK   pets 并集的词都在大词库里
+  OK   pets-1 词数标记一致：918
+  OK   pets-1 无重复
+  OK   pets-1 的词都在大词库里
+  OK   pets-1 有名称
+  OK   pets-1 id 唯一
+  OK   pets-2 词数标记一致：2027
+  OK   pets-2 无重复
+  OK   pets-2 的词都在大词库里
+  OK   pets-2 有名称
+  OK   pets-2 id 唯一
+  OK   pets-3 词数标记一致：4178
+  OK   pets-3 无重复
+  OK   pets-3 的词都在大词库里
+  OK   pets-3 有名称
+  OK   pets-3 id 唯一
+  OK   pets-4 词数标记一致：5628
+  OK   pets-4 无重复
+  OK   pets-4 的词都在大词库里
+  OK   pets-4 有名称
+  OK   pets-4 id 唯一
+  OK   pets-5 词数标记一致：7728
+  OK   pets-5 无重复
+  OK   pets-5 的词都在大词库里
+  OK   pets-5 有名称
+  OK   pets-5 id 唯一
+  OK   pets 并集 = 各词书按序去重
+  OK   pets 有并集名
+  OK   gz-text 并集词数标记一致：3229
+  OK   gz-text 并集无重复
+  OK   gz-text 并集的词都在大词库里
+  OK   gz1-1 词数标记一致：301
+  OK   gz1-1 无重复
+  OK   gz1-1 的词都在大词库里
+  OK   gz1-1 有名称
+  OK   gz1-1 id 唯一
+  OK   gz1-2 词数标记一致：320
+  OK   gz1-2 无重复
+  OK   gz1-2 的词都在大词库里
+  OK   gz1-2 有名称
+  OK   gz1-2 id 唯一
+  OK   gz1-3 词数标记一致：362
+  OK   gz1-3 无重复
+  OK   gz1-3 的词都在大词库里
+  OK   gz1-3 有名称
+  OK   gz1-3 id 唯一
+  OK   gz1-4 词数标记一致：332
+  OK   gz1-4 无重复
+  OK   gz1-4 的词都在大词库里
+  OK   gz1-4 有名称
+  OK   gz1-4 id 唯一
+  OK   gz1-5 词数标记一致：321
+  OK   gz1-5 无重复
+  OK   gz1-5 的词都在大词库里
+  OK   gz1-5 有名称
+  OK   gz1-5 id 唯一
+  OK   gz1-6 词数标记一致：298
+  OK   gz1-6 无重复
+  OK   gz1-6 的词都在大词库里
+  OK   gz1-6 有名称
+  OK   gz1-6 id 唯一
+  OK   gz1-7 词数标记一致：280
+  OK   gz1-7 无重复
+  OK   gz1-7 的词都在大词库里
+  OK   gz1-7 有名称
+  OK   gz1-7 id 唯一
+  OK   gz2-1 词数标记一致：376
+  OK   gz2-1 无重复
+  OK   gz2-1 的词都在大词库里
+  OK   gz2-1 有名称
+  OK   gz2-1 id 唯一
+  OK   gz2-2 词数标记一致：342
+  OK   gz2-2 无重复
+  OK   gz2-2 的词都在大词库里
+  OK   gz2-2 有名称
+  OK   gz2-2 id 唯一
+  OK   gz2-3 词数标记一致：252
+  OK   gz2-3 无重复
+  OK   gz2-3 的词都在大词库里
+  OK   gz2-3 有名称
+  OK   gz2-3 id 唯一
+  OK   gz2-4 词数标记一致：228
+  OK   gz2-4 无重复
+  OK   gz2-4 的词都在大词库里
+  OK   gz2-4 有名称
+  OK   gz2-4 id 唯一
+  OK   gz2-5 词数标记一致：313
+  OK   gz2-5 无重复
+  OK   gz2-5 的词都在大词库里
+  OK   gz2-5 有名称
+  OK   gz2-5 id 唯一
+  OK   gz2-6 词数标记一致：341
+  OK   gz2-6 无重复
+  OK   gz2-6 的词都在大词库里
+  OK   gz2-6 有名称
+  OK   gz2-6 id 唯一
+  OK   gz2-7 词数标记一致：199
+  OK   gz2-7 无重复
+  OK   gz2-7 的词都在大词库里
+  OK   gz2-7 有名称
+  OK   gz2-7 id 唯一
+  OK   gz3-1 词数标记一致：215
+  OK   gz3-1 无重复
+  OK   gz3-1 的词都在大词库里
+  OK   gz3-1 有名称
+  OK   gz3-1 id 唯一
+  OK   gz3-2 词数标记一致：263
+  OK   gz3-2 无重复
+  OK   gz3-2 的词都在大词库里
+  OK   gz3-2 有名称
+  OK   gz3-2 id 唯一
+  OK   gz3-3 词数标记一致：256
+  OK   gz3-3 无重复
+  OK   gz3-3 的词都在大词库里
+  OK   gz3-3 有名称
+  OK   gz3-3 id 唯一
+  OK   gz3-4 词数标记一致：314
+  OK   gz3-4 无重复
+  OK   gz3-4 的词都在大词库里
+  OK   gz3-4 有名称
+  OK   gz3-4 id 唯一
+  OK   gz3-5 词数标记一致：314
+  OK   gz3-5 无重复
+  OK   gz3-5 的词都在大词库里
+  OK   gz3-5 有名称
+  OK   gz3-5 id 唯一
+  OK   gz3-6 词数标记一致：288
+  OK   gz3-6 无重复
+  OK   gz3-6 的词都在大词库里
+  OK   gz3-6 有名称
+  OK   gz3-6 id 唯一
+  OK   gz3-7 词数标记一致：263
+  OK   gz3-7 无重复
+  OK   gz3-7 的词都在大词库里
+  OK   gz3-7 有名称
+  OK   gz3-7 id 唯一
+  OK   gz-text 并集 = 各词书按序去重
+  OK   gz-text 有并集名
+  OK   gz-text 是教材分册（21 册/3 版本）
+  OK   gaokao 并集词数标记一致：5434
+  OK   gaokao 并集无重复
+  OK   gaokao 并集的词都在大词库里
+  OK   gk-sg 词数标记一致：3039
+  OK   gk-sg 无重复
+  OK   gk-sg 的词都在大词库里
+  OK   gk-sg 有名称
+  OK   gk-sg id 唯一
+  OK   gk-db 词数标记一致：3576
+  OK   gk-db 无重复
+  OK   gk-db 的词都在大词库里
+  OK   gk-db 有名称
+  OK   gk-db id 唯一
+  OK   gk-xh 词数标记一致：4721
+  OK   gk-xh 无重复
+  OK   gk-xh 的词都在大词库里
+  OK   gk-xh 有名称
+  OK   gk-xh id 唯一
+  OK   gk-cg 词数标记一致：3398
+  OK   gk-cg 无重复
+  OK   gk-cg 的词都在大词库里
+  OK   gk-cg 有名称
+  OK   gk-cg id 唯一
+  OK   gaokao 并集 = 各词书按序去重
+  OK   gaokao 有并集名
+  OK   zhongzhi 并集词数标记一致：2572
+  OK   zhongzhi 并集无重复
+  OK   zhongzhi 并集的词都在大词库里
+  OK   zz 词数标记一致：2572
+  OK   zz 无重复
+  OK   zz 的词都在大词库里
+  OK   zz 有名称
+  OK   zz id 唯一
+  OK   zhongzhi 并集 = 各词书按序去重
+  OK   zhongzhi 有并集名
+  OK   nce 并集词数标记一致：3255
+  OK   nce 并集无重复
+  OK   nce 并集的词都在大词库里
+  OK   nce-1 词数标记一致：823
+  OK   nce-1 无重复
+  OK   nce-1 的词都在大词库里
+  OK   nce-1 有名称
+  OK   nce-1 id 唯一
+  OK   nce-2 词数标记一致：817
+  OK   nce-2 无重复
+  OK   nce-2 的词都在大词库里
+  OK   nce-2 有名称
+  OK   nce-2 id 唯一
+  OK   nce-3 词数标记一致：1035
+  OK   nce-3 无重复
+  OK   nce-3 的词都在大词库里
+  OK   nce-3 有名称
+  OK   nce-3 id 唯一
+  OK   nce-4 词数标记一致：764
+  OK   nce-4 无重复
+  OK   nce-4 的词都在大词库里
+  OK   nce-4 有名称
+  OK   nce-4 id 唯一
+  OK   nce 并集 = 各词书按序去重
+  OK   nce 有并集名
+  OK   cz-text 并集词数标记一致：2773
+  OK   cz-text 并集无重复
+  OK   cz-text 并集的词都在大词库里
+  OK   cz1-1 词数标记一致：387
+  OK   cz1-1 无重复
+  OK   cz1-1 的词都在大词库里
+  OK   cz1-1 有名称
+  OK   cz1-1 id 唯一
+  OK   cz1-2 词数标记一致：435
+  OK   cz1-2 无重复
+  OK   cz1-2 的词都在大词库里
+  OK   cz1-2 有名称
+  OK   cz1-2 id 唯一
+  OK   cz1-3 词数标记一致：393
+  OK   cz1-3 无重复
+  OK   cz1-3 的词都在大词库里
+  OK   cz1-3 有名称
+  OK   cz1-3 id 唯一
+  OK   cz1-4 词数标记一致：395
+  OK   cz1-4 无重复
+  OK   cz1-4 的词都在大词库里
+  OK   cz1-4 有名称
+  OK   cz1-4 id 唯一
+  OK   cz1-5 词数标记一致：542
+  OK   cz1-5 无重复
+  OK   cz1-5 的词都在大词库里
+  OK   cz1-5 有名称
+  OK   cz1-5 id 唯一
+  OK   cz2-1 词数标记一致：567
+  OK   cz2-1 无重复
+  OK   cz2-1 的词都在大词库里
+  OK   cz2-1 有名称
+  OK   cz2-1 id 唯一
+  OK   cz2-2 词数标记一致：389
+  OK   cz2-2 无重复
+  OK   cz2-2 的词都在大词库里
+  OK   cz2-2 有名称
+  OK   cz2-2 id 唯一
+  OK   cz2-3 词数标记一致：276
+  OK   cz2-3 无重复
+  OK   cz2-3 的词都在大词库里
+  OK   cz2-3 有名称
+  OK   cz2-3 id 唯一
+  OK   cz2-4 词数标记一致：232
+  OK   cz2-4 无重复
+  OK   cz2-4 的词都在大词库里
+  OK   cz2-4 有名称
+  OK   cz2-4 id 唯一
+  OK   cz2-5 词数标记一致：306
+  OK   cz2-5 无重复
+  OK   cz2-5 的词都在大词库里
+  OK   cz2-5 有名称
+  OK   cz2-5 id 唯一
+  OK   cz2-6 词数标记一致：106
+  OK   cz2-6 无重复
+  OK   cz2-6 的词都在大词库里
+  OK   cz2-6 有名称
+  OK   cz2-6 id 唯一
+  OK   cz3-1 词数标记一致：271
+  OK   cz3-1 无重复
+  OK   cz3-1 的词都在大词库里
+  OK   cz3-1 有名称
+  OK   cz3-1 id 唯一
+  OK   cz3-2 词数标记一致：368
+  OK   cz3-2 无重复
+  OK   cz3-2 的词都在大词库里
+  OK   cz3-2 有名称
+  OK   cz3-2 id 唯一
+  OK   cz3-3 词数标记一致：409
+  OK   cz3-3 无重复
+  OK   cz3-3 的词都在大词库里
+  OK   cz3-3 有名称
+  OK   cz3-3 id 唯一
+  OK   cz3-4 词数标记一致：326
+  OK   cz3-4 无重复
+  OK   cz3-4 的词都在大词库里
+  OK   cz3-4 有名称
+  OK   cz3-4 id 唯一
+  OK   cz3-5 词数标记一致：345
+  OK   cz3-5 无重复
+  OK   cz3-5 的词都在大词库里
+  OK   cz3-5 有名称
+  OK   cz3-5 id 唯一
+  OK   cz3-6 词数标记一致：155
+  OK   cz3-6 无重复
+  OK   cz3-6 的词都在大词库里
+  OK   cz3-6 有名称
+  OK   cz3-6 id 唯一
+  OK   cz-text 并集 = 各词书按序去重
+  OK   cz-text 有并集名
+  OK   cz-text 是教材分册（17 册/3 版本）
+  OK   zhongkao 并集词数标记一致：2703
+  OK   zhongkao 并集无重复
+  OK   zhongkao 并集的词都在大词库里
+  OK   zk-sg 词数标记一致：2003
+  OK   zk-sg 无重复
+  OK   zk-sg 的词都在大词库里
+  OK   zk-sg 有名称
+  OK   zk-sg id 唯一
+  OK   zk-xh16 词数标记一致：2418
+  OK   zk-xh16 无重复
+  OK   zk-xh16 的词都在大词库里
+  OK   zk-xh16 有名称
+  OK   zk-xh16 id 唯一
+  OK   zk-xh-tj 词数标记一致：2418
+  OK   zk-xh-tj 无重复
+  OK   zk-xh-tj 的词都在大词库里
+  OK   zk-xh-tj 有名称
+  OK   zk-xh-tj id 唯一
+  OK   zhongkao 并集 = 各词书按序去重
+  OK   zhongkao 有并集名
+  OK   xx-text 并集词数标记一致：1264
+  OK   xx-text 并集无重复
+  OK   xx-text 并集的词都在大词库里
+  OK   xx1-1 词数标记一致：64
+  OK   xx1-1 无重复
+  OK   xx1-1 的词都在大词库里
+  OK   xx1-1 有名称
+  OK   xx1-1 id 唯一
+  OK   xx1-2 词数标记一致：72
+  OK   xx1-2 无重复
+  OK   xx1-2 的词都在大词库里
+  OK   xx1-2 有名称
+  OK   xx1-2 id 唯一
+  OK   xx1-3 词数标记一致：76
+  OK   xx1-3 无重复
+  OK   xx1-3 的词都在大词库里
+  OK   xx1-3 有名称
+  OK   xx1-3 id 唯一
+  OK   xx1-4 词数标记一致：82
+  OK   xx1-4 无重复
+  OK   xx1-4 的词都在大词库里
+  OK   xx1-4 有名称
+  OK   xx1-4 id 唯一
+  OK   xx1-5 词数标记一致：109
+  OK   xx1-5 无重复
+  OK   xx1-5 的词都在大词库里
+  OK   xx1-5 有名称
+  OK   xx1-5 id 唯一
+  OK   xx1-6 词数标记一致：122
+  OK   xx1-6 无重复
+  OK   xx1-6 的词都在大词库里
+  OK   xx1-6 有名称
+  OK   xx1-6 id 唯一
+  OK   xx1-7 词数标记一致：130
+  OK   xx1-7 无重复
+  OK   xx1-7 的词都在大词库里
+  OK   xx1-7 有名称
+  OK   xx1-7 id 唯一
+  OK   xx1-8 词数标记一致：117
+  OK   xx1-8 无重复
+  OK   xx1-8 的词都在大词库里
+  OK   xx1-8 有名称
+  OK   xx1-8 id 唯一
+  OK   xx2-1 词数标记一致：138
+  OK   xx2-1 无重复
+  OK   xx2-1 的词都在大词库里
+  OK   xx2-1 有名称
+  OK   xx2-1 id 唯一
+  OK   xx2-2 词数标记一致：141
+  OK   xx2-2 无重复
+  OK   xx2-2 的词都在大词库里
+  OK   xx2-2 有名称
+  OK   xx2-2 id 唯一
+  OK   xx2-3 词数标记一致：112
+  OK   xx2-3 无重复
+  OK   xx2-3 的词都在大词库里
+  OK   xx2-3 有名称
+  OK   xx2-3 id 唯一
+  OK   xx2-4 词数标记一致：134
+  OK   xx2-4 无重复
+  OK   xx2-4 的词都在大词库里
+  OK   xx2-4 有名称
+  OK   xx2-4 id 唯一
+  OK   xx2-5 词数标记一致：143
+  OK   xx2-5 无重复
+  OK   xx2-5 的词都在大词库里
+  OK   xx2-5 有名称
+  OK   xx2-5 id 唯一
+  OK   xx2-6 词数标记一致：146
+  OK   xx2-6 无重复
+  OK   xx2-6 的词都在大词库里
+  OK   xx2-6 有名称
+  OK   xx2-6 id 唯一
+  OK   xx2-7 词数标记一致：67
+  OK   xx2-7 无重复
+  OK   xx2-7 的词都在大词库里
+  OK   xx2-7 有名称
+  OK   xx2-7 id 唯一
+  OK   xx2-8 词数标记一致：98
+  OK   xx2-8 无重复
+  OK   xx2-8 的词都在大词库里
+  OK   xx2-8 有名称
+  OK   xx2-8 id 唯一
+  OK   xx3-1 词数标记一致：65
+  OK   xx3-1 无重复
+  OK   xx3-1 的词都在大词库里
+  OK   xx3-1 有名称
+  OK   xx3-1 id 唯一
+  OK   xx3-2 词数标记一致：97
+  OK   xx3-2 无重复
+  OK   xx3-2 的词都在大词库里
+  OK   xx3-2 有名称
+  OK   xx3-2 id 唯一
+  OK   xx3-3 词数标记一致：105
+  OK   xx3-3 无重复
+  OK   xx3-3 的词都在大词库里
+  OK   xx3-3 有名称
+  OK   xx3-3 id 唯一
+  OK   xx3-4 词数标记一致：85
+  OK   xx3-4 无重复
+  OK   xx3-4 的词都在大词库里
+  OK   xx3-4 有名称
+  OK   xx3-4 id 唯一
+  OK   xx3-5 词数标记一致：113
+  OK   xx3-5 无重复
+  OK   xx3-5 的词都在大词库里
+  OK   xx3-5 有名称
+  OK   xx3-5 id 唯一
+  OK   xx3-6 词数标记一致：106
+  OK   xx3-6 无重复
+  OK   xx3-6 的词都在大词库里
+  OK   xx3-6 有名称
+  OK   xx3-6 id 唯一
+  OK   xx3-7 词数标记一致：116
+  OK   xx3-7 无重复
+  OK   xx3-7 的词都在大词库里
+  OK   xx3-7 有名称
+  OK   xx3-7 id 唯一
+  OK   xx3-8 词数标记一致：80
+  OK   xx3-8 无重复
+  OK   xx3-8 的词都在大词库里
+  OK   xx3-8 有名称
+  OK   xx3-8 id 唯一
+  OK   xx-text 并集 = 各词书按序去重
+  OK   xx-text 有并集名
+  OK   xx-text 是教材分册（24 册/3 版本）
+  OK   xx-ci 并集词数标记一致：921
+  OK   xx-ci 并集无重复
+  OK   xx-ci 并集的词都在大词库里
+  OK   xx-dg 词数标记一致：525
+  OK   xx-dg 无重复
+  OK   xx-dg 的词都在大词库里
+  OK   xx-dg 有名称
+  OK   xx-dg id 唯一
+  OK   xx-dg2011 词数标记一致：437
+  OK   xx-dg2011 无重复
+  OK   xx-dg2011 的词都在大词库里
+  OK   xx-dg2011 有名称
+  OK   xx-dg2011 id 唯一
+  OK   xx-yle1 词数标记一致：455
+  OK   xx-yle1 无重复
+  OK   xx-yle1 的词都在大词库里
+  OK   xx-yle1 有名称
+  OK   xx-yle1 id 唯一
+  OK   xx-yle2 词数标记一致：802
+  OK   xx-yle2 无重复
+  OK   xx-yle2 的词都在大词库里
+  OK   xx-yle2 有名称
+  OK   xx-yle2 id 唯一
+  OK   xx-ci 并集 = 各词书按序去重
+  OK   xx-ci 有并集名
+  OK   ielts 并集词数标记一致：6803
+  OK   ielts 并集无重复
+  OK   ielts 并集的词都在大词库里
+  OK   ielts-real7 词数标记一致：3686
+  OK   ielts-real7 无重复
+  OK   ielts-real7 的词都在大词库里
+  OK   ielts-real7 有名称
+  OK   ielts-real7 id 唯一
+  OK   ielts-807 词数标记一致：1735
+  OK   ielts-807 无重复
+  OK   ielts-807 的词都在大词库里
+  OK   ielts-807 有名称
+  OK   ielts-807 id 唯一
+  OK   ielts-camb 词数标记一致：362
+  OK   ielts-camb 无重复
+  OK   ielts-camb 的词都在大词库里
+  OK   ielts-camb 有名称
+  OK   ielts-camb id 唯一
+  OK   ielts-zj 词数标记一致：3619
+  OK   ielts-zj 无重复
+  OK   ielts-zj 的词都在大词库里
+  OK   ielts-zj 有名称
+  OK   ielts-zj id 唯一
+  OK   ielts 并集 = 各词书按序去重
+  OK   ielts 有并集名
+  OK   toefl 并集词数标记一致：10811
+  OK   toefl 并集无重复
+  OK   toefl 并集的词都在大词库里
+  OK   toefl-1 词数标记一致：5517
+  OK   toefl-1 无重复
+  OK   toefl-1 的词都在大词库里
+  OK   toefl-1 有名称
+  OK   toefl-1 id 唯一
+  OK   toefl-real 词数标记一致：4553
+  OK   toefl-real 无重复
+  OK   toefl-real 的词都在大词库里
+  OK   toefl-real 有名称
+  OK   toefl-real id 唯一
+  OK   toefl-hg 词数标记一致：9075
+  OK   toefl-hg 无重复
+  OK   toefl-hg 的词都在大词库里
+  OK   toefl-hg 有名称
+  OK   toefl-hg id 唯一
+  OK   toefl 并集 = 各词书按序去重
+  OK   toefl 有并集名
+  OK   gre 并集词数标记一致：9286
+  OK   gre 并集无重复
+  OK   gre 并集的词都在大词库里
+  OK   gre-kf 词数标记一致：3029
+  OK   gre-kf 无重复
+  OK   gre-kf 的词都在大词库里
+  OK   gre-kf 有名称
+  OK   gre-kf id 唯一
+  OK   gre-jx 词数标记一致：6645
+  OK   gre-jx 无重复
+  OK   gre-jx 的词都在大词库里
+  OK   gre-jx 有名称
+  OK   gre-jx id 唯一
+  OK   gre-bl 词数标记一致：5005
+  OK   gre-bl 无重复
+  OK   gre-bl 的词都在大词库里
+  OK   gre-bl 有名称
+  OK   gre-bl id 唯一
+  OK   gre 并集 = 各词书按序去重
+  OK   gre 有并集名
+  OK   gmat 并集词数标记一致：4572
+  OK   gmat 并集无重复
+  OK   gmat 并集的词都在大词库里
+  OK   gmat-jx 词数标记一致：3372
+  OK   gmat-jx 无重复
+  OK   gmat-jx 的词都在大词库里
+  OK   gmat-jx 有名称
+  OK   gmat-jx id 唯一
+  OK   gmat-lj 词数标记一致：2770
+  OK   gmat-lj 无重复
+  OK   gmat-lj 的词都在大词库里
+  OK   gmat-lj 有名称
+  OK   gmat-lj id 唯一
+  OK   gmat 并集 = 各词书按序去重
+  OK   gmat 有并集名
+  OK   sat 并集词数标记一致：4708
+  OK   sat 并集无重复
+  OK   sat 并集的词都在大词库里
+  OK   sat-bl 词数标记一致：2131
+  OK   sat-bl 无重复
+  OK   sat-bl 的词都在大词库里
+  OK   sat-bl 有名称
+  OK   sat-bl id 唯一
+  OK   sat-bmc 词数标记一致：3855
+  OK   sat-bmc 无重复
+  OK   sat-bmc 的词都在大词库里
+  OK   sat-bmc 有名称
+  OK   sat-bmc id 唯一
+  OK   sat 并集 = 各词书按序去重
+  OK   sat 有并集名
+  OK   act 并集词数标记一致：3541
+  OK   act 并集无重复
+  OK   act 并集的词都在大词库里
+  OK   act-1 词数标记一致：3541
+  OK   act-1 无重复
+  OK   act-1 的词都在大词库里
+  OK   act-1 有名称
+  OK   act-1 id 唯一
+  OK   act 并集 = 各词书按序去重
+  OK   act 有并集名
+  OK   cambridge 并集词数标记一致：5191
+  OK   cambridge 并集无重复
+  OK   cambridge 并集的词都在大词库里
+  OK   ket 词数标记一致：1929
+  OK   ket 无重复
+  OK   ket 的词都在大词库里
+  OK   ket 有名称
+  OK   ket id 唯一
+  OK   pet 词数标记一致：3408
+  OK   pet 无重复
+  OK   pet 的词都在大词库里
+  OK   pet 有名称
+  OK   pet id 唯一
+  OK   fce 词数标记一致：3441
+  OK   fce 无重复
+  OK   fce 的词都在大词库里
+  OK   fce 有名称
+  OK   fce id 唯一
+  OK   cambridge 并集 = 各词书按序去重
+  OK   cambridge 有并集名
+  OK   toefl-jr 并集词数标记一致：3163
+  OK   toefl-jr 并集无重复
+  OK   toefl-jr 并集的词都在大词库里
+  OK   tj 词数标记一致：3163
+  OK   tj 无重复
+  OK   tj 的词都在大词库里
+  OK   tj 有名称
+  OK   tj id 唯一
+  OK   toefl-jr 并集 = 各词书按序去重
+  OK   toefl-jr 有并集名
+  OK   jc 并集词数标记一致：3943
+  OK   jc 并集无重复
+  OK   jc 并集的词都在大词库里
+  OK   ox3000 词数标记一致：2967
+  OK   ox3000 无重复
+  OK   ox3000 的词都在大词库里
+  OK   ox3000 有名称
+  OK   ox3000 id 唯一
+  OK   lsx2000 词数标记一致：1641
+  OK   lsx2000 无重复
+  OK   lsx2000 的词都在大词库里
+  OK   lsx2000 有名称
+  OK   lsx2000 id 唯一
+  OK   lw3000 词数标记一致：3143
+  OK   lw3000 无重复
+  OK   lw3000 的词都在大词库里
+  OK   lw3000 有名称
+  OK   lw3000 id 唯一
+  OK   jc 并集 = 各词书按序去重
+  OK   jc 有并集名
+  OK   fj 并集词数标记一致：7982
+  OK   fj 并集无重复
+  OK   fj 并集的词都在大词库里
+  OK   ox5000 词数标记一致：4942
+  OK   ox5000 无重复
+  OK   ox5000 的词都在大词库里
+  OK   ox5000 有名称
+  OK   ox5000 id 唯一
+  OK   ess4000 词数标记一致：3589
+  OK   ess4000 无重复
+  OK   ess4000 的词都在大词库里
+  OK   ess4000 有名称
+  OK   ess4000 id 唯一
+  OK   ww3000 词数标记一致：3108
+  OK   ww3000 无重复
+  OK   ww3000 的词都在大词库里
+  OK   ww3000 有名称
+  OK   ww3000 id 唯一
+  OK   fj 并集 = 各词书按序去重
+  OK   fj 有并集名
+  OK   jj 并集词数标记一致：3676
+  OK   jj 并集无重复
+  OK   jj 并集的词都在大词库里
+  OK   ly5000 词数标记一致：1473
+  OK   ly5000 无重复
+  OK   ly5000 的词都在大词库里
+  OK   ly5000 有名称
+  OK   ly5000 id 唯一
+  OK   ly10000 词数标记一致：1706
+  OK   ly10000 无重复
+  OK   ly10000 的词都在大词库里
+  OK   ly10000 有名称
+  OK   ly10000 id 唯一
+  OK   ly22000 词数标记一致：901
+  OK   ly22000 无重复
+  OK   ly22000 的词都在大词库里
+  OK   ly22000 有名称
+  OK   ly22000 id 唯一
+  OK   jj 并集 = 各词书按序去重
+  OK   jj 有并集名
+  OK   cgcf 并集词数标记一致：16331
+  OK   cgcf 并集无重复
+  OK   cgcf 并集的词都在大词库里
+  OK   cg-aomi 词数标记一致：6944
+  OK   cg-aomi 无重复
+  OK   cg-aomi 的词都在大词库里
+  OK   cg-aomi 有名称
+  OK   cg-aomi id 唯一
+  OK   cg-sd1 词数标记一致：6049
+  OK   cg-sd1 无重复
+  OK   cg-sd1 的词都在大词库里
+  OK   cg-sd1 有名称
+  OK   cg-sd1 id 唯一
+  OK   cg-sd2 词数标记一致：4000
+  OK   cg-sd2 无重复
+  OK   cg-sd2 的词都在大词库里
+  OK   cg-sd2 有名称
+  OK   cg-sd2 id 唯一
+  OK   cg-sd3 词数标记一致：4107
+  OK   cg-sd3 无重复
+  OK   cg-sd3 的词都在大词库里
+  OK   cg-sd3 有名称
+  OK   cg-sd3 id 唯一
+  OK   cg-sd4 词数标记一致：3175
+  OK   cg-sd4 无重复
+  OK   cg-sd4 的词都在大词库里
+  OK   cg-sd4 有名称
+  OK   cg-sd4 id 唯一
+  OK   cg-200 词数标记一致：736
+  OK   cg-200 无重复
+  OK   cg-200 的词都在大词库里
+  OK   cg-200 有名称
+  OK   cg-200 id 唯一
+  OK   cgcf 并集 = 各词书按序去重
+  OK   cgcf 有并集名
+  OK   wai-kan 并集词数标记一致：1031
+  OK   wai-kan 并集无重复
+  OK   wai-kan 并集的词都在大词库里
+  OK   time1000 词数标记一致：1031
+  OK   time1000 无重复
+  OK   time1000 的词都在大词库里
+  OK   time1000 有名称
+  OK   time1000 id 唯一
+  OK   wai-kan 并集 = 各词书按序去重
+  OK   wai-kan 有并集名
+  OK   toeic 并集词数标记一致：3443
+  OK   toeic 并集无重复
+  OK   toeic 并集的词都在大词库里
+  OK   toeic-990 词数标记一致：1385
+  OK   toeic-990 无重复
+  OK   toeic-990 的词都在大词库里
+  OK   toeic-990 有名称
+  OK   toeic-990 id 唯一
+  OK   toeic-bl 词数标记一致：885
+  OK   toeic-bl 无重复
+  OK   toeic-bl 的词都在大词库里
+  OK   toeic-bl 有名称
+  OK   toeic-bl id 唯一
+  OK   toeic-zx 词数标记一致：2485
+  OK   toeic-zx 无重复
+  OK   toeic-zx 的词都在大词库里
+  OK   toeic-zx 有名称
+  OK   toeic-zx id 唯一
+  OK   toeic 并集 = 各词书按序去重
+  OK   toeic 有并集名
+  OK   business 并集词数标记一致：2819
+  OK   business 并集无重复
+  OK   business 并集的词都在大词库里
+  OK   bec2-q 词数标记一致：2753
+  OK   bec2-q 无重复
+  OK   bec2-q 的词都在大词库里
+  OK   bec2-q 有名称
+  OK   bec2-q id 唯一
+  OK   bec3-q 词数标记一致：2819
+  OK   bec3-q 无重复
+  OK   bec3-q 的词都在大词库里
+  OK   bec3-q 有名称
+  OK   bec3-q id 唯一
+  OK   business 并集 = 各词书按序去重
+  OK   business 有并集名
+  OK   academic 并集词数标记一致：357
+  OK   academic 并集无重复
+  OK   academic 并集的词都在大词库里
+  OK   awl 词数标记一致：357
+  OK   awl 无重复
+  OK   awl 的词都在大词库里
+  OK   awl 有名称
+  OK   awl id 唯一
+  OK   academic 并集 = 各词书按序去重
+  OK   academic 有并集名
+  OK   medical 并集词数标记一致：9594
+  OK   medical 并集无重复
+  OK   medical 并集的词都在大词库里
+  OK   med-main 词数标记一致：9414
+  OK   med-main 无重复
+  OK   med-main 的词都在大词库里
+  OK   med-main 有名称
+  OK   med-main id 唯一
+  OK   med-bio 词数标记一致：479
+  OK   med-bio 无重复
+  OK   med-bio 的词都在大词库里
+  OK   med-bio 有名称
+  OK   med-bio id 唯一
+  OK   medical 并集 = 各词书按序去重
+  OK   medical 有并集名
+  OK   finance 并集词数标记一致：5632
+  OK   finance 并集无重复
+  OK   finance 并集的词都在大词库里
+  OK   mba 词数标记一致：5632
+  OK   mba 无重复
+  OK   mba 的词都在大词库里
+  OK   mba 有名称
+  OK   mba id 唯一
+  OK   finance 并集 = 各词书按序去重
+  OK   finance 有并集名
+  OK   law 并集词数标记一致：771
+  OK   law 并集无重复
+  OK   law 并集的词都在大词库里
+  OK   law-top1000 词数标记一致：771
+  OK   law-top1000 无重复
+  OK   law-top1000 的词都在大词库里
+  OK   law-top1000 有名称
+  OK   law-top1000 id 唯一
+  OK   law 并集 = 各词书按序去重
+  OK   law 有并集名
+  OK   computer 并集词数标记一致：1760
+  OK   computer 并集无重复
+  OK   computer 并集的词都在大词库里
+  OK   it-vocab 词数标记一致：1664
+  OK   it-vocab 无重复
+  OK   it-vocab 的词都在大词库里
+  OK   it-vocab 有名称
+  OK   it-vocab id 唯一
+  OK   coder 词数标记一致：1699
+  OK   coder 无重复
+  OK   coder 的词都在大词库里
+  OK   coder 有名称
+  OK   coder id 唯一
+  OK   computer 并集 = 各词书按序去重
+  OK   computer 有并集名
+  OK   engineering 并集词数标记一致：285
+  OK   engineering 并集无重复
+  OK   engineering 并集的词都在大词库里
+  OK   arch 词数标记一致：285
+  OK   arch 无重复
+  OK   arch 的词都在大词库里
+  OK   arch 有名称
+  OK   arch id 唯一
+  OK   engineering 并集 = 各词书按序去重
+  OK   engineering 有并集名
+  OK   所有词书并集 = 大词库（34825 vs 34825）
 
 FAILS 0

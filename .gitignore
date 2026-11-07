@@ -16,3 +16,6 @@ data/_layout*.png
 *.log
 Thumbs.db
 .DS_Store
+
+# 词表抽取的中间产物（raw / lists / gloss / report，可随时重建）
+build/

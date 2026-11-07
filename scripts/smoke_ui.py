@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
-"""冒烟自检 v1.1：大词库 / 11 本词书 / 顺序乱序 / 引导 / 学习 / 设置 / 阶梯测试 / 历史。"""
-import os, sys, io, json, time, re
+"""冒烟自检 v1.2：大词库 / 三级词书导航 / 全选并集 / 教材系列 / 引导 / 学习 / 设置 / 阶梯测试 / 历史。
+
+V1.1 的检查项全部保留（数据、引导、学习、测试、设置、历史），只是把「11 本平铺词书」
+换成 V2 的三级目录（主类 → 分组 → 词书/并集），并新增全选并集、教材系列并集、
+伪 id 持久化、旧 id 兼容等检查。
+"""
+import os, sys, io, json, time
 
 APP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(APP, "app"))
@@ -33,33 +38,70 @@ def check(cond, msg):
         fails.append(msg)
 
 
-def stop_timer():
-    for x in (w,):
+def stop_timer(*wins):
+    for x in wins:
         try:
             x.quiz_timer.stop()
         except Exception:
             pass
 
 
+def series_words(group_id, series):
+    """自测里独立算一遍系列并集，避免直接复用被测实现。"""
+    seen, out = set(), []
+    for it in bk.items(group_id):
+        if (it.get("series") or "") == series:
+            for word in it["words"]:
+                if word not in seen:
+                    seen.add(word)
+                    out.append(word)
+    return out
+
+
 pump()
 
 # ---- 1. 大词库 ----
 bank = w.bank
-check(len(bank) >= 15000, "大词库 %d 词" % len(bank))
+check(len(bank) >= 30000, "大词库 %s 词" % format(len(bank), ","))
 check([x["w"] for x in bank] == sorted(x["w"] for x in bank), "大词库按字母序 A–Z")
 check(len({x["w"] for x in bank}) == len(bank), "大词库无重复")
 check(all(x.get("s") for x in bank), "每个词都有卡面释义")
 lv = [0] * 15
 for x in bank:
     lv[x["lvl"]] += 1
-check(min(lv) > 0 and max(lv) - min(lv) <= 20, "难度 15 档分布：%s" % lv)
+check(all(n > 0 for n in lv), "难度 15 档分布：%s" % lv)
 
-# ---- 2. 11 本词书 ----
-check(len(bk.all()) == 11, "词书 %d 本" % len(bk.all()))
-check(bk.size("cet6") == 5406, "六级 %d 词" % bk.size("cet6"))
-check(bk.size("kaobo") == 10556, "考博 %d 词" % bk.size("kaobo"))
-check(all(x in w.bank_map for x in bk.words("cet6")), "六级每个词都在大词库里")
-check(bk.words("cet6") == sorted(bk.words("cet6")), "词书数据存的是 A–Z 顺序")
+# ---- 2. 三级目录数据（8 主类 / 41 分组 / 168 词书） ----
+mains = bk.mains()
+groups = bk.groups()
+items = [it for g in groups for it in g["items"]]
+bank_words = {x["w"] for x in bank}
+check(len(mains) == 8, "主类 %d 个" % len(mains))
+check(len(groups) == 41, "分组 %d 个" % len(groups))
+check(len(items) == 168, "词书 %d 本" % len(items))
+check(len(bk.all()) == len(groups) + len(items),
+      "扁平目录 %d = %d 个并集 + %d 本词书" % (len(bk.all()), len(groups), len(items)))
+check(len({b["id"] for b in bk.all()}) == len(bk.all()), "词书 id 无重复")
+check(bk.DEFAULT == "cet6-all" and bk.get("cet6")["id"] == "cet6-all",
+      "默认词书 = 六级并集（旧 id 可映射）")
+check(bk.size("cet6") == bk.size("cet6-all"),
+      "旧 id 兼容：cet6 -> cet6-all，%s 词" % format(bk.size("cet6"), ","))
+check(bk.size("kaobo") == bk.size("kaoyan-all"),
+      "旧 id 兼容：kaobo -> kaoyan-all，%s 词" % format(bk.size("kaobo"), ","))
+check(bk.size("xiaoxue") == bk.size("xx-ci-all"),
+      "旧 id 兼容：xiaoxue -> xx-ci-all，%s 词" % format(bk.size("xiaoxue"), ","))
+check(all(b["count"] == len(b["words"]) for b in bk.all()), "209 个条目 count = words 长度")
+check(all(len(b["words"]) == len(set(b["words"])) for b in bk.all()), "209 个条目内无重复词")
+check(all(set(g["union"]["words"]) ==
+          set().union(*(set(it["words"]) for it in g["items"])) for g in groups),
+      "每个分组并集 = 各词书 words 去重并集")
+check(all(g["union"]["count"] == len(set(g["union"]["words"])) for g in groups),
+      "每个分组并集词数 = 去重后词数")
+check(all(wd in bank_words for b in bk.all() for wd in b["words"]),
+      "词书里所有单词都在大词库里")
+b = bk.get("cet6-all")
+check(b["path"] == ["大学", "六级"] and b["display"] == "六级词汇大全",
+      "三级路径：%s" % bk.path("cet6-all"))
 
 # ---- 3. 首次打开：引导页 ----
 w._startup(force=True)
@@ -70,26 +112,103 @@ check(any("约 5 分钟" in t and "50 题" in t for t in texts), "引导页小�
 check(not any(("中途可以跳过" in t) or ("之后想测" in t) for t in texts), "引导页没有多余小字")
 check(th.DEFAULT == "light" and w.theme_key == "light", "默认主题为亮色")
 
-# ---- 4. 不测了 -> 词书页；选书 + 选顺序 ----
+# ---- 4. 不测了 -> 第 1 级：主类列表 ----
 w._welcome_skip()
-check(w.mode == "books", "不测了 -> 词书页，实际 %s" % w.mode)
-check(len(w.book_btns) == 11, "词书页列出 %d 本" % len(w.book_btns))
-check(w.book_scroll.isVisible(), "词书列表可滚动")
-check(w.chip_seq.text() == "顺序" and w.chip_shuf.text() == "乱序", "有 顺序/乱序 两个选择")
-check(w.sel_book == "cet6" and w.sel_order in ("seq", "shuffle"),
-      "默认选中 %s / %s" % (w.sel_book, w.sel_order))
-check("已学 0 / 5,406" in w.lab_book_stat.text(), "词书显示已学/总：%s" % w.lab_book_stat.text())
+check(w.mode == "books" and w.nav_level == 1,
+      "不测了 -> 三级词书导航第 1 级，实际 %s/%s" % (w.mode, w.nav_level))
+check(len(w.book_btns) == 8, "第 1 级列出 %d 个主类" % len(w.book_btns))
+check(all(r["kind"] == "main" for r in w.nav_rows), "第 1 级每行都是主类")
+check(all(m["name"] in r["text"] for m, r in zip(mains, w.nav_rows)),
+      "第 1 级主类名称全部来自数据")
+check(w.books_lead.text().startswith("选择主类") and "8 类" in w.books_lead.text()
+      and "41 组" in w.books_lead.text() and "168 本词书" in w.books_lead.text(),
+      "第 1 级小字：%s" % w.books_lead.text())
+check(w.book_scroll.isVisible(), "第 1 级列表可滚动")
+check(w.status.text().startswith("已学 "),
+      "顶部显示当前选择统计：%s" % w.status.text())
+check(w.lab_book_stat.text() ==
+      w._book_path(w.sel_book) + " · " + format(bk.size(w.sel_book), ",") + " 词",
+      "底部显示当前选择路径与词数：%s" % w.lab_book_stat.text())
+check(w.chip_seq.text() == "顺序" and w.chip_shuf.text() == "乱序", "保留 顺序/乱序 两个选择")
 
-w._pick_book("cet6")
+# ---- 5. 第 1 级 -> 第 2 级 -> 返回 ----
+w._nav_into_main("university")
+check(w.nav_level == 2 and len(w.book_btns) == len(bk.groups("university")),
+      "进入大学 -> 第 2 级 %d 个分组" % len(w.book_btns))
+check("大学" in w.books_lead.text() and
+      ("%d 个分组" % len(bk.groups("university"))) in w.books_lead.text(),
+      "第 2 级小字：%s" % w.books_lead.text())
+check(all("本词书" in r["text"] for r in w.nav_rows), "第 2 级显示分组名 + 词书数")
+w._nav_back()
+check(w.nav_level == 1 and len(w.book_btns) == 8, "第 2 级返回键 -> 主类列表")
+
+# ---- 6. 第 2 级 -> 第 3 级（含分组全选并集） ----
+w._nav_into_main("highschool")
+check(w.nav_level == 2 and len(w.book_btns) == len(bk.groups("highschool")),
+      "进入高中 -> 第 2 级列出 %d 个分组" % len(w.book_btns))
+w._nav_into_group("gz-text")
+gz = next(g for g in groups if g["id"] == "gz-text")
+expect_rows = 1 + len(gz["series"]) + len(gz["items"])
+check(w.nav_level == 3 and len(w.book_btns) == expect_rows,
+      "教材分组第 3 级 %d 行（1 全选 + %d 版本 + %d 分册）" %
+      (len(w.book_btns), len(gz["series"]), len(gz["items"])))
+check(w.nav_sections == ["%s · %d 册" % (s, sum(1 for it in gz["items"] if it.get("series") == s))
+                         for s in gz["series"]],
+      "教材分组按 series 分节：%s" % w.nav_sections)
+union_row = w.book_btns[gz["union"]["id"]]
+check(union_row.text().startswith(gz["union"]["display"]) and
+      ("%s 词" % format(gz["union"]["count"], ",")) in union_row.text(),
+      "顶部全选并集行用 union_name：%s" % union_row.text())
+
+# ---- 7. 教材系列全选 = 各分册 words 按序去重 ----
+for s in gz["series"]:
+    pid = app_main.series_pseudo_id("gz-text", s)
+    exp = series_words("gz-text", s)
+    got = app_main.series_union_words("gz-text", s)
+    check(pid in w.book_btns and "本版本全选" in w.book_btns[pid].text(),
+          "系列行 %s：%s" % (s, w.book_btns[pid].text()))
+    check(got == exp and len(exp) == len(set(exp)) and len(exp) > 0,
+          "系列并集 %s = %d 个分册按序去重（%s 词）" %
+          (s, sum(1 for it in gz["items"] if it.get("series") == s), format(len(exp), ",")))
+
+# ---- 8. 选择并集 / 选择系列 -> 开始学习 ----
+w._pick_book(gz["union"]["id"])
+check(w.sel_book == gz["union"]["id"] and w.lab_book_stat.text().endswith(
+      format(bk.size(gz["union"]["id"]), ",") + " 词"), "选中分组并集：%s" % w.lab_book_stat.text())
+series_id = app_main.series_pseudo_id("gz-text", "人教版")
+exp = series_words("gz-text", "人教版")
+w._pick_book(series_id)
+check(w.sel_book == series_id, "选中教材系列伪 id：%s" % series_id)
+check(series_id not in bk.BY_ID, "系列并集伪 id 不写进 books.py")
+check(w._book_stats(series_id)[3] == len(exp),
+      "系列并集统计对象 = 当前词表（%s 词）" % format(len(exp), ","))
+check(w._book_word_strs(series_id) == exp, "伪 id 解析出的词表 = 按册去重并集")
+check(w._book_path(series_id) == "高中 · 高中教材 · 人教版 · 本版本全选",
+      "伪 id 显示路径：%s" % w._book_path(series_id))
 w._set_order("seq")
 w._start_learning()
-check(w.mode == "front" and w.book_id == "cet6" and w.order_mode == "seq",
-      "顺序学习：%s / %s" % (w.book_id, w.order_mode))
-check(len(w.queue_words) == 5406, "当前队列 %d 词" % len(w.queue_words))
-check(w.queue_words[0]["w"] == sorted(bk.words("cet6"))[0],
-      "顺序书从 A 开头的词开始：%s" % w.queue_words[0]["w"])
+check(w.mode == "front" and w.book_id == series_id,
+      "用系列并集开始学习：%s / %s" % (w.book_id, w.mode))
+check(len(w.queue_words) == len(exp), "系列学习队列 %s 词" % format(len(w.queue_words), ","))
+check(w.progress.get("book") == series_id, "progress[book] 保存伪 id")
+check(w.queue_words[0]["w"] == exp[0], "顺序学习从系列第一个词开始：%s" % exp[0])
 
-# ---- 5. 学习：记得 / 释义 / 选错了跳下一个 ----
+# ---- 9. 回到三级导航，选六级并集开始经典学习 ----
+w.open_books("welcome")
+check(w.nav_level == 1 and len(w.book_btns) == 8, "重新打开词书页回到第 1 级")
+w._nav_into_main("university")
+w._nav_into_group("cet6")
+w._pick_book("cet6-all")
+w._set_order("seq")
+w._start_learning()
+check(w.mode == "front" and w.book_id == "cet6-all" and w.order_mode == "seq",
+      "顺序学习：%s / %s" % (w.book_id, w.order_mode))
+check(len(w.queue_words) == bk.size("cet6-all"),
+      "当前队列 %s 词" % format(len(w.queue_words), ","))
+check(w.queue_words[0]["w"] == bk.words("cet6-all")[0],
+      "顺序书从数据第一个词开始：%s" % w.queue_words[0]["w"])
+
+# ---- 10. 学习：记得 / 释义 / 选错了跳下一个 ----
 first = w.queue[w.qi]["w"]["w"]
 qi0 = w.qi
 w.act("remember")
@@ -101,50 +220,62 @@ check(st.get("st") == "learning" and st.get("lapse", 0) >= 1,
       "选错了把状态改成不记得（lapse=%s）" % st.get("lapse"))
 check(w.mode == "front", "选错了之后回到正面")
 
-# ---- 6. 换书 + 乱序 + seed 持久化 ----
+# ---- 11. 换书 + 乱序 + seed 持久化 ----
 w.open_books("welcome")
-w._pick_book("gre")
+w._nav_into_main("abroad")
+w._nav_into_group("gre")
+w._pick_book("gre-all")
 w._set_order("shuffle")
 w._start_learning()
-check(w.book_id == "gre" and w.order_mode == "shuffle", "换到 GRE / 乱序")
-check(len(w.queue_words) == 7504, "GRE 队列 %d 词" % len(w.queue_words))
-seed1 = (w.orders.get("gre") or {}).get("seed")
+check(w.book_id == "gre-all" and w.order_mode == "shuffle", "换到 GRE 并集 / 乱序")
+check(len(w.queue_words) == bk.size("gre-all"),
+      "GRE 队列 %s 词" % format(len(w.queue_words), ","))
+seed1 = (w.orders.get("gre-all") or {}).get("seed")
 first_shuf = w.queue_words[0]["w"]
 w.save()
 w2 = app_main.Card()
 w2._startup(force=True)
-check(w2.book_id == "gre" and w2.order_mode == "shuffle", "重启后记住书 + 乱序")
+check(w2.book_id == "gre-all" and w2.order_mode == "shuffle", "重启后记住书 + 乱序")
 check(w2.queue_words[0]["w"] == first_shuf, "乱序 seed 稳定：%s" % first_shuf)
-stop_timer()
+stop_timer(w, w2)
 
-# ---- 7. 复习跨书 ----
-cel = set(bk.words("cet6"))
-gre_only = next(x for x in bk.words("gre") if x not in cel)
+# ---- 12. 复习跨书 ----
+cel = set(bk.words("cet6-all"))
+gre_only = next(x for x in bk.words("gre-all") if x not in cel)
 w2.states[gre_only] = {"st": "learning", "lv": 2, "due": time.time() - 10,
                        "seen": 2, "lapse": 0, "streak": 0}
 w2.open_books("welcome")
-w2._pick_book("cet6")
+w2._nav_into_main("university")
+w2._nav_into_group("cet6")
+w2._pick_book("cet6-all")
 w2._set_order("seq")
 w2._start_learning()
 check(w2.queue[0]["kind"] == "review" and w2.queue[0]["w"]["w"] == gre_only,
       "复习跨书：先出 %s" % gre_only)
 
-# ---- 8. 设置页：当前词书 / 数量 ----
+# ---- 13. 设置页：当前词书路径 / 数量 / 进度 ----
 w2.open_settings()
 check(w2.mode == "settings", "齿轮 -> 设置页")
-check(w2.lab_book.text() == bk.get("cet6")["name"], "设置页显示当前词书：%s" % w2.lab_book.text())
-check("/ 5,406" in w2.lab_book_num.text(), "设置页已学/总：%s" % w2.lab_book_num.text())
+expect_path = " · ".join(bk.get("cet6-all")["path"] + [bk.get("cet6-all")["display"]])
+check(w2.lab_book.text() == expect_path, "设置页显示词书路径：%s" % w2.lab_book.text())
+check(("/ %s" % format(bk.size("cet6-all"), ",")) in w2.lab_book_num.text(),
+      "设置页已学/总：%s" % w2.lab_book_num.text())
 check("已掌握" in w2.lab_progress.text() and "测试判定已会" in w2.lab_progress.text(),
       "设置页进度行：%s" % w2.lab_progress.text())
+w2.open_books("settings")
+check(w2.mode == "books" and w2.nav_level == 1 and w2.btn_back.isVisible(),
+      "设置页「更换」-> 第 1 级，返回键可见")
+w2._page_back()
+check(w2.mode == "settings", "第 1 级返回键（设置进入）-> 设置页")
 
-# ---- 9. 主题切换 ----
+# ---- 14. 主题切换 ----
 for key, name in th.options():
     w2.set_theme(key)
     check(w2.theme_key == key and w2.progress.get("theme") == key,
           "主题 %s（%s）已应用，背景 %s" % (name, key, w2.t["bg"]))
 w2.set_theme(th.DEFAULT)
 
-# ---- 10. 词汇量测试入口 + 历史记录 ----
+# ---- 15. 词汇量测试入口 + 历史记录 ----
 w2.progress["history"] = [
     {"ts": int(time.time()) - 90 * 86400, "vocab": 5200, "right": 18, "dontknow": 9,
      "total": 50, "theta": 0.1, "se": 0.5, "baseline": True, "known": 3200, "to_learn": 12012},
@@ -160,10 +291,11 @@ w2._open_history(1)
 check(w2.mode == "result", "点历史记录 -> 结果页")
 check(w2.btn_start.text() == "返回设置", "历史结果主按钮是「返回设置」")
 check(len(w2.chart.points) == 2, "折线图有 %d 个点" % len(w2.chart.points))
+check("六级已会" in w2.res_note.text(), "结果页用分组短名：%s" % w2.res_note.text().split("\n")[-1])
 w2._result_primary()
 check(w2.mode == "settings", "返回设置")
 
-# ---- 11. 阶梯测试：快速定位（2 连对升 2 档） ----
+# ---- 16. 阶梯测试：快速定位（2 连对升 2 档） ----
 w2.progress["history"] = []
 w2.progress.pop("theta", None)
 w2.save()
@@ -180,7 +312,7 @@ check(w2.quiz_state["level"] == 2, "2 连对（前 8 题）-> 升 2 档，实际
 check(w2.quiz_i == 2 and len(w2.quiz_resp) == 3, "已答 %d 题" % len(w2.quiz_resp))
 w2.save()
 
-# ---- 12. 关掉重开：续测 ----
+# ---- 17. 关掉重开：续测 ----
 w3 = app_main.Card()
 w3._startup(force=True)
 check(w3.mode == "quiz" and w3.quiz_i == 2, "重开后继续第 %d 题" % (w3.quiz_i + 1))
@@ -188,7 +320,7 @@ w3.skip_test()
 check(w3.progress.get("snooze_until", 0) > time.time(), "24h 内不再弹")
 w3.progress.pop("snooze_until", None)
 
-# ---- 13. 走完 50 题 -> 结果页（基准） ----
+# ---- 18. 走完 50 题 -> 结果页（基准） ----
 w3.progress["history"] = []
 w3.progress.pop("theta", None)
 w3.save()
@@ -215,15 +347,63 @@ check(w3.last_test[0]["known"] == len(w3.known), "结果页已会数与 θ 一�
 learned, known, mastered, total = w3._book_stats(w3.book_id)
 check(known <= total, "词书已会 %s / %s" % (format(known, ","), format(total, ",")))
 check("严谨度" in w3.res_sub.text(), "结果页有严谨度")
+stop_timer(w2, w3)
 
-# ---- 14. 满 30 天再弹测试 ----
+# ---- 19. 满 30 天再弹测试 ----
 for h in w3.progress["history"]:
     h["ts"] -= 31 * 86400
 w3.save()
 w3._startup(force=True)
 check(w3.mode == "quiz", "超过 30 天 -> 再次弹测试，实际 %s" % w3.mode)
+stop_timer(w3)
 
-# ---- 15. 主题完整性 ----
+# ---- 20. 教材系列伪 id 重启恢复 ----
+expected_series = series_words("gz-text", "人教版")
+w3.progress["book"] = series_id
+w3.progress.setdefault("cursors", {})[series_id] = 0
+w3.save()
+w4 = app_main.Card()
+w4._startup(force=True)
+check(w4.book_id == series_id, "重启后恢复系列并集 book id：%s" % w4.book_id)
+check(len(w4.queue_words) == len(expected_series),
+      "重启后系列队列 %s 词" % format(len(w4.queue_words), ","))
+w4.open_settings()
+check(w4.lab_book.text() == "高中 · 高中教材 · 人教版 · 本版本全选",
+      "设置页显示伪 id 路径：%s" % w4.lab_book.text())
+check(w4.lab_book_num.text().endswith("/ " + format(len(expected_series), ",")),
+      "设置页显示伪 id 词数：%s" % w4.lab_book_num.text())
+stop_timer(w4)
+
+# ---- 21. 旧进度里的 V1.1 词书 id 自动映射 ----
+w4.progress["book"] = "cet6"
+w4.save()
+w5 = app_main.Card()
+w5._startup(force=True)
+check(w5.book_id == "cet6-all", "旧 book id cet6 重启 -> cet6-all")
+check(len(w5.queue_words) == bk.size("cet6-all"),
+      "旧 id 映射后队列 %s 词" % format(len(w5.queue_words), ","))
+w5.open_settings()
+check(w5.lab_book.text() == expect_path, "旧 id 在设置页显示新路径：%s" % w5.lab_book.text())
+check(w5._resolve_saved_book("kaobo") == "kaoyan-all", "旧 id kaobo 解析 -> kaoyan-all")
+stop_timer(w5)
+
+# ---- 22. 紧凑模式 356×196 / 最小化按钮不回归 ----
+w5._start_learning()
+check(w5.mode == "front", "继续学习 -> 正面卡片")
+w5.toggle_compact()
+check(w5.compact and (w5.width(), w5.height()) == (356, 196),
+      "缩小 -> %d×%d" % (w5.width(), w5.height()))
+check(w5.word.isVisible() and w5.ipa.isVisible() and w5.meaning.isVisible(),
+      "紧凑模式仍显示 单词/音标/释义")
+check(w5.btn_min.kind == "max", "缩小后图标变成 ＋")
+w5.toggle_compact()
+check((not w5.compact) and (w5.width(), w5.height()) == (520, 430),
+      "再点展开回 520×430")
+w5._show_empty()
+check(w5.word.text().startswith(w5._book_name(w5.book_id)),
+      "学习页空状态显示当前词书名称：%s" % w5.word.text())
+
+# ---- 23. 主题完整性 ----
 check(not th.missing(), "所有主题颜色齐全（缺 %s）" % (th.missing(),))
 for key, t in th.THEMES.items():
     s = th.qss(t)
@@ -232,4 +412,10 @@ for key, t in th.THEMES.items():
 out.append("")
 out.append("全部通过 ✓" if not fails else "失败 %d 项：%s" % (len(fails), " / ".join(fails)))
 io.open(os.path.join(app_main.DATA, "smoke.txt"), "w", encoding="utf-8").write("\n".join(out))
+# smoke 自己生成的运行态文件（progress/_win）不留在数据目录里
+for _name in ("progress.json", "_win.json"):
+    try:
+        os.remove(os.path.join(app_main.DATA, _name))
+    except OSError:
+        pass
 print("WROTE %d LINES; FAILS %d" % (len(out), len(fails)))

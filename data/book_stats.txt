@@ -1,29 +1,59 @@
-词书校验（生成自 bank.json）
+V2 books（三级目录）
 
-xiaoxue    小学词汇          1006 词  人教版 PEP 教材 · 1,006 词
-chuzhong   初中词汇          2239 词  人教版 PEP 教材 · 2,239 词
-gaokao     高中词汇          3671 词  高考大纲 · 3,671 词
-cet4       四级词汇          3846 词  CET-4 大纲 · 3,846 词
-cet6       六级词汇          5406 词  CET-6 大纲 · 5,406 词
-kaoyan     考研词汇          4801 词  考研大纲 · 4,801 词
-kaobo      考博词汇         10556 词  考研 + GRE 学术合成 · 10,556 词
-ielts      雅思词汇          5038 词  IELTS · 5,038 词
-toefl      托福词汇          6970 词  TOEFL · 6,970 词
-gre        GRE 词汇        7504 词  GRE · 7,504 词
-all        全部词汇         15212 词  大词库 · 15,212 词
+大学   四级     cet4       items= 6 union= 6612  max= 5817
+大学   六级     cet6       items= 5 union= 6791  max= 5347
+大学   考研     kaoyan     items= 7 union= 9923  max= 8086
+大学   专升本    zhuansheng items= 3 union= 5333  max= 4276
+大学   英专     yingzhuan  items= 4 union=10673  max= 5121
+大学   新视野    xinshiye   items= 4 union= 2099  max=  538
+大学   高职     gaozhi     items= 1 union= 3036  max= 3036
+大学   成人自考英语 zikao      items= 2 union= 5137  max= 4915
+大学   同力申硕   tongli     items= 1 union= 5823  max= 5823
+大学   CATTI  catti      items= 1 union= 3365  max= 3365
+大学   BEC    bec        items= 3 union= 4545  max= 2451
+大学   PETS   pets       items= 5 union= 7791  max= 7728
+高中   高中教材   gz-text    items=21 union= 3229  max=  376
+高中   高考     gaokao     items= 4 union= 5434  max= 4721
+高中   中职     zhongzhi   items= 1 union= 2572  max= 2572
+高中   新概念    nce        items= 4 union= 3255  max= 1035
+初中   初中教材   cz-text    items=17 union= 2773  max=  567
+初中   中考     zhongkao   items= 3 union= 2703  max= 2418
+小学   小学教材   xx-text    items=24 union= 1264  max=  146
+小学   小学词汇   xx-ci      items= 4 union=  921  max=  802
+留学   雅思     ielts      items= 4 union= 6803  max= 3686
+留学   托福     toefl      items= 3 union=10811  max= 9075
+留学   GRE    gre        items= 3 union= 9286  max= 6645
+留学   GMAT   gmat       items= 2 union= 4572  max= 3372
+留学   SAT    sat        items= 2 union= 4708  max= 3855
+留学   ACT    act        items= 1 union= 3541  max= 3541
+留学   剑桥五级   cambridge  items= 3 union= 5191  max= 3441
+留学   小托福    toefl-jr   items= 1 union= 3163  max= 3163
+实用   基础     jc         items= 3 union= 3943  max= 3143
+实用   分级     fj         items= 3 union= 7982  max= 4942
+实用   进阶     jj         items= 3 union= 3676  max= 1706
+实用   词根词缀   cgcf       items= 6 union=16331  max= 6944
+实用   外刊     wai-kan    items= 1 union= 1031  max= 1031
+职场   托业     toeic      items= 3 union= 3443  max= 2485
+职场   商务英语   business   items= 2 union= 2819  max= 2819
+专业   学术     academic   items= 1 union=  357  max=  357
+专业   医学     medical    items= 2 union= 9594  max= 9414
+专业   财经     finance    items= 1 union= 5632  max= 5632
+专业   法律     law        items= 1 union=  771  max=  771
+专业   计算机    computer   items= 2 union= 1760  max= 1699
+专业   工程     engineering items= 1 union=  285  max=  285
 
-重叠矩阵（行书的词也出现在列书的比例）：
-             xiaoxue chuzhong gaokao   cet4   cet6 kaoyan  kaobo  ielts  toefl    gre    all
-  xiaoxue      1.00   0.82   0.82   0.23   0.19   0.23   0.25   0.33   0.13   0.05   1.00
-  chuzhong     0.37   1.00   0.82   0.44   0.38   0.43   0.45   0.38   0.24   0.07   1.00
-  gaokao       0.22   0.50   1.00   0.60   0.57   0.61   0.64   0.47   0.39   0.15   1.00
-  cet4         0.06   0.26   0.57   1.00   0.90   0.89   0.90   0.56   0.57   0.25   1.00
-  cet6         0.03   0.16   0.39   0.64   1.00   0.76   0.83   0.56   0.60   0.36   1.00
-  kaoyan       0.05   0.20   0.47   0.71   0.86   1.00   1.00   0.64   0.63   0.36   1.00
-  kaobo        0.02   0.10   0.22   0.33   0.43   0.45   1.00   0.36   0.46   0.71   1.00
-  ielts        0.07   0.17   0.34   0.43   0.60   0.61   0.75   1.00   0.58   0.42   1.00
-  toefl        0.02   0.08   0.21   0.31   0.46   0.43   0.70   0.42   1.00   0.47   1.00
-  gre          0.01   0.02   0.07   0.13   0.26   0.23   1.00   0.28   0.44   1.00   1.00
-  all          0.07   0.15   0.24   0.25   0.36   0.32   0.69   0.33   0.46   0.49   1.00
-
-全部词都在大词库里 ✓
+主类=8 分组=41 词书=168  bank=34825
+被 bank 剔除的词（无释义/单字母）共 296 个，涉及 77 本
+  bec3         e-sale news-agent toe-dipping workset
+  catti3       braintrust resituate waxcandle x-eyed x-radiate yeasaying
+  cet4-cg      a i
+  cet4-sg      a i
+  cet4-xh      a i
+  cet6-sg      a
+  cg-aomi      agitatress agro-town cruisette condutor occidentialist negrodom negroite negrolet abnormalist inumbrate demi-fixed dysopsy
+  cg-sd1       demi-fixed piggie
+  cg-sd2       softlanding
+  cg-sd3       multimetre jcct
+整本被排除：['nce-smart-1', 'nce-smart-2', 'nce-smart-3', 'nce-smart-4', 'zk-db', 'lsx-adv', 'dev-phrases']
+校验问题：无
+文件大小=6.47 MB

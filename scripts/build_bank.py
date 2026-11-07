@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """构建 V1.1 大词库：8 个考试标签并集 + 人教版 PEP 小初词表，A–Z 排列。
 
+【历史脚本】V2.0 起词库由 scripts/build_bank_v2.py 生成（175 本词书并集，34,825 词）。
+直接运行本脚本会用 15,212 词覆盖 data/bank.json，仅用于复现 v1.1。
+
 用法：
     python scripts/build_bank.py --todo   # 只生成 data/bank_todo.json（待抓有道的词）
     python scripts/build_bank.py          # 合并 raw_youdao*.jsonl 生成 data/bank.json

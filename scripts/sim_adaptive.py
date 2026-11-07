@@ -77,7 +77,7 @@ for th in (-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0):
                   format(int(round(rmse)), ","), "%d%%" % (100 * cover // N_SIM)))
 
 lines.append("")
-lines.append("平均 MAE = %s 词（50 题 / 1.5 万词库，理论精度约 ±1,400 词/1SE；目标 ≤ 1,000）"
+lines.append("平均 MAE = %s 词（50 题 / 3.5 万词库，理论精度约 ±1,400 词/1SE；目标 ≤ 1,800）"
              % format(int(round(sum(total_mae) / len(total_mae))), ","))
 io.open(OUT, "w", encoding="utf-8").write("\n".join(lines) + "\n")
 print("WROTE", OUT)
