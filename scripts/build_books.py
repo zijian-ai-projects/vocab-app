@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """从 bank.json 生成 11 本词书：data/books.json（每本书 = A–Z 顺序的单词列表）。
 
-【历史脚本】V2.0 起词书由 scripts/build_books_v2.py 生成（三级目录）。
+【历史脚本】v1.2.0 起词书由 scripts/build_books_v2.py 生成（三级目录）。
 直接运行本脚本会用 11 本平铺词书覆盖 data/books.json，仅用于复现 v1.1。
 
 词表来源：
