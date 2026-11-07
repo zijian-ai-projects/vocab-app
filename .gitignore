@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 本机运行态（每人的学习进度 / 窗口位置）
+data/progress.json
+data/_win.json
+
+# 自测输出
+data/smoke.txt
+data/_layout.txt
+data/_layout*.png
+
+# 日志
+*.log
+Thumbs.db
+.DS_Store
