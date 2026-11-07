@@ -1,23 +1,26 @@
 # -*- coding: utf-8 -*-
-"""词书。
+"""词书：从 data/books.json 读取。
 
-现在只有一本《六级词汇（乱序）》。以后加书：在 BOOKS 里加一项，并把同结构的
-词表 json 放进 data/（字段与 words.json 一致），设置页和词书页会自动列出来。
+每本书 = 一份 A–Z 顺序的单词列表（数据只存"顺序"）；乱序在读取层用 seed 洗牌，
+不写第二份数据。加书：改 scripts/build_books.py 重新生成 books.json。
 """
+import io
+import json
 import os
 
 DATA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+DEFAULT = "cet6"
 
-BOOKS = [
-    {
-        "id": "cet6",
-        "name": "六级词汇（乱序）",
-        "desc": "大学英语六级 · 5,556 词 · 乱序",
-        "file": "words.json",
-    },
-]
 
-DEFAULT = BOOKS[0]["id"]
+def _load():
+    path = os.path.join(DATA, "books.json")
+    with io.open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+BOOKS = _load()
+_BY_ID = {b["id"]: b for b in BOOKS}
+DEFAULT = "cet6" if "cet6" in _BY_ID else BOOKS[0]["id"]
 
 
 def all():
@@ -25,11 +28,12 @@ def all():
 
 
 def get(book_id):
-    for b in BOOKS:
-        if b["id"] == book_id:
-            return b
-    return BOOKS[0]
+    return _BY_ID.get(book_id) or _BY_ID[DEFAULT]
 
 
-def path(book_id):
-    return os.path.join(DATA, get(book_id)["file"])
+def words(book_id):
+    return get(book_id)["words"]
+
+
+def size(book_id):
+    return get(book_id)["count"]

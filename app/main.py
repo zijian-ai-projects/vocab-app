@@ -5,12 +5,13 @@
 首次打开：先推荐做词汇量测试（也可以跳过，直接选词书开始学）。
 设置（⚙）：背景风格 / 词汇量测试入口与历史记录 / 词书与已学进度。
 """
-import sys, os, io, json, time, copy, math
+import sys, os, io, json, time, copy, math, random
 
 from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QRectF, QPointF
 from PyQt5.QtGui import (QPainter, QColor, QPainterPath, QPen, QFont, QFontMetrics)
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QPushButton,
-                             QHBoxLayout, QVBoxLayout, QGraphicsOpacityEffect)
+                             QHBoxLayout, QVBoxLayout, QGraphicsOpacityEffect,
+                             QScrollArea)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -231,19 +232,32 @@ class Card(QWidget):
 
         self.progress = self._load_progress()
         self.states = self.progress.setdefault("states", {})
-        self.cursor = self.progress.get("cursor", 0)
+        self.cursors = self.progress.setdefault("cursors", {})
+        self.orders = self.progress.setdefault("orders", {})
 
         self.theme_key = self.progress.get("theme") or th.DEFAULT
         self.t = th.get(self.theme_key)
         self.book_id = bk.get(self.progress.get("book") or bk.DEFAULT)["id"]
         self.sel_book = self.book_id
+        self.sel_order = (self.orders.get(self.book_id) or {}).get("mode", "shuffle")
+        self.order_mode = self.sel_order
         self.books_src = "welcome"
         self.pre_settings_mode = "front"
         self.result_ctx = "test"
         self._reg = []
 
-        self.words = json.load(io.open(bk.path(self.book_id), encoding="utf-8"))
-        self.bs = pl.build_profile(self.words)
+        # 大词库（A–Z，唯一一份词条）+ 当前词书的 A–Z 单词列表
+        self.bank = json.load(io.open(os.path.join(DATA, "bank.json"), encoding="utf-8"))
+        self.bank_map = {x["w"]: x for x in self.bank}
+        self.bs = [x["b"] for x in self.bank]
+        self.lvls = [x["lvl"] for x in self.bank]
+        self.theta = self.progress.get("theta")
+        self.known = set()
+        self._refresh_known()
+        self.book_words = self._book_words(self.book_id)
+        self.cursor = self.cursors.get(self.book_id, 0)
+        self.queue_words = self._order_words(self.book_words, self.order_mode,
+                                             self._seed(self.book_id))
 
         self.queue = []
         self.qi = 0
@@ -274,13 +288,16 @@ class Card(QWidget):
         p = {}
         if os.path.exists(PROGRESS_PATH):
             try:
-                p = json.load(io.open(PROGRESS_PATH, encoding="utf-8"))
+                with io.open(PROGRESS_PATH, encoding="utf-8") as f:
+                    p = json.load(f)
             except Exception:
                 p = {}
         p.setdefault("states", {})
-        p.setdefault("cursor", 0)
         p.setdefault("theme", th.DEFAULT)
         p.setdefault("book", bk.DEFAULT)
+        p.setdefault("cursors", {})
+        p.setdefault("orders", {})
+        p.pop("cursor", None)          # v1.0 的全局游标，v1.1 改为每本书一个
         if "welcome_done" not in p:
             # 老用户（已经有学习记录）直接当引导已经走完
             p["welcome_done"] = bool(p.get("states") or p.get("history"))
@@ -288,15 +305,69 @@ class Card(QWidget):
 
     def save(self):
         self.progress["states"] = self.states
-        self.progress["cursor"] = self.cursor
+        self.progress["cursors"] = self.cursors
+        self.progress["orders"] = self.orders
+        self.progress["theta"] = self.theta
         tmp = PROGRESS_PATH + ".tmp"
         with io.open(tmp, "w", encoding="utf-8") as f:
             json.dump(self.progress, f, ensure_ascii=False)
-        os.replace(tmp, PROGRESS_PATH)
+        # Windows 上目标文件偶尔会被杀毒/索引短暂占用，重试几次再替换
+        last = None
+        for i in range(6):
+            try:
+                os.replace(tmp, PROGRESS_PATH)
+                return
+            except PermissionError as e:
+                last = e
+                time.sleep(0.02 * (i + 1))
+        try:
+            with io.open(PROGRESS_PATH, "w", encoding="utf-8") as f:
+                json.dump(self.progress, f, ensure_ascii=False)
+        except Exception:
+            raise last
 
-    # ---------- 学习队列：先复习，再一个个学新词 ----------
+    # ---------- 大词库 / 词书 ----------
+    def _book_words(self, book_id):
+        return [self.bank_map[w] for w in bk.words(book_id) if w in self.bank_map]
+
+    def _seed(self, book_id):
+        rec = self.orders.setdefault(book_id, {"mode": "shuffle"})
+        if not rec.get("seed"):
+            rec["seed"] = random.randrange(1, 1 << 30)
+        return rec["seed"]
+
+    def _order_words(self, words, mode, seed):
+        out = list(words)
+        if mode == "shuffle":
+            random.Random(seed).shuffle(out)
+        return out
+
+    def _refresh_known(self):
+        """用最近一次测试的 θ 算「测试判定已会」的词（跨书共享）。"""
+        theta = self.progress.get("theta")
+        self.theta = theta
+        if theta is None:
+            self.known = set()
+            return
+        self.known = {w["w"] for w, b in zip(self.bank, self.bs)
+                      if pl.p_know(theta, b) >= pl.KNOWN_THRESHOLD}
+
+    def _book_stats(self, book_id):
+        learned = mastered = known = 0
+        for w in bk.words(book_id):
+            st = (self.states.get(w) or {}).get("st")
+            if st == "learning":
+                learned += 1
+            elif st == "mastered":
+                learned += 1
+                mastered += 1
+            if w in self.known:
+                known += 1
+        return learned, known, mastered, bk.size(book_id)
+
+    # ---------- 学习队列：先复习（跨书），再一个个学新词（当前书） ----------
     def _new_session(self):
-        self.queue = sch.review_items(self.words, self.states, time.time())
+        self.queue = sch.review_items(self.bank, self.states, time.time())
         self.qi = 0
         if not self.queue and not self._pull_new():
             self._show_empty()
@@ -305,13 +376,20 @@ class Card(QWidget):
         self._show_current()
 
     def _pull_new(self):
-        item, ni = sch.next_new(self.words, self.states, self.cursor)
-        if not item:
-            self.cursor = ni
-            return False
-        self.cursor = ni
-        self.queue.append(item)
-        return True
+        i = self.cursor
+        while i < len(self.queue_words):
+            w = self.queue_words[i]
+            st = self.states.get(w["w"])
+            if (st and st.get("st") in sch.DONE) or w["w"] in self.known:
+                i += 1
+                continue
+            self.cursor = i + 1
+            self.cursors[self.book_id] = self.cursor
+            self.queue.append({"kind": "new", "w": w, "st": None, "idx": i})
+            return True
+        self.cursor = i
+        self.cursors[self.book_id] = i
+        return False
 
     # ---------- 窗口 ----------
     def toggle_compact(self):
@@ -634,34 +712,66 @@ class Card(QWidget):
         bv.setContentsMargins(0, 0, 0, 0)
         bv.setSpacing(0)
         bv.addSpacing(4)
-        lead = QLabel("选一本词书，从第一个词开始学")
+        lead = QLabel("选一本词书，再选顺序")
         self.reg(lead, "note", 12)
         bv.addWidget(lead)
-        bv.addSpacing(10)
+        bv.addSpacing(8)
 
+        self.book_scroll = QScrollArea()
+        self.book_scroll.setWidgetResizable(True)
+        self.book_scroll.setFixedHeight(238)
+        self.book_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.book_scroll.setStyleSheet(
+            "QScrollArea{border:none;background:transparent;}"
+            "QWidget#booklist{background:transparent;}")
+        holder = QWidget()
+        holder.setObjectName("booklist")
+        self.book_list_layout = QVBoxLayout(holder)
+        self.book_list_layout.setContentsMargins(0, 0, 6, 0)
+        self.book_list_layout.setSpacing(6)
         self.book_btns = {}
         for b in bk.all():
-            btn = QPushButton("%s\n%s" % (b["name"], b["desc"]))
+            btn = QPushButton("")
             btn.setObjectName("book")
             btn.setCursor(Qt.PointingHandCursor)
-            btn.setMinimumHeight(66)
+            btn.setMinimumHeight(48)
             btn.clicked.connect(lambda _=False, bid=b["id"]: self._pick_book(bid))
-            bv.addWidget(btn)
-            bv.addSpacing(8)
+            self.book_list_layout.addWidget(btn)
             self.book_btns[b["id"]] = btn
+        self.book_list_layout.addStretch(1)
+        self.book_scroll.setWidget(holder)
+        bv.addWidget(self.book_scroll)
+        bv.addSpacing(6)
 
-        bv.addSpacing(2)
         self.lab_book_stat = QLabel("")
         self.reg(self.lab_book_stat, "note", 12)
         bv.addWidget(self.lab_book_stat)
-        bv.addStretch(1)
+        bv.addSpacing(6)
+
+        orow = QHBoxLayout()
+        orow.setSpacing(8)
+        lab_order = QLabel("词序")
+        self.reg(lab_order, "note", 12)
+        orow.addWidget(lab_order)
+        self.chip_seq = QPushButton("顺序")
+        self.chip_shuf = QPushButton("乱序")
+        for b, mode in ((self.chip_seq, "seq"), (self.chip_shuf, "shuffle")):
+            b.setObjectName("chip")
+            b.setCursor(Qt.PointingHandCursor)
+            b.setMinimumHeight(28)
+            b.clicked.connect(lambda _=False, m=mode: self._set_order(m))
+            orow.addWidget(b)
+        orow.addStretch(1)
+        bv.addLayout(orow)
+        bv.addSpacing(6)
 
         self.btn_learn = QPushButton("开始学习")
         self.btn_learn.setObjectName("remember")
         self.btn_learn.setCursor(Qt.PointingHandCursor)
-        self.btn_learn.setMinimumHeight(46)
+        self.btn_learn.setMinimumHeight(44)
         self.btn_learn.clicked.connect(self._start_learning)
         bv.addWidget(self.btn_learn)
+        bv.addSpacing(2)
 
         self.root.addWidget(self.books_page, 1)
         self.books_page.hide()
@@ -784,48 +894,70 @@ class Card(QWidget):
 
     # ---------- 词书 / 进度 ----------
     def _stats(self):
-        learned = known = mastered = 0
-        for w in self.words:
-            st = (self.states.get(w["w"]) or {}).get("st")
-            if st == "learning":
-                learned += 1
-            elif st == "mastered":
-                learned += 1
-                mastered += 1
-            elif st == "known":
-                known += 1
-        return learned, known, mastered, len(self.words)
+        return self._book_stats(self.book_id)
 
     def _refresh_books(self):
         for bid, btn in self.book_btns.items():
+            learned, known, mastered, total = self._book_stats(bid)
+            b = bk.get(bid)
+            btn.setText("%s　%s 词 · 已学 %s / %s" %
+                        (b["name"], format(total, ","), format(learned, ","), format(total, ",")))
             btn.setProperty("on", "1" if bid == self.sel_book else "0")
             btn.style().unpolish(btn)
             btn.style().polish(btn)
-        learned, known, mastered, total = self._stats()
+        learned, known, mastered, total = self._book_stats(self.sel_book)
         b = bk.get(self.sel_book)
         self.lab_book_stat.setText("%s · 已学 %s / %s · 已掌握 %s" %
                                    (b["name"], format(learned, ","), format(total, ","),
                                     format(mastered, ",")))
-        self.btn_learn.setText("开始学习" if self.sel_book == self.book_id else "换到这本词书")
+        for chip, mode in ((self.chip_seq, "seq"), (self.chip_shuf, "shuffle")):
+            chip.setProperty("on", "1" if mode == self.sel_order else "0")
+            chip.style().unpolish(chip)
+            chip.style().polish(chip)
+        same = (self.sel_book == self.book_id and self.sel_order == self.order_mode)
+        self.btn_learn.setText("开始学习" if same else "用这本开始")
+        try:
+            self.book_scroll.ensureWidgetVisible(self.book_btns[self.sel_book], 0, 6)
+        except Exception:
+            pass
 
     def _pick_book(self, bid):
         self.sel_book = bid
+        self.sel_order = (self.orders.get(bid) or {}).get("mode", "shuffle")
+        self._refresh_books()
+
+    def _set_order(self, mode):
+        self.sel_order = mode
         self._refresh_books()
 
     def open_books(self, src="welcome"):
         self.books_src = src
         self.sel_book = self.book_id
+        self.sel_order = self.order_mode
         self._refresh_books()
         self._set_mode("books")
 
     def _start_learning(self):
         new_book = self.sel_book != self.book_id
-        self.book_id = self.sel_book
-        self.progress["book"] = self.book_id
-        self.save()
+        old_mode = (self.orders.get(self.sel_book) or {}).get("mode", "shuffle")
         if new_book:
-            self.words = json.load(io.open(bk.path(self.book_id), encoding="utf-8"))
-            self.bs = pl.build_profile(self.words)
+            self.book_id = self.sel_book
+            self.book_words = self._book_words(self.book_id)
+        if new_book or self.sel_order != self.order_mode or self.sel_order != old_mode:
+            self.order_mode = self.sel_order
+            rec = self.orders.setdefault(self.book_id, {"mode": self.order_mode})
+            rec["mode"] = self.order_mode
+            if not rec.get("seed"):
+                rec["seed"] = random.randrange(1, 1 << 30)
+            self.queue_words = self._order_words(self.book_words, self.order_mode, rec["seed"])
+            # 换了顺序就从头开始（已学的会被跳过），避免旧游标指向新序列里的别的词
+            self.cursor = 0
+            self.cursors[self.book_id] = 0
+        else:
+            self.cursor = self.cursors.get(self.book_id, 0)
+        self.progress["book"] = self.book_id
+        self.sel_book = self.book_id
+        self.save()
         self.setFixedSize(CARD_W, CARD_H)
         self._new_session()
 
@@ -966,6 +1098,13 @@ class Card(QWidget):
         self.books_page.setVisible(mode == "books")
         self.settings_page.setVisible(mode == "settings")
         self.btn_skip.setVisible(mode == "quiz")
+        # 所有页面都锁在固定尺寸里：避免长释义/历史结果把窗口撑大
+        if mode == "quiz":
+            pass                                # start_quiz 已经 setFixedSize(QUIZ_W, QUIZ_H)
+        elif self.compact and mode in ("front", "back", "empty"):
+            self.setFixedSize(COMPACT_W, COMPACT_H)
+        else:
+            self.setFixedSize(CARD_W, CARD_H)
         if mode == "front":
             self.fade.stop()               # 防止上一次淡入还在跑，把答案又淡出来
             self.answer_effect.setOpacity(0.0)
@@ -1036,6 +1175,7 @@ class Card(QWidget):
         self.states[key] = cur
         if kind == "new":
             self.cursor = max(self.cursor, item["idx"] + 1)
+            self.cursors[self.book_id] = self.cursor
         self.last_action = (kind, key)
         self.save()
         self._show_back(w, remember=(action == "remember"))
@@ -1081,6 +1221,7 @@ class Card(QWidget):
         if not self.snapshot:
             return
         self.states, self.cursor, self.qi = self.snapshot
+        self.cursors[self.book_id] = self.cursor
         self.snapshot = None
         self.save()
         if self.mode in ("back", "empty"):
@@ -1107,26 +1248,45 @@ class Card(QWidget):
         if self.compact:
             self.set_compact(False)          # 测试固定大窗，不受缩小状态影响
         sess = self.progress.get("quiz_session")
-        if sess and 0 < sess.get("i", 0) < QUIZ_N and len(sess.get("items", [])) == QUIZ_N:
+        ok = bool(sess and sess.get("algo") == "staircase-v1"
+                  and 0 <= sess.get("i", 0) < QUIZ_N
+                  and len(sess.get("items") or []) > sess.get("i", 0))
+        if ok:
+            self.quiz_state = sess["state"]
             self.quiz_items = sess["items"]
             self.quiz_resp = sess["resp"]
             self.quiz_i = sess["i"]
+            self.rigor = sess.get("rigor", 100.0)
         else:
-            self.quiz_items = self._make_quiz(QUIZ_N)
+            self.progress.pop("quiz_session", None)
+            self.quiz_state = pl.new_session(seed=random.randrange(1, 1 << 30))
+            self.quiz_items = []
             self.quiz_resp = []
             self.quiz_i = 0
+            self.rigor = 100.0
+            self._gen_item()
             self._save_quiz_session()
         self.quiz_locked = False
-        if not (sess and 0 < sess.get("i", 0) < QUIZ_N):
-            self.rigor = 100.0
         self.setFixedSize(QUIZ_W, QUIZ_H)
         self._set_mode("quiz")
         self._quiz_show()
 
+    def _gen_item(self):
+        """按当前档位随机抽一个没做过的词，生成 4 选 1。"""
+        rng = random.Random(self.quiz_state["seed"] * 1000003 + len(self.quiz_state["asked"]))
+        idx = pl.pick_idx(self.lvls, self.quiz_state["level"], self.quiz_state["asked"], rng)
+        opts, correct = pl.make_options(self.bank, idx, rng, self.bs)
+        item = {"idx": idx, "opts": opts, "correct": correct, "lvl": self.quiz_state["level"]}
+        self.quiz_items.append(item)
+        self.quiz_state["asked"].append(idx)
+        return item
+
     def _save_quiz_session(self):
         self.progress["quiz_session"] = {
+            "algo": "staircase-v1",
+            "state": self.quiz_state,
             "items": self.quiz_items, "resp": self.quiz_resp,
-            "i": self.quiz_i, "ts": int(time.time()),
+            "i": self.quiz_i, "rigor": self.rigor, "ts": int(time.time()),
         }
         self.save()
 
@@ -1139,19 +1299,9 @@ class Card(QWidget):
         self.setFixedSize(CARD_W, CARD_H)
         self._new_session()
 
-    def _make_quiz(self, k):
-        import random
-        rng = random.Random()
-        idxs = pl.sample_items(self.bs, k, seed=rng.randrange(1 << 30))
-        items = []
-        for idx in idxs:
-            opts, correct = pl.make_options(self.words, idx, rng, self.bs)
-            items.append({"idx": idx, "opts": opts, "correct": correct})
-        return items
-
     def _quiz_status(self, delta=None):
         txt = "词汇量测试 %d/%d   ·   严谨度 %d" % (
-            self.quiz_i + 1, len(self.quiz_items), int(round(self.rigor)))
+            self.quiz_i + 1, QUIZ_N, int(round(self.rigor)))
         if delta:
             col = "#79e0ac" if delta > 0 else "#ef9cad"
             txt += "  <span style='color:%s'>%+.1f</span>" % (col, delta)
@@ -1159,7 +1309,7 @@ class Card(QWidget):
 
     def _quiz_show(self):
         item = self.quiz_items[self.quiz_i]
-        w = self.words[item["idx"]]
+        w = self.bank[item["idx"]]
         self.quiz_word.setText(w["w"])
         self._quiz_status()
         for i, b in enumerate(self.opt_btns):
@@ -1181,10 +1331,11 @@ class Card(QWidget):
         self.quiz_locked = True
         item = self.quiz_items[self.quiz_i]
         correct = item["correct"]
+        good = choice >= 0 and choice == correct
         if choice < 0:
             self.quiz_resp.append(-1)
             delta = 0.0
-        elif choice == correct:
+        elif good:
             self.quiz_resp.append(1)
             delta = 1.5
         else:
@@ -1194,6 +1345,8 @@ class Card(QWidget):
         self.rigor = max(0.0, min(100.0, self.rigor + delta))
         delta = self.rigor - old
         self._quiz_status(delta)
+        # 阶梯：连对 2 升档、连错 2 降档、单个对/错留在同档
+        pl.step(self.quiz_state, good, len(self.quiz_resp))
         for i, b in enumerate(self.opt_btns):
             b.setEnabled(False)
             state = ""
@@ -1215,9 +1368,11 @@ class Card(QWidget):
         if self.mode != "quiz":
             return
         self.quiz_i += 1
-        if self.quiz_i >= len(self.quiz_items):
+        if self.quiz_i >= QUIZ_N:
             self._finish_quiz()
             return
+        while len(self.quiz_items) <= self.quiz_i:
+            self._gen_item()
         self._save_quiz_session()
         self._quiz_show()
 
@@ -1225,60 +1380,57 @@ class Card(QWidget):
         items = self.quiz_items
         if not items:
             return
-        if len(self.quiz_resp) < len(items):
-            self.quiz_resp += [0] * (len(items) - len(self.quiz_resp))
+        resp = self.quiz_resp[:len(items)]
+        if len(resp) < len(items):
+            resp += [0] * (len(items) - len(resp))
         self.status.setText("词汇量测试完成")
 
         bs = [self.bs[it["idx"]] for it in items]
-        theta, se = pl.estimate_theta(bs, self.quiz_resp)
-        probs = pl.knowledge(self.bs, theta)
-        known_flags = [p >= THRESHOLD for p in probs]
+        theta, se = pl.estimate_theta(bs, resp)
+        est = int(round(pl.vocab_at(self.bs, theta)))
+        lo, hi = pl.error_band(self.bs, theta, se * 1.5)   # ±1.5SE ≈ 86% 覆盖
 
         history = self.progress.setdefault("history", [])
         is_baseline = not any(h.get("baseline") for h in history)
         rigor = int(round(self.rigor))
-        err = max(4.0, min(40.0, 4 + (100 - rigor) * 0.35))
-        est = int(round(sum(probs)))
+        # 误差带：以 θ 的 ±1SE 对应的词数区间为准（50 题的真实精度），
+        # 严谨度只负责"题答得越飘、误差下限越大"。
+        se_err = (hi - lo) / 2.0 / max(1, est) * 100.0
+        err = max(4.0, min(40.0, max(se_err, 4 + (100 - rigor) * 0.35)))
+        lo = int(round(est * (1 - err / 100.0)))
+        hi = int(round(est * (1 + err / 100.0)))
+
+        if is_baseline or not self.progress.get("theta"):
+            self._set_theta(theta)             # 基准测试决定跳过哪些词
+        elif self.last_test is None:
+            self._refresh_known()
+
         rec = {
             "ts": int(time.time()),
+            "algo": "staircase-v1",
             "theta": round(theta, 3), "se": round(se, 3),
             "vocab": est, "rigor": rigor, "err": round(err, 1),
-            "lo": int(round(est * (1 - err / 100.0))),
-            "hi": int(round(est * (1 + err / 100.0))),
-            "right": sum(1 for r in self.quiz_resp if r == 1),
-            "dontknow": sum(1 for r in self.quiz_resp if r < 0),
-            "total": len(items),
+            "lo": max(0, lo), "hi": hi,
+            "right": sum(1 for r in resp if r == 1),
+            "dontknow": sum(1 for r in resp if r < 0),
+            "total": QUIZ_N,
+            "known": len(self.known),
+            "to_learn": len(self.bank) - len(self.known),
             "baseline": is_baseline,
         }
-        if is_baseline:
-            known_n, to_learn = self._apply_flags(known_flags)
-            rec["known"] = known_n
-            rec["to_learn"] = to_learn
         history.append(rec)
         self.progress["history"] = history
         self.progress.pop("quiz_session", None)
         self.progress.pop("snooze_until", None)
-        self.last_test = (rec, known_flags, is_baseline)
+        self.last_test = (rec, is_baseline)
         self.save()
         self._show_result(rec, is_baseline)
 
-    def _apply_flags(self, known_flags):
-        """把「判定为已会」写进学习队列；清掉上一轮判定。"""
-        for w in self.words:
-            st = self.states.get(w["w"])
-            if st and st.get("st") == "known":
-                del self.states[w["w"]]
-        known_n = 0
-        for i, w in enumerate(self.words):
-            if not known_flags[i] or w["w"] in self.states:
-                continue
-            self.states[w["w"]] = {"st": "known", "due": None, "lv": 9,
-                                   "seen": 0, "lapse": 0, "streak": 0}
-            known_n += 1
-        to_learn = sum(1 for w in self.words
-                       if self.states.get(w["w"], {}).get("st") not in ("known", "mastered"))
-        self.save()
-        return known_n, to_learn
+    def _set_theta(self, theta):
+        """记下决定「测试判定已会」的 θ（基准测试 / 手排时用）。"""
+        self.theta = float(theta)
+        self.progress["theta"] = self.theta
+        self._refresh_known()
 
     def _fill_result(self, rec, hist, is_baseline):
         base = next((h for h in hist if h.get("baseline")), None)
@@ -1291,22 +1443,25 @@ class Card(QWidget):
             format(rec.get("lo", rec["vocab"]), ","),
             format(rec.get("hi", rec["vocab"]), ",")))
         line = "答对 %d/%d" % (rec["right"], rec["total"])
-        if rec["dontknow"]:
+        if rec.get("dontknow"):
             line += "  ·  不认识 %d 题" % rec["dontknow"]
 
+        learned, known, mastered, total = self._book_stats(self.book_id)
+        book = bk.get(self.book_id)
+        tail = "%s已会 %s / %s" % (book["short"], format(known, ","), format(total, ","))
+
         if is_baseline:
-            known_n = rec.get("known", 0)
-            to_learn = rec.get("to_learn", 5556)
-            self.res_note.setText("%s\n首次测试作为起点：%s 个词判定为已会、直接跳过，"
-                                  "剩下 %s 个词进入学习。" %
-                                  (line, format(known_n, ","), format(to_learn, ",")))
+            known_n = rec.get("known", len(self.known))
+            to_learn = rec.get("to_learn", len(self.bank) - known_n)
+            self.res_note.setText("%s\n大词库判定已会 %s 个、剩 %s 个；%s" %
+                                  (line, format(known_n, ","), format(to_learn, ","), tail))
         else:
             delta = rec["vocab"] - (base["vocab"] if base else rec["vocab"])
             d2 = rec["vocab"] - (prev["vocab"] if prev else rec["vocab"])
             sign = "+" if delta >= 0 else ""
             sign2 = "+" if d2 >= 0 else ""
-            self.res_note.setText("%s\n比首次 %s%s 词  ·  比上次 %s%s 词" %
-                                  (line, sign, format(delta, ","), sign2, format(d2, ",")))
+            self.res_note.setText("%s\n比首次 %s%s 词 · 比上次 %s%s 词 · %s" %
+                                  (line, sign, format(delta, ","), sign2, format(d2, ","), tail))
 
         self.chart.points = [(h["ts"], h["vocab"]) for h in hist][-12:]
         self.chart.update()
@@ -1329,12 +1484,12 @@ class Card(QWidget):
         """用最近这次测试的结果重排学习队列。"""
         if not self.last_test:
             return
-        rec, flags, _ = self.last_test
-        known_n, to_learn = self._apply_flags(flags)
+        rec, _ = self.last_test
+        self._set_theta(rec.get("theta", 0.0))
         for h in self.progress.get("history", []):
             h["baseline"] = (h is rec)
-        rec["known"] = known_n
-        rec["to_learn"] = to_learn
+        rec["known"] = len(self.known)
+        rec["to_learn"] = len(self.bank) - len(self.known)
         self.save()
         self._show_result(rec, True)
 
@@ -1402,9 +1557,9 @@ def main():
         w.quiz_timer.stop()
         if w.mode != "quiz":
             w.start_quiz()
-        n = len(w.quiz_items)
-        for i in range(n):
-            it = w.quiz_items[i]
+        while len(w.quiz_resp) < QUIZ_N:
+            i = len(w.quiz_resp)
+            it = w.quiz_items[w.quiz_i]
             if dk and i % 7 == 3:
                 w._quiz_answer(-1)
             elif good and w.bs[it["idx"]] < 0.25:
@@ -1413,7 +1568,7 @@ def main():
                 w._quiz_answer(it["correct"] if i % 3 else (it["correct"] + 1) % 4)
             else:
                 w._quiz_answer((it["correct"] + 1) % 4)
-            if i < n - 1:
+            if len(w.quiz_resp) < QUIZ_N:
                 w._quiz_next()
         w._finish_quiz()
 
@@ -1421,21 +1576,25 @@ def main():
         """调试用：造点历史记录和学习进度，方便截设置页。"""
         now = int(time.time())
         w.progress["history"] = [
-            {"ts": now - 90 * 86400, "vocab": 2180, "right": 18, "dontknow": 9,
+            {"ts": now - 90 * 86400, "vocab": 5200, "right": 18, "dontknow": 9,
              "total": 50, "theta": 0.1, "se": 0.5, "baseline": True,
-             "known": 1400, "to_learn": 4156},
-            {"ts": now - 60 * 86400, "vocab": 2760, "right": 22, "dontknow": 7,
-             "total": 50, "theta": 0.4, "se": 0.5, "baseline": False},
-            {"ts": now - 30 * 86400, "vocab": 3120, "right": 25, "dontknow": 6,
-             "total": 50, "theta": 0.6, "se": 0.5, "baseline": False},
+             "known": 3200, "to_learn": 12012, "rigor": 88, "err": 9.0,
+             "lo": 4732, "hi": 5668},
+            {"ts": now - 60 * 86400, "vocab": 7100, "right": 22, "dontknow": 7,
+             "total": 50, "theta": 0.4, "se": 0.5, "baseline": False,
+             "rigor": 92, "err": 8.0, "lo": 6532, "hi": 7668},
+            {"ts": now - 30 * 86400, "vocab": 8600, "right": 25, "dontknow": 6,
+             "total": 50, "theta": 0.8, "se": 0.5, "baseline": False,
+             "rigor": 94, "err": 7.0, "lo": 7998, "hi": 9202},
         ]
         states = w.progress["states"]
-        for i, wd in enumerate(w.words[:160]):
+        for i, wd in enumerate(w.bank[:160]):
             st = "mastered" if i < 40 else "learning"
             states[wd["w"]] = {"st": st, "lv": 9 if st == "mastered" else 3,
                                "due": None if st == "mastered" else now + 3600,
                                "seen": 5, "lapse": 0, "streak": 0}
         w.states = states
+        w._set_theta(0.8)
         w.progress["welcome_done"] = True
         w.save()
 

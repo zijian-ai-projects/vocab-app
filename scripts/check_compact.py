@@ -24,7 +24,7 @@ w.show()
 pump = lambda n=6: [app.processEvents() for _ in range(n)]
 pump()
 
-words = json.load(io.open(os.path.join(app_main.DATA, "words.json"), encoding="utf-8"))
+words = json.load(io.open(os.path.join(app_main.DATA, "bank.json"), encoding="utf-8"))
 
 out, fails = [], []
 

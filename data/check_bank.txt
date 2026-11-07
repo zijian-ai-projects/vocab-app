@@ -1,0 +1,65 @@
+  OK   大词库 15212 词（目标 15,000+）
+  OK   大词库无重复
+  OK   大词库按字母序 A–Z 排列
+  OK   每个词都有卡面释义
+  OK   缺音标的词 28 个（<=30）
+  OK   难度 15 档分布均匀：[1015, 1014, 1014, 1014, 1014, 1014, 1014, 1015, 1014, 1014, 1014, 1014, 1014, 1014, 1014]
+  OK   难度 b 都在 [-3.2, 3.2]
+  OK   词书 11 本：xiaoxue、chuzhong、gaokao、cet4、cet6、kaoyan、kaobo、ielts、toefl、gre、all
+  OK   xiaoxue 词数标记一致：1006
+  OK   xiaoxue 按字母序
+  OK   xiaoxue 无重复
+  OK   xiaoxue 的词都在大词库里
+  OK   xiaoxue 有名称/描述
+  OK   chuzhong 词数标记一致：2239
+  OK   chuzhong 按字母序
+  OK   chuzhong 无重复
+  OK   chuzhong 的词都在大词库里
+  OK   chuzhong 有名称/描述
+  OK   gaokao 词数标记一致：3671
+  OK   gaokao 按字母序
+  OK   gaokao 无重复
+  OK   gaokao 的词都在大词库里
+  OK   gaokao 有名称/描述
+  OK   cet4 词数标记一致：3846
+  OK   cet4 按字母序
+  OK   cet4 无重复
+  OK   cet4 的词都在大词库里
+  OK   cet4 有名称/描述
+  OK   cet6 词数标记一致：5406
+  OK   cet6 按字母序
+  OK   cet6 无重复
+  OK   cet6 的词都在大词库里
+  OK   cet6 有名称/描述
+  OK   kaoyan 词数标记一致：4801
+  OK   kaoyan 按字母序
+  OK   kaoyan 无重复
+  OK   kaoyan 的词都在大词库里
+  OK   kaoyan 有名称/描述
+  OK   kaobo 词数标记一致：10556
+  OK   kaobo 按字母序
+  OK   kaobo 无重复
+  OK   kaobo 的词都在大词库里
+  OK   kaobo 有名称/描述
+  OK   ielts 词数标记一致：5038
+  OK   ielts 按字母序
+  OK   ielts 无重复
+  OK   ielts 的词都在大词库里
+  OK   ielts 有名称/描述
+  OK   toefl 词数标记一致：6970
+  OK   toefl 按字母序
+  OK   toefl 无重复
+  OK   toefl 的词都在大词库里
+  OK   toefl 有名称/描述
+  OK   gre 词数标记一致：7504
+  OK   gre 按字母序
+  OK   gre 无重复
+  OK   gre 的词都在大词库里
+  OK   gre 有名称/描述
+  OK   all 词数标记一致：15212
+  OK   all 按字母序
+  OK   all 无重复
+  OK   all 的词都在大词库里
+  OK   all 有名称/描述
+
+FAILS 0

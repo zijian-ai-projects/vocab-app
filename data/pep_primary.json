@@ -1,0 +1,9319 @@
+[
+{
+"w": "(Fri.)",
+"ipa": "/'fraidi/",
+"pos": "",
+"s": "星期五",
+"g": "#"
+},
+{
+"w": "(Mon.)",
+"ipa": "/'mʌndi/",
+"pos": "",
+"s": "星期一",
+"g": "#"
+},
+{
+"w": "(Sat.)",
+"ipa": "/'sætədi/",
+"pos": "",
+"s": "星期六",
+"g": "#"
+},
+{
+"w": "(Sun.)",
+"ipa": "/'sʌndi/",
+"pos": "",
+"s": "星期天",
+"g": "#"
+},
+{
+"w": "(Thu.)",
+"ipa": "/'θə:zdi/",
+"pos": "",
+"s": "星期四",
+"g": "#"
+},
+{
+"w": "(Tue.)",
+"ipa": "/'tju:zdi/",
+"pos": "",
+"s": "星期二",
+"g": "#"
+},
+{
+"w": "a",
+"ipa": "",
+"pos": "",
+"s": "few 一些",
+"g": "A"
+},
+{
+"w": "a cold",
+"ipa": "",
+"pos": "",
+"s": "感冒",
+"g": "A"
+},
+{
+"w": "a few",
+"ipa": "",
+"pos": "",
+"s": "一些",
+"g": "A"
+},
+{
+"w": "a little",
+"ipa": "/'litl/",
+"pos": "",
+"s": "有些.",
+"g": "A"
+},
+{
+"w": "a pair of",
+"ipa": "/pɛə/",
+"pos": "",
+"s": "一双",
+"g": "A"
+},
+{
+"w": "a.m.",
+"ipa": "/ˌeɪ ˈem/",
+"pos": "",
+"s": "午前；上午",
+"g": "A"
+},
+{
+"w": "able",
+"ipa": "/'eibl/",
+"pos": "",
+"s": "能",
+"g": "A"
+},
+{
+"w": "about",
+"ipa": "/'əbaut/",
+"pos": "",
+"s": "关于,大约",
+"g": "A"
+},
+{
+"w": "above",
+"ipa": "/ə'bʌv/",
+"pos": "",
+"s": "在…… 上面",
+"g": "A"
+},
+{
+"w": "accountant",
+"ipa": "/ə'kauntənt/",
+"pos": "",
+"s": "会计",
+"g": "A"
+},
+{
+"w": "active",
+"ipa": "/'æktiv/",
+"pos": "",
+"s": "积极的;活跃的",
+"g": "A"
+},
+{
+"w": "actor",
+"ipa": "/'æktə/",
+"pos": "",
+"s": "男演员",
+"g": "A"
+},
+{
+"w": "actress",
+"ipa": "/'æktris/",
+"pos": "",
+"s": "女演员",
+"g": "A"
+},
+{
+"w": "afraid",
+"ipa": "/əˈfreɪd/",
+"pos": "",
+"s": "害怕的",
+"g": "A"
+},
+{
+"w": "after",
+"ipa": "",
+"pos": "",
+"s": "在...之后",
+"g": "A"
+},
+{
+"w": "after school",
+"ipa": "/'ɑ:ftəsku:l/",
+"pos": "",
+"s": "放学以后",
+"g": "A"
+},
+{
+"w": "afternoon",
+"ipa": "/,ɑ:ftə:'nu:n/",
+"pos": "",
+"s": "下午午后",
+"g": "A"
+},
+{
+"w": "again",
+"ipa": "/ə'ɡen/",
+"pos": "",
+"s": "再一次；又；再",
+"g": "A"
+},
+{
+"w": "ago",
+"ipa": "",
+"pos": "",
+"s": "以前",
+"g": "A"
+},
+{
+"w": "air",
+"ipa": "/єə/",
+"pos": "n.",
+"s": "空气",
+"g": "A"
+},
+{
+"w": "air-conditioner",
+"ipa": "/ɛə/",
+"pos": "",
+"s": "[kən'diʃənə]",
+"g": "A"
+},
+{
+"w": "Alaska",
+"ipa": "/əˈlæskə/",
+"pos": "",
+"s": "阿拉斯加州（美国州名）",
+"g": "A"
+},
+{
+"w": "all",
+"ipa": "",
+"pos": "",
+"s": "全；完全",
+"g": "A"
+},
+{
+"w": "all right",
+"ipa": "/ɔ:l rait/",
+"pos": "",
+"s": "好吧；好的",
+"g": "A"
+},
+{
+"w": "also",
+"ipa": "",
+"pos": "",
+"s": "还；也",
+"g": "A"
+},
+{
+"w": "always",
+"ipa": "/'ɔ:lweiz/",
+"pos": "",
+"s": "总是;一直",
+"g": "A"
+},
+{
+"w": "amazing",
+"ipa": "/əˈmeɪzɪŋ/",
+"pos": "",
+"s": "令人惊奇的",
+"g": "A"
+},
+{
+"w": "America",
+"ipa": "/ə'merikə/",
+"pos": "",
+"s": "美国",
+"g": "A"
+},
+{
+"w": "American",
+"ipa": "",
+"pos": "",
+"s": "美国的",
+"g": "A"
+},
+{
+"w": "and",
+"ipa": "/ænd/",
+"pos": "",
+"s": "和；并且",
+"g": "A"
+},
+{
+"w": "angry",
+"ipa": "/'æŋgri/",
+"pos": "",
+"s": "生气的；愤怒的",
+"g": "A"
+},
+{
+"w": "animal",
+"ipa": "/'ænɪməl/",
+"pos": "",
+"s": "动物",
+"g": "A"
+},
+{
+"w": "another",
+"ipa": "/ə'nʌðə/",
+"pos": "",
+"s": "另一个.",
+"g": "A"
+},
+{
+"w": "answer the phone",
+"ipa": "/'a:nsəfəun/",
+"pos": "",
+"s": "接电话",
+"g": "A"
+},
+{
+"w": "ant",
+"ipa": "/ænt/",
+"pos": "",
+"s": "蚂蚁",
+"g": "A"
+},
+{
+"w": "any",
+"ipa": "/'eni/",
+"pos": "",
+"s": "任何的；任一的",
+"g": "A"
+},
+{
+"w": "anything",
+"ipa": "",
+"pos": "",
+"s": "任何事物",
+"g": "A"
+},
+{
+"w": "apple",
+"ipa": "/'æpl/",
+"pos": "",
+"s": "苹果",
+"g": "A"
+},
+{
+"w": "April",
+"ipa": "/'eiprəl/",
+"pos": "",
+"s": "四月",
+"g": "A"
+},
+{
+"w": "are",
+"ipa": "/ɑ:/",
+"pos": "",
+"s": "是",
+"g": "A"
+},
+{
+"w": "aren't",
+"ipa": "/ɑːnt/",
+"pos": "",
+"s": "不是",
+"g": "A"
+},
+{
+"w": "aren't = are not",
+"ipa": "",
+"pos": "",
+"s": "不是",
+"g": "A"
+},
+{
+"w": "arm",
+"ipa": "/ɑ:m/",
+"pos": "",
+"s": "胳膊;手臂",
+"g": "A"
+},
+{
+"w": "art",
+"ipa": "",
+"pos": "",
+"s": "room 美术教室",
+"g": "A"
+},
+{
+"w": "art room",
+"ipa": "/ɑ:tru:m/",
+"pos": "",
+"s": "绘画教室",
+"g": "A"
+},
+{
+"w": "artist",
+"ipa": "/'ɑ:tist/",
+"pos": "",
+"s": "画家",
+"g": "A"
+},
+{
+"w": "ask",
+"ipa": "/ɑːsk/",
+"pos": "",
+"s": "问",
+"g": "A"
+},
+{
+"w": "at",
+"ipa": "/æt/",
+"pos": "",
+"s": "\\(后面接邮件地址\\)",
+"g": "A"
+},
+{
+"w": "at home",
+"ipa": "/æt həum/",
+"pos": "",
+"s": "在家",
+"g": "A"
+},
+{
+"w": "ate",
+"ipa": "",
+"pos": "",
+"s": "(eat的过去式) 吃",
+"g": "A"
+},
+{
+"w": "attention",
+"ipa": "/əˈtenʃən/",
+"pos": "",
+"s": "注意",
+"g": "A"
+},
+{
+"w": "August",
+"ipa": "/'ɔ:gəst/",
+"pos": "",
+"s": "八月",
+"g": "A"
+},
+{
+"w": "aunt",
+"ipa": "/ɑːnt/",
+"pos": "",
+"s": "阿姨，婶婶，舅妈",
+"g": "A"
+},
+{
+"w": "Australia",
+"ipa": "/ɔ'streiliə/",
+"pos": "",
+"s": "澳大利亚",
+"g": "A"
+},
+{
+"w": "autumn",
+"ipa": "",
+"pos": "",
+"s": "秋天",
+"g": "A"
+},
+{
+"w": "baby",
+"ipa": "/'beibi/",
+"pos": "",
+"s": "婴儿.",
+"g": "B"
+},
+{
+"w": "baby brother",
+"ipa": "/ˈbeɪbi/",
+"pos": "",
+"s": "弟弟",
+"g": "B"
+},
+{
+"w": "back",
+"ipa": "/bæk/",
+"pos": "",
+"s": "回来",
+"g": "B"
+},
+{
+"w": "bad",
+"ipa": "/bæd/",
+"pos": "",
+"s": "坏的",
+"g": "B"
+},
+{
+"w": "badminton",
+"ipa": "",
+"pos": "",
+"s": "羽毛球运动",
+"g": "B"
+},
+{
+"w": "bag",
+"ipa": "/bæg/",
+"pos": "",
+"s": "包，书包",
+"g": "B"
+},
+{
+"w": "ball",
+"ipa": "/bɔːl/",
+"pos": "",
+"s": "球",
+"g": "B"
+},
+{
+"w": "balloon",
+"ipa": "/bə'lu:n/",
+"pos": "",
+"s": "气球",
+"g": "B"
+},
+{
+"w": "bamboo",
+"ipa": "",
+"pos": "",
+"s": "竹子",
+"g": "B"
+},
+{
+"w": "banana",
+"ipa": "/bə'nɑːnə/",
+"pos": "",
+"s": "香蕉",
+"g": "B"
+},
+{
+"w": "bank",
+"ipa": "/bæŋk/",
+"pos": "",
+"s": "银行",
+"g": "B"
+},
+{
+"w": "basket",
+"ipa": "",
+"pos": "",
+"s": "篮，筐",
+"g": "B"
+},
+{
+"w": "basketball",
+"ipa": "/'bæskɪtbɔːl/",
+"pos": "",
+"s": "篮球",
+"g": "B"
+},
+{
+"w": "bathroom",
+"ipa": "/ˈbɑːθruːm/",
+"pos": "",
+"s": "浴室；洗手间",
+"g": "B"
+},
+{
+"w": "be",
+"ipa": "",
+"pos": "",
+"s": "careful 小心",
+"g": "B"
+},
+{
+"w": "be careful",
+"ipa": "",
+"pos": "",
+"s": "小心",
+"g": "B"
+},
+{
+"w": "beach",
+"ipa": "",
+"pos": "",
+"s": "海滩，沙滩",
+"g": "B"
+},
+{
+"w": "bear",
+"ipa": "/beə/",
+"pos": "",
+"s": "熊",
+"g": "B"
+},
+{
+"w": "beautiful",
+"ipa": "/'bjuːtəfəl/",
+"pos": "",
+"s": "美丽的",
+"g": "B"
+},
+{
+"w": "because",
+"ipa": "/bi'kɔz/",
+"pos": "",
+"s": "因为",
+"g": "B"
+},
+{
+"w": "become",
+"ipa": "/bi'kʌm/",
+"pos": "",
+"s": "变成",
+"g": "B"
+},
+{
+"w": "bed",
+"ipa": "/bed/",
+"pos": "",
+"s": "床",
+"g": "B"
+},
+{
+"w": "bedroom",
+"ipa": "/'bedrʊm/",
+"pos": "",
+"s": "卧室",
+"g": "B"
+},
+{
+"w": "beef",
+"ipa": "/biːf/",
+"pos": "",
+"s": "牛肉",
+"g": "B"
+},
+{
+"w": "before",
+"ipa": "",
+"pos": "",
+"s": "在\\.\\.\\. 之前",
+"g": "B"
+},
+{
+"w": "behind",
+"ipa": "/bɪ'haɪnd/",
+"pos": "",
+"s": "在…… 后面",
+"g": "B"
+},
+{
+"w": "beside",
+"ipa": "/bɪˈsaɪd/",
+"pos": "",
+"s": "在…旁边/附近",
+"g": "B"
+},
+{
+"w": "best",
+"ipa": "/best/",
+"pos": "",
+"s": "最、极",
+"g": "B"
+},
+{
+"w": "better",
+"ipa": "/'betə/",
+"pos": "",
+"s": "更好的",
+"g": "B"
+},
+{
+"w": "between",
+"ipa": "/bɪ'twiːn/",
+"pos": "",
+"s": "在…… 中间",
+"g": "B"
+},
+{
+"w": "big",
+"ipa": "/biɡ/",
+"pos": "",
+"s": "大的 .",
+"g": "B"
+},
+{
+"w": "bigger",
+"ipa": "",
+"pos": "",
+"s": "更大的",
+"g": "B"
+},
+{
+"w": "big—bigger",
+"ipa": "/biɡ/",
+"pos": "",
+"s": "更大的",
+"g": "B"
+},
+{
+"w": "bike",
+"ipa": "/baɪk/",
+"pos": "",
+"s": "自行车；脚踏车",
+"g": "B"
+},
+{
+"w": "bird",
+"ipa": "/bɜːd/",
+"pos": "",
+"s": "鸟",
+"g": "B"
+},
+{
+"w": "birthday",
+"ipa": "/'bə:θdei/",
+"pos": "",
+"s": "生日",
+"g": "B"
+},
+{
+"w": "black",
+"ipa": "/blæk/",
+"pos": "",
+"s": "黑色的",
+"g": "B"
+},
+{
+"w": "blackboard",
+"ipa": "/'blækbɔːd/",
+"pos": "",
+"s": "黑板",
+"g": "B"
+},
+{
+"w": "blue",
+"ipa": "/blu:/",
+"pos": "",
+"s": "蓝色的",
+"g": "B"
+},
+{
+"w": "board",
+"ipa": "/bɔ:d/",
+"pos": "",
+"s": "写字板",
+"g": "B"
+},
+{
+"w": "boat",
+"ipa": "/bəʊt/",
+"pos": "",
+"s": "小船",
+"g": "B"
+},
+{
+"w": "boating",
+"ipa": "/'bəʊtɪŋ/",
+"pos": "",
+"s": "划船",
+"g": "B"
+},
+{
+"w": "body",
+"ipa": "/'bɒdi/",
+"pos": "",
+"s": "身体",
+"g": "B"
+},
+{
+"w": "book",
+"ipa": "/bʊk/",
+"pos": "",
+"s": "书",
+"g": "B"
+},
+{
+"w": "bookstore",
+"ipa": "/bʊkstɔː/",
+"pos": "",
+"s": "书店",
+"g": "B"
+},
+{
+"w": "boots",
+"ipa": "/bu:ts/",
+"pos": "",
+"s": "靴子",
+"g": "B"
+},
+{
+"w": "bored",
+"ipa": "/bɒ:d/",
+"pos": "",
+"s": "无聊的",
+"g": "B"
+},
+{
+"w": "both",
+"ipa": "",
+"pos": "",
+"s": "两个都",
+"g": "B"
+},
+{
+"w": "bottle",
+"ipa": "/'bɒtl/",
+"pos": "",
+"s": "瓶子",
+"g": "B"
+},
+{
+"w": "bought",
+"ipa": "",
+"pos": "",
+"s": "(buy的过去式) 买",
+"g": "B"
+},
+{
+"w": "bounce",
+"ipa": "/bauns/",
+"pos": "",
+"s": "反弹",
+"g": "B"
+},
+{
+"w": "bowl",
+"ipa": "/bəʊl/",
+"pos": "",
+"s": "碗",
+"g": "B"
+},
+{
+"w": "box",
+"ipa": "/bɒks/",
+"pos": "",
+"s": "盒；箱",
+"g": "B"
+},
+{
+"w": "boy",
+"ipa": "/bɔɪ/",
+"pos": "",
+"s": "男孩",
+"g": "B"
+},
+{
+"w": "bread",
+"ipa": "/bred/",
+"pos": "",
+"s": "面包",
+"g": "B"
+},
+{
+"w": "breakfast",
+"ipa": "/'brekfəst/",
+"pos": "",
+"s": "早餐.",
+"g": "B"
+},
+{
+"w": "breath",
+"ipa": "/breθ/",
+"pos": "",
+"s": "呼吸",
+"g": "B"
+},
+{
+"w": "bridge",
+"ipa": "/brɪdʒ/",
+"pos": "",
+"s": "桥",
+"g": "B"
+},
+{
+"w": "broken",
+"ipa": "",
+"pos": "",
+"s": "破损的",
+"g": "B"
+},
+{
+"w": "brother",
+"ipa": "/'brʌðə/",
+"pos": "",
+"s": "兄；弟",
+"g": "B"
+},
+{
+"w": "brown",
+"ipa": "/braun/",
+"pos": "",
+"s": "棕色的;褐色的",
+"g": "B"
+},
+{
+"w": "building",
+"ipa": "/ˈbɪldɪŋ/",
+"pos": "",
+"s": "建筑物；房子；楼房",
+"g": "B"
+},
+{
+"w": "bunny",
+"ipa": "",
+"pos": "",
+"s": "兔子",
+"g": "B"
+},
+{
+"w": "bus",
+"ipa": "/bʌs/",
+"pos": "",
+"s": "公共汽车",
+"g": "B"
+},
+{
+"w": "businessman",
+"ipa": "/'bɪznəsmən/",
+"pos": "",
+"s": "商人；企业家",
+"g": "B"
+},
+{
+"w": "busy",
+"ipa": "/'bizi/",
+"pos": "",
+"s": "忙碌的",
+"g": "B"
+},
+{
+"w": "but",
+"ipa": "/bʌt/",
+"pos": "",
+"s": "但，但是",
+"g": "B"
+},
+{
+"w": "buy",
+"ipa": "/bai/",
+"pos": "",
+"s": "（过去式bought[bɔ:t]）买",
+"g": "B"
+},
+{
+"w": "buy—bought",
+"ipa": "/bai/",
+"pos": "",
+"s": "买",
+"g": "B"
+},
+{
+"w": "by",
+"ipa": "/baɪ/",
+"pos": "",
+"s": "（表示方式）乘",
+"g": "B"
+},
+{
+"w": "bye",
+"ipa": "/bai/",
+"pos": "",
+"s": "再见（口语）",
+"g": "B"
+},
+{
+"w": "cabbage",
+"ipa": "/'kæbidʒ/",
+"pos": "",
+"s": "洋白菜;卷心菜",
+"g": "C"
+},
+{
+"w": "cake",
+"ipa": "/keɪk/",
+"pos": "",
+"s": "蛋糕",
+"g": "C"
+},
+{
+"w": "camp",
+"ipa": "",
+"pos": "",
+"s": "野营",
+"g": "C"
+},
+{
+"w": "can",
+"ipa": "/kæn/",
+"pos": "",
+"s": "能够；可以",
+"g": "C"
+},
+{
+"w": "Canada",
+"ipa": "/'kænədə/",
+"pos": "",
+"s": "加拿大",
+"g": "C"
+},
+{
+"w": "Canadian",
+"ipa": "",
+"pos": "",
+"s": "加拿大的；加拿大人",
+"g": "C"
+},
+{
+"w": "Canberra",
+"ipa": "/ˈkænbərə/",
+"pos": "",
+"s": "堪培拉（澳大利亚首都）",
+"g": "C"
+},
+{
+"w": "candy",
+"ipa": "/'kændi/",
+"pos": "",
+"s": "糖果",
+"g": "C"
+},
+{
+"w": "canteen",
+"ipa": "/kæn'ti:n/",
+"pos": "",
+"s": "食堂",
+"g": "C"
+},
+{
+"w": "can—could",
+"ipa": "/kæn/",
+"pos": "",
+"s": "能",
+"g": "C"
+},
+{
+"w": "cap",
+"ipa": "/kæp/",
+"pos": "",
+"s": "帽子",
+"g": "C"
+},
+{
+"w": "car",
+"ipa": "/kɑː/",
+"pos": "",
+"s": "小汽车",
+"g": "C"
+},
+{
+"w": "carrot",
+"ipa": "/'kærət/",
+"pos": "",
+"s": "胡萝卜",
+"g": "C"
+},
+{
+"w": "cartoon",
+"ipa": "/kɑːˈtuːn/",
+"pos": "",
+"s": "漫画",
+"g": "C"
+},
+{
+"w": "cat",
+"ipa": "/kæt/",
+"pos": "",
+"s": "猫",
+"g": "C"
+},
+{
+"w": "catch butterflies",
+"ipa": "/kætʃ'bʌtəflaiz/",
+"pos": "",
+"s": "捉蝴蝶",
+"g": "C"
+},
+{
+"w": "cave",
+"ipa": "",
+"pos": "",
+"s": "山洞；洞穴",
+"g": "C"
+},
+{
+"w": "certainly",
+"ipa": "/'sə:tənli/",
+"pos": "",
+"s": "当然；可以",
+"g": "C"
+},
+{
+"w": "chair",
+"ipa": "/tʃeə/",
+"pos": "",
+"s": "椅子",
+"g": "C"
+},
+{
+"w": "chart",
+"ipa": "/tʃɑ:t/",
+"pos": "",
+"s": "图表",
+"g": "C"
+},
+{
+"w": "chase",
+"ipa": "",
+"pos": "",
+"s": "追赶",
+"g": "C"
+},
+{
+"w": "cheap",
+"ipa": "/tʃiːp/",
+"pos": "",
+"s": "便宜的",
+"g": "C"
+},
+{
+"w": "cheetah",
+"ipa": "",
+"pos": "",
+"s": "猎豹",
+"g": "C"
+},
+{
+"w": "chicken",
+"ipa": "/'tʃɪkɪn/",
+"pos": "",
+"s": "鸡肉",
+"g": "C"
+},
+{
+"w": "children",
+"ipa": "/'tʃɪldrən/",
+"pos": "",
+"s": "儿童 \\(child 的复数）",
+"g": "C"
+},
+{
+"w": "Children's Center",
+"ipa": "/'tʃildrəns'sentə/",
+"pos": "",
+"s": "儿童活动中心",
+"g": "C"
+},
+{
+"w": "china",
+"ipa": "/'tʃainə/",
+"pos": "n.",
+"s": "中国;瓷器",
+"g": "C"
+},
+{
+"w": "Chinese",
+"ipa": "/'tʃai'ni:z/",
+"pos": "n.",
+"s": "中文，汉语；中国人adj. 中国的，中国人的；中国话的",
+"g": "C"
+},
+{
+"w": "Chinese book",
+"ipa": "/buk/",
+"pos": "",
+"s": "语文书",
+"g": "C"
+},
+{
+"w": "chocolate",
+"ipa": "",
+"pos": "",
+"s": "巧克力",
+"g": "C"
+},
+{
+"w": "chopstick(s)",
+"ipa": "/'tʃɔpstik/",
+"pos": "",
+"s": "筷子",
+"g": "C"
+},
+{
+"w": "chopsticks",
+"ipa": "/'tʃɔpstiks/",
+"pos": "",
+"s": "筷子（复数）",
+"g": "C"
+},
+{
+"w": "Christmas",
+"ipa": "",
+"pos": "",
+"s": "圣诞节",
+"g": "C"
+},
+{
+"w": "cinema",
+"ipa": "/ˈsɪnɪmə/",
+"pos": "",
+"s": "电影院",
+"g": "C"
+},
+{
+"w": "city",
+"ipa": "/'siti/",
+"pos": "n.",
+"s": "城市",
+"g": "C"
+},
+{
+"w": "class",
+"ipa": "/klɑ:s/",
+"pos": "",
+"s": "班级；课程",
+"g": "C"
+},
+{
+"w": "classmate",
+"ipa": "/'klɑ:smeit/",
+"pos": "",
+"s": "同学",
+"g": "C"
+},
+{
+"w": "classroom",
+"ipa": "/'klɑːsruːm/",
+"pos": "",
+"s": "教室",
+"g": "C"
+},
+{
+"w": "clean",
+"ipa": "/kli:n/",
+"pos": "adj.",
+"s": "清洁的，干净的；vi.打扫，清扫",
+"g": "C"
+},
+{
+"w": "clean my room",
+"ipa": "",
+"pos": "",
+"s": "打扫我的房间",
+"g": "C"
+},
+{
+"w": "clean the bedroom",
+"ipa": "/kli:n ði: 'bedrum/",
+"pos": "",
+"s": "打扫卧室",
+"g": "C"
+},
+{
+"w": "clean the room",
+"ipa": "/kli:nrum'mju:zik/",
+"pos": "",
+"s": "打扫房间",
+"g": "C"
+},
+{
+"w": "cleaned",
+"ipa": "",
+"pos": "",
+"s": "打扫",
+"g": "C"
+},
+{
+"w": "cleaner",
+"ipa": "/'kli:nə/",
+"pos": "n.",
+"s": "清洁工",
+"g": "C"
+},
+{
+"w": "clean—cleaned",
+"ipa": "/kli:n/",
+"pos": "",
+"s": "打扫",
+"g": "C"
+},
+{
+"w": "clever",
+"ipa": "/ˈklevə(r)/",
+"pos": "",
+"s": "聪明的；聪颖的",
+"g": "C"
+},
+{
+"w": "climb",
+"ipa": "/klaim/",
+"pos": "",
+"s": "（过去式climbed）爬",
+"g": "C"
+},
+{
+"w": "climber",
+"ipa": "/'klaimə/",
+"pos": "",
+"s": "攀登者",
+"g": "C"
+},
+{
+"w": "climbing",
+"ipa": "",
+"pos": "",
+"s": "（正在）攀登；攀爬",
+"g": "C"
+},
+{
+"w": "climbing mountains",
+"ipa": "/'klaimiŋ'mauntins/",
+"pos": "",
+"s": "爬山",
+"g": "C"
+},
+{
+"w": "clock",
+"ipa": "/klɒk/",
+"pos": "",
+"s": "时钟；钟",
+"g": "C"
+},
+{
+"w": "close",
+"ipa": "/kləuz/",
+"pos": "",
+"s": "关上",
+"g": "C"
+},
+{
+"w": "closet",
+"ipa": "/'klɔzit/",
+"pos": "n.",
+"s": "壁橱,衣橱",
+"g": "C"
+},
+{
+"w": "clothes",
+"ipa": "/kləʊðz/",
+"pos": "",
+"s": "衣服",
+"g": "C"
+},
+{
+"w": "cloud",
+"ipa": "/klaud/",
+"pos": "",
+"s": "云；云彩",
+"g": "C"
+},
+{
+"w": "cloudy",
+"ipa": "/'klaʊdi/",
+"pos": "",
+"s": "阴天的",
+"g": "C"
+},
+{
+"w": "club",
+"ipa": "/klʌb/",
+"pos": "",
+"s": "俱乐部",
+"g": "C"
+},
+{
+"w": "cm(centimeter)",
+"ipa": "",
+"pos": "",
+"s": "厘米",
+"g": "C"
+},
+{
+"w": "coach",
+"ipa": "/kəʊtʃ/",
+"pos": "",
+"s": "教练",
+"g": "C"
+},
+{
+"w": "coat",
+"ipa": "/kəʊt/",
+"pos": "",
+"s": "外套；大衣",
+"g": "C"
+},
+{
+"w": "cock",
+"ipa": "/kɔk/",
+"pos": "",
+"s": "公鸡",
+"g": "C"
+},
+{
+"w": "coffee",
+"ipa": "/'kɔfi/",
+"pos": "",
+"s": "咖啡",
+"g": "C"
+},
+{
+"w": "Coke",
+"ipa": "/kəuk/",
+"pos": "",
+"s": "可乐",
+"g": "C"
+},
+{
+"w": "cold",
+"ipa": "/kəuld/",
+"pos": "",
+"s": "寒冷的",
+"g": "C"
+},
+{
+"w": "collect leaves",
+"ipa": "/kə'lektli:vz/",
+"pos": "",
+"s": "收集树叶",
+"g": "C"
+},
+{
+"w": "collect stamps",
+"ipa": "/kə'lektstæmp/",
+"pos": "",
+"s": "集邮",
+"g": "C"
+},
+{
+"w": "collecting stamps",
+"ipa": "/kə'lektiŋ/",
+"pos": "",
+"s": "集邮",
+"g": "C"
+},
+{
+"w": "colour",
+"ipa": "/'kʌlə/",
+"pos": "",
+"s": "颜色",
+"g": "C"
+},
+{
+"w": "colourful",
+"ipa": "/'kʌləful/",
+"pos": "",
+"s": "色彩丰富的",
+"g": "C"
+},
+{
+"w": "come",
+"ipa": "",
+"pos": "",
+"s": "快；加油",
+"g": "C"
+},
+{
+"w": "come from",
+"ipa": "/kʌmfrɔm/",
+"pos": "",
+"s": "来自…….;从………来",
+"g": "C"
+},
+{
+"w": "Come in",
+"ipa": "/kʌm in/",
+"pos": "",
+"s": "进来",
+"g": "C"
+},
+{
+"w": "come on",
+"ipa": "/kʌmɔn/",
+"pos": "",
+"s": "用于祈使句以鼓励某人做某事，尤指促其加速或努力试一试",
+"g": "C"
+},
+{
+"w": "come out",
+"ipa": "/kʌmaut/",
+"pos": "",
+"s": "露出;出现",
+"g": "C"
+},
+{
+"w": "comic",
+"ipa": "/ˈkɒmɪk/",
+"pos": "",
+"s": "滑稽的",
+"g": "C"
+},
+{
+"w": "comic book",
+"ipa": "/'kɔmikbuk/",
+"pos": "",
+"s": "漫画书",
+"g": "C"
+},
+{
+"w": "company",
+"ipa": "/'kɔmpəni/",
+"pos": "",
+"s": "公司",
+"g": "C"
+},
+{
+"w": "computer",
+"ipa": "/kəmˈpjuːtə/",
+"pos": "",
+"s": "计算机；电脑",
+"g": "C"
+},
+{
+"w": "computer game",
+"ipa": "/kəm'pju:tə ɡeim/",
+"pos": "",
+"s": "电脑游戏",
+"g": "C"
+},
+{
+"w": "computer room",
+"ipa": "",
+"pos": "",
+"s": "计算机教室",
+"g": "C"
+},
+{
+"w": "contest",
+"ipa": "",
+"pos": "",
+"s": "比赛；竞赛",
+"g": "C"
+},
+{
+"w": "cook",
+"ipa": "/kuk/",
+"pos": "",
+"s": "（过去式cooked）做（饭）",
+"g": "C"
+},
+{
+"w": "cook dinner",
+"ipa": "/kuk'dinə/",
+"pos": "",
+"s": "做饭",
+"g": "C"
+},
+{
+"w": "cook the meals",
+"ipa": "/kuk ði: mi:ls/",
+"pos": "",
+"s": "做饭",
+"g": "C"
+},
+{
+"w": "cooking",
+"ipa": "/ˈkʊkɪŋ/",
+"pos": "",
+"s": "烹饪；烹调",
+"g": "C"
+},
+{
+"w": "cool",
+"ipa": "/ku:/",
+"pos": "",
+"s": "订好的；酷的",
+"g": "C"
+},
+{
+"w": "could",
+"ipa": "",
+"pos": "",
+"s": "(can的过去式) 能",
+"g": "C"
+},
+{
+"w": "count",
+"ipa": "/ kaunt/",
+"pos": "",
+"s": "数数",
+"g": "C"
+},
+{
+"w": "count insects",
+"ipa": "/kaunt'insekts/",
+"pos": "",
+"s": "数昆虫",
+"g": "C"
+},
+{
+"w": "count to ten",
+"ipa": "",
+"pos": "",
+"s": "数到十",
+"g": "C"
+},
+{
+"w": "country",
+"ipa": "/ˈkʌntri/",
+"pos": "",
+"s": "国家",
+"g": "C"
+},
+{
+"w": "countryside",
+"ipa": "",
+"pos": "",
+"s": "乡村",
+"g": "C"
+},
+{
+"w": "cousin",
+"ipa": "/'kʌzn/",
+"pos": "",
+"s": "同辈表亲 \\(堂亲\\)",
+"g": "C"
+},
+{
+"w": "cow",
+"ipa": "/kaʊ/",
+"pos": "",
+"s": "母牛；奶牛",
+"g": "C"
+},
+{
+"w": "crayon",
+"ipa": "/'kreɪən/",
+"pos": "",
+"s": "蜡笔",
+"g": "C"
+},
+{
+"w": "crossing",
+"ipa": "/ˈkrɒsɪŋ/",
+"pos": "",
+"s": "十字路口",
+"g": "C"
+},
+{
+"w": "cucumber",
+"ipa": "/'kju:kʌmbə/",
+"pos": "",
+"s": "黄瓜",
+"g": "C"
+},
+{
+"w": "curtain",
+"ipa": "/'kə:tn/",
+"pos": "n.",
+"s": "窗帘",
+"g": "C"
+},
+{
+"w": "cute",
+"ipa": "/kju:t/",
+"pos": "",
+"s": "逗人喜爱的",
+"g": "C"
+},
+{
+"w": "cycling",
+"ipa": "",
+"pos": "",
+"s": "骑自行车运动",
+"g": "C"
+},
+{
+"w": "dad",
+"ipa": "/dæd/",
+"pos": "",
+"s": "爸爸（口语）",
+"g": "D"
+},
+{
+"w": "dance",
+"ipa": "/'dɑ:ns/",
+"pos": "",
+"s": "（过去式danced）跳舞",
+"g": "D"
+},
+{
+"w": "dancing",
+"ipa": "",
+"pos": "",
+"s": "跳舞；舞蹈",
+"g": "D"
+},
+{
+"w": "date",
+"ipa": "/deit/",
+"pos": "",
+"s": "日期",
+"g": "D"
+},
+{
+"w": "day",
+"ipa": "/deɪ/",
+"pos": "",
+"s": "一天；一日",
+"g": "D"
+},
+{
+"w": "Dear",
+"ipa": "/dɪə/",
+"pos": "",
+"s": "亲爱的",
+"g": "D"
+},
+{
+"w": "December",
+"ipa": "/di'sembə/",
+"pos": "",
+"s": "十二月",
+"g": "D"
+},
+{
+"w": "deep",
+"ipa": "/diːp/",
+"pos": "",
+"s": "深的",
+"g": "D"
+},
+{
+"w": "deer",
+"ipa": "/diə/",
+"pos": "",
+"s": "鹿",
+"g": "D"
+},
+{
+"w": "degree",
+"ipa": "/dɪˈɡriː/",
+"pos": "",
+"s": "度",
+"g": "D"
+},
+{
+"w": "delicious",
+"ipa": "/dɪ'lɪʃəs/",
+"pos": "",
+"s": "美味的；可口的",
+"g": "D"
+},
+{
+"w": "design",
+"ipa": "/di'zain/",
+"pos": "",
+"s": "设计",
+"g": "D"
+},
+{
+"w": "desk",
+"ipa": "/desk/",
+"pos": "",
+"s": "书桌",
+"g": "D"
+},
+{
+"w": "diary",
+"ipa": "",
+"pos": "",
+"s": "日记",
+"g": "D"
+},
+{
+"w": "dictionary",
+"ipa": "/'dikʃənəri/",
+"pos": "",
+"s": "词典;字典",
+"g": "D"
+},
+{
+"w": "difference",
+"ipa": "/'difərəns/",
+"pos": "",
+"s": "不同;区别",
+"g": "D"
+},
+{
+"w": "different",
+"ipa": "/'difərənt/",
+"pos": "",
+"s": "不同的",
+"g": "D"
+},
+{
+"w": "dining",
+"ipa": "",
+"pos": "",
+"s": "hall 饭厅",
+"g": "D"
+},
+{
+"w": "dining hall",
+"ipa": "",
+"pos": "",
+"s": "餐厅",
+"g": "D"
+},
+{
+"w": "dinner",
+"ipa": "/'dinə/",
+"pos": "",
+"s": "晚餐；正餐",
+"g": "D"
+},
+{
+"w": "dinosaur",
+"ipa": "",
+"pos": "",
+"s": "恐龙",
+"g": "D"
+},
+{
+"w": "dirty",
+"ipa": "/'dɜːti/",
+"pos": "",
+"s": "肮脏的",
+"g": "D"
+},
+{
+"w": "dive",
+"ipa": "/daiv/",
+"pos": "",
+"s": "跳水",
+"g": "D"
+},
+{
+"w": "diving",
+"ipa": "/'daiviŋ/",
+"pos": "",
+"s": "跳水",
+"g": "D"
+},
+{
+"w": "do",
+"ipa": "/du/",
+"pos": "",
+"s": "（过去式did [did]）vt. 做；完成；进行.",
+"g": "D"
+},
+{
+"w": "do an experiment",
+"ipa": "/æniks'periməntli:vz/",
+"pos": "",
+"s": "做实验",
+"g": "D"
+},
+{
+"w": "do homework",
+"ipa": "/dəu 'həumwə:k/",
+"pos": "",
+"s": "做作业",
+"g": "D"
+},
+{
+"w": "do housework",
+"ipa": "/du 'haʊswə:k/",
+"pos": "",
+"s": "做家务",
+"g": "D"
+},
+{
+"w": "do kung fu",
+"ipa": "/duː ˌkʌŋ ˈfuː/",
+"pos": "",
+"s": "练武术",
+"g": "D"
+},
+{
+"w": "do morning exercise",
+"ipa": "",
+"pos": "",
+"s": "做早操",
+"g": "D"
+},
+{
+"w": "do morning exercises",
+"ipa": "",
+"pos": "",
+"s": "做早操",
+"g": "D"
+},
+{
+"w": "do the dishes",
+"ipa": "/'diʃiz/",
+"pos": "",
+"s": "洗餐具",
+"g": "D"
+},
+{
+"w": "doctor",
+"ipa": "/'dɒktə/",
+"pos": "",
+"s": "医生",
+"g": "D"
+},
+{
+"w": "dog",
+"ipa": "/dɒg/",
+"pos": "",
+"s": "狗",
+"g": "D"
+},
+{
+"w": "doing",
+"ipa": "",
+"pos": "",
+"s": "morning exercises 正在晨练",
+"g": "D"
+},
+{
+"w": "doing morning exercises",
+"ipa": "",
+"pos": "",
+"s": "（正在）做早操",
+"g": "D"
+},
+{
+"w": "doll",
+"ipa": "/dɔl/",
+"pos": "",
+"s": "玩具娃娃",
+"g": "D"
+},
+{
+"w": "dollar",
+"ipa": "/'dɒlə/",
+"pos": "",
+"s": "元 \\(美元等）",
+"g": "D"
+},
+{
+"w": "donkey",
+"ipa": "/'dɔŋki/",
+"pos": "",
+"s": "驴子",
+"g": "D"
+},
+{
+"w": "door",
+"ipa": "/dɔː/",
+"pos": "",
+"s": "门",
+"g": "D"
+},
+{
+"w": "down",
+"ipa": "/daʊn/",
+"pos": "",
+"s": "减少；降低",
+"g": "D"
+},
+{
+"w": "drank",
+"ipa": "",
+"pos": "",
+"s": "喝",
+"g": "D"
+},
+{
+"w": "draw",
+"ipa": "/drɔ:/",
+"pos": "",
+"s": "画画",
+"g": "D"
+},
+{
+"w": "draw cartoon",
+"ipa": "",
+"pos": "",
+"s": "画漫画",
+"g": "D"
+},
+{
+"w": "draw cartoons",
+"ipa": "/drɔː/",
+"pos": "",
+"s": "画漫画",
+"g": "D"
+},
+{
+"w": "draw pictures",
+"ipa": "/drɔ:'piktʃəs/",
+"pos": "",
+"s": "画画",
+"g": "D"
+},
+{
+"w": "dream",
+"ipa": "",
+"pos": "",
+"s": "梦",
+"g": "D"
+},
+{
+"w": "dress",
+"ipa": "/dres/",
+"pos": "",
+"s": "连衣裙",
+"g": "D"
+},
+{
+"w": "drink",
+"ipa": "/drɪŋk/",
+"pos": "",
+"s": "喝；饮",
+"g": "D"
+},
+{
+"w": "drink ware",
+"ipa": "/driŋkwεə/",
+"pos": "",
+"s": "喝水",
+"g": "D"
+},
+{
+"w": "drink water",
+"ipa": "/driŋk'wɔ:tə/",
+"pos": "",
+"s": "喝水",
+"g": "D"
+},
+{
+"w": "drinking",
+"ipa": "",
+"pos": "",
+"s": "（正在）喝",
+"g": "D"
+},
+{
+"w": "drink—drank",
+"ipa": "/drɪŋk/",
+"pos": "",
+"s": "喝",
+"g": "D"
+},
+{
+"w": "drive",
+"ipa": "/draiv/",
+"pos": "",
+"s": "驾驶",
+"g": "D"
+},
+{
+"w": "driver",
+"ipa": "/'draivə/",
+"pos": "",
+"s": "驾驶员",
+"g": "D"
+},
+{
+"w": "drop",
+"ipa": "/drɔp/",
+"pos": "",
+"s": "(液体的)珠；滴",
+"g": "D"
+},
+{
+"w": "duck",
+"ipa": "/dʌk/",
+"pos": "",
+"s": "鸭子",
+"g": "D"
+},
+{
+"w": "e-card",
+"ipa": "/ekɑ:d/",
+"pos": "",
+"s": "电子卡片",
+"g": "E"
+},
+{
+"w": "each",
+"ipa": "/i:tʃ/",
+"pos": "",
+"s": "各自；每个",
+"g": "E"
+},
+{
+"w": "each other",
+"ipa": "",
+"pos": "",
+"s": "相互",
+"g": "E"
+},
+{
+"w": "ear",
+"ipa": "/ɪə/",
+"pos": "",
+"s": "耳朵",
+"g": "E"
+},
+{
+"w": "early",
+"ipa": "/ˈɜːli/",
+"pos": "",
+"s": "早到的",
+"g": "E"
+},
+{
+"w": "east",
+"ipa": "/i:st/",
+"pos": "",
+"s": "东",
+"g": "E"
+},
+{
+"w": "Easter",
+"ipa": "",
+"pos": "",
+"s": "party 复活节派对",
+"g": "E"
+},
+{
+"w": "easy",
+"ipa": "/'i:zi/",
+"pos": "",
+"s": "简单的",
+"g": "E"
+},
+{
+"w": "eat",
+"ipa": "/i:t/",
+"pos": "",
+"s": "（过去式ate['ɑ:ti]）吃",
+"g": "E"
+},
+{
+"w": "eat breakfast",
+"ipa": "",
+"pos": "",
+"s": "吃早饭",
+"g": "E"
+},
+{
+"w": "eat dinner",
+"ipa": "/'dinə/",
+"pos": "",
+"s": "吃晚饭",
+"g": "E"
+},
+{
+"w": "eating",
+"ipa": "",
+"pos": "",
+"s": "breakfast 正在吃早饭",
+"g": "E"
+},
+{
+"w": "eating lunch",
+"ipa": "",
+"pos": "",
+"s": "（正在）吃午饭",
+"g": "E"
+},
+{
+"w": "eat—ate",
+"ipa": "/i:t/",
+"pos": "",
+"s": "吃",
+"g": "E"
+},
+{
+"w": "egg",
+"ipa": "/eɡ/",
+"pos": "",
+"s": "鸡蛋",
+"g": "E"
+},
+{
+"w": "eggplant",
+"ipa": "/'egplænt/",
+"pos": "n",
+"s": "茄子",
+"g": "E"
+},
+{
+"w": "eight",
+"ipa": "/eɪt/",
+"pos": "",
+"s": "八",
+"g": "E"
+},
+{
+"w": "eighteen",
+"ipa": "/'eɪ'tiːn/",
+"pos": "",
+"s": "十八",
+"g": "E"
+},
+{
+"w": "eighth",
+"ipa": "/eiθ/",
+"pos": "",
+"s": "第八",
+"g": "E"
+},
+{
+"w": "eighty",
+"ipa": "",
+"pos": "",
+"s": "八十",
+"g": "E"
+},
+{
+"w": "either",
+"ipa": "/'aiðə/",
+"pos": "",
+"s": "也",
+"g": "E"
+},
+{
+"w": "elephant",
+"ipa": "/'elɪfənt/",
+"pos": "",
+"s": "大象",
+"g": "E"
+},
+{
+"w": "eleven",
+"ipa": "/i'levən/",
+"pos": "",
+"s": "十一 .",
+"g": "E"
+},
+{
+"w": "eleventh",
+"ipa": "",
+"pos": "",
+"s": "\\(11th\\) 第十一",
+"g": "E"
+},
+{
+"w": "else",
+"ipa": "/els/",
+"pos": "",
+"s": "其他；另外",
+"g": "E"
+},
+{
+"w": "email",
+"ipa": "/'iːmeɪl/",
+"pos": "",
+"s": "电子邮件",
+"g": "E"
+},
+{
+"w": "empty the trash",
+"ipa": "/'emptiði:træʃ/",
+"pos": "",
+"s": "倒垃圾",
+"g": "E"
+},
+{
+"w": "end",
+"ipa": "/end/",
+"pos": "n.",
+"s": "1.最后部分, 末尾 2.端, 尽头, 梢 3.终止, 结局",
+"g": "E"
+},
+{
+"w": "end table",
+"ipa": "/end'teibl/",
+"pos": "",
+"s": "床头柜",
+"g": "E"
+},
+{
+"w": "engineer",
+"ipa": "/,endʒi'niə/",
+"pos": "",
+"s": "工程师",
+"g": "E"
+},
+{
+"w": "England",
+"ipa": "/'iŋglənd/",
+"pos": "n.",
+"s": "英格兰;英国",
+"g": "E"
+},
+{
+"w": "English",
+"ipa": "/'iŋgliʃ/",
+"pos": "",
+"s": "a.英国的；英国人的；英语的n.英语；英国人",
+"g": "E"
+},
+{
+"w": "English book",
+"ipa": "/ˈɪŋglɪʃ/",
+"pos": "",
+"s": "英语书",
+"g": "E"
+},
+{
+"w": "English class",
+"ipa": "",
+"pos": "",
+"s": "英语课",
+"g": "E"
+},
+{
+"w": "English songs",
+"ipa": "",
+"pos": "",
+"s": "唱英文歌曲",
+"g": "E"
+},
+{
+"w": "enjoy",
+"ipa": "/in'dʒɔi/",
+"pos": "",
+"s": "从…获得乐趣；享受",
+"g": "E"
+},
+{
+"w": "eraser",
+"ipa": "/ɪ'reɪzə/",
+"pos": "",
+"s": "橡皮",
+"g": "E"
+},
+{
+"w": "even",
+"ipa": "/'i:vən/",
+"pos": "",
+"s": "甚至",
+"g": "E"
+},
+{
+"w": "evening",
+"ipa": "/ˈiːvnɪŋ/",
+"pos": "",
+"s": "晚上；傍晚",
+"g": "E"
+},
+{
+"w": "every",
+"ipa": "/'evri/",
+"pos": "",
+"s": "每一个；每个",
+"g": "E"
+},
+{
+"w": "everyone",
+"ipa": "/'evriwʌn/",
+"pos": "",
+"s": "每个人",
+"g": "E"
+},
+{
+"w": "everywhere",
+"ipa": "/'evrihweə/",
+"pos": "",
+"s": "处处；到处",
+"g": "E"
+},
+{
+"w": "excited",
+"ipa": "/ik'saitid/",
+"pos": "",
+"s": "兴奋的激动的",
+"g": "E"
+},
+{
+"w": "excuse me",
+"ipa": "/iks'kju:zmi:/",
+"pos": "",
+"s": "对不起",
+"g": "E"
+},
+{
+"w": "exercise",
+"ipa": "",
+"pos": "",
+"s": "活动；运动",
+"g": "E"
+},
+{
+"w": "exhibition",
+"ipa": "",
+"pos": "",
+"s": "展览",
+"g": "E"
+},
+{
+"w": "expensive",
+"ipa": "/ɪks'pensɪv/",
+"pos": "",
+"s": "昂贵的",
+"g": "E"
+},
+{
+"w": "eye",
+"ipa": "/aɪ/",
+"pos": "",
+"s": "眼睛",
+"g": "E"
+},
+{
+"w": "face",
+"ipa": "/feɪs/",
+"pos": "",
+"s": "脸",
+"g": "F"
+},
+{
+"w": "factory",
+"ipa": "/ˈfæktəri/",
+"pos": "",
+"s": "工厂",
+"g": "F"
+},
+{
+"w": "fail",
+"ipa": "/feil/",
+"pos": "",
+"s": "不及格；失败",
+"g": "F"
+},
+{
+"w": "fall",
+"ipa": "/fɔ:l/",
+"pos": "",
+"s": "落下;跌落;降落;掉下",
+"g": "F"
+},
+{
+"w": "fall—fell",
+"ipa": "/fɔ:l/",
+"pos": "",
+"s": "摔倒",
+"g": "F"
+},
+{
+"w": "family",
+"ipa": "/'fæmɪli/",
+"pos": "",
+"s": "家；家庭",
+"g": "F"
+},
+{
+"w": "fan",
+"ipa": "/fæn/",
+"pos": "",
+"s": "扇子；电扇",
+"g": "F"
+},
+{
+"w": "far",
+"ipa": "/fɑː/",
+"pos": "",
+"s": "较远的",
+"g": "F"
+},
+{
+"w": "farm",
+"ipa": "/fɑ:m/",
+"pos": "n.",
+"s": "农场,农田",
+"g": "F"
+},
+{
+"w": "farmer",
+"ipa": "/'fɑ:mə/",
+"pos": "n.",
+"s": "农夫，农民",
+"g": "F"
+},
+{
+"w": "fast",
+"ipa": "/fɑːst/",
+"pos": "",
+"s": "快的",
+"g": "F"
+},
+{
+"w": "faster",
+"ipa": "",
+"pos": "",
+"s": "更快的",
+"g": "F"
+},
+{
+"w": "fast—faster",
+"ipa": "/fɑːst/",
+"pos": "",
+"s": "更快的",
+"g": "F"
+},
+{
+"w": "fat",
+"ipa": "/fæt/",
+"pos": "",
+"s": "胖的；肥的",
+"g": "F"
+},
+{
+"w": "father",
+"ipa": "/'fɑːðə/",
+"pos": "",
+"s": "父亲；爸爸",
+"g": "F"
+},
+{
+"w": "favorite",
+"ipa": "",
+"pos": "",
+"s": "特别喜爱的",
+"g": "F"
+},
+{
+"w": "favourite",
+"ipa": "/'feivərit/",
+"pos": "",
+"s": "a.特别喜爱的;最喜爱的",
+"g": "F"
+},
+{
+"w": "feature",
+"ipa": "/ˈfiːtʃə/",
+"pos": "",
+"s": "特点",
+"g": "F"
+},
+{
+"w": "February",
+"ipa": "/'februəri/",
+"pos": "",
+"s": "二月",
+"g": "F"
+},
+{
+"w": "feed",
+"ipa": "/fi:d/",
+"pos": "",
+"s": "喂养",
+"g": "F"
+},
+{
+"w": "feel",
+"ipa": "/'fi:l/",
+"pos": "",
+"s": "感觉到；感受到",
+"g": "F"
+},
+{
+"w": "feel—felt",
+"ipa": "/'fi:l/",
+"pos": "",
+"s": "感觉",
+"g": "F"
+},
+{
+"w": "feet",
+"ipa": "/fi:t/",
+"pos": "",
+"s": "脚（复数）",
+"g": "F"
+},
+{
+"w": "fell",
+"ipa": "",
+"pos": "",
+"s": "(fall的过去式) 摔倒",
+"g": "F"
+},
+{
+"w": "felt",
+"ipa": "",
+"pos": "",
+"s": "(feel的过去式) 感觉",
+"g": "F"
+},
+{
+"w": "ferry",
+"ipa": "/ˈferi/",
+"pos": "",
+"s": "轮渡",
+"g": "F"
+},
+{
+"w": "festival",
+"ipa": "",
+"pos": "",
+"s": "节日",
+"g": "F"
+},
+{
+"w": "few",
+"ipa": "",
+"pos": "",
+"s": "不多；很少",
+"g": "F"
+},
+{
+"w": "fifteen",
+"ipa": "/'fɪf'tiːn/",
+"pos": "",
+"s": "十五",
+"g": "F"
+},
+{
+"w": "fifth",
+"ipa": "/fifθ/",
+"pos": "",
+"s": "第五；五分之一",
+"g": "F"
+},
+{
+"w": "fifth (5th)",
+"ipa": "",
+"pos": "",
+"s": "第五的",
+"g": "F"
+},
+{
+"w": "fifty",
+"ipa": "/'fifti/",
+"pos": "",
+"s": "五十",
+"g": "F"
+},
+{
+"w": "fight",
+"ipa": "/fait/",
+"pos": "",
+"s": "打架",
+"g": "F"
+},
+{
+"w": "film",
+"ipa": "/fɪlm/",
+"pos": "",
+"s": "电影",
+"g": "F"
+},
+{
+"w": "find",
+"ipa": "/faind/",
+"pos": "",
+"s": "寻找；找到",
+"g": "F"
+},
+{
+"w": "fine",
+"ipa": "/fain/",
+"pos": "",
+"s": "好的",
+"g": "F"
+},
+{
+"w": "finger",
+"ipa": "/'fiŋɡə/",
+"pos": "",
+"s": "手指",
+"g": "F"
+},
+{
+"w": "finish",
+"ipa": "/'fɪnɪʃ/",
+"pos": "",
+"s": "完成；做好",
+"g": "F"
+},
+{
+"w": "first",
+"ipa": "/fə:st/",
+"pos": "",
+"s": "第一",
+"g": "F"
+},
+{
+"w": "first (1st)",
+"ipa": "",
+"pos": "",
+"s": "第一的",
+"g": "F"
+},
+{
+"w": "first floor",
+"ipa": "",
+"pos": "",
+"s": "一楼",
+"g": "F"
+},
+{
+"w": "fish",
+"ipa": "/fiʃ/",
+"pos": "",
+"s": "鱼 .",
+"g": "F"
+},
+{
+"w": "fisherman",
+"ipa": "/ˈfɪʃəmən/",
+"pos": "",
+"s": "渔民",
+"g": "F"
+},
+{
+"w": "five",
+"ipa": "/faɪv/",
+"pos": "",
+"s": "五",
+"g": "F"
+},
+{
+"w": "fixed",
+"ipa": "",
+"pos": "",
+"s": "修理",
+"g": "F"
+},
+{
+"w": "fix—fixed",
+"ipa": "/fɪks/",
+"pos": "",
+"s": "修理",
+"g": "F"
+},
+{
+"w": "flat",
+"ipa": "/flæt/",
+"pos": "",
+"s": "公寓",
+"g": "F"
+},
+{
+"w": "floor",
+"ipa": "/flɔː/",
+"pos": "",
+"s": "地板",
+"g": "F"
+},
+{
+"w": "flower",
+"ipa": "/'flaʊə/",
+"pos": "",
+"s": "花；花朵",
+"g": "F"
+},
+{
+"w": "flu",
+"ipa": "/flu:/",
+"pos": "",
+"s": "流感",
+"g": "F"
+},
+{
+"w": "fly",
+"ipa": "/flai/",
+"pos": "",
+"s": "（过去式flew [flu:]）飞",
+"g": "F"
+},
+{
+"w": "Fly kites",
+"ipa": "/flai/",
+"pos": "",
+"s": "放风筝",
+"g": "F"
+},
+{
+"w": "follow",
+"ipa": "/ˈfɒləʊ/",
+"pos": "",
+"s": "跟着",
+"g": "F"
+},
+{
+"w": "food",
+"ipa": "/fuːd/",
+"pos": "",
+"s": "食物",
+"g": "F"
+},
+{
+"w": "fool",
+"ipa": "",
+"pos": "",
+"s": "蠢人；傻瓜",
+"g": "F"
+},
+{
+"w": "foot",
+"ipa": "/fut/",
+"pos": "",
+"s": "脚,足",
+"g": "F"
+},
+{
+"w": "football",
+"ipa": "/'futbɔ:l/",
+"pos": "",
+"s": "足球",
+"g": "F"
+},
+{
+"w": "football player",
+"ipa": "/ˈfʊtbɔːl/",
+"pos": "",
+"s": "足球运动员",
+"g": "F"
+},
+{
+"w": "for",
+"ipa": "/fɔ:/",
+"pos": "",
+"s": "为；给",
+"g": "F"
+},
+{
+"w": "forest",
+"ipa": "/'fɒrɪst/",
+"pos": "",
+"s": "森林；林区",
+"g": "F"
+},
+{
+"w": "fork",
+"ipa": "/fɔːk/",
+"pos": "",
+"s": "餐叉",
+"g": "F"
+},
+{
+"w": "forty",
+"ipa": "/'fɔːti/",
+"pos": "",
+"s": "四十",
+"g": "F"
+},
+{
+"w": "forty-one",
+"ipa": "/ˌfɔːrti ˈwʌn/",
+"pos": "",
+"s": "四十一",
+"g": "F"
+},
+{
+"w": "four",
+"ipa": "/fɔː/",
+"pos": "",
+"s": "四",
+"g": "F"
+},
+{
+"w": "fourteen",
+"ipa": "/'fɔː'tiːn/",
+"pos": "",
+"s": "十四",
+"g": "F"
+},
+{
+"w": "fourth",
+"ipa": "/fɔ:θ/",
+"pos": "",
+"s": "第四",
+"g": "F"
+},
+{
+"w": "fourth (4th)",
+"ipa": "",
+"pos": "",
+"s": "第四的",
+"g": "F"
+},
+{
+"w": "fox",
+"ipa": "/fɔks/",
+"pos": "",
+"s": "狐狸",
+"g": "F"
+},
+{
+"w": "French",
+"ipa": "/frentʃ/",
+"pos": "",
+"s": "法国的；法国人；法语；法语的",
+"g": "F"
+},
+{
+"w": "French fries",
+"ipa": "/fraiz/",
+"pos": "",
+"s": "炸薯条",
+"g": "F"
+},
+{
+"w": "fresh",
+"ipa": "/freʃ/",
+"pos": "",
+"s": "新鲜的；刚摘的",
+"g": "F"
+},
+{
+"w": "Friday",
+"ipa": "/'fraɪdi/",
+"pos": "",
+"s": "星期五",
+"g": "F"
+},
+{
+"w": "fridge",
+"ipa": "/frɪdʒ/",
+"pos": "",
+"s": "冰箱",
+"g": "F"
+},
+{
+"w": "friend",
+"ipa": "/frend/",
+"pos": "",
+"s": "朋友",
+"g": "F"
+},
+{
+"w": "friendly",
+"ipa": "/'frendli/",
+"pos": "",
+"s": "友好的",
+"g": "F"
+},
+{
+"w": "from",
+"ipa": "/frɔm/",
+"pos": "",
+"s": "从;来自.",
+"g": "F"
+},
+{
+"w": "front",
+"ipa": "/frʌnt/",
+"pos": "",
+"s": "前面，正面",
+"g": "F"
+},
+{
+"w": "fruit",
+"ipa": "/fruːt/",
+"pos": "",
+"s": "水果",
+"g": "F"
+},
+{
+"w": "fun",
+"ipa": "/fʌn/",
+"pos": "n.",
+"s": "玩笑;有趣的事",
+"g": "F"
+},
+{
+"w": "funnier",
+"ipa": "",
+"pos": "",
+"s": "更滑稽的",
+"g": "F"
+},
+{
+"w": "funny",
+"ipa": "/'fʌni/",
+"pos": "",
+"s": "滑稽的；好笑的",
+"g": "F"
+},
+{
+"w": "fur",
+"ipa": "",
+"pos": "",
+"s": "浓密的软毛",
+"g": "F"
+},
+{
+"w": "fɑ:ðə ] (",
+"ipa": "",
+"pos": "",
+"s": "外)祖父",
+"g": "F"
+},
+{
+"w": "game",
+"ipa": "/geim/",
+"pos": "",
+"s": "比赛；游戏",
+"g": "G"
+},
+{
+"w": "garden",
+"ipa": "/'gɑːdn/",
+"pos": "",
+"s": "花园；菜园",
+"g": "G"
+},
+{
+"w": "gave",
+"ipa": "/ɡeɪv/",
+"pos": "",
+"s": "（give 的过去式）提供；交给",
+"g": "G"
+},
+{
+"w": "Germany",
+"ipa": "/ˈdʒɜːməni/",
+"pos": "",
+"s": "德国",
+"g": "G"
+},
+{
+"w": "get",
+"ipa": "/get/",
+"pos": "",
+"s": "(过去式got [gɔt])到达",
+"g": "G"
+},
+{
+"w": "get off",
+"ipa": "/getɔ:f/",
+"pos": "",
+"s": "下车",
+"g": "G"
+},
+{
+"w": "get to",
+"ipa": "/gettu:/",
+"pos": "",
+"s": "到达",
+"g": "G"
+},
+{
+"w": "get together",
+"ipa": "",
+"pos": "",
+"s": "聚会",
+"g": "G"
+},
+{
+"w": "get up",
+"ipa": "/'getʌp/",
+"pos": "",
+"s": "起床",
+"g": "G"
+},
+{
+"w": "gift",
+"ipa": "/ɡift/",
+"pos": "",
+"s": "礼物",
+"g": "G"
+},
+{
+"w": "giraffe",
+"ipa": "/dʒɪˈrɑːf/",
+"pos": "",
+"s": "长颈鹿",
+"g": "G"
+},
+{
+"w": "girl",
+"ipa": "/gɜːl/",
+"pos": "",
+"s": "女孩",
+"g": "G"
+},
+{
+"w": "glasses",
+"ipa": "/'glɑːsɪz/",
+"pos": "",
+"s": "眼镜",
+"g": "G"
+},
+{
+"w": "glove",
+"ipa": "/ɡlʌv/",
+"pos": "",
+"s": "手套",
+"g": "G"
+},
+{
+"w": "gloves",
+"ipa": "",
+"pos": "",
+"s": "手套",
+"g": "G"
+},
+{
+"w": "go",
+"ipa": "/gəu/",
+"pos": "",
+"s": "（过去式went [went]）去",
+"g": "G"
+},
+{
+"w": "go boating",
+"ipa": "/gəʊ/",
+"pos": "",
+"s": "去划船",
+"g": "G"
+},
+{
+"w": "go cycling",
+"ipa": "",
+"pos": "",
+"s": "去骑自行车",
+"g": "G"
+},
+{
+"w": "go fishing",
+"ipa": "/'fiʃiŋ/",
+"pos": "",
+"s": "去钓鱼",
+"g": "G"
+},
+{
+"w": "go for a walk",
+"ipa": "",
+"pos": "",
+"s": "去散步",
+"g": "G"
+},
+{
+"w": "go hiking",
+"ipa": "/'haikiŋ/",
+"pos": "",
+"s": "去远足",
+"g": "G"
+},
+{
+"w": "go home",
+"ipa": "/həum/",
+"pos": "",
+"s": "回家",
+"g": "G"
+},
+{
+"w": "go ice-skating",
+"ipa": "/ais 'skeitiŋ/",
+"pos": "",
+"s": "去滑冰",
+"g": "G"
+},
+{
+"w": "go on a picnic",
+"ipa": "",
+"pos": "",
+"s": "去野餐",
+"g": "G"
+},
+{
+"w": "go shopping",
+"ipa": "/'ʃɔpiŋ/",
+"pos": "",
+"s": "购物 买东西",
+"g": "G"
+},
+{
+"w": "go skiing",
+"ipa": "/'ski:iŋ/",
+"pos": "",
+"s": "去滑雪",
+"g": "G"
+},
+{
+"w": "go swimming",
+"ipa": "/'swimiŋ/",
+"pos": "",
+"s": "去游泳",
+"g": "G"
+},
+{
+"w": "go to bed",
+"ipa": "",
+"pos": "",
+"s": "上床睡觉",
+"g": "G"
+},
+{
+"w": "go to school",
+"ipa": "/sku:l/",
+"pos": "",
+"s": "上学",
+"g": "G"
+},
+{
+"w": "go to the playground",
+"ipa": "/'pleiɡraund/",
+"pos": "",
+"s": "去操场",
+"g": "G"
+},
+{
+"w": "Go tothe cinema",
+"ipa": "/gəutu:ðə'sinimə/",
+"pos": "",
+"s": "去看电影",
+"g": "G"
+},
+{
+"w": "goal",
+"ipa": "/gəul/",
+"pos": "",
+"s": "得分数.",
+"g": "G"
+},
+{
+"w": "goat",
+"ipa": "/ɡəʊt/",
+"pos": "",
+"s": "山羊",
+"g": "G"
+},
+{
+"w": "goes",
+"ipa": "",
+"pos": "",
+"s": "去",
+"g": "G"
+},
+{
+"w": "good",
+"ipa": "/ɡud/",
+"pos": "",
+"s": "好的好的的",
+"g": "G"
+},
+{
+"w": "Good bay",
+"ipa": "/'ɡud'bai/",
+"pos": "",
+"s": "再见",
+"g": "G"
+},
+{
+"w": "good job",
+"ipa": "/dʒɔb/",
+"pos": "",
+"s": "干得好",
+"g": "G"
+},
+{
+"w": "goose",
+"ipa": "/ɡu:s/",
+"pos": "",
+"s": "鹅",
+"g": "G"
+},
+{
+"w": "go—went",
+"ipa": "/gəu/",
+"pos": "",
+"s": "去",
+"g": "G"
+},
+{
+"w": "GPS",
+"ipa": "/dʒiː piː es/",
+"pos": "",
+"s": "全球（卫星）定位系统",
+"g": "G"
+},
+{
+"w": "grandfather",
+"ipa": "/'grændˌfɑːðə/",
+"pos": "",
+"s": "（外）祖父",
+"g": "G"
+},
+{
+"w": "grandma",
+"ipa": "/'grændmɑ:/",
+"pos": "",
+"s": "（口语）（外）祖母",
+"g": "G"
+},
+{
+"w": "grandmother",
+"ipa": "/'grænˌmʌðə/",
+"pos": "",
+"s": "\\(外\\) 祖母",
+"g": "G"
+},
+{
+"w": "grandpa",
+"ipa": "/'grændpɑ:/",
+"pos": "",
+"s": "（口语）（外）祖父",
+"g": "G"
+},
+{
+"w": "grandparent",
+"ipa": "/ˈgrænpeərənt/",
+"pos": "",
+"s": "祖父/祖母；外祖父/外祖母",
+"g": "G"
+},
+{
+"w": "grape",
+"ipa": "/greɪp/",
+"pos": "",
+"s": "葡萄",
+"g": "G"
+},
+{
+"w": "grass",
+"ipa": "/ grAs/",
+"pos": "",
+"s": "草坪",
+"g": "G"
+},
+{
+"w": "great",
+"ipa": "/ɡreit/",
+"pos": "",
+"s": "很好的",
+"g": "G"
+},
+{
+"w": "green",
+"ipa": "/ɡri:n/",
+"pos": "",
+"s": "绿色的",
+"g": "G"
+},
+{
+"w": "green beans",
+"ipa": "",
+"pos": "",
+"s": "豆角；四季豆",
+"g": "G"
+},
+{
+"w": "guess",
+"ipa": "/ɡes/",
+"pos": "",
+"s": "猜测",
+"g": "G"
+},
+{
+"w": "gym",
+"ipa": "/dʒɪm/",
+"pos": "",
+"s": "体育馆",
+"g": "G"
+},
+{
+"w": "had",
+"ipa": "",
+"pos": "",
+"s": "a cold 感冒",
+"g": "H"
+},
+{
+"w": "had a cold",
+"ipa": "",
+"pos": "",
+"s": "感冒",
+"g": "H"
+},
+{
+"w": "hair",
+"ipa": "/hɛə/",
+"pos": "",
+"s": "长头发",
+"g": "H"
+},
+{
+"w": "half",
+"ipa": "/hɑːf/",
+"pos": "",
+"s": "一半",
+"g": "H"
+},
+{
+"w": "hall",
+"ipa": "",
+"pos": "",
+"s": "大厅",
+"g": "H"
+},
+{
+"w": "Halloween",
+"ipa": "/'hæləu'i:n/",
+"pos": "",
+"s": "万圣节前夕",
+"g": "H"
+},
+{
+"w": "hamburger",
+"ipa": "/'hæmbɜːgə/",
+"pos": "",
+"s": "汉堡包",
+"g": "H"
+},
+{
+"w": "hand",
+"ipa": "/hænd/",
+"pos": "",
+"s": "手",
+"g": "H"
+},
+{
+"w": "happy",
+"ipa": "/'hæpi/",
+"pos": "",
+"s": "快乐的；幸福的",
+"g": "H"
+},
+{
+"w": "hard-working",
+"ipa": "/ˌhɑːdˈwɜːkɪŋ/",
+"pos": "",
+"s": "努力工作的；勤劳的",
+"g": "H"
+},
+{
+"w": "hardly",
+"ipa": "/'hɑ:dli/",
+"pos": "",
+"s": "几乎没有；几乎不",
+"g": "H"
+},
+{
+"w": "has",
+"ipa": "/hæz/",
+"pos": "",
+"s": "有",
+"g": "H"
+},
+{
+"w": "hat",
+"ipa": "/hæt/",
+"pos": "",
+"s": "帽子",
+"g": "H"
+},
+{
+"w": "have",
+"ipa": "/hæv/",
+"pos": "",
+"s": "（过去式had[ hæd]）有",
+"g": "H"
+},
+{
+"w": "have ... class",
+"ipa": "",
+"pos": "",
+"s": "上...课",
+"g": "H"
+},
+{
+"w": "have a cold",
+"ipa": "/kəuld/",
+"pos": "",
+"s": "感冒;伤风",
+"g": "H"
+},
+{
+"w": "have a headache",
+"ipa": "/'hedeik/",
+"pos": "",
+"s": "头疼.",
+"g": "H"
+},
+{
+"w": "have a look",
+"ipa": "/luk/",
+"pos": "",
+"s": "看一看",
+"g": "H"
+},
+{
+"w": "have a picnic",
+"ipa": "/hæv'piknik/",
+"pos": "",
+"s": "举行野餐",
+"g": "H"
+},
+{
+"w": "have a sore throat",
+"ipa": "/sɔ: θrəut/",
+"pos": "",
+"s": "喉咙疼",
+"g": "H"
+},
+{
+"w": "have a toothache",
+"ipa": "/'tu:θeik/",
+"pos": "",
+"s": "牙疼",
+"g": "H"
+},
+{
+"w": "have a try",
+"ipa": "/hævtrai/",
+"pos": "",
+"s": "试一试",
+"g": "H"
+},
+{
+"w": "have to",
+"ipa": "/hæv tu:/",
+"pos": "",
+"s": "不得不",
+"g": "H"
+},
+{
+"w": "have...class",
+"ipa": "/hæv klɑːs/",
+"pos": "",
+"s": "上……课",
+"g": "H"
+},
+{
+"w": "have—had",
+"ipa": "/hæv/",
+"pos": "",
+"s": "得病",
+"g": "H"
+},
+{
+"w": "he",
+"ipa": "/hiː/",
+"pos": "",
+"s": "他",
+"g": "H"
+},
+{
+"w": "head",
+"ipa": "/hed/",
+"pos": "",
+"s": "头",
+"g": "H"
+},
+{
+"w": "head teacher",
+"ipa": "/hed ˈtiːtʃə/",
+"pos": "",
+"s": "校长",
+"g": "H"
+},
+{
+"w": "healthy",
+"ipa": "/'helθi/",
+"pos": "",
+"s": "a.健康的;有益健康的",
+"g": "H"
+},
+{
+"w": "hear",
+"ipa": "/hiə/",
+"pos": "",
+"s": "听见；听到",
+"g": "H"
+},
+{
+"w": "heavier",
+"ipa": "",
+"pos": "",
+"s": "更重的",
+"g": "H"
+},
+{
+"w": "heavy",
+"ipa": "/'hevi/",
+"pos": "",
+"s": "重的；沉重的",
+"g": "H"
+},
+{
+"w": "heavy—heavier",
+"ipa": "/'hevi/",
+"pos": "",
+"s": "更重的",
+"g": "H"
+},
+{
+"w": "hello",
+"ipa": "/hə'ləu/",
+"pos": "",
+"s": "喂",
+"g": "H"
+},
+{
+"w": "helmet",
+"ipa": "/ˈhelmɪt/",
+"pos": "",
+"s": "头盔",
+"g": "H"
+},
+{
+"w": "help",
+"ipa": "/help/",
+"pos": "",
+"s": "帮助",
+"g": "H"
+},
+{
+"w": "help yourself",
+"ipa": "/help/",
+"pos": "",
+"s": "为（自己）取用",
+"g": "H"
+},
+{
+"w": "helpful",
+"ipa": "/'helpful/",
+"pos": "",
+"s": "a. 有帮助的,有益的",
+"g": "H"
+},
+{
+"w": "hen",
+"ipa": "/hen/",
+"pos": "",
+"s": "母鸡",
+"g": "H"
+},
+{
+"w": "her",
+"ipa": "/hɜː/",
+"pos": "",
+"s": "她的",
+"g": "H"
+},
+{
+"w": "here",
+"ipa": "/hiə/",
+"pos": "",
+"s": "这儿；这里",
+"g": "H"
+},
+{
+"w": "here you are",
+"ipa": "/hiə/",
+"pos": "",
+"s": "给你",
+"g": "H"
+},
+{
+"w": "hers",
+"ipa": "",
+"pos": "",
+"s": "她的",
+"g": "H"
+},
+{
+"w": "hi",
+"ipa": "/hai/",
+"pos": "",
+"s": "喂",
+"g": "H"
+},
+{
+"w": "high",
+"ipa": "/haɪ/",
+"pos": "",
+"s": "高的",
+"g": "H"
+},
+{
+"w": "hiking",
+"ipa": "/haɪkɪŋ/",
+"pos": "",
+"s": "远足",
+"g": "H"
+},
+{
+"w": "hill",
+"ipa": "/hɪl/",
+"pos": "",
+"s": "山丘；小山",
+"g": "H"
+},
+{
+"w": "him",
+"ipa": "/hɪm/",
+"pos": "",
+"s": "他（宾语或表语\\)",
+"g": "H"
+},
+{
+"w": "his",
+"ipa": "/hɪz/",
+"pos": "",
+"s": "他的",
+"g": "H"
+},
+{
+"w": "His friend is a tall, slim girl with a straight nose",
+"ipa": "",
+"pos": "",
+"s": "他的朋友是位鼻子挺直,身材高而苗条的姑娘",
+"g": "H"
+},
+{
+"w": "His friend is a tall, slim girl with a straight nose.",
+"ipa": "",
+"pos": "",
+"s": "他的朋友是位鼻子挺直,身材高而苗条的姑娘",
+"g": "H"
+},
+{
+"w": "hobby",
+"ipa": "/ˈhɒbi/",
+"pos": "",
+"s": "业余爱好",
+"g": "H"
+},
+{
+"w": "holiday",
+"ipa": "/'hɔlədi/",
+"pos": "n.",
+"s": "假期,假日",
+"g": "H"
+},
+{
+"w": "homework",
+"ipa": "/'həʊmwɜːk/",
+"pos": "",
+"s": "作业",
+"g": "H"
+},
+{
+"w": "honey",
+"ipa": "/'hʌni/",
+"pos": "",
+"s": "蜂蜜",
+"g": "H"
+},
+{
+"w": "Hong Kong",
+"ipa": "/hɔŋ/",
+"pos": "",
+"s": "香港",
+"g": "H"
+},
+{
+"w": "horse",
+"ipa": "/hɔːs/",
+"pos": "",
+"s": "马",
+"g": "H"
+},
+{
+"w": "hospital",
+"ipa": "/ˈhɒspɪtl/",
+"pos": "",
+"s": "医院",
+"g": "H"
+},
+{
+"w": "hot",
+"ipa": "/hɒt/",
+"pos": "",
+"s": "辣的；辛辣的",
+"g": "H"
+},
+{
+"w": "hot dog",
+"ipa": "/hɔt dɔɡ/",
+"pos": "",
+"s": "热狗",
+"g": "H"
+},
+{
+"w": "hotel",
+"ipa": "",
+"pos": "",
+"s": "旅馆",
+"g": "H"
+},
+{
+"w": "house",
+"ipa": "/haʊs/",
+"pos": "",
+"s": "房屋；房子；住宅",
+"g": "H"
+},
+{
+"w": "how",
+"ipa": "/hau/",
+"pos": "",
+"s": "多么；怎么样",
+"g": "H"
+},
+{
+"w": "how about",
+"ipa": "",
+"pos": "",
+"s": "……怎么样？……情况如何？",
+"g": "H"
+},
+{
+"w": "how many",
+"ipa": "/'meni/",
+"pos": "",
+"s": "多少后接可数名词复数形式",
+"g": "H"
+},
+{
+"w": "how much",
+"ipa": "/mʌtʃ/",
+"pos": "",
+"s": "多少，后接不可数名词或多少钱",
+"g": "H"
+},
+{
+"w": "how old",
+"ipa": "/hau əuld/",
+"pos": "",
+"s": "几岁",
+"g": "H"
+},
+{
+"w": "however",
+"ipa": "/hau'evə/",
+"pos": "",
+"s": "1、但是;2 无论如何,不管怎样",
+"g": "H"
+},
+{
+"w": "However hot it is, he will not take off his coat",
+"ipa": "",
+"pos": "",
+"s": "无论多热,他也不会脱掉外衣",
+"g": "H"
+},
+{
+"w": "However hot it is, he will not take off his coat.",
+"ipa": "",
+"pos": "",
+"s": "无论多热,他也不会脱掉外衣",
+"g": "H"
+},
+{
+"w": "hundred",
+"ipa": "/'hʌndrəd/",
+"pos": "",
+"s": "百",
+"g": "H"
+},
+{
+"w": "hungry",
+"ipa": "/'hʌŋɡri/",
+"pos": "",
+"s": "饥饿的",
+"g": "H"
+},
+{
+"w": "hurry",
+"ipa": "/'hʌri/",
+"pos": "",
+"s": "抓紧；赶快",
+"g": "H"
+},
+{
+"w": "hurry up",
+"ipa": "",
+"pos": "",
+"s": "快点",
+"g": "H"
+},
+{
+"w": "hurt",
+"ipa": "/hɜːt/",
+"pos": "",
+"s": "（使）受伤",
+"g": "H"
+},
+{
+"w": "hurt—hurt",
+"ipa": "/hɜːt/",
+"pos": "",
+"s": "受伤",
+"g": "H"
+},
+{
+"w": "I would like to",
+"ipa": "/ai wud laiktu:/",
+"pos": "",
+"s": "想要. 例：我现在想看书 I want to read now.=I would like to read now",
+"g": "I"
+},
+{
+"w": "ice",
+"ipa": "/ais/",
+"pos": "",
+"s": "冰",
+"g": "I"
+},
+{
+"w": "ice cream",
+"ipa": "/ˌaɪsˈkriːm/",
+"pos": "",
+"s": "冰淇淋",
+"g": "I"
+},
+{
+"w": "ice-cream",
+"ipa": "/'aiskri:m/",
+"pos": "",
+"s": "冰激凌",
+"g": "I"
+},
+{
+"w": "ice-skate",
+"ipa": "/ˈaɪs skeɪt/",
+"pos": "v.",
+"s": "滑冰",
+"g": "I"
+},
+{
+"w": "idea",
+"ipa": "/aɪˈdɪə/",
+"pos": "",
+"s": "想法；主意",
+"g": "I"
+},
+{
+"w": "if",
+"ipa": "/ɪf/",
+"pos": "",
+"s": "如果",
+"g": "I"
+},
+{
+"w": "ill",
+"ipa": "/il/",
+"pos": "",
+"s": "a.坏的,有病的",
+"g": "I"
+},
+{
+"w": "in",
+"ipa": "/ɪn/",
+"pos": "",
+"s": "在…… 里面",
+"g": "I"
+},
+{
+"w": "in front of",
+"ipa": "/ɪn/",
+"pos": "",
+"s": "在...前面",
+"g": "I"
+},
+{
+"w": "interesting",
+"ipa": "/ˈɪntrəstɪŋ/",
+"pos": "",
+"s": "有趣的",
+"g": "I"
+},
+{
+"w": "Internet",
+"ipa": "",
+"pos": "",
+"s": "互联网",
+"g": "I"
+},
+{
+"w": "into",
+"ipa": "/'intu:/",
+"pos": "",
+"s": "进入；到……里面",
+"g": "I"
+},
+{
+"w": "is",
+"ipa": "/iz/",
+"pos": "",
+"s": "是",
+"g": "I"
+},
+{
+"w": "island",
+"ipa": "",
+"pos": "",
+"s": "岛",
+"g": "I"
+},
+{
+"w": "it",
+"ipa": "/it/",
+"pos": "",
+"s": "它",
+"g": "I"
+},
+{
+"w": "Italian",
+"ipa": "/ɪˈtæljən/",
+"pos": "",
+"s": "意大利的",
+"g": "I"
+},
+{
+"w": "its",
+"ipa": "",
+"pos": "",
+"s": "它的",
+"g": "I"
+},
+{
+"w": "jacket",
+"ipa": "/'dʒækɪt/",
+"pos": "",
+"s": "夹克衫",
+"g": "J"
+},
+{
+"w": "January",
+"ipa": "/'dʒænjuəri/",
+"pos": "",
+"s": "一月",
+"g": "J"
+},
+{
+"w": "jasmine",
+"ipa": "/'dʒæzmɪn/",
+"pos": "",
+"s": "茉莉",
+"g": "J"
+},
+{
+"w": "jeans",
+"ipa": "/dʒi:nz/",
+"pos": "",
+"s": "牛仔裤",
+"g": "J"
+},
+{
+"w": "jeep",
+"ipa": "/dʒi:p/",
+"pos": "",
+"s": "吉普车",
+"g": "J"
+},
+{
+"w": "job",
+"ipa": "/dʒɒb/",
+"pos": "",
+"s": "工作",
+"g": "J"
+},
+{
+"w": "join",
+"ipa": "/dʒɔɪn/",
+"pos": "",
+"s": "加入",
+"g": "J"
+},
+{
+"w": "juice",
+"ipa": "/dʒuːs/",
+"pos": "",
+"s": "果汁",
+"g": "J"
+},
+{
+"w": "July",
+"ipa": "/dʒu:'lai/",
+"pos": "",
+"s": "七月",
+"g": "J"
+},
+{
+"w": "jump",
+"ipa": "/dʒʌmp/",
+"pos": "",
+"s": "跳",
+"g": "J"
+},
+{
+"w": "jumping",
+"ipa": "",
+"pos": "",
+"s": "（正在）跳",
+"g": "J"
+},
+{
+"w": "June",
+"ipa": "/dʒu:n/",
+"pos": "",
+"s": "六月",
+"g": "J"
+},
+{
+"w": "just",
+"ipa": "/dʒʌst/",
+"pos": "",
+"s": "正好；恰好",
+"g": "J"
+},
+{
+"w": "just a minute",
+"ipa": "/'minit/",
+"pos": "",
+"s": "再多一会",
+"g": "J"
+},
+{
+"w": "just do it",
+"ipa": "/dʒʌst dəu it/",
+"pos": "v.",
+"s": "就这么干吧；说做就做",
+"g": "J"
+},
+{
+"w": "kangaroo",
+"ipa": "/,kænɡə'ru:/",
+"pos": "",
+"s": "袋鼠",
+"g": "K"
+},
+{
+"w": "keep",
+"ipa": "",
+"pos": "",
+"s": "your desk clean 保持你的桌面整洁",
+"g": "K"
+},
+{
+"w": "keep to the right",
+"ipa": "",
+"pos": "",
+"s": "靠右",
+"g": "K"
+},
+{
+"w": "keep your desk clean",
+"ipa": "",
+"pos": "",
+"s": "保持你的课桌干净",
+"g": "K"
+},
+{
+"w": "key",
+"ipa": "/kiː/",
+"pos": "",
+"s": "钥匙",
+"g": "K"
+},
+{
+"w": "kg(kilogram)",
+"ipa": "/'kiləuɡræm/",
+"pos": "",
+"s": "千克；公斤",
+"g": "K"
+},
+{
+"w": "kick",
+"ipa": "/kik/",
+"pos": "",
+"s": "踢",
+"g": "K"
+},
+{
+"w": "kid",
+"ipa": "/kid/",
+"pos": "",
+"s": "小孩；孩子",
+"g": "K"
+},
+{
+"w": "killer whale",
+"ipa": "/'kɪlə/",
+"pos": "",
+"s": "虎鲸",
+"g": "K"
+},
+{
+"w": "kilogram",
+"ipa": "",
+"pos": "",
+"s": "千克；公斤",
+"g": "K"
+},
+{
+"w": "kind",
+"ipa": "/kaɪnd/",
+"pos": "",
+"s": "体贴的；慈祥的；宽容的",
+"g": "K"
+},
+{
+"w": "kitchen",
+"ipa": "/'kɪtʃɪn/",
+"pos": "",
+"s": "厨房",
+"g": "K"
+},
+{
+"w": "kite",
+"ipa": "/kaɪt/",
+"pos": "",
+"s": "风筝",
+"g": "K"
+},
+{
+"w": "kitten",
+"ipa": "",
+"pos": "",
+"s": "小猫",
+"g": "K"
+},
+{
+"w": "knife",
+"ipa": "/naɪf/",
+"pos": "",
+"s": "刀",
+"g": "K"
+},
+{
+"w": "know",
+"ipa": "/nəʊ/",
+"pos": "",
+"s": "知道；了解",
+"g": "K"
+},
+{
+"w": "kung",
+"ipa": "",
+"pos": "",
+"s": "fu 功夫；武术",
+"g": "K"
+},
+{
+"w": "kung fu",
+"ipa": "/ˌkʌŋ ˈfuː/",
+"pos": "",
+"s": "功夫；武术",
+"g": "K"
+},
+{
+"w": "Labour",
+"ipa": "",
+"pos": "",
+"s": "Day 劳动节",
+"g": "L"
+},
+{
+"w": "Labour Day",
+"ipa": "",
+"pos": "",
+"s": "劳动节",
+"g": "L"
+},
+{
+"w": "Lady",
+"ipa": "/'leidi/",
+"pos": "",
+"s": "女士;小姐’夫人",
+"g": "L"
+},
+{
+"w": "lake",
+"ipa": "/leɪk/",
+"pos": "",
+"s": "湖；湖泊",
+"g": "L"
+},
+{
+"w": "lamb",
+"ipa": "/læm/",
+"pos": "",
+"s": "小羊；羔羊",
+"g": "L"
+},
+{
+"w": "lamp",
+"ipa": "/læmp/",
+"pos": "",
+"s": "台灯",
+"g": "L"
+},
+{
+"w": "last",
+"ipa": "/lɑ:st/",
+"pos": "",
+"s": "仅余的;留在最后的",
+"g": "L"
+},
+{
+"w": "late",
+"ipa": "",
+"pos": "",
+"s": "晚；迟",
+"g": "L"
+},
+{
+"w": "laugh at",
+"ipa": "/lɑ:f æt/",
+"pos": "",
+"s": "因…而发笑. . .",
+"g": "L"
+},
+{
+"w": "laughed",
+"ipa": "",
+"pos": "",
+"s": "(laugh的过去式) 笑",
+"g": "L"
+},
+{
+"w": "laugh—laughed",
+"ipa": "/lɑːf/",
+"pos": "",
+"s": "笑",
+"g": "L"
+},
+{
+"w": "leaf",
+"ipa": "/li:f li:vz/",
+"pos": "",
+"s": "（复数leaves）叶子",
+"g": "L"
+},
+{
+"w": "leaf (leaves)",
+"ipa": "",
+"pos": "",
+"s": "叶子",
+"g": "L"
+},
+{
+"w": "learn",
+"ipa": "/lə:n/",
+"pos": "",
+"s": "（过去式learned ['lə:nid]）学习",
+"g": "L"
+},
+{
+"w": "leave",
+"ipa": "/li:v/",
+"pos": "",
+"s": "(过去式left[left])",
+"g": "L"
+},
+{
+"w": "left",
+"ipa": "/left/",
+"pos": "",
+"s": "左边的",
+"g": "L"
+},
+{
+"w": "leg",
+"ipa": "/leg/",
+"pos": "",
+"s": "腿",
+"g": "L"
+},
+{
+"w": "lesson",
+"ipa": "/ˈlesn/",
+"pos": "",
+"s": "课",
+"g": "L"
+},
+{
+"w": "letter",
+"ipa": "",
+"pos": "",
+"s": "信",
+"g": "L"
+},
+{
+"w": "library",
+"ipa": "/'laɪbrəri/",
+"pos": "",
+"s": "图书馆",
+"g": "L"
+},
+{
+"w": "licked",
+"ipa": "",
+"pos": "",
+"s": "(lick的过去式) 舔",
+"g": "L"
+},
+{
+"w": "lick—licked",
+"ipa": "/lɪk/",
+"pos": "",
+"s": "舔",
+"g": "L"
+},
+{
+"w": "light",
+"ipa": "/'lait/",
+"pos": "",
+"s": "灯；管灯",
+"g": "L"
+},
+{
+"w": "like",
+"ipa": "/laik/",
+"pos": "",
+"s": "喜欢",
+"g": "L"
+},
+{
+"w": "lion",
+"ipa": "/'laiən/",
+"pos": "",
+"s": "狮子",
+"g": "L"
+},
+{
+"w": "listen to music",
+"ipa": "/'lisəntu:'mju:zik 'leitə/",
+"pos": "",
+"s": "听音乐",
+"g": "L"
+},
+{
+"w": "listening",
+"ipa": "",
+"pos": "",
+"s": "to music 正在听音乐",
+"g": "L"
+},
+{
+"w": "listening to music",
+"ipa": "",
+"pos": "",
+"s": "（正在）听音乐",
+"g": "L"
+},
+{
+"w": "little",
+"ipa": "/ˈlɪtl/",
+"pos": "",
+"s": "一点儿（不可数）",
+"g": "L"
+},
+{
+"w": "live",
+"ipa": "/liv/",
+"pos": "",
+"s": "居住；住",
+"g": "L"
+},
+{
+"w": "lives",
+"ipa": "/laivz/",
+"pos": "",
+"s": ":叶子的复数（life）",
+"g": "L"
+},
+{
+"w": "living",
+"ipa": "",
+"pos": "",
+"s": "room 客厅；起居室",
+"g": "L"
+},
+{
+"w": "living room",
+"ipa": "/'liviŋ ru:m/",
+"pos": "",
+"s": "客厅；起居室起客厅",
+"g": "L"
+},
+{
+"w": "lobster",
+"ipa": "/'lɔbstə/",
+"pos": "",
+"s": "龙虾",
+"g": "L"
+},
+{
+"w": "lock",
+"ipa": "/lɔk/",
+"pos": "",
+"s": "锁 .",
+"g": "L"
+},
+{
+"w": "London",
+"ipa": "/'lʌndən/",
+"pos": "",
+"s": "伦敦",
+"g": "L"
+},
+{
+"w": "long",
+"ipa": "/lɒŋ/",
+"pos": "",
+"s": "长的",
+"g": "L"
+},
+{
+"w": "long hair",
+"ipa": "/lɔŋ hεə/",
+"pos": "",
+"s": "长头发",
+"g": "L"
+},
+{
+"w": "longer",
+"ipa": "",
+"pos": "",
+"s": "更长的",
+"g": "L"
+},
+{
+"w": "long—longer",
+"ipa": "/lɒŋ/",
+"pos": "",
+"s": "更长的",
+"g": "L"
+},
+{
+"w": "look",
+"ipa": "/luk/",
+"pos": "",
+"s": "看上去",
+"g": "L"
+},
+{
+"w": "look .out",
+"ipa": "/lu: aut/",
+"pos": "",
+"s": "当心;留神",
+"g": "L"
+},
+{
+"w": "look at",
+"ipa": "/luk æt/",
+"pos": "",
+"s": "看；瞧",
+"g": "L"
+},
+{
+"w": "look for",
+"ipa": "/lukfɔ:/",
+"pos": "",
+"s": "寻找",
+"g": "L"
+},
+{
+"w": "look up",
+"ipa": "",
+"pos": "",
+"s": "查阅",
+"g": "L"
+},
+{
+"w": "lost",
+"ipa": "/lɒst/",
+"pos": "",
+"s": "丢失",
+"g": "L"
+},
+{
+"w": "lot",
+"ipa": "/lɒt/",
+"pos": "",
+"s": "大量；许多",
+"g": "L"
+},
+{
+"w": "lots",
+"ipa": "",
+"pos": "",
+"s": "of 大量；许多",
+"g": "L"
+},
+{
+"w": "lots of",
+"ipa": "/lɒts/",
+"pos": "",
+"s": "大量；许多",
+"g": "L"
+},
+{
+"w": "loud",
+"ipa": "",
+"pos": "",
+"s": "喧闹的，大声的",
+"g": "L"
+},
+{
+"w": "love",
+"ipa": "/lʌv/",
+"pos": "",
+"s": "爱;热爱",
+"g": "L"
+},
+{
+"w": "lovely",
+"ipa": "/'lʌvli/",
+"pos": "",
+"s": "可爱的；美丽的",
+"g": "L"
+},
+{
+"w": "lower",
+"ipa": "",
+"pos": "",
+"s": "low的比较级；更低的",
+"g": "L"
+},
+{
+"w": "low—lower",
+"ipa": "/ləʊ/",
+"pos": "",
+"s": "更低的",
+"g": "L"
+},
+{
+"w": "lunch",
+"ipa": "/lʌntʃ/",
+"pos": "",
+"s": "午餐",
+"g": "L"
+},
+{
+"w": "magazine",
+"ipa": "/,mægə'zi:n/",
+"pos": "",
+"s": "报纸 阅读杂志",
+"g": "M"
+},
+{
+"w": "make",
+"ipa": "",
+"pos": "",
+"s": "a snowman 堆雪人",
+"g": "M"
+},
+{
+"w": "make a Snowman",
+"ipa": "/meik'snəʊmæn/",
+"pos": "",
+"s": "堆雪人",
+"g": "M"
+},
+{
+"w": "make kites",
+"ipa": "/meikkait/",
+"pos": "",
+"s": "制作风筝",
+"g": "M"
+},
+{
+"w": "make sure",
+"ipa": "/meiksə:/",
+"pos": "",
+"s": "核实或查明某事物",
+"g": "M"
+},
+{
+"w": "make the bed",
+"ipa": "/meik ði: bed/",
+"pos": "",
+"s": "铺床，整理床铺",
+"g": "M"
+},
+{
+"w": "making kites",
+"ipa": "/'meikiŋ/",
+"pos": "",
+"s": "制作风筝",
+"g": "M"
+},
+{
+"w": "man",
+"ipa": "/mæn/",
+"pos": "",
+"s": "男人",
+"g": "M"
+},
+{
+"w": "many",
+"ipa": "/'meni/",
+"pos": "",
+"s": "许多的",
+"g": "M"
+},
+{
+"w": "map",
+"ipa": "/mæp/",
+"pos": "",
+"s": "地图",
+"g": "M"
+},
+{
+"w": "March",
+"ipa": "/mɑ:tʃ/",
+"pos": "",
+"s": "三月",
+"g": "M"
+},
+{
+"w": "match",
+"ipa": "/mætʃ/",
+"pos": "",
+"s": "比赛",
+"g": "M"
+},
+{
+"w": "math",
+"ipa": "/mæθ/",
+"pos": "",
+"s": "数学",
+"g": "M"
+},
+{
+"w": "math book",
+"ipa": "/mæθ/",
+"pos": "",
+"s": "数学书",
+"g": "M"
+},
+{
+"w": "maths",
+"ipa": "",
+"pos": "",
+"s": "test 数学测试",
+"g": "M"
+},
+{
+"w": "maths book",
+"ipa": "/mæθs/",
+"pos": "",
+"s": "数学书",
+"g": "M"
+},
+{
+"w": "matter",
+"ipa": "/'mætə/",
+"pos": "",
+"s": "事情；麻烦",
+"g": "M"
+},
+{
+"w": "may",
+"ipa": "/mei/",
+"pos": "",
+"s": "可以；可能",
+"g": "M"
+},
+{
+"w": "mean",
+"ipa": "/mi:n/",
+"pos": "",
+"s": "意思是",
+"g": "M"
+},
+{
+"w": "medicine",
+"ipa": "/'medisin/",
+"pos": "",
+"s": "药",
+"g": "M"
+},
+{
+"w": "meet",
+"ipa": "/mi:t/",
+"pos": "",
+"s": "见面；遇见",
+"g": "M"
+},
+{
+"w": "member",
+"ipa": "/'membə/",
+"pos": "",
+"s": "成员",
+"g": "M"
+},
+{
+"w": "menu",
+"ipa": "/'menju:/",
+"pos": "n.",
+"s": "菜单",
+"g": "M"
+},
+{
+"w": "meter",
+"ipa": "/'mi:tə/",
+"pos": "",
+"s": "米",
+"g": "M"
+},
+{
+"w": "metre",
+"ipa": "",
+"pos": "",
+"s": "米",
+"g": "M"
+},
+{
+"w": "mice",
+"ipa": "",
+"pos": "",
+"s": "（mouse的复数）",
+"g": "M"
+},
+{
+"w": "Mid-autumn",
+"ipa": "/ˌmɪd ˈɔːtəm/",
+"pos": "",
+"s": "中秋节",
+"g": "M"
+},
+{
+"w": "Mid-Autumn Festival",
+"ipa": "/mɪd ˈɔːtəm ˈfestəvəl/",
+"pos": "",
+"s": "中秋节",
+"g": "M"
+},
+{
+"w": "might",
+"ipa": "/mait/",
+"pos": "",
+"s": "可以；能",
+"g": "M"
+},
+{
+"w": "milk",
+"ipa": "/mɪlk/",
+"pos": "",
+"s": "牛奶",
+"g": "M"
+},
+{
+"w": "mine",
+"ipa": "/maɪn/",
+"pos": "",
+"s": "我的",
+"g": "M"
+},
+{
+"w": "minute",
+"ipa": "/'minit/",
+"pos": "",
+"s": "分钟",
+"g": "M"
+},
+{
+"w": "mirror",
+"ipa": "/'mirə/",
+"pos": "n.",
+"s": "镜子",
+"g": "M"
+},
+{
+"w": "Miss",
+"ipa": "/mis/",
+"pos": "",
+"s": "小姐.",
+"g": "M"
+},
+{
+"w": "mom",
+"ipa": "/mɔm/",
+"pos": "",
+"s": "妈妈",
+"g": "M"
+},
+{
+"w": "Monday",
+"ipa": "/'mʌndeɪ/",
+"pos": "",
+"s": "星期一",
+"g": "M"
+},
+{
+"w": "money",
+"ipa": "/'mʌni/",
+"pos": "",
+"s": "钱；金钱",
+"g": "M"
+},
+{
+"w": "monkey",
+"ipa": "/'mʌŋki/",
+"pos": "",
+"s": "猴子",
+"g": "M"
+},
+{
+"w": "month",
+"ipa": "/mʌnθ/",
+"pos": "",
+"s": "月份；月",
+"g": "M"
+},
+{
+"w": "moon",
+"ipa": "/muːn/",
+"pos": "",
+"s": "月亮",
+"g": "M"
+},
+{
+"w": "mooncake",
+"ipa": "/muːnkeɪk/",
+"pos": "",
+"s": "月饼",
+"g": "M"
+},
+{
+"w": "Moral Education",
+"ipa": "/'mɔrəl 'edju:'keiʃən/",
+"pos": "",
+"s": "思想品德课",
+"g": "M"
+},
+{
+"w": "more",
+"ipa": "/mɔː/",
+"pos": "",
+"s": "更多的",
+"g": "M"
+},
+{
+"w": "morning",
+"ipa": "/'mɔ:niŋ/",
+"pos": "",
+"s": "早晨；上午",
+"g": "M"
+},
+{
+"w": "Moscow",
+"ipa": "/'mɒskəʊ/",
+"pos": "",
+"s": "莫斯科",
+"g": "M"
+},
+{
+"w": "mother",
+"ipa": "/'mʌðə/",
+"pos": "",
+"s": "母亲；妈妈",
+"g": "M"
+},
+{
+"w": "motor cycle",
+"ipa": "/'məutə'saikl/",
+"pos": "",
+"s": "摩托车",
+"g": "M"
+},
+{
+"w": "mountain",
+"ipa": "/'maʊntɪn/",
+"pos": "",
+"s": "高山；山岳",
+"g": "M"
+},
+{
+"w": "mouse",
+"ipa": "/maʊs/",
+"pos": "",
+"s": "老鼠",
+"g": "M"
+},
+{
+"w": "mouth",
+"ipa": "/maʊθ/",
+"pos": "",
+"s": "嘴",
+"g": "M"
+},
+{
+"w": "move",
+"ipa": "/muːv/",
+"pos": "",
+"s": "搬家",
+"g": "M"
+},
+{
+"w": "Mr",
+"ipa": "/'mistə/",
+"pos": "",
+"s": "先生.",
+"g": "M"
+},
+{
+"w": "Mrs",
+"ipa": "/ˈmɪsɪz/",
+"pos": "",
+"s": "夫人",
+"g": "M"
+},
+{
+"w": "Ms",
+"ipa": "/mɪz/",
+"pos": "",
+"s": "女士",
+"g": "M"
+},
+{
+"w": "much",
+"ipa": "",
+"pos": "",
+"s": "非常地",
+"g": "M"
+},
+{
+"w": "mud",
+"ipa": "/mʌd/",
+"pos": "",
+"s": "泥",
+"g": "M"
+},
+{
+"w": "mule",
+"ipa": "",
+"pos": "",
+"s": "骡子",
+"g": "M"
+},
+{
+"w": "mum",
+"ipa": "/mʌm/",
+"pos": "",
+"s": "妈妈",
+"g": "M"
+},
+{
+"w": "Munich",
+"ipa": "/ˈmjuːnɪk/",
+"pos": "",
+"s": "慕尼黑（德国城市）",
+"g": "M"
+},
+{
+"w": "museum",
+"ipa": "/mju:'ziəm/",
+"pos": "",
+"s": "科学博物馆",
+"g": "M"
+},
+{
+"w": "music",
+"ipa": "/'mju:zik/",
+"pos": "",
+"s": "音乐",
+"g": "M"
+},
+{
+"w": "music class",
+"ipa": "/klɑ:s/",
+"pos": "",
+"s": "音乐课",
+"g": "M"
+},
+{
+"w": "music room",
+"ipa": "/'mju:zik/",
+"pos": "",
+"s": "音乐教室",
+"g": "M"
+},
+{
+"w": "must",
+"ipa": "/mʌst/",
+"pos": "",
+"s": "一定；肯定",
+"g": "M"
+},
+{
+"w": "mutton",
+"ipa": "/'mʌtn/",
+"pos": "n",
+"s": "羊肉",
+"g": "M"
+},
+{
+"w": "my",
+"ipa": "/maɪ/",
+"pos": "",
+"s": "我的",
+"g": "M"
+},
+{
+"w": "name",
+"ipa": "/neɪm/",
+"pos": "",
+"s": "名字名字",
+"g": "N"
+},
+{
+"w": "national",
+"ipa": "",
+"pos": "",
+"s": "国家的",
+"g": "N"
+},
+{
+"w": "National Day",
+"ipa": "",
+"pos": "",
+"s": "国庆日",
+"g": "N"
+},
+{
+"w": "nature",
+"ipa": "/'neɪtʃə/",
+"pos": "",
+"s": "自然界；大自然",
+"g": "N"
+},
+{
+"w": "nature park",
+"ipa": "/'neitʃə pɑ:k/",
+"pos": "",
+"s": "自然公园",
+"g": "N"
+},
+{
+"w": "near",
+"ipa": "/nɪə/",
+"pos": "",
+"s": "近的；距离近",
+"g": "N"
+},
+{
+"w": "need",
+"ipa": "/ni:d/",
+"pos": "",
+"s": "需要",
+"g": "N"
+},
+{
+"w": "neighbour",
+"ipa": "/'neibə/",
+"pos": "",
+"s": "邻居",
+"g": "N"
+},
+{
+"w": "nest",
+"ipa": "/nest/",
+"pos": "",
+"s": "鸟窝；巢",
+"g": "N"
+},
+{
+"w": "new",
+"ipa": "/njuː/",
+"pos": "",
+"s": "新的",
+"g": "N"
+},
+{
+"w": "New York",
+"ipa": "/'njuːleɪd/",
+"pos": "",
+"s": "纽约",
+"g": "N"
+},
+{
+"w": "newspaper",
+"ipa": "/'nju:z,peipə/",
+"pos": "",
+"s": "报纸",
+"g": "N"
+},
+{
+"w": "next",
+"ipa": "/nekst/",
+"pos": "",
+"s": "下一个的；紧接着的；接下来的",
+"g": "N"
+},
+{
+"w": "next to",
+"ipa": "/'neksttu:/",
+"pos": "",
+"s": "与……相邻",
+"g": "N"
+},
+{
+"w": "next week",
+"ipa": "/nekst wiːk/",
+"pos": "",
+"s": "下周",
+"g": "N"
+},
+{
+"w": "nice",
+"ipa": "/nais/",
+"pos": "",
+"s": "好的；愉快的",
+"g": "N"
+},
+{
+"w": "night",
+"ipa": "/nait/",
+"pos": "",
+"s": "夜晚",
+"g": "N"
+},
+{
+"w": "nine",
+"ipa": "/naɪn/",
+"pos": "",
+"s": "九",
+"g": "N"
+},
+{
+"w": "nineteen",
+"ipa": "/naɪn'tiːn/",
+"pos": "",
+"s": "十九",
+"g": "N"
+},
+{
+"w": "ninety-nine",
+"ipa": "/'nainti/",
+"pos": "",
+"s": "九十九",
+"g": "N"
+},
+{
+"w": "ninth",
+"ipa": "/nainθ/",
+"pos": "",
+"s": "第九",
+"g": "N"
+},
+{
+"w": "no",
+"ipa": "/nəu/",
+"pos": "",
+"s": "不；不是",
+"g": "N"
+},
+{
+"w": "no problem",
+"ipa": "/nəʊ/",
+"pos": "",
+"s": "没问题",
+"g": "N"
+},
+{
+"w": "no. problem",
+"ipa": "/nəu 'prɔbləm/",
+"pos": "",
+"s": "没问题",
+"g": "N"
+},
+{
+"w": "noise",
+"ipa": "",
+"pos": "",
+"s": "声音；响声；噪音",
+"g": "N"
+},
+{
+"w": "noodle(s)",
+"ipa": "/'nu:dl/",
+"pos": "",
+"s": "面条（复数）",
+"g": "N"
+},
+{
+"w": "noodles",
+"ipa": "/'nu:dl/",
+"pos": "",
+"s": "面条（复数）",
+"g": "N"
+},
+{
+"w": "noon",
+"ipa": "/nu:n/",
+"pos": "",
+"s": "中午",
+"g": "N"
+},
+{
+"w": "north",
+"ipa": "/nɔ:θ/",
+"pos": "",
+"s": "北方；向北方.",
+"g": "N"
+},
+{
+"w": "nose",
+"ipa": "/nəʊz/",
+"pos": "",
+"s": "鼻子",
+"g": "N"
+},
+{
+"w": "not",
+"ipa": "/nɔt/",
+"pos": "",
+"s": "不；不是的",
+"g": "N"
+},
+{
+"w": "not much",
+"ipa": "/mʌtʃ/",
+"pos": "",
+"s": "没什么",
+"g": "N"
+},
+{
+"w": "notebook",
+"ipa": "/'nəʊtbʊk/",
+"pos": "",
+"s": "笔记本",
+"g": "N"
+},
+{
+"w": "nothing",
+"ipa": "",
+"pos": "",
+"s": "没有什么",
+"g": "N"
+},
+{
+"w": "November",
+"ipa": "/nəu'vembə/",
+"pos": "",
+"s": "十一月",
+"g": "N"
+},
+{
+"w": "now",
+"ipa": "/naʊ/",
+"pos": "",
+"s": "现在；目前",
+"g": "N"
+},
+{
+"w": "nurse",
+"ipa": "/nɜːs/",
+"pos": "",
+"s": "护士",
+"g": "N"
+},
+{
+"w": "o",
+"ipa": "",
+"pos": "",
+"s": "（表示整点）……点钟",
+"g": "O"
+},
+{
+"w": "o'clock",
+"ipa": "/əˈklɒk/",
+"pos": "",
+"s": "…… 点钟",
+"g": "O"
+},
+{
+"w": "October",
+"ipa": "/ɔk'təubə/",
+"pos": "",
+"s": "十月",
+"g": "O"
+},
+{
+"w": "of",
+"ipa": "",
+"pos": "",
+"s": "当然",
+"g": "O"
+},
+{
+"w": "of course",
+"ipa": "/ɒv kɔːs/",
+"pos": "",
+"s": "当然",
+"g": "O"
+},
+{
+"w": "off",
+"ipa": "/ɒ:f/",
+"pos": "",
+"s": "距；离；离开.",
+"g": "O"
+},
+{
+"w": "often",
+"ipa": "/'ɔːfən/",
+"pos": "",
+"s": "时常；常常",
+"g": "O"
+},
+{
+"w": "OK",
+"ipa": "/əʊˈkeɪ/",
+"pos": "",
+"s": "好；行",
+"g": "O"
+},
+{
+"w": "old",
+"ipa": "/əʊld/",
+"pos": "",
+"s": "老的；年纪大的",
+"g": "O"
+},
+{
+"w": "older",
+"ipa": "",
+"pos": "",
+"s": "年龄更大的",
+"g": "O"
+},
+{
+"w": "old—older",
+"ipa": "/əʊld/",
+"pos": "",
+"s": "年龄更大的",
+"g": "O"
+},
+{
+"w": "on",
+"ipa": "/ɒn/",
+"pos": "",
+"s": "在…… 上面",
+"g": "O"
+},
+{
+"w": "on foot",
+"ipa": "/ɒn fut/",
+"pos": "",
+"s": "步行",
+"g": "O"
+},
+{
+"w": "one",
+"ipa": "/wʌn/",
+"pos": "",
+"s": "一",
+"g": "O"
+},
+{
+"w": "onion",
+"ipa": "/ˈʌnjən/",
+"pos": "",
+"s": "洋葱；葱头",
+"g": "O"
+},
+{
+"w": "only",
+"ipa": "/'əunli/",
+"pos": "",
+"s": "只有；仅仅",
+"g": "O"
+},
+{
+"w": "open",
+"ipa": "/'əupən/",
+"pos": "",
+"s": "打开",
+"g": "O"
+},
+{
+"w": "or",
+"ipa": "/ɔː/",
+"pos": "",
+"s": "或者",
+"g": "O"
+},
+{
+"w": "orange",
+"ipa": "/'ɔrindʒ/",
+"pos": "adj.",
+"s": "橘色的；橙色的",
+"g": "O"
+},
+{
+"w": "other",
+"ipa": "/'ʌðə/",
+"pos": "",
+"s": "其他的;另外的;别的",
+"g": "O"
+},
+{
+"w": "our",
+"ipa": "/'aʊə/",
+"pos": "",
+"s": "我们的",
+"g": "O"
+},
+{
+"w": "ours",
+"ipa": "",
+"pos": "",
+"s": "我们的",
+"g": "O"
+},
+{
+"w": "outside",
+"ipa": "/'aʊt'saɪd/",
+"pos": "",
+"s": "在户外",
+"g": "O"
+},
+{
+"w": "over",
+"ipa": "/'əuvə/",
+"pos": "prep.",
+"s": "在...的上方",
+"g": "O"
+},
+{
+"w": "over there",
+"ipa": "/'əuvə ðεə/",
+"pos": "",
+"s": "在那边",
+"g": "O"
+},
+{
+"w": "own",
+"ipa": "/əun/",
+"pos": "",
+"s": "a. 自己的",
+"g": "O"
+},
+{
+"w": "P.E",
+"ipa": "/ˌpiː ˈiː/",
+"pos": "",
+"s": "体育",
+"g": "P"
+},
+{
+"w": "P.E. class",
+"ipa": "",
+"pos": "",
+"s": "体育课",
+"g": "P"
+},
+{
+"w": "p.m.",
+"ipa": "/ˌpiː ˈem/",
+"pos": "",
+"s": "午后；下午",
+"g": "P"
+},
+{
+"w": "pack",
+"ipa": "/pæk/",
+"pos": "",
+"s": "收拾 \\(行李）",
+"g": "P"
+},
+{
+"w": "paint",
+"ipa": "/peint/",
+"pos": "",
+"s": "绘画",
+"g": "P"
+},
+{
+"w": "painting",
+"ipa": "/'peintiŋ/",
+"pos": "",
+"s": "绘画",
+"g": "P"
+},
+{
+"w": "pair",
+"ipa": "/pεə/",
+"pos": "",
+"s": "一双；一对",
+"g": "P"
+},
+{
+"w": "pal",
+"ipa": "/pæl/",
+"pos": "",
+"s": "朋友，同志，伙伴",
+"g": "P"
+},
+{
+"w": "panda",
+"ipa": "/'pændə/",
+"pos": "",
+"s": "大熊猫",
+"g": "P"
+},
+{
+"w": "pants",
+"ipa": "/pænts/",
+"pos": "",
+"s": "裤子",
+"g": "P"
+},
+{
+"w": "Papa Westray",
+"ipa": "/,pɑːpə ˈwestreɪ/",
+"pos": "",
+"s": "帕帕韦斯特雷岛",
+"g": "P"
+},
+{
+"w": "parents",
+"ipa": "/ˈpeərənts/",
+"pos": "",
+"s": "父母，双亲",
+"g": "P"
+},
+{
+"w": "park",
+"ipa": "/pɑːk/",
+"pos": "",
+"s": "公园",
+"g": "P"
+},
+{
+"w": "part",
+"ipa": "",
+"pos": "",
+"s": "角色",
+"g": "P"
+},
+{
+"w": "party",
+"ipa": "/'pɑːti/",
+"pos": "",
+"s": "聚会；派对",
+"g": "P"
+},
+{
+"w": "pass",
+"ipa": "/pɑːs/",
+"pos": "",
+"s": "给；递",
+"g": "P"
+},
+{
+"w": "path",
+"ipa": "/pɑ:θ/",
+"pos": "n.",
+"s": "路，小道",
+"g": "P"
+},
+{
+"w": "pay",
+"ipa": "",
+"pos": "",
+"s": "注意",
+"g": "P"
+},
+{
+"w": "pay attention to",
+"ipa": "/peɪ əˈtenʃən tuː/",
+"pos": "",
+"s": "注意",
+"g": "P"
+},
+{
+"w": "PE",
+"ipa": "",
+"pos": "",
+"s": "class 体育课",
+"g": "P"
+},
+{
+"w": "PE class",
+"ipa": "",
+"pos": "",
+"s": "体育课",
+"g": "P"
+},
+{
+"w": "peach",
+"ipa": "/pi:tʃ/",
+"pos": "",
+"s": "桃",
+"g": "P"
+},
+{
+"w": "pear",
+"ipa": "/peə/",
+"pos": "",
+"s": "梨",
+"g": "P"
+},
+{
+"w": "pen",
+"ipa": "/pen/",
+"pos": "",
+"s": "钢笔",
+"g": "P"
+},
+{
+"w": "pen pal",
+"ipa": "/pen pæl/",
+"pos": "",
+"s": "笔友",
+"g": "P"
+},
+{
+"w": "pencil",
+"ipa": "/'pensl/",
+"pos": "",
+"s": "铅笔",
+"g": "P"
+},
+{
+"w": "pencil box",
+"ipa": "/ˈpensl/",
+"pos": "",
+"s": "铅笔盒",
+"g": "P"
+},
+{
+"w": "pencil-case",
+"ipa": "/'pensəlkeis/",
+"pos": "",
+"s": "铅笔盒",
+"g": "P"
+},
+{
+"w": "people",
+"ipa": "/ˈpiːpl/",
+"pos": "",
+"s": "人，人民",
+"g": "P"
+},
+{
+"w": "pet shop",
+"ipa": "/petʃɔp/",
+"pos": "",
+"s": "宠物商店",
+"g": "P"
+},
+{
+"w": "phone",
+"ipa": "/fəʊn/",
+"pos": "",
+"s": "电话",
+"g": "P"
+},
+{
+"w": "photo",
+"ipa": "/'fəʊtəʊ/",
+"pos": "",
+"s": "照片；相片",
+"g": "P"
+},
+{
+"w": "pick",
+"ipa": "",
+"pos": "",
+"s": "摘；采集",
+"g": "P"
+},
+{
+"w": "pick apples",
+"ipa": "",
+"pos": "",
+"s": "摘苹果",
+"g": "P"
+},
+{
+"w": "pick up leaves",
+"ipa": "/pikʌpli:vz/",
+"pos": "",
+"s": "采摘树叶",
+"g": "P"
+},
+{
+"w": "picnic",
+"ipa": "",
+"pos": "",
+"s": "野餐",
+"g": "P"
+},
+{
+"w": "picture",
+"ipa": "/'piktʃə/",
+"pos": "n.",
+"s": "图画,照片,景色",
+"g": "P"
+},
+{
+"w": "pig",
+"ipa": "/pɪg/",
+"pos": "",
+"s": "猪",
+"g": "P"
+},
+{
+"w": "pilot",
+"ipa": "/ˈpaɪlət/",
+"pos": "",
+"s": "飞行员",
+"g": "P"
+},
+{
+"w": "ping-pong",
+"ipa": "/ˈpɪŋpɒŋ/",
+"pos": "",
+"s": "乒乓球",
+"g": "P"
+},
+{
+"w": "pink",
+"ipa": "/piŋk/",
+"pos": "",
+"s": "粉红色的",
+"g": "P"
+},
+{
+"w": "pizza",
+"ipa": "/ˈpiːtsə/",
+"pos": "",
+"s": "比萨饼",
+"g": "P"
+},
+{
+"w": "plane",
+"ipa": "/pleɪn/",
+"pos": "",
+"s": "飞机",
+"g": "P"
+},
+{
+"w": "Plant",
+"ipa": "/plɑ:nt/",
+"pos": "",
+"s": "植物；种植",
+"g": "P"
+},
+{
+"w": "plant trees",
+"ipa": "/plɑ:nt tri:s/",
+"pos": "",
+"s": "种树",
+"g": "P"
+},
+{
+"w": "plate",
+"ipa": "/pleɪt/",
+"pos": "",
+"s": "盘子",
+"g": "P"
+},
+{
+"w": "play",
+"ipa": "/plei/",
+"pos": "",
+"s": "（过去式played）玩",
+"g": "P"
+},
+{
+"w": "play basketball",
+"ipa": "/pleɪ/",
+"pos": "",
+"s": "打篮球",
+"g": "P"
+},
+{
+"w": "play chess",
+"ipa": "/plei tʃes/",
+"pos": "",
+"s": "下棋",
+"g": "P"
+},
+{
+"w": "play computer games",
+"ipa": "/pleikəm'pju:tə geims/",
+"pos": "",
+"s": "玩电脑游戏",
+"g": "P"
+},
+{
+"w": "play football",
+"ipa": "/pleɪ/",
+"pos": "",
+"s": "踢足球",
+"g": "P"
+},
+{
+"w": "play ping-pong",
+"ipa": "/pleɪ/",
+"pos": "",
+"s": "打乒乓球",
+"g": "P"
+},
+{
+"w": "play sports",
+"ipa": "/plei spɔ:ts/",
+"pos": "",
+"s": "进行体育运动",
+"g": "P"
+},
+{
+"w": "play the piano",
+"ipa": "/pi'ænəu/",
+"pos": "",
+"s": "弹钢琴",
+"g": "P"
+},
+{
+"w": "play the pipa",
+"ipa": "/pleɪ/",
+"pos": "",
+"s": "弹琵琶",
+"g": "P"
+},
+{
+"w": "play the violin",
+"ipa": "/plei,vaiə'lin/",
+"pos": "",
+"s": "拉小提琴",
+"g": "P"
+},
+{
+"w": "play with",
+"ipa": "/wið/",
+"pos": "",
+"s": "玩，与…一起玩",
+"g": "P"
+},
+{
+"w": "playground",
+"ipa": "/'pleɪgraʊnd/",
+"pos": "",
+"s": "操场",
+"g": "P"
+},
+{
+"w": "playing",
+"ipa": "",
+"pos": "",
+"s": "（正在）玩耍",
+"g": "P"
+},
+{
+"w": "please",
+"ipa": "/pli:z/",
+"pos": "",
+"s": "请",
+"g": "P"
+},
+{
+"w": "poem",
+"ipa": "/ˈpəʊɪm/",
+"pos": "",
+"s": "诗",
+"g": "P"
+},
+{
+"w": "police",
+"ipa": "/pə'li:s/",
+"pos": "n.",
+"s": "警察",
+"g": "P"
+},
+{
+"w": "police officer",
+"ipa": "/pəˈliːs ˈɒfɪsə/",
+"pos": "",
+"s": "警察",
+"g": "P"
+},
+{
+"w": "policeman",
+"ipa": "/pə'li:smən/",
+"pos": "",
+"s": "（男）警察",
+"g": "P"
+},
+{
+"w": "policewoman",
+"ipa": "/pə'li:s,wumən/",
+"pos": "n.",
+"s": "女警察；女警官",
+"g": "P"
+},
+{
+"w": "polite",
+"ipa": "/pəˈlaɪt/",
+"pos": "",
+"s": "有礼貌的；客气的",
+"g": "P"
+},
+{
+"w": "pork",
+"ipa": "/pɔ:k/",
+"pos": "n",
+"s": "猪肉",
+"g": "P"
+},
+{
+"w": "post",
+"ipa": "",
+"pos": "",
+"s": "邮局",
+"g": "P"
+},
+{
+"w": "Post card",
+"ipa": "/pəustkɑ:d/",
+"pos": "",
+"s": "明信片",
+"g": "P"
+},
+{
+"w": "post office",
+"ipa": "/pəʊst ˈɒfɪs/",
+"pos": "",
+"s": "邮局",
+"g": "P"
+},
+{
+"w": "postcard",
+"ipa": "/ˈpəʊstkɑːd/",
+"pos": "",
+"s": "明信片",
+"g": "P"
+},
+{
+"w": "postman",
+"ipa": "/ˈpəʊstmən/",
+"pos": "",
+"s": "邮递员",
+"g": "P"
+},
+{
+"w": "pot",
+"ipa": "/pɔt/",
+"pos": "",
+"s": "锅；碗；瓢；盆",
+"g": "P"
+},
+{
+"w": "potato",
+"ipa": "/pə'teitəu/",
+"pos": "n.",
+"s": "马铃薯,土豆",
+"g": "P"
+},
+{
+"w": "PRC",
+"ipa": "/ˌpiː ɑːr ˈsiː/",
+"pos": "",
+"s": "中国",
+"g": "P"
+},
+{
+"w": "prepare",
+"ipa": "/pri'peə/",
+"pos": "",
+"s": "准备",
+"g": "P"
+},
+{
+"w": "present",
+"ipa": "/pri'zent/",
+"pos": "",
+"s": "礼物",
+"g": "P"
+},
+{
+"w": "pretty",
+"ipa": "/'prɪti/",
+"pos": "",
+"s": "美观的；精致的",
+"g": "P"
+},
+{
+"w": "price",
+"ipa": "/praɪs/",
+"pos": "",
+"s": "价格",
+"g": "P"
+},
+{
+"w": "principal",
+"ipa": "/'prinsəpəl/",
+"pos": "",
+"s": "校长",
+"g": "P"
+},
+{
+"w": "problem",
+"ipa": "/'prɒbləm/",
+"pos": "",
+"s": "问题",
+"g": "P"
+},
+{
+"w": "pull",
+"ipa": "/pʊl/",
+"pos": "",
+"s": "拉；拽",
+"g": "P"
+},
+{
+"w": "pupil",
+"ipa": "/'pjuːpl/",
+"pos": "",
+"s": "小学生",
+"g": "P"
+},
+{
+"w": "puppy",
+"ipa": "/'pʌpi/",
+"pos": "",
+"s": "小狗",
+"g": "P"
+},
+{
+"w": "purple",
+"ipa": "/'pə:pl/",
+"pos": "",
+"s": "紫色的",
+"g": "P"
+},
+{
+"w": "put",
+"ipa": "/put/",
+"pos": "",
+"s": "放；放置",
+"g": "P"
+},
+{
+"w": "put away the clothes",
+"ipa": "/pʌtə'weikləuðz/",
+"pos": "",
+"s": "收拾衣服.",
+"g": "P"
+},
+{
+"w": "put on",
+"ipa": "",
+"pos": "",
+"s": "穿上. put on 动词,表示穿上衣服的动词,强调动作",
+"g": "P"
+},
+{
+"w": "puzzle",
+"ipa": "/ˈpʌzl/",
+"pos": "",
+"s": "谜",
+"g": "P"
+},
+{
+"w": "queen",
+"ipa": "/kwi:n/",
+"pos": "",
+"s": "女王；王后",
+"g": "Q"
+},
+{
+"w": "quickly",
+"ipa": "/ˈkwɪkli/",
+"pos": "",
+"s": "迅速地",
+"g": "Q"
+},
+{
+"w": "quiet",
+"ipa": "/'kwaɪət/",
+"pos": "",
+"s": "安静的",
+"g": "Q"
+},
+{
+"w": "rabbit",
+"ipa": "/ˈræbɪt/",
+"pos": "",
+"s": "兔；野兔",
+"g": "R"
+},
+{
+"w": "race",
+"ipa": "",
+"pos": "",
+"s": "赛跑",
+"g": "R"
+},
+{
+"w": "rain",
+"ipa": "/rein/",
+"pos": "",
+"s": "雨；下雨",
+"g": "R"
+},
+{
+"w": "rainbow",
+"ipa": "/'reinbəu/",
+"pos": "",
+"s": "彩虹",
+"g": "R"
+},
+{
+"w": "rainy",
+"ipa": "/'reɪni/",
+"pos": "",
+"s": "多雨的",
+"g": "R"
+},
+{
+"w": "read",
+"ipa": "/ri:d/",
+"pos": "",
+"s": "读；阅读",
+"g": "R"
+},
+{
+"w": "read a book",
+"ipa": "/ri:dbuk/",
+"pos": "",
+"s": "看书",
+"g": "R"
+},
+{
+"w": "read a magazine",
+"ipa": "/ri:d,mægə'zi:n/",
+"pos": "",
+"s": "阅读杂志",
+"g": "R"
+},
+{
+"w": "read books",
+"ipa": "/ri:d bu:ks/",
+"pos": "",
+"s": "读书",
+"g": "R"
+},
+{
+"w": "reading",
+"ipa": "",
+"pos": "",
+"s": "a book 正在看书",
+"g": "R"
+},
+{
+"w": "reading a book",
+"ipa": "",
+"pos": "",
+"s": "（正在）看书",
+"g": "R"
+},
+{
+"w": "reads",
+"ipa": "/riːdz/",
+"pos": "v.",
+"s": "读；看（第三人称单数）",
+"g": "R"
+},
+{
+"w": "ready",
+"ipa": "/'redi/",
+"pos": "",
+"s": "准备好了",
+"g": "R"
+},
+{
+"w": "read—read",
+"ipa": "/ri:d/",
+"pos": "",
+"s": "读",
+"g": "R"
+},
+{
+"w": "really",
+"ipa": "/'riəli/",
+"pos": "",
+"s": "真正的；确实",
+"g": "R"
+},
+{
+"w": "red",
+"ipa": "/red/",
+"pos": "",
+"s": "红色的",
+"g": "R"
+},
+{
+"w": "relax",
+"ipa": "/ri'læks/",
+"pos": "",
+"s": "放松",
+"g": "R"
+},
+{
+"w": "remember",
+"ipa": "/ri'membə/",
+"pos": "",
+"s": "记住",
+"g": "R"
+},
+{
+"w": "reporter",
+"ipa": "/rɪˈpɔːtə/",
+"pos": "",
+"s": "记者",
+"g": "R"
+},
+{
+"w": "restaurant",
+"ipa": "/ˈrestrɒnt/",
+"pos": "",
+"s": "餐馆",
+"g": "R"
+},
+{
+"w": "return",
+"ipa": "/ri'tə:n/",
+"pos": "",
+"s": "送回；归还",
+"g": "R"
+},
+{
+"w": "rice",
+"ipa": "/raɪs/",
+"pos": "",
+"s": "米饭",
+"g": "R"
+},
+{
+"w": "ride a bike",
+"ipa": "/raidbaik/",
+"pos": "",
+"s": "骑自行车",
+"g": "R"
+},
+{
+"w": "ride—rode",
+"ipa": "/raɪd/",
+"pos": "",
+"s": "骑",
+"g": "R"
+},
+{
+"w": "riding a bike",
+"ipa": "/'raidiŋ/",
+"pos": "",
+"s": "骑自行车",
+"g": "R"
+},
+{
+"w": "right",
+"ipa": "/rait/",
+"pos": "",
+"s": "右边的;正确的,准确的",
+"g": "R"
+},
+{
+"w": "river",
+"ipa": "/'rɪvə/",
+"pos": "",
+"s": "河；江",
+"g": "R"
+},
+{
+"w": "road",
+"ipa": "/rəud/",
+"pos": "n.",
+"s": "公路、大道",
+"g": "R"
+},
+{
+"w": "robot",
+"ipa": "/'rəʊbɒt/",
+"pos": "",
+"s": "机器人",
+"g": "R"
+},
+{
+"w": "rode",
+"ipa": "",
+"pos": "",
+"s": "(ride的过去式)骑(马，自行车)",
+"g": "R"
+},
+{
+"w": "roll",
+"ipa": "",
+"pos": "",
+"s": "滚动",
+"g": "R"
+},
+{
+"w": "room",
+"ipa": "/ru:m/",
+"pos": "",
+"s": "房间",
+"g": "R"
+},
+{
+"w": "row",
+"ipa": "/rau/",
+"pos": "",
+"s": "（过去式rowed）划（船）",
+"g": "R"
+},
+{
+"w": "RSVP",
+"ipa": "",
+"pos": "",
+"s": "请赐复",
+"g": "R"
+},
+{
+"w": "ruler",
+"ipa": "/'ruːlə/",
+"pos": "",
+"s": "尺子",
+"g": "R"
+},
+{
+"w": "run",
+"ipa": "/rʌn/",
+"pos": "",
+"s": "跑、奔跑",
+"g": "R"
+},
+{
+"w": "sad",
+"ipa": "/sæd/",
+"pos": "",
+"s": "难过的",
+"g": "S"
+},
+{
+"w": "salad",
+"ipa": "/ˈsæləd/",
+"pos": "",
+"s": "蔬菜色拉；混合色拉",
+"g": "S"
+},
+{
+"w": "sale",
+"ipa": "/seɪl/",
+"pos": "",
+"s": "大减价",
+"g": "S"
+},
+{
+"w": "salesperson",
+"ipa": "/'seilz,pə:sən/",
+"pos": "",
+"s": "售货员",
+"g": "S"
+},
+{
+"w": "salty",
+"ipa": "/'sɔ:lti/",
+"pos": "",
+"s": "a. 咸的",
+"g": "S"
+},
+{
+"w": "same",
+"ipa": "/seim/",
+"pos": "",
+"s": "相同的",
+"g": "S"
+},
+{
+"w": "sandals",
+"ipa": "/'sandl/",
+"pos": "",
+"s": "凉鞋",
+"g": "S"
+},
+{
+"w": "sandwich",
+"ipa": "/'sændwɪtʃ/",
+"pos": "",
+"s": "三明治",
+"g": "S"
+},
+{
+"w": "Saturday",
+"ipa": "/'sætədi/",
+"pos": "",
+"s": "星期六",
+"g": "S"
+},
+{
+"w": "saw",
+"ipa": "",
+"pos": "",
+"s": "看见",
+"g": "S"
+},
+{
+"w": "say",
+"ipa": "/sei/",
+"pos": "",
+"s": "说；讲",
+"g": "S"
+},
+{
+"w": "scarf",
+"ipa": "/skɑːf/",
+"pos": "",
+"s": "围巾",
+"g": "S"
+},
+{
+"w": "schedule",
+"ipa": "/'ʃedjuːl/",
+"pos": "",
+"s": "工作计划；日程安排",
+"g": "S"
+},
+{
+"w": "school",
+"ipa": "/skuːl/",
+"pos": "",
+"s": "学校",
+"g": "S"
+},
+{
+"w": "schoolbag",
+"ipa": "/'skuːlˌbæg/",
+"pos": "",
+"s": "书包",
+"g": "S"
+},
+{
+"w": "science",
+"ipa": "/ˈsaɪəns/",
+"pos": "",
+"s": "科学",
+"g": "S"
+},
+{
+"w": "scientist",
+"ipa": "/ˈsaɪəntɪst/",
+"pos": "",
+"s": "科学家",
+"g": "S"
+},
+{
+"w": "Scotland",
+"ipa": "/ˈskɒtlənd/",
+"pos": "",
+"s": "苏格兰",
+"g": "S"
+},
+{
+"w": "sea",
+"ipa": "/siː/",
+"pos": "",
+"s": "大海",
+"g": "S"
+},
+{
+"w": "seal",
+"ipa": "/si:l/",
+"pos": "",
+"s": "海豹",
+"g": "S"
+},
+{
+"w": "season",
+"ipa": "/'si:zn 'si:zən/",
+"pos": "",
+"s": "季节",
+"g": "S"
+},
+{
+"w": "seat",
+"ipa": "/si:t/",
+"pos": "",
+"s": "座位",
+"g": "S"
+},
+{
+"w": "second",
+"ipa": "/'sekənd/",
+"pos": "",
+"s": "第二",
+"g": "S"
+},
+{
+"w": "second (2nd)",
+"ipa": "",
+"pos": "",
+"s": "第二的",
+"g": "S"
+},
+{
+"w": "second floor",
+"ipa": "",
+"pos": "",
+"s": "二楼",
+"g": "S"
+},
+{
+"w": "secretary",
+"ipa": "/ˈsekrətri/",
+"pos": "",
+"s": "秘书",
+"g": "S"
+},
+{
+"w": "see",
+"ipa": "/si:/",
+"pos": "",
+"s": "(过去式saw[sɔ:])看见",
+"g": "S"
+},
+{
+"w": "see a doctor",
+"ipa": "/siː ə ˈdɒktə/",
+"pos": "",
+"s": "看病",
+"g": "S"
+},
+{
+"w": "see a film",
+"ipa": "",
+"pos": "",
+"s": "看电影",
+"g": "S"
+},
+{
+"w": "see you later",
+"ipa": "/si:ju:'leitə/",
+"pos": "",
+"s": "再见",
+"g": "S"
+},
+{
+"w": "seed",
+"ipa": "/si:d/",
+"pos": "",
+"s": "种子",
+"g": "S"
+},
+{
+"w": "see—saw",
+"ipa": "/si:/",
+"pos": "",
+"s": "看见",
+"g": "S"
+},
+{
+"w": "send",
+"ipa": "/send/",
+"pos": "",
+"s": "邮寄；发送",
+"g": "S"
+},
+{
+"w": "September",
+"ipa": "/səp'tembə/",
+"pos": "",
+"s": "九月",
+"g": "S"
+},
+{
+"w": "set the table",
+"ipa": "/setði:'teibl/",
+"pos": "",
+"s": "摆餐具；摆饭桌",
+"g": "S"
+},
+{
+"w": "seven",
+"ipa": "/'sevn/",
+"pos": "",
+"s": "七",
+"g": "S"
+},
+{
+"w": "seventeen",
+"ipa": "/sevən'tiːn/",
+"pos": "",
+"s": "十七",
+"g": "S"
+},
+{
+"w": "seventh",
+"ipa": "",
+"pos": "",
+"s": "\\(7th\\) 第七",
+"g": "S"
+},
+{
+"w": "seventy",
+"ipa": "/'sevənti/",
+"pos": "",
+"s": "七十",
+"g": "S"
+},
+{
+"w": "several",
+"ipa": "/'sevərəl/",
+"pos": "",
+"s": "一些（但不多）;几个",
+"g": "S"
+},
+{
+"w": "shadow",
+"ipa": "",
+"pos": "",
+"s": "阴影，影子",
+"g": "S"
+},
+{
+"w": "shall",
+"ipa": "/ʃæl/",
+"pos": "",
+"s": "表示征求意见",
+"g": "S"
+},
+{
+"w": "share",
+"ipa": "/ʃeə/",
+"pos": "",
+"s": "分享",
+"g": "S"
+},
+{
+"w": "shark",
+"ipa": "/ʃɑ:k/",
+"pos": "",
+"s": "鲨鱼",
+"g": "S"
+},
+{
+"w": "sharpener",
+"ipa": "/'ʃɑ:pənə/",
+"pos": "",
+"s": "卷笔刀",
+"g": "S"
+},
+{
+"w": "she",
+"ipa": "/ʃiː/",
+"pos": "",
+"s": "她",
+"g": "S"
+},
+{
+"w": "sheep",
+"ipa": "/ʃiːp/",
+"pos": "",
+"s": "绵羊",
+"g": "S"
+},
+{
+"w": "shelf",
+"ipa": "/ʃelf/",
+"pos": "",
+"s": "书架.",
+"g": "S"
+},
+{
+"w": "shine",
+"ipa": "/ʃain/",
+"pos": "",
+"s": "照耀",
+"g": "S"
+},
+{
+"w": "ship",
+"ipa": "/ʃip/",
+"pos": "",
+"s": "（大）船；轮船",
+"g": "S"
+},
+{
+"w": "ship：",
+"ipa": "/ʃɪp/",
+"pos": "",
+"s": "船,舰",
+"g": "S"
+},
+{
+"w": "shirt",
+"ipa": "/ʃɜːt/",
+"pos": "",
+"s": "衬衫",
+"g": "S"
+},
+{
+"w": "shoe",
+"ipa": "/ʃuː/",
+"pos": "",
+"s": "鞋",
+"g": "S"
+},
+{
+"w": "shoe store",
+"ipa": "/ʃu:stɔ:/",
+"pos": "",
+"s": "鞋店",
+"g": "S"
+},
+{
+"w": "shoes",
+"ipa": "/ʃuːz/",
+"pos": "",
+"s": "鞋子",
+"g": "S"
+},
+{
+"w": "shop",
+"ipa": "/ʃɔp/",
+"pos": "",
+"s": "商店",
+"g": "S"
+},
+{
+"w": "short",
+"ipa": "/ʃɔ:t/",
+"pos": "",
+"s": "短的.；矮的",
+"g": "S"
+},
+{
+"w": "short hair",
+"ipa": "/ʃɔ:t/",
+"pos": "",
+"s": "短头发",
+"g": "S"
+},
+{
+"w": "shorter",
+"ipa": "",
+"pos": "",
+"s": "更矮，更短的",
+"g": "S"
+},
+{
+"w": "shorts",
+"ipa": "/ʃɔːts/",
+"pos": "",
+"s": "短裤",
+"g": "S"
+},
+{
+"w": "short—shorter",
+"ipa": "/ʃɔ:t/",
+"pos": "",
+"s": "更矮的",
+"g": "S"
+},
+{
+"w": "should",
+"ipa": "/ʃʊd/",
+"pos": "",
+"s": "应该；应当",
+"g": "S"
+},
+{
+"w": "Show",
+"ipa": "/ʃəu/",
+"pos": "v",
+"s": "t. 显示；演出；展出；说明vi. 显示；指示；说明n. 炫耀；显示；表演",
+"g": "S"
+},
+{
+"w": "shy",
+"ipa": "/ʃaɪ/",
+"pos": "",
+"s": "羞怯的；腼腆的；怕生的",
+"g": "S"
+},
+{
+"w": "sick",
+"ipa": "/sik/",
+"pos": "",
+"s": "不舒服的；有病的",
+"g": "S"
+},
+{
+"w": "side",
+"ipa": "/said/",
+"pos": "",
+"s": "边;面;侧;端",
+"g": "S"
+},
+{
+"w": "Sing",
+"ipa": "/siŋ/",
+"pos": "",
+"s": "（过去式sang[sæŋ ]）",
+"g": "S"
+},
+{
+"w": "sing English songs",
+"ipa": "/sɪŋ/",
+"pos": "",
+"s": "唱英文歌",
+"g": "S"
+},
+{
+"w": "Singapore",
+"ipa": "/ˌsɪŋgəˌpɔː/",
+"pos": "",
+"s": "新加坡",
+"g": "S"
+},
+{
+"w": "singer",
+"ipa": "/'siŋə/",
+"pos": "",
+"s": "歌唱家；歌手",
+"g": "S"
+},
+{
+"w": "sir",
+"ipa": "/sɜː/",
+"pos": "",
+"s": "（对男子的礼貌称呼）先生",
+"g": "S"
+},
+{
+"w": "sister",
+"ipa": "/'sɪstə/",
+"pos": "",
+"s": "姐；妹",
+"g": "S"
+},
+{
+"w": "sit",
+"ipa": "/sɪt/",
+"pos": "",
+"s": "坐",
+"g": "S"
+},
+{
+"w": "six",
+"ipa": "/sɪks/",
+"pos": "",
+"s": "六",
+"g": "S"
+},
+{
+"w": "sixteen",
+"ipa": "/'sɪksti/",
+"pos": "",
+"s": "十六",
+"g": "S"
+},
+{
+"w": "sixth",
+"ipa": "",
+"pos": "",
+"s": "\\(6th\\) 第六",
+"g": "S"
+},
+{
+"w": "sixty",
+"ipa": "/'siksti(:)/",
+"pos": "",
+"s": "六十",
+"g": "S"
+},
+{
+"w": "size",
+"ipa": "/saiz/",
+"pos": "",
+"s": "号码；尺码",
+"g": "S"
+},
+{
+"w": "skate",
+"ipa": "/skeit/",
+"pos": "",
+"s": "滑冰；滑冰鞋",
+"g": "S"
+},
+{
+"w": "skirt",
+"ipa": "/skɜːt/",
+"pos": "",
+"s": "女裙",
+"g": "S"
+},
+{
+"w": "sky",
+"ipa": "/skai/",
+"pos": "n.",
+"s": "天空",
+"g": "S"
+},
+{
+"w": "sled",
+"ipa": "/sled/",
+"pos": "",
+"s": "雪橇",
+"g": "S"
+},
+{
+"w": "sleep",
+"ipa": "/sli:p/",
+"pos": "",
+"s": "睡觉",
+"g": "S"
+},
+{
+"w": "sleeping",
+"ipa": "",
+"pos": "",
+"s": "（正在）睡觉",
+"g": "S"
+},
+{
+"w": "sleep—slept",
+"ipa": "/sli:p/",
+"pos": "",
+"s": "睡觉",
+"g": "S"
+},
+{
+"w": "slept",
+"ipa": "",
+"pos": "",
+"s": "睡觉",
+"g": "S"
+},
+{
+"w": "slippers",
+"ipa": "/'slipə/",
+"pos": "",
+"s": "拖鞋",
+"g": "S"
+},
+{
+"w": "slow",
+"ipa": "/sləʊ/",
+"pos": "",
+"s": "慢的",
+"g": "S"
+},
+{
+"w": "slow down",
+"ipa": "/sləʊ daʊn/",
+"pos": "",
+"s": "慢下来",
+"g": "S"
+},
+{
+"w": "small",
+"ipa": "/smɔːl/",
+"pos": "",
+"s": "小的",
+"g": "S"
+},
+{
+"w": "smaller",
+"ipa": "",
+"pos": "",
+"s": "（体型）更小的",
+"g": "S"
+},
+{
+"w": "small—smaller",
+"ipa": "/smɔːl/",
+"pos": "",
+"s": "（体型）更小",
+"g": "S"
+},
+{
+"w": "smart",
+"ipa": "/smɑ:t/",
+"pos": "",
+"s": "聪明的;巧妙的",
+"g": "S"
+},
+{
+"w": "smart-smarter",
+"ipa": "/smɑ:t/",
+"pos": "",
+"s": "更聪慧的",
+"g": "S"
+},
+{
+"w": "smarter",
+"ipa": "",
+"pos": "",
+"s": "更聪明的",
+"g": "S"
+},
+{
+"w": "snake",
+"ipa": "/sneik/",
+"pos": "",
+"s": "蛇",
+"g": "S"
+},
+{
+"w": "sneakers",
+"ipa": "/'sni:kəz/",
+"pos": "",
+"s": "胶底帆布鞋；网球鞋",
+"g": "S"
+},
+{
+"w": "snow",
+"ipa": "/snəu/",
+"pos": "",
+"s": "雪",
+"g": "S"
+},
+{
+"w": "snowman",
+"ipa": "",
+"pos": "",
+"s": "雪人",
+"g": "S"
+},
+{
+"w": "snowy",
+"ipa": "/snəʊi/",
+"pos": "",
+"s": "下雪的",
+"g": "S"
+},
+{
+"w": "so",
+"ipa": "/səʊ/",
+"pos": "",
+"s": "这么；那么",
+"g": "S"
+},
+{
+"w": "so much",
+"ipa": "/səumʌtʃ/",
+"pos": "",
+"s": "很;非常",
+"g": "S"
+},
+{
+"w": "Social Studies",
+"ipa": "/'səuʃəl 'stʌdiz/",
+"pos": "",
+"s": "社会课",
+"g": "S"
+},
+{
+"w": "sock",
+"ipa": "/sɒk/",
+"pos": "",
+"s": "短袜",
+"g": "S"
+},
+{
+"w": "socks",
+"ipa": "/sɔks/",
+"pos": "",
+"s": "袜子",
+"g": "S"
+},
+{
+"w": "sofa",
+"ipa": "/'səʊfə/",
+"pos": "",
+"s": "长沙发",
+"g": "S"
+},
+{
+"w": "Soil",
+"ipa": "/sɔil/",
+"pos": "",
+"s": "土壤",
+"g": "S"
+},
+{
+"w": "some",
+"ipa": "/sʌm/",
+"pos": "",
+"s": "一些",
+"g": "S"
+},
+{
+"w": "something",
+"ipa": "/'sʌmθiŋ/",
+"pos": "",
+"s": "某事物",
+"g": "S"
+},
+{
+"w": "sometimes",
+"ipa": "/'sʌmtaɪmz/",
+"pos": "",
+"s": "有时；间或",
+"g": "S"
+},
+{
+"w": "son",
+"ipa": "/sʌn/",
+"pos": "",
+"s": "儿子",
+"g": "S"
+},
+{
+"w": "song",
+"ipa": "/sɒŋ/",
+"pos": "",
+"s": "歌曲",
+"g": "S"
+},
+{
+"w": "soon",
+"ipa": "/su:n/",
+"pos": "",
+"s": "立刻；不久",
+"g": "S"
+},
+{
+"w": "sore",
+"ipa": "/sɔ:/",
+"pos": "",
+"s": "疼的",
+"g": "S"
+},
+{
+"w": "sorry",
+"ipa": "/'sɔ:ri/",
+"pos": "",
+"s": "对不起",
+"g": "S"
+},
+{
+"w": "sound",
+"ipa": "/saund/",
+"pos": "",
+"s": "听起来",
+"g": "S"
+},
+{
+"w": "soup",
+"ipa": "/suːp/",
+"pos": "",
+"s": "汤",
+"g": "S"
+},
+{
+"w": "sour",
+"ipa": "/'sauə/",
+"pos": "adj.",
+"s": "酸的",
+"g": "S"
+},
+{
+"w": "south",
+"ipa": "/sauθ/",
+"pos": "",
+"s": "南",
+"g": "S"
+},
+{
+"w": "space",
+"ipa": "/speɪs/",
+"pos": "",
+"s": "太空",
+"g": "S"
+},
+{
+"w": "Spain",
+"ipa": "",
+"pos": "",
+"s": "西班牙",
+"g": "S"
+},
+{
+"w": "Spanish",
+"ipa": "",
+"pos": "",
+"s": "西班牙的；西班牙语；西班牙人",
+"g": "S"
+},
+{
+"w": "speak",
+"ipa": "/spiːk/",
+"pos": "",
+"s": "会说；会讲",
+"g": "S"
+},
+{
+"w": "speak English",
+"ipa": "/spiːk/",
+"pos": "",
+"s": "说英语",
+"g": "S"
+},
+{
+"w": "speak to",
+"ipa": "/spi:k/",
+"pos": "",
+"s": "和…讲话",
+"g": "S"
+},
+{
+"w": "special",
+"ipa": "",
+"pos": "",
+"s": "特殊的；特别的",
+"g": "S"
+},
+{
+"w": "sperm whale",
+"ipa": "/spɜ:mweil/",
+"pos": "",
+"s": "抹香鲸",
+"g": "S"
+},
+{
+"w": "spoon",
+"ipa": "/spu:n/",
+"pos": "",
+"s": "勺子",
+"g": "S"
+},
+{
+"w": "sport",
+"ipa": "/spɔːt/",
+"pos": "",
+"s": "体育运动",
+"g": "S"
+},
+{
+"w": "sports",
+"ipa": "/spɔ:ts/",
+"pos": "",
+"s": "体育运动",
+"g": "S"
+},
+{
+"w": "sports meet",
+"ipa": "",
+"pos": "",
+"s": "运动会",
+"g": "S"
+},
+{
+"w": "spring",
+"ipa": "/spriŋ/",
+"pos": "",
+"s": "春天",
+"g": "S"
+},
+{
+"w": "Sprout",
+"ipa": "/spraut/",
+"pos": "",
+"s": "苗;芽;嫩芽",
+"g": "S"
+},
+{
+"w": "squid",
+"ipa": "/skwɪd/",
+"pos": "",
+"s": "鱿鱼",
+"g": "S"
+},
+{
+"w": "squirrel",
+"ipa": "/'skwirəl/",
+"pos": "",
+"s": "松鼠",
+"g": "S"
+},
+{
+"w": "star",
+"ipa": "",
+"pos": "",
+"s": "星星",
+"g": "S"
+},
+{
+"w": "start",
+"ipa": "/stɑ:t/",
+"pos": "",
+"s": "开始",
+"g": "S"
+},
+{
+"w": "stay",
+"ipa": "/stei/",
+"pos": "",
+"s": "在;逗留",
+"g": "S"
+},
+{
+"w": "stayed",
+"ipa": "",
+"pos": "",
+"s": "停留，待",
+"g": "S"
+},
+{
+"w": "stay—stayed",
+"ipa": "/stei/",
+"pos": "",
+"s": "停留",
+"g": "S"
+},
+{
+"w": "still",
+"ipa": "/stil/",
+"pos": "",
+"s": "仍然；依旧；还是",
+"g": "S"
+},
+{
+"w": "stop",
+"ipa": "/stɔp/",
+"pos": "",
+"s": "停；停车站",
+"g": "S"
+},
+{
+"w": "story -book",
+"ipa": "/'stɔ:ri/",
+"pos": "",
+"s": "故事书",
+"g": "S"
+},
+{
+"w": "storybook",
+"ipa": "/ˈstɔːrɪbʊk/",
+"pos": "",
+"s": "故事书",
+"g": "S"
+},
+{
+"w": "straight",
+"ipa": "/streit/",
+"pos": "",
+"s": "1. 笔直的;挺直的2、成直线地",
+"g": "S"
+},
+{
+"w": "strawberry",
+"ipa": "/'strɔːbəri/",
+"pos": "",
+"s": "草莓",
+"g": "S"
+},
+{
+"w": "stream",
+"ipa": "/stri:m/",
+"pos": "",
+"s": "（小）河",
+"g": "S"
+},
+{
+"w": "street",
+"ipa": "/striːt/",
+"pos": "",
+"s": "大街；街道",
+"g": "S"
+},
+{
+"w": "strict",
+"ipa": "/strɪkt/",
+"pos": "",
+"s": "要求严格的；严厉的",
+"g": "S"
+},
+{
+"w": "strong",
+"ipa": "/strɒŋ/",
+"pos": "",
+"s": "强壮的",
+"g": "S"
+},
+{
+"w": "stronger",
+"ipa": "",
+"pos": "",
+"s": "更强壮的",
+"g": "S"
+},
+{
+"w": "strong—stronger",
+"ipa": "/strɒŋ/",
+"pos": "",
+"s": "更强壮的",
+"g": "S"
+},
+{
+"w": "stuck",
+"ipa": "/stʌk/",
+"pos": "",
+"s": "陷住；无法移动",
+"g": "S"
+},
+{
+"w": "student",
+"ipa": "/'stjuːdənt/",
+"pos": "",
+"s": "学生",
+"g": "S"
+},
+{
+"w": "studies",
+"ipa": "/ˈstʌdiz/",
+"pos": "",
+"s": "（study 的第三人称单数形式）学习",
+"g": "S"
+},
+{
+"w": "study",
+"ipa": "/'stʌdi/",
+"pos": "",
+"s": "（过去式studied[ 'stʌdid ]）学习",
+"g": "S"
+},
+{
+"w": "subway",
+"ipa": "/ˈsʌbweɪ/",
+"pos": "",
+"s": "地铁",
+"g": "S"
+},
+{
+"w": "subway：",
+"ipa": "/'sʌbwei/",
+"pos": "",
+"s": "地铁",
+"g": "S"
+},
+{
+"w": "summer",
+"ipa": "/'sʌmə/",
+"pos": "",
+"s": "夏天",
+"g": "S"
+},
+{
+"w": "sun",
+"ipa": "/sʌn/",
+"pos": "",
+"s": "太阳",
+"g": "S"
+},
+{
+"w": "Sunday",
+"ipa": "/'sʌndi/",
+"pos": "",
+"s": "星期日",
+"g": "S"
+},
+{
+"w": "sunglasses",
+"ipa": "/'sʌŋglɑːsɪz/",
+"pos": "",
+"s": "太阳镜",
+"g": "S"
+},
+{
+"w": "sunny",
+"ipa": "/'sʌni/",
+"pos": "",
+"s": "阳光充足的",
+"g": "S"
+},
+{
+"w": "super",
+"ipa": "/'sju:pə/",
+"pos": "",
+"s": "太棒了太",
+"g": "S"
+},
+{
+"w": "supermarket",
+"ipa": "/ˈsjuːpəmɑːkɪt/",
+"pos": "",
+"s": "超市",
+"g": "S"
+},
+{
+"w": "sure",
+"ipa": "/ʃuə/",
+"pos": "",
+"s": "的确；一定",
+"g": "S"
+},
+{
+"w": "sushi",
+"ipa": "",
+"pos": "",
+"s": "寿司",
+"g": "S"
+},
+{
+"w": "sweater",
+"ipa": "/'swetə/",
+"pos": "",
+"s": "毛衣 .",
+"g": "S"
+},
+{
+"w": "sweep the floor",
+"ipa": "/swi:p ði:,flɔ:/",
+"pos": "",
+"s": "扫地",
+"g": "S"
+},
+{
+"w": "sweet",
+"ipa": "/swiːt/",
+"pos": "",
+"s": "含糖的；甜的",
+"g": "S"
+},
+{
+"w": "swim",
+"ipa": "/swim/",
+"pos": "",
+"s": "（过去式swam[ swæm]）",
+"g": "S"
+},
+{
+"w": "swing",
+"ipa": "/swiŋ/",
+"pos": "",
+"s": "荡;荡秋千",
+"g": "S"
+},
+{
+"w": "Sydney",
+"ipa": "/'sɪdni/",
+"pos": "",
+"s": "悉尼",
+"g": "S"
+},
+{
+"w": "T-shirt",
+"ipa": "",
+"pos": "",
+"s": "T恤衫",
+"g": "T"
+},
+{
+"w": "T-shirt T",
+"ipa": "",
+"pos": "",
+"s": "恤衫",
+"g": "T"
+},
+{
+"w": "table",
+"ipa": "/'teɪbl/",
+"pos": "",
+"s": "桌子",
+"g": "T"
+},
+{
+"w": "tail",
+"ipa": "/teɪl/",
+"pos": "",
+"s": "尾巴",
+"g": "T"
+},
+{
+"w": "take",
+"ipa": "/teik/",
+"pos": "",
+"s": "（过去式took[tʊk]）",
+"g": "T"
+},
+{
+"w": "take a dancing class",
+"ipa": "",
+"pos": "",
+"s": "上舞蹈课",
+"g": "T"
+},
+{
+"w": "take a deep breath",
+"ipa": "",
+"pos": "",
+"s": "深深吸一口气",
+"g": "T"
+},
+{
+"w": "take a trip",
+"ipa": "/teɪk ə trɪp/",
+"pos": "",
+"s": "去旅行",
+"g": "T"
+},
+{
+"w": "take pictures",
+"ipa": "/teik'piktʃəs/",
+"pos": "",
+"s": "照相",
+"g": "T"
+},
+{
+"w": "take turns",
+"ipa": "",
+"pos": "",
+"s": "按顺序来",
+"g": "T"
+},
+{
+"w": "take—took",
+"ipa": "/teik/",
+"pos": "",
+"s": "拍照",
+"g": "T"
+},
+{
+"w": "talk",
+"ipa": "/tɔ:k/",
+"pos": "",
+"s": "讲话",
+"g": "T"
+},
+{
+"w": "talk quietly",
+"ipa": "",
+"pos": "",
+"s": "小声讲话",
+"g": "T"
+},
+{
+"w": "tall",
+"ipa": "/tɔːl/",
+"pos": "",
+"s": "高的",
+"g": "T"
+},
+{
+"w": "taller",
+"ipa": "",
+"pos": "",
+"s": "更高的",
+"g": "T"
+},
+{
+"w": "tall—taller",
+"ipa": "/tɔːl/",
+"pos": "",
+"s": "更高的",
+"g": "T"
+},
+{
+"w": "taste",
+"ipa": "/teist/",
+"pos": "",
+"s": "品尝",
+"g": "T"
+},
+{
+"w": "tasty",
+"ipa": "/'teisti/",
+"pos": "adj.",
+"s": "好吃的;可口的",
+"g": "T"
+},
+{
+"w": "taxi",
+"ipa": "/ˈtæksi/",
+"pos": "",
+"s": "出租汽车",
+"g": "T"
+},
+{
+"w": "tea",
+"ipa": "/tiː/",
+"pos": "",
+"s": "茶；茶水",
+"g": "T"
+},
+{
+"w": "teach",
+"ipa": "/ti:tʃ/",
+"pos": "",
+"s": "教",
+"g": "T"
+},
+{
+"w": "teacher",
+"ipa": "/'tiːtʃə/",
+"pos": "",
+"s": "教师",
+"g": "T"
+},
+{
+"w": "teacher's",
+"ipa": "",
+"pos": "",
+"s": "desk 讲台",
+"g": "T"
+},
+{
+"w": "teacher's desk",
+"ipa": "/ˈtiːʧəz/",
+"pos": "",
+"s": "讲台",
+"g": "T"
+},
+{
+"w": "teacher's office",
+"ipa": "",
+"pos": "",
+"s": "教师办公室",
+"g": "T"
+},
+{
+"w": "teacher,s desk",
+"ipa": "/desk/",
+"pos": "",
+"s": "讲台",
+"g": "T"
+},
+{
+"w": "teacher,s-office",
+"ipa": "/'ɔfis/",
+"pos": "",
+"s": "教师办公室",
+"g": "T"
+},
+{
+"w": "teachers",
+"ipa": "",
+"pos": "",
+"s": "教师办公室",
+"g": "T"
+},
+{
+"w": "teachers'",
+"ipa": "",
+"pos": "",
+"s": "office 教师办公室",
+"g": "T"
+},
+{
+"w": "teaches",
+"ipa": "",
+"pos": "",
+"s": "教",
+"g": "T"
+},
+{
+"w": "tell",
+"ipa": "/tel/",
+"pos": "v.",
+"s": "告诉,说",
+"g": "T"
+},
+{
+"w": "ten",
+"ipa": "/ten/",
+"pos": "",
+"s": "十",
+"g": "T"
+},
+{
+"w": "tenth",
+"ipa": "",
+"pos": "",
+"s": "\\(10th\\) 第十",
+"g": "T"
+},
+{
+"w": "test",
+"ipa": "/test/",
+"pos": "",
+"s": "测试",
+"g": "T"
+},
+{
+"w": "than",
+"ipa": "/ðæn/",
+"pos": "",
+"s": "与…相比较",
+"g": "T"
+},
+{
+"w": "thank",
+"ipa": "/θæŋk/",
+"pos": "",
+"s": "谢谢",
+"g": "T"
+},
+{
+"w": "thanks",
+"ipa": "/θæŋks/",
+"pos": "",
+"s": "多谢",
+"g": "T"
+},
+{
+"w": "Thanksgiving",
+"ipa": "/θæŋks'giviŋ/",
+"pos": "",
+"s": "感恩节",
+"g": "T"
+},
+{
+"w": "that",
+"ipa": "/ðæt/",
+"pos": "",
+"s": "那；那个",
+"g": "T"
+},
+{
+"w": "the",
+"ipa": "",
+"pos": "",
+"s": "Great Wall 长城",
+"g": "T"
+},
+{
+"w": "the Great Wall",
+"ipa": "/ðəgreitwɔ:l/",
+"pos": "",
+"s": "长城",
+"g": "T"
+},
+{
+"w": "their",
+"ipa": "/ðeə/",
+"pos": "",
+"s": "他们的，她们的，它们的",
+"g": "T"
+},
+{
+"w": "theirs",
+"ipa": "",
+"pos": "",
+"s": "他们的；她们的；它们的",
+"g": "T"
+},
+{
+"w": "them",
+"ipa": "/ðem/",
+"pos": "",
+"s": "他（她、它）们（宾格）",
+"g": "T"
+},
+{
+"w": "theme park",
+"ipa": "/θi:mpɑ:k/",
+"pos": "",
+"s": "主题公园",
+"g": "T"
+},
+{
+"w": "then",
+"ipa": "/ðen/",
+"pos": "",
+"s": "然后,接着",
+"g": "T"
+},
+{
+"w": "then：",
+"ipa": "/ðen/",
+"pos": "",
+"s": "然后,接着",
+"g": "T"
+},
+{
+"w": "there",
+"ipa": "/ðeə/",
+"pos": "",
+"s": "\\(表示存在或发生\\)",
+"g": "T"
+},
+{
+"w": "these",
+"ipa": "/ði:z/",
+"pos": "",
+"s": "这些.",
+"g": "T"
+},
+{
+"w": "they",
+"ipa": "/ðei/",
+"pos": "pron.",
+"s": "他们",
+"g": "T"
+},
+{
+"w": "thin",
+"ipa": "/θɪn/",
+"pos": "",
+"s": "瘦的",
+"g": "T"
+},
+{
+"w": "thing",
+"ipa": "/θiŋ/",
+"pos": "",
+"s": "东西；物",
+"g": "T"
+},
+{
+"w": "think",
+"ipa": "/θiŋk/",
+"pos": "",
+"s": "想；思考",
+"g": "T"
+},
+{
+"w": "think—thought",
+"ipa": "/θiŋk/",
+"pos": "",
+"s": "想",
+"g": "T"
+},
+{
+"w": "thinner",
+"ipa": "/'θɪnə/",
+"pos": "",
+"s": "更瘦的",
+"g": "T"
+},
+{
+"w": "thin—thinner",
+"ipa": "/θɪn/",
+"pos": "",
+"s": "更瘦的",
+"g": "T"
+},
+{
+"w": "third",
+"ipa": "/θə:d/",
+"pos": "",
+"s": "a. 第三的",
+"g": "T"
+},
+{
+"w": "third (3rd)",
+"ipa": "",
+"pos": "",
+"s": "第三的",
+"g": "T"
+},
+{
+"w": "thirsty",
+"ipa": "/ˈθɜːsti/",
+"pos": "",
+"s": "渴的；口渴的",
+"g": "T"
+},
+{
+"w": "thirteen",
+"ipa": "/'θɜːtiːn/",
+"pos": "",
+"s": "十三",
+"g": "T"
+},
+{
+"w": "thirtieth",
+"ipa": "",
+"pos": "",
+"s": "\\(30th\\) 第三十",
+"g": "T"
+},
+{
+"w": "thirtieth (30th)",
+"ipa": "",
+"pos": "",
+"s": "第三十的",
+"g": "T"
+},
+{
+"w": "thirty",
+"ipa": "/'θɜːti/",
+"pos": "",
+"s": "三十",
+"g": "T"
+},
+{
+"w": "thirty-one",
+"ipa": "/ˌθɜːrti ˈwʌn/",
+"pos": "",
+"s": "三十一",
+"g": "T"
+},
+{
+"w": "this",
+"ipa": "/ðis/",
+"pos": "",
+"s": "这；这个",
+"g": "T"
+},
+{
+"w": "This afternoon",
+"ipa": "/ðis'ɑ:ftə'nu:n/",
+"pos": "",
+"s": "今天下午",
+"g": "T"
+},
+{
+"w": "This evening",
+"ipa": "/ðis'i:vniŋ/",
+"pos": "",
+"s": "今天晚上",
+"g": "T"
+},
+{
+"w": "this morning",
+"ipa": "/ðis'mɔ:niŋ/",
+"pos": "",
+"s": "今天上午",
+"g": "T"
+},
+{
+"w": "this way",
+"ipa": "/wei/",
+"pos": "",
+"s": "这边",
+"g": "T"
+},
+{
+"w": "those",
+"ipa": "/ðəuz/",
+"pos": "",
+"s": "那些.",
+"g": "T"
+},
+{
+"w": "thought",
+"ipa": "",
+"pos": "",
+"s": "(think的过去式) 想",
+"g": "T"
+},
+{
+"w": "three",
+"ipa": "/θriː/",
+"pos": "",
+"s": "三",
+"g": "T"
+},
+{
+"w": "Thursday",
+"ipa": "/'θɜːzdi/",
+"pos": "",
+"s": "星期四",
+"g": "T"
+},
+{
+"w": "tiger",
+"ipa": "/'taɪgə/",
+"pos": "",
+"s": "老虎",
+"g": "T"
+},
+{
+"w": "till",
+"ipa": "",
+"pos": "",
+"s": "直到",
+"g": "T"
+},
+{
+"w": "tip",
+"ipa": "/tip/",
+"pos": "",
+"s": "有用的小建议；实用的小提示",
+"g": "T"
+},
+{
+"w": "tired",
+"ipa": "/'taɪəd/",
+"pos": "",
+"s": "疲倦的",
+"g": "T"
+},
+{
+"w": "to",
+"ipa": "/tu:/",
+"pos": "",
+"s": "给；对",
+"g": "T"
+},
+{
+"w": "today",
+"ipa": "/tə'deɪ/",
+"pos": "",
+"s": "今天",
+"g": "T"
+},
+{
+"w": "tofu",
+"ipa": "/'təufu:/",
+"pos": "n.",
+"s": "豆腐",
+"g": "T"
+},
+{
+"w": "together",
+"ipa": "/tə'geðə/",
+"pos": "",
+"s": "一起的",
+"g": "T"
+},
+{
+"w": "tomato",
+"ipa": "/tə'meɪtəʊ/",
+"pos": "",
+"s": "西红柿",
+"g": "T"
+},
+{
+"w": "tomorrow",
+"ipa": "/təˈmɒrəʊ/",
+"pos": "",
+"s": "明天",
+"g": "T"
+},
+{
+"w": "tomoto",
+"ipa": "/tə'ma:təu/",
+"pos": "",
+"s": "西红柿",
+"g": "T"
+},
+{
+"w": "ton",
+"ipa": "/tʌn/",
+"pos": "",
+"s": "吨",
+"g": "T"
+},
+{
+"w": "tongue twister",
+"ipa": "/tʌŋ 'twistə/",
+"pos": "",
+"s": "绕口令",
+"g": "T"
+},
+{
+"w": "tonight",
+"ipa": "/təˈnaɪt/",
+"pos": "",
+"s": "在晚上",
+"g": "T"
+},
+{
+"w": "too",
+"ipa": "/tuː/",
+"pos": "",
+"s": "太；过于",
+"g": "T"
+},
+{
+"w": "too many",
+"ipa": "",
+"pos": "",
+"s": "太多了",
+"g": "T"
+},
+{
+"w": "took",
+"ipa": "",
+"pos": "",
+"s": "(take的过去式) 拍照",
+"g": "T"
+},
+{
+"w": "took pictures",
+"ipa": "",
+"pos": "",
+"s": "照相",
+"g": "T"
+},
+{
+"w": "tourist",
+"ipa": "/'tuərist/",
+"pos": "",
+"s": "旅行者；旅游者",
+"g": "T"
+},
+{
+"w": "toy",
+"ipa": "/tɔɪ/",
+"pos": "",
+"s": "玩具",
+"g": "T"
+},
+{
+"w": "traffic",
+"ipa": "/ˈtræfɪk/",
+"pos": "",
+"s": "交通",
+"g": "T"
+},
+{
+"w": "traffic light",
+"ipa": "/lait/",
+"pos": "",
+"s": "交通灯",
+"g": "T"
+},
+{
+"w": "traffic lights",
+"ipa": "/'træfiklaits/",
+"pos": "",
+"s": "交通灯",
+"g": "T"
+},
+{
+"w": "traffic rule",
+"ipa": "/ru:l/",
+"pos": "",
+"s": "交通规则",
+"g": "T"
+},
+{
+"w": "traffic：",
+"ipa": "/'træfik/",
+"pos": "",
+"s": "交通",
+"g": "T"
+},
+{
+"w": "train",
+"ipa": "/treɪn/",
+"pos": "",
+"s": "火车",
+"g": "T"
+},
+{
+"w": "train：",
+"ipa": "/trein/",
+"pos": "",
+"s": "火车",
+"g": "T"
+},
+{
+"w": "trash bin",
+"ipa": "/træʃ bin/",
+"pos": "",
+"s": "垃圾箱",
+"g": "T"
+},
+{
+"w": "travel",
+"ipa": "/ˈtrævl/",
+"pos": "",
+"s": "（尤指长途）旅行",
+"g": "T"
+},
+{
+"w": "tree",
+"ipa": "/triː/",
+"pos": "",
+"s": "树；树木；乔木",
+"g": "T"
+},
+{
+"w": "tried",
+"ipa": "/traid/",
+"pos": "",
+"s": "疲劳的；累的",
+"g": "T"
+},
+{
+"w": "trip",
+"ipa": "/trɪp/",
+"pos": "",
+"s": "旅行",
+"g": "T"
+},
+{
+"w": "truck",
+"ipa": "/trʌk/",
+"pos": "",
+"s": "象鼻",
+"g": "T"
+},
+{
+"w": "try",
+"ipa": "/trai/",
+"pos": "",
+"s": "尝试；试一下",
+"g": "T"
+},
+{
+"w": "try on",
+"ipa": "/ˈtraɪɒn/",
+"pos": "",
+"s": "试穿",
+"g": "T"
+},
+{
+"w": "Tuesday",
+"ipa": "/'tjuːzdi/",
+"pos": "",
+"s": "星期二",
+"g": "T"
+},
+{
+"w": "turn",
+"ipa": "/tɜːn/",
+"pos": "",
+"s": "转弯",
+"g": "T"
+},
+{
+"w": "turn：",
+"ipa": "/tə:n/",
+"pos": "",
+"s": "转弯",
+"g": "T"
+},
+{
+"w": "Turpan",
+"ipa": "",
+"pos": "",
+"s": "吐鲁番",
+"g": "T"
+},
+{
+"w": "TV",
+"ipa": "/‚tiː'viː/",
+"pos": "",
+"s": "电视",
+"g": "T"
+},
+{
+"w": "TV reporter",
+"ipa": "/ri'pɔ:tə/",
+"pos": "",
+"s": "电视台记者",
+"g": "T"
+},
+{
+"w": "TV room",
+"ipa": "",
+"pos": "",
+"s": "电视机房",
+"g": "T"
+},
+{
+"w": "twelfth",
+"ipa": "/twelfθ/",
+"pos": "",
+"s": "第十二;十二分之一",
+"g": "T"
+},
+{
+"w": "twelfth (12th)",
+"ipa": "",
+"pos": "",
+"s": "第十二的",
+"g": "T"
+},
+{
+"w": "twelve",
+"ipa": "/twelv/",
+"pos": "",
+"s": "十二",
+"g": "T"
+},
+{
+"w": "twentieth",
+"ipa": "/'twentiiθ/",
+"pos": "",
+"s": "第二十",
+"g": "T"
+},
+{
+"w": "twentieth (20th)",
+"ipa": "",
+"pos": "",
+"s": "第二十的",
+"g": "T"
+},
+{
+"w": "twenty",
+"ipa": "/'twenti/",
+"pos": "",
+"s": "二十一",
+"g": "T"
+},
+{
+"w": "twenty-first",
+"ipa": "",
+"pos": "",
+"s": "\\(21st\\) 第二十一",
+"g": "T"
+},
+{
+"w": "twenty-first (21st)",
+"ipa": "",
+"pos": "",
+"s": "第二十一的",
+"g": "T"
+},
+{
+"w": "twenty-second",
+"ipa": "",
+"pos": "",
+"s": "\\(22nd\\) 第二十二",
+"g": "T"
+},
+{
+"w": "twenty-third",
+"ipa": "",
+"pos": "",
+"s": "\\(23rd\\) 第二十三",
+"g": "T"
+},
+{
+"w": "twenty-third (23rd)",
+"ipa": "",
+"pos": "",
+"s": "第二十三的",
+"g": "T"
+},
+{
+"w": "twin",
+"ipa": "/twin/",
+"pos": "",
+"s": "双胞胎之一",
+"g": "T"
+},
+{
+"w": "two",
+"ipa": "/tuː/",
+"pos": "",
+"s": "二",
+"g": "T"
+},
+{
+"w": "type",
+"ipa": "/taɪp/",
+"pos": "",
+"s": "打字",
+"g": "T"
+},
+{
+"w": "UK",
+"ipa": "/juːˈkeɪ/",
+"pos": "",
+"s": "英国",
+"g": "U"
+},
+{
+"w": "umbrella",
+"ipa": "/ʌm'brelə/",
+"pos": "",
+"s": "雨伞",
+"g": "U"
+},
+{
+"w": "uncle",
+"ipa": "/ˈʌŋkl/",
+"pos": "",
+"s": "叔叔，舅舅，婕夫",
+"g": "U"
+},
+{
+"w": "under",
+"ipa": "/'ʌndə/",
+"pos": "",
+"s": "在…… 下面",
+"g": "U"
+},
+{
+"w": "university",
+"ipa": "/ˌjuːnɪˈvɜːsɪti/",
+"pos": "",
+"s": "大学",
+"g": "U"
+},
+{
+"w": "university student",
+"ipa": "/'ju:ni'və:siti 'stju:dənt/",
+"pos": "",
+"s": "大学生",
+"g": "U"
+},
+{
+"w": "up",
+"ipa": "/ʌp/",
+"pos": "",
+"s": "向上",
+"g": "U"
+},
+{
+"w": "us",
+"ipa": "/us/",
+"pos": "",
+"s": "我们（宾格）",
+"g": "U"
+},
+{
+"w": "USA",
+"ipa": "/juːesˈeɪ/",
+"pos": "",
+"s": "美国",
+"g": "U"
+},
+{
+"w": "use",
+"ipa": "/juːs/",
+"pos": "",
+"s": "使用",
+"g": "U"
+},
+{
+"w": "use a computer",
+"ipa": "/ju:z kəm'pju:tə/",
+"pos": "",
+"s": "使用电脑",
+"g": "U"
+},
+{
+"w": "usually",
+"ipa": "/'ju:ʒʊəli/",
+"pos": "",
+"s": "通常、一般",
+"g": "U"
+},
+{
+"w": "vacation",
+"ipa": "",
+"pos": "",
+"s": "假期",
+"g": "V"
+},
+{
+"w": "vapour",
+"ipa": "/'veipə/",
+"pos": "",
+"s": "蒸气；水汽",
+"g": "V"
+},
+{
+"w": "vegetable",
+"ipa": "/'vedʒɪtəbl/",
+"pos": "",
+"s": "蔬菜",
+"g": "V"
+},
+{
+"w": "very",
+"ipa": "/'veri/",
+"pos": "",
+"s": "很;非常",
+"g": "V"
+},
+{
+"w": "very much",
+"ipa": "/'veri mʌtʃ/",
+"pos": "",
+"s": "非常、很多",
+"g": "V"
+},
+{
+"w": "vest",
+"ipa": "/vest/",
+"pos": "",
+"s": "背心",
+"g": "V"
+},
+{
+"w": "village",
+"ipa": "/'vɪlɪdʒ/",
+"pos": "",
+"s": "村庄；村镇",
+"g": "V"
+},
+{
+"w": "violin",
+"ipa": "/,vaiə'lin/",
+"pos": "",
+"s": "小提琴",
+"g": "V"
+},
+{
+"w": "visit",
+"ipa": "/'vizit/",
+"pos": "",
+"s": "（过去式visited）看望",
+"g": "V"
+},
+{
+"w": "visit grandparents",
+"ipa": "/'vizit'græєərənts/",
+"pos": "",
+"s": "看望（外）祖父母",
+"g": "V"
+},
+{
+"w": "visitor",
+"ipa": "/'vizitə/",
+"pos": "",
+"s": "客人；参观者",
+"g": "V"
+},
+{
+"w": "wait",
+"ipa": "/weit/",
+"pos": "",
+"s": "等待;等等",
+"g": "W"
+},
+{
+"w": "waiter",
+"ipa": "/'weitə/",
+"pos": "n.",
+"s": "侍者,服务员",
+"g": "W"
+},
+{
+"w": "wake up",
+"ipa": "/weikʌp/",
+"pos": "",
+"s": "醒；醒来",
+"g": "W"
+},
+{
+"w": "wake—woke",
+"ipa": "/weɪk/",
+"pos": "",
+"s": "醒",
+"g": "W"
+},
+{
+"w": "walk",
+"ipa": "/wɔ:k/",
+"pos": "",
+"s": "走",
+"g": "W"
+},
+{
+"w": "walkman",
+"ipa": "/'wɔ:kmən/",
+"pos": "",
+"s": "随身听",
+"g": "W"
+},
+{
+"w": "wall",
+"ipa": "/wɔːl/",
+"pos": "",
+"s": "墙壁",
+"g": "W"
+},
+{
+"w": "want",
+"ipa": "/wɒnt/",
+"pos": "",
+"s": "要；想要",
+"g": "W"
+},
+{
+"w": "warm",
+"ipa": "/wɔːm/",
+"pos": "",
+"s": "温暖的",
+"g": "W"
+},
+{
+"w": "wash",
+"ipa": "/wɒʃ/",
+"pos": "",
+"s": "（过去式washed）洗",
+"g": "W"
+},
+{
+"w": "wash my clothes",
+"ipa": "/wɒʃ/",
+"pos": "",
+"s": "洗我的衣服",
+"g": "W"
+},
+{
+"w": "wash the clothes",
+"ipa": "/wɔʃ kləuðz/",
+"pos": "",
+"s": "洗衣服. .洗衣服",
+"g": "W"
+},
+{
+"w": "wash the windows",
+"ipa": "/wɔʃ 'windəʊz/",
+"pos": "",
+"s": "擦窗户",
+"g": "W"
+},
+{
+"w": "washed",
+"ipa": "",
+"pos": "",
+"s": "洗",
+"g": "W"
+},
+{
+"w": "washroom",
+"ipa": "/'wɔʃrum/",
+"pos": "",
+"s": "卫生间",
+"g": "W"
+},
+{
+"w": "wash—washed",
+"ipa": "/wɒʃ/",
+"pos": "",
+"s": "洗",
+"g": "W"
+},
+{
+"w": "watch",
+"ipa": "/wɒtʃ/",
+"pos": "",
+"s": "（过去式watched）看",
+"g": "W"
+},
+{
+"w": "watch insects",
+"ipa": "/wɔ:tʃ'insekts/",
+"pos": "",
+"s": "观察昆虫",
+"g": "W"
+},
+{
+"w": "watch TV",
+"ipa": "/wɔtʃ'ti:'vi:/",
+"pos": "",
+"s": "看电视",
+"g": "W"
+},
+{
+"w": "watched",
+"ipa": "",
+"pos": "",
+"s": "看",
+"g": "W"
+},
+{
+"w": "watches",
+"ipa": "",
+"pos": "",
+"s": "看",
+"g": "W"
+},
+{
+"w": "watch—watched",
+"ipa": "/wɒtʃ/",
+"pos": "",
+"s": "看",
+"g": "W"
+},
+{
+"w": "water",
+"ipa": "/'wɔːtə/",
+"pos": "",
+"s": "水",
+"g": "W"
+},
+{
+"w": "water bottle",
+"ipa": "/ˈwɔːtə/",
+"pos": "",
+"s": "水瓶",
+"g": "W"
+},
+{
+"w": "water the flowers",
+"ipa": "/'wɔ:təi: 'flauəs/",
+"pos": "",
+"s": "浇花",
+"g": "W"
+},
+{
+"w": "watermelon",
+"ipa": "/'wɔːtəmelən/",
+"pos": "",
+"s": "西瓜",
+"g": "W"
+},
+{
+"w": "way",
+"ipa": "/wei/",
+"pos": "",
+"s": "路；道",
+"g": "W"
+},
+{
+"w": "we",
+"ipa": "/wi:/",
+"pos": "",
+"s": "我们",
+"g": "W"
+},
+{
+"w": "we'll",
+"ipa": "/wiːl/",
+"pos": "",
+"s": "我们将……",
+"g": "W"
+},
+{
+"w": "we'll = we will",
+"ipa": "",
+"pos": "",
+"s": "我们将",
+"g": "W"
+},
+{
+"w": "wear",
+"ipa": "/weə/",
+"pos": "",
+"s": "戴",
+"g": "W"
+},
+{
+"w": "weather",
+"ipa": "/'weðə/",
+"pos": "",
+"s": "天气",
+"g": "W"
+},
+{
+"w": "weather report",
+"ipa": "/ri'pɔ:t/",
+"pos": "",
+"s": "天气预报",
+"g": "W"
+},
+{
+"w": "Wednesday",
+"ipa": "/'wenzdi/",
+"pos": "",
+"s": "星期三",
+"g": "W"
+},
+{
+"w": "Wednesday(Wed.)",
+"ipa": "/'wenzdei/",
+"pos": "",
+"s": "星期三",
+"g": "W"
+},
+{
+"w": "week",
+"ipa": "/wi:k/",
+"pos": "n.",
+"s": "一星期, 周",
+"g": "W"
+},
+{
+"w": "weekend",
+"ipa": "/'wiːk'end/",
+"pos": "",
+"s": "周末",
+"g": "W"
+},
+{
+"w": "welcome",
+"ipa": "/'welkəm/",
+"pos": "",
+"s": "欢迎",
+"g": "W"
+},
+{
+"w": "well",
+"ipa": "/ wel/",
+"pos": "",
+"s": "健康;身体好",
+"g": "W"
+},
+{
+"w": "well—better",
+"ipa": "/ wel/",
+"pos": "",
+"s": "更好的",
+"g": "W"
+},
+{
+"w": "went",
+"ipa": "",
+"pos": "",
+"s": "fishing 去钓鱼",
+"g": "W"
+},
+{
+"w": "went camping",
+"ipa": "",
+"pos": "",
+"s": "去野营",
+"g": "W"
+},
+{
+"w": "went fishing",
+"ipa": "",
+"pos": "",
+"s": "去钓鱼",
+"g": "W"
+},
+{
+"w": "west",
+"ipa": "/west/",
+"pos": "",
+"s": "西",
+"g": "W"
+},
+{
+"w": "what",
+"ipa": "/wɔt/",
+"pos": "",
+"s": "什么",
+"g": "W"
+},
+{
+"w": "what .for",
+"ipa": "/wɔt/",
+"pos": "",
+"s": "为什么",
+"g": "W"
+},
+{
+"w": "what about",
+"ipa": "/wɔt'əbaut/",
+"pos": "",
+"s": "怎么样?",
+"g": "W"
+},
+{
+"w": "when",
+"ipa": "/wen/",
+"pos": "",
+"s": "什么时候",
+"g": "W"
+},
+{
+"w": "where",
+"ipa": "/hwɛə/",
+"pos": "",
+"s": "在哪里；到哪里",
+"g": "W"
+},
+{
+"w": "which",
+"ipa": "/witʃ/",
+"pos": "",
+"s": "哪一个",
+"g": "W"
+},
+{
+"w": "white",
+"ipa": "/hwait/",
+"pos": "",
+"s": "白色的",
+"g": "W"
+},
+{
+"w": "who",
+"ipa": "/hu:/",
+"pos": "",
+"s": "谁",
+"g": "W"
+},
+{
+"w": "who is",
+"ipa": "/hu:/",
+"pos": "",
+"s": "是谁",
+"g": "W"
+},
+{
+"w": "whose",
+"ipa": "/huːz/",
+"pos": "",
+"s": "谁的",
+"g": "W"
+},
+{
+"w": "why",
+"ipa": "/wai/",
+"pos": "",
+"s": "为什么",
+"g": "W"
+},
+{
+"w": "will",
+"ipa": "/wɪl/",
+"pos": "",
+"s": "将要",
+"g": "W"
+},
+{
+"w": "win",
+"ipa": "/win/",
+"pos": "",
+"s": "（过去式won [wʌn]）赢",
+"g": "W"
+},
+{
+"w": "wind",
+"ipa": "/wind/",
+"pos": "",
+"s": "风",
+"g": "W"
+},
+{
+"w": "window",
+"ipa": "/'wɪndəʊ/",
+"pos": "",
+"s": "窗户",
+"g": "W"
+},
+{
+"w": "windy",
+"ipa": "/'wɪndi/",
+"pos": "",
+"s": "多风的",
+"g": "W"
+},
+{
+"w": "winter",
+"ipa": "/'wintə/",
+"pos": "",
+"s": "冬天",
+"g": "W"
+},
+{
+"w": "with",
+"ipa": "/wið/",
+"pos": "",
+"s": "同……；和……",
+"g": "W"
+},
+{
+"w": "woke",
+"ipa": "",
+"pos": "",
+"s": "(wake的过去式) 醒",
+"g": "W"
+},
+{
+"w": "woman",
+"ipa": "/'wʊmən/",
+"pos": "",
+"s": "女人",
+"g": "W"
+},
+{
+"w": "wonderful",
+"ipa": "/'wʌndəfəl/",
+"pos": "",
+"s": "极好的；了不起的",
+"g": "W"
+},
+{
+"w": "woods",
+"ipa": "/wʊdz/",
+"pos": "",
+"s": "树林",
+"g": "W"
+},
+{
+"w": "word book",
+"ipa": "",
+"pos": "",
+"s": "单词书",
+"g": "W"
+},
+{
+"w": "work",
+"ipa": "/wə:k/",
+"pos": "",
+"s": "工作",
+"g": "W"
+},
+{
+"w": "work.",
+"ipa": "/wə:k/",
+"pos": "",
+"s": "工作",
+"g": "W"
+},
+{
+"w": "worker",
+"ipa": "/ˈwɜːkə/",
+"pos": "",
+"s": "工人",
+"g": "W"
+},
+{
+"w": "world",
+"ipa": "/wɜːld/",
+"pos": "",
+"s": "世界",
+"g": "W"
+},
+{
+"w": "worried",
+"ipa": "/ˈwʌrid/",
+"pos": "",
+"s": "担心的；发愁的",
+"g": "W"
+},
+{
+"w": "worry",
+"ipa": "/'wʌri/",
+"pos": "",
+"s": "烦恼；忧虑",
+"g": "W"
+},
+{
+"w": "would Like",
+"ipa": "",
+"pos": "",
+"s": "就是want",
+"g": "W"
+},
+{
+"w": "wow",
+"ipa": "/waʊ/",
+"pos": "",
+"s": "哇；呀",
+"g": "W"
+},
+{
+"w": "Write",
+"ipa": "/rait/",
+"pos": "",
+"s": "写",
+"g": "W"
+},
+{
+"w": "write a letter",
+"ipa": "/rait'letə/",
+"pos": "",
+"s": "写信",
+"g": "W"
+},
+{
+"w": "write a report",
+"ipa": "/raitri'pɔ:t/",
+"pos": "",
+"s": "写报告",
+"g": "W"
+},
+{
+"w": "write an e-mail",
+"ipa": "/raitænmeil/",
+"pos": "",
+"s": "写电子邮件",
+"g": "W"
+},
+{
+"w": "Writer",
+"ipa": "/'raitə/",
+"pos": "",
+"s": "作家",
+"g": "W"
+},
+{
+"w": "wrong",
+"ipa": "/rɒŋ/",
+"pos": "",
+"s": "错误的",
+"g": "W"
+},
+{
+"w": "yeah",
+"ipa": "/jεə/",
+"pos": "",
+"s": "是;行",
+"g": "Y"
+},
+{
+"w": "year",
+"ipa": "",
+"pos": "",
+"s": "年",
+"g": "Y"
+},
+{
+"w": "yellow",
+"ipa": "/'jeləu/",
+"pos": "",
+"s": "黄色的",
+"g": "Y"
+},
+{
+"w": "yesterday",
+"ipa": "/'jestədi/",
+"pos": "",
+"s": "昨天",
+"g": "Y"
+},
+{
+"w": "yo-yo",
+"ipa": "/jəu/",
+"pos": "",
+"s": "溜溜球",
+"g": "Y"
+},
+{
+"w": "you",
+"ipa": "/ju:/",
+"pos": "",
+"s": "你；你们",
+"g": "Y"
+},
+{
+"w": "young",
+"ipa": "/jʌŋ/",
+"pos": "",
+"s": "年轻的；岁数不大的",
+"g": "Y"
+},
+{
+"w": "younger",
+"ipa": "",
+"pos": "",
+"s": "更年轻的",
+"g": "Y"
+},
+{
+"w": "young—younger",
+"ipa": "/jʌŋ/",
+"pos": "",
+"s": "更年轻的",
+"g": "Y"
+},
+{
+"w": "your",
+"ipa": "/jɔ:/",
+"pos": "",
+"s": "你的；你们的",
+"g": "Y"
+},
+{
+"w": "yours",
+"ipa": "/jʊəz/",
+"pos": "",
+"s": "你的；你们的",
+"g": "Y"
+},
+{
+"w": "yum",
+"ipa": "",
+"pos": "",
+"s": "味道很好",
+"g": "Y"
+},
+{
+"w": "yummy",
+"ipa": "/'jʌmi/",
+"pos": "",
+"s": "好吃的",
+"g": "Y"
+},
+{
+"w": "zoo",
+"ipa": "/zu:/",
+"pos": "",
+"s": "动物园动物园",
+"g": "Z"
+}
+]

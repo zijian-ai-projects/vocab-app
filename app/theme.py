@@ -202,10 +202,16 @@ QPushButton#row {
 QPushButton#row:hover { background: %(chip_bg)s; }
 QPushButton#book {
     background: %(opt_bg)s; color: %(opt_fg)s; border-radius: 14px;
-    text-align: left; padding: 14px 16px; font-size: 15px;
+    text-align: left; padding: 10px 16px; font-size: 15px;
 }
 QPushButton#book:hover { background: %(opt_hover)s; }
 QPushButton#book[on="1"] { background: %(chip_sel)s; color: %(chip_sel_fg)s; }
+QScrollArea { background: transparent; border: none; }
+QScrollBar:vertical { background: transparent; width: 6px; margin: 0; }
+QScrollBar::handle:vertical { background: %(chip_bg)s; border-radius: 3px; min-height: 28px; }
+QScrollBar::handle:vertical:hover { background: %(muted)s; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: transparent; }
 """
 
 
