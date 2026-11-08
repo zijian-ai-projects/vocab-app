@@ -1,25 +1,45 @@
 # -*- coding: utf-8 -*-
 """布局自检：缩小/展开两档的字号、留白、控件是否够放、齿轮图标是否画出来。
 
-结果写到 data/_layout.txt（控制台是 GBK，别直接 print 中文）。
+V1.2.1 起使用 ui_test_support 沙箱：
+  * 不删除/覆盖真实 data/progress.json、data/_win.json（退出时只校验，不回滚）；
+  * 报告和截图写临时输出目录并打印路径（不写 data/）；
+  * 失败时 exit 非 0。
 """
 import os, sys, io, json, time, re
 
 APP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(APP, "app"))
-sys.argv = [sys.argv[0], "--nottest"]          # main 里读的是 sys.argv
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.argv = [sys.argv[0], "--nottest"]          # only 屏蔽周期测试；首次引导仍生效
+
+from ui_test_support import Sandbox, set_nottest, new_app
+set_nottest(True)
 
 from PyQt5.QtWidgets import QApplication, QLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFontMetrics
 import main as app_main
 
-prog = os.path.join(app_main.DATA, "progress.json")
-if os.path.exists(prog):
-    os.remove(prog)
+app = new_app(sys.argv)
+sb = Sandbox(app_main, "compact")
+sb.__enter__()
 
-app = QApplication(sys.argv)
-w = app_main.Card()
+# 用“已有用户”的隔离进度，启动后直接是学习页（不碰真实 progress）
+sb.write_progress({
+    "welcome_done": True,
+    "book_confirmed": True,
+    "book": "cet6-dg",
+    "theme": "light",
+    "states": {},
+    "cursors": {},
+    "orders": {},
+    "history": [{"ts": int(time.time()) - 3600, "vocab": 5000, "right": 20,
+                 "dontknow": 8, "total": 50, "theta": 0.2, "se": 0.5,
+                 "baseline": True, "known": 3000, "to_learn": 10000,
+                 "rigor": 90, "err": 10, "lo": 4500, "hi": 5500}],
+})
+w = sb.new_card(show=True)
 w.show()
 pump = lambda n=6: [app.processEvents() for _ in range(n)]
 pump()
@@ -89,8 +109,8 @@ for compact, tag in ((True, "缩小"), (False, "展开")):
     bar_top = w.front_bar.mapTo(w, w.front_bar.rect().topLeft()).y()
     mean_bot = w.meaning.mapTo(w, w.meaning.rect().bottomLeft()).y()
     check(mean_bot < bar_top, "释义底 %d < 按钮顶 %d" % (mean_bot, bar_top))
-    w.grab().save(os.path.join(app_main.DATA, "_layout_%s_longmean.png"
-                               % ("compact" if compact else "normal")))
+    w.grab().save(sb.shot("_layout_%s_longmean.png"
+                          % ("compact" if compact else "normal")))
 
     if compact:
         check(not w.btn_gear.isVisible(), "小窗隐藏齿轮")
@@ -105,7 +125,7 @@ for compact, tag in ((True, "缩小"), (False, "展开")):
     check(w.word.width() <= w.width(), "长词宽度 %d ≤ 窗口 %d" % (w.word.width(), w.width()))
     out.append("       长词：%s" % w.word.text())
     tag_f = "compact" if compact else "normal"
-    w.grab().save(os.path.join(app_main.DATA, "_layout_%s_front.png" % tag_f))
+    w.grab().save(sb.shot("_layout_%s_front.png" % tag_f))
 
     # 正面 → 翻面：位置不能动，答案要淡入到全不透明
     top_before = w.meaning.mapTo(w, w.meaning.rect().topLeft()).y()
@@ -116,7 +136,7 @@ for compact, tag in ((True, "缩小"), (False, "展开")):
             break
         time.sleep(0.01)
     pump(2)
-    w.grab().save(os.path.join(app_main.DATA, "_layout_%s_back.png" % tag_f))
+    w.grab().save(sb.shot("_layout_%s_back.png" % tag_f))
     y_back = w.meaning.mapTo(w, w.meaning.rect().topLeft()).y()
     check(y_back == top_before, "翻面 位置一致（%d vs %d）" % (y_back, top_before))
     check(abs(w.answer_effect.opacity() - 1.0) < 0.01,
@@ -200,10 +220,14 @@ for name, btn in (("min", w.btn_min), ("gear", w.btn_gear)):
     w.grab().copy(tl.x() - 3, tl.y() - 3, btn.width() + 6, btn.height() + 6).scaled(
         (btn.width() + 6) * 8, (btn.height() + 6) * 8,
         Qt.KeepAspectRatio, Qt.SmoothTransformation).save(
-        os.path.join(app_main.DATA, "_layout_icon_%s.png" % name))
-out.append("放大图：_layout_icon_min.png / _layout_icon_gear.png（8 倍）")
+        sb.shot("_layout_icon_%s.png" % name))
+out.append("放大图：_layout_icon_min.png / _layout_icon_gear.png（8 倍，见输出目录）")
 
 out.append("")
-out.append("全部通过 ✓" if not fails else "失败 %d 项：%s" % (len(fails), " / ".join(fails)))
-io.open(os.path.join(app_main.DATA, "_layout.txt"), "w", encoding="utf-8").write("\n".join(out))
-print("WROTE %d LINES; FAILS %d" % (len(out), len(fails)))
+if fails:
+    out.append("失败 %d 项：%s" % (len(fails), " / ".join(fails)))
+else:
+    out.append("全部通过 ✓")
+sb.__exit__(None, None, None)
+rc = sb.finish(out, fails, "_layout.txt")
+sys.exit(rc)

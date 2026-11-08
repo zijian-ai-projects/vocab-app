@@ -1,30 +1,35 @@
 # -*- coding: utf-8 -*-
 """冒烟自检 v1.2：大词库 / 三级词书导航 / 全选并集 / 教材系列 / 引导 / 学习 / 设置 / 阶梯测试 / 历史。
 
-V1.1 的检查项全部保留（数据、引导、学习、测试、设置、历史），只是把「11 本平铺词书」
-换成 V2 的三级目录（主类 → 分组 → 词书/并集），并新增全选并集、教材系列并集、
-伪 id 持久化、旧 id 兼容等检查。
+V1.2.1：改为 ui_test_support 沙箱运行（不删/不改真实 data/progress.json、_win.json），
+并补上首次选书空选择、未确认重启、标题返回槽、按钮统一、设置去掌握行等断言。
 """
 import os, sys, io, json, time
 
 APP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(APP, "app"))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.argv = [sys.argv[0], "--nottest"]
 
-from PyQt5.QtWidgets import QApplication
+from ui_test_support import (configure_qt, Sandbox, set_nottest, new_app,
+                             REAL_PROGRESS, REAL_WIN)
+configure_qt("offscreen")
+set_nottest(True)
+
+from PyQt5.QtWidgets import QApplication, QLabel
+from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtTest import QTest
 import main as app_main
 import theme as th
 import books as bk
 import placement as pl
 
-prog = os.path.join(app_main.DATA, "progress.json")
-if os.path.exists(prog):
-    os.remove(prog)
-
-app = QApplication(sys.argv)
-w = app_main.Card()
+app = new_app(sys.argv)
+sb = Sandbox(app_main, "smoke")
+sb.__enter__()
 out = []
 fails = []
+w = sb.new_card(progress={}, show=True)
 
 
 def pump(n=6):
@@ -58,6 +63,18 @@ def series_words(group_id, series):
     return out
 
 
+def title_pixel_size(widget):
+    size = widget.fontInfo().pixelSize()
+    if size < 0:
+        size = widget.font().pixelSize()
+    if size < 0:
+        import re
+        m = re.search(r"font-size:\s*(\d+)px", widget.styleSheet())
+        if m:
+            size = int(m.group(1))
+    return size
+
+
 pump()
 
 # ---- 1. 大词库 ----
@@ -86,7 +103,7 @@ check(len(bk.all()) == len(groups) + len(items),
       "扁平目录 %d = %d 个并集 + %d 本词书" % (len(bk.all()), len(groups), len(items)))
 check(len({b["id"] for b in bk.all()}) == len(bk.all()), "词书 id 无重复")
 check(bk.DEFAULT == "cet6-dg" and bk.get("cet6")["id"] == "cet6-all",
-      "默认词书 = 六级大纲；旧 id cet6 仍映射到六级并集")
+      "旧进度兜底值 = 六级大纲；旧 id cet6 仍映射到六级并集")
 check(bk.size("cet6") == bk.size("cet6-all"),
       "旧 id 兼容：cet6 -> cet6-all，%s 词" % format(bk.size("cet6"), ","))
 check(bk.size("kaobo") == bk.size("kaoyan-all"),
@@ -108,17 +125,22 @@ b = bk.get("cet6-all")
 check(b["path"] == ["大学", "六级"] and b["display"] == "六级词汇大全",
       "三级路径：%s" % bk.path("cet6-all"))
 
-# ---- 3. 首次打开：引导页 ----
-w._startup(force=True)
+# ---- 3. 首次打开：Card 创建即为引导页（不再先闪学习页） ----
 check(w.mode == "welcome", "首次打开 -> 引导页，实际 %s" % w.mode)
+check(w.book_id is None and w.sel_book is None,
+      "首次打开无默认书：book_id=%r sel_book=%r" % (w.book_id, w.sel_book))
+check(w.queue == [] and w.queue_words == [],
+      "首次打开不预拉词：queue=%r queue_words=%r" % (len(w.queue), len(w.queue_words)))
+check(not w.progress.get("book_confirmed"), "首次打开未写 book_confirmed")
 texts = [lbl.text() for lbl in w.welcome_page.findChildren(app_main.QLabel)]
 check(any("测试结果会影响学习内容" in t and "自动跳过" in t for t in texts), "引导页说明")
 check(any("约 5 分钟" in t and "50 题" in t for t in texts), "引导页小字：约 5 分钟 · 50 题")
 check(not any(("中途可以跳过" in t) or ("之后想测" in t) for t in texts), "引导页没有多余小字")
 check(th.DEFAULT == "light" and w.theme_key == "light", "默认主题为亮色")
 
-# ---- 4. 不测了 -> 第 1 级：主类列表 ----
-w._welcome_skip()
+# ---- 4. 不测了 -> 第 1 级：主类列表（空选择） ----
+w.btn_welcome_skip.click()
+pump(8)
 check(w.mode == "books" and w.nav_level == 1,
       "不测了 -> 三级词书导航第 1 级，实际 %s/%s" % (w.mode, w.nav_level))
 check(len(w.book_btns) == 8, "第 1 级列出 %d 个主类" % len(w.book_btns))
@@ -132,12 +154,31 @@ check(not any(("个分组" in t) or ("本词书" in t) or ("词" in t) for t in
               [r["text"] for r in w.nav_rows] + [w.books_lead.text()]),
       "第 1 级没有词书数/词数")
 check(w.book_scroll.isVisible(), "第 1 级列表可滚动")
-check(w.status.text().startswith("已学 "),
-      "顶部显示当前选择统计：%s" % w.status.text())
-check(w.lab_book_stat.text() ==
-      w._book_path(w.sel_book) + " · " + format(bk.size(w.sel_book), ",") + " 词",
-      "底部显示当前选择路径与词数：%s" % w.lab_book_stat.text())
-check(w.chip_seq.text() == "顺序" and w.chip_shuf.text() == "乱序", "保留 顺序/乱序 两个选择")
+check(w.sel_book is None, "首次选书没有默认选中")
+check(not any(b.property("on") == "1" for b in w.book_btns.values()),
+      "首次选书没有任何行高亮")
+check(not w.btn_learn.isEnabled(), "首次选书开始按钮禁用")
+check(w.btn_learn.text() == "用这本开始",
+      "首次选书按钮统一「用这本开始」：%r" % w.btn_learn.text())
+check(w.status.text() == "", "选书页顶部不再显示已学/已会/掌握：%r" % w.status.text())
+check(w.lab_book_stat.text() == "", "首次选书底部无当前书统计：%r" % w.lab_book_stat.text())
+check(not w.btn_back.isVisibleTo(w), "初次主分类返回图标隐藏")
+check(hasattr(w, "back_slot") and (w.back_slot.width(), w.back_slot.height()) == (22, 20),
+      "返回槽保留 22×20")
+check(title_pixel_size(w.page_title) == 15,
+      "标题字号 15px，实际 %s" % title_pixel_size(w.page_title))
+_pos = w.page_title.mapTo(w, QPoint(0, 0))
+check((_pos.x(), _pos.y()) == (54, 14),
+      "初始标题几何 = (54,14)，实际 %r" % ((_pos.x(), _pos.y()),))
+check((w.width(), w.height()) == (520, 430),
+      "窗口 520×430，实际 %r" % ((w.width(), w.height()),))
+# 初次主分类的 Esc / 隐藏返回不能退出
+w._page_back()
+check(w.mode == "books" and w.isVisible(), "初次主分类 _page_back 不退出")
+QTest.keyClick(w, Qt.Key_Escape)
+check(w.mode == "books" and w.isVisible(), "初次主分类 Esc 不退出")
+check(w.chip_seq.text() == "顺序" and w.chip_shuf.text() == "乱序",
+      "保留 顺序/乱序 两个选择")
 
 # ---- 5. 第 1 级 -> 第 2 级 -> 返回 ----
 w._nav_into_main("university")
@@ -291,8 +332,8 @@ check(len(w.queue_words) == bk.size("gre-all"),
 seed1 = (w.orders.get("gre-all") or {}).get("seed")
 first_shuf = w.queue_words[0]["w"]
 w.save()
-w2 = app_main.Card()
-w2._startup(force=True)
+w2 = sb.new_card(show=True)
+pump(8)
 check(w2.book_id == "gre-all" and w2.order_mode == "shuffle", "重启后记住书 + 乱序")
 check(w2.queue_words[0]["w"] == first_shuf, "乱序 seed 稳定：%s" % first_shuf)
 stop_timer(w, w2)
@@ -316,13 +357,26 @@ w2.open_settings()
 check(w2.mode == "settings", "齿轮 -> 设置页")
 expect_path = " · ".join(bk.get("cet6-all")["path"] + [bk.get("cet6-all")["display"]])
 check(w2.lab_book.text() == expect_path, "设置页显示词书路径：%s" % w2.lab_book.text())
-check(("/ %s" % format(bk.size("cet6-all"), ",")) in w2.lab_book_num.text(),
+check("/ %s" % format(bk.size("cet6-all"), ",") in w2.lab_book_num.text(),
       "设置页已学/总：%s" % w2.lab_book_num.text())
-check("已掌握" in w2.lab_progress.text() and "测试判定已会" in w2.lab_progress.text(),
-      "设置页进度行：%s" % w2.lab_progress.text())
+_settings_texts = "\n".join(str(lbl.text() or "") for lbl in w2.settings_page.findChildren(QLabel))
+check("已掌握" not in _settings_texts and "测试判定已会" not in _settings_texts,
+      "设置页不再显示已掌握/测试判定已会")
+check(hasattr(w2, "lab_progress") is False,
+      "设置页已删除 lab_progress 控件")
 w2.open_books("settings")
-check(w2.mode == "books" and w2.nav_level == 1 and w2.btn_back.isVisible(),
+pump(6)
+check(w2.mode == "books" and w2.nav_level == 1 and w2.btn_back.isVisibleTo(w2),
       "设置页「更换」-> 第 1 级，返回键可见")
+check(w2.back_slot.isVisibleTo(w2) and (w2.back_slot.width(), w2.back_slot.height()) == (22, 20),
+      "设置入口返回槽 22×20 仍占位")
+_pos2 = w2.page_title.mapTo(w2, QPoint(0, 0))
+check((_pos2.x(), _pos2.y()) == (54, 14),
+      "设置入口标题几何 = (54,14)，实际 %r" % ((_pos2.x(), _pos2.y()),))
+check(title_pixel_size(w2.page_title) == 15,
+      "设置入口标题字号 15px，实际 %s" % title_pixel_size(w2.page_title))
+check((w2.width(), w2.height()) == (520, 430),
+      "设置入口窗口 520×430，实际 %r" % ((w2.width(), w2.height()),))
 w2._page_back()
 check(w2.mode == "settings", "第 1 级返回键（设置进入）-> 设置页")
 
@@ -371,8 +425,8 @@ check(w2.quiz_i == 2 and len(w2.quiz_resp) == 3, "已答 %d 题" % len(w2.quiz_r
 w2.save()
 
 # ---- 17. 关掉重开：续测 ----
-w3 = app_main.Card()
-w3._startup(force=True)
+w3 = sb.new_card(show=True)
+pump(8)
 check(w3.mode == "quiz" and w3.quiz_i == 2, "重开后继续第 %d 题" % (w3.quiz_i + 1))
 w3.skip_test()
 check(w3.progress.get("snooze_until", 0) > time.time(), "24h 内不再弹")
@@ -407,21 +461,40 @@ check(known <= total, "词书已会 %s / %s" % (format(known, ","), format(total
 check("严谨度" in w3.res_sub.text(), "结果页有严谨度")
 stop_timer(w2, w3)
 
-# ---- 19. 满 30 天再弹测试 ----
+# ---- 19. 周期测试：--nottest 屏蔽；去掉后满 30 天自动弹 ----
 for h in w3.progress["history"]:
     h["ts"] -= 31 * 86400
 w3.save()
-w3._startup(force=True)
-check(w3.mode == "quiz", "超过 30 天 -> 再次弹测试，实际 %s" % w3.mode)
 stop_timer(w3)
+w3.close()
+pump(4)
+set_nottest(True)
+w_nt = sb.new_card(show=True)
+pump(8)
+check(w_nt.mode == "front", "--nottest 下周期测试被屏蔽，实际 %s" % w_nt.mode)
+check(not w_nt.progress.get("quiz_session"), "--nottest 下没有生成 quiz_session")
+stop_timer(w_nt)
+w_nt.close()
+pump(4)
+set_nottest(False)
+try:
+    w_t = sb.new_card(show=True)
+    pump(8)
+    check(w_t.mode == "quiz", "去掉 --nottest 后满 30 天自动弹测试，实际 %s" % w_t.mode)
+    stop_timer(w_t)
+    w_t.close()
+    pump(4)
+finally:
+    set_nottest(True)
 
-# ---- 20. 教材系列伪 id 重启恢复 ----
+# ---- 20. 教材系列伪 id 重启恢复（已确认用户） ----
 expected_series = series_words("gz-text", "人教版")
 w3.progress["book"] = series_id
+w3.progress["book_confirmed"] = True
 w3.progress.setdefault("cursors", {})[series_id] = 0
 w3.save()
-w4 = app_main.Card()
-w4._startup(force=True)
+w4 = sb.new_card(show=True)
+pump(8)
 check(w4.book_id == series_id, "重启后恢复系列并集 book id：%s" % w4.book_id)
 check(len(w4.queue_words) == len(expected_series),
       "重启后系列队列 %s 词" % format(len(w4.queue_words), ","))
@@ -432,11 +505,12 @@ check(w4.lab_book_num.text().endswith("/ " + format(len(expected_series), ",")),
       "设置页显示伪 id 词数：%s" % w4.lab_book_num.text())
 stop_timer(w4)
 
-# ---- 21. 旧进度里的 V1.1 词书 id 自动映射 ----
+# ---- 21. 旧进度里的 V1.1 词书 id 自动映射（已确认用户） ----
 w4.progress["book"] = "cet6"
+w4.progress["book_confirmed"] = True
 w4.save()
-w5 = app_main.Card()
-w5._startup(force=True)
+w5 = sb.new_card(show=True)
+pump(8)
 check(w5.book_id == "cet6-all", "旧 book id cet6 重启 -> cet6-all")
 check(len(w5.queue_words) == bk.size("cet6-all"),
       "旧 id 映射后队列 %s 词" % format(len(w5.queue_words), ","))
@@ -446,8 +520,12 @@ check(w5._resolve_saved_book("kaobo") == "kaoyan-all", "旧 id kaobo 解析 -> k
 stop_timer(w5)
 
 # ---- 22. 紧凑模式 356×196 / 最小化按钮不回归 ----
+w5.open_books("settings")
+pump(6)
+w5._pick_book(w5.book_id)
 w5._start_learning()
-check(w5.mode == "front", "继续学习 -> 正面卡片")
+pump(6)
+check(w5.mode == "front", "确认选书后继续学习 -> 正面卡片，实际 %s" % w5.mode)
 w5.toggle_compact()
 check(w5.compact and (w5.width(), w5.height()) == (356, 196),
       "缩小 -> %d×%d" % (w5.width(), w5.height()))
@@ -461,39 +539,54 @@ w5._show_empty()
 check(w5.word.text().startswith(w5._book_name(w5.book_id)),
       "学习页空状态显示当前词书名称：%s" % w5.word.text())
 
-# ---- 23. 首次引导选测试：结束 / 跳过都去选词书 ----
-w6 = app_main.Card()
-w6.progress["welcome_done"] = False
-w6.progress.pop("snooze_until", None)
-w6.progress.pop("quiz_session", None)
-w6.save()
-w6._startup(force=True)
-check(w6.mode == "welcome", "重新进入首次引导")
-w6._welcome_test()
+# ---- 23. 首次引导选测试：跳过 / 结束都去空选书 ----
+stop_timer(w5)
+w5.close()
+pump(4)
+sb.write_progress({})
+w6 = sb.new_card(show=True)
+pump(8)
+check(w6.mode == "welcome", "重置隔离进度后重新进入首次引导，实际 %s" % w6.mode)
+w6.btn_welcome_test.click()
+pump(6)
 check(w6.mode == "quiz" and w6.progress.get("quiz_from_welcome") is True,
       "引导里点测试 -> 进入测试，并记下来源")
 w6.skip_test()
+pump(8)
 check(w6.mode == "books" and w6.nav_level == 1 and not w6.progress.get("quiz_from_welcome"),
       "跳过首次测试 -> 直接进词书选择（第 1 级）")
-w6.progress["welcome_done"] = False
-w6.progress.pop("snooze_until", None)
-w6.save()
-w6._startup(force=True)
-w6._welcome_test()
-w6.quiz_timer.stop()
-while len(w6.quiz_resp) < app_main.QUIZ_N:
-    it = w6.quiz_items[w6.quiz_i]
-    w6._quiz_answer(it["correct"] if it["lvl"] <= 6 else (it["correct"] + 1) % 4)
-    w6.quiz_timer.stop()
-    if len(w6.quiz_resp) < app_main.QUIZ_N:
-        w6._quiz_next()
-w6._finish_quiz()
-check(w6.mode == "result", "走完首次测试 -> 结果页")
-check(w6.btn_start.text() == "选择词书" and w6.result_ctx == "welcome_test",
-      "首次测试结果主按钮是「选择词书」")
-w6._result_primary()
-check(w6.mode == "books" and w6.nav_level == 1, "首次测试结束 -> 词书选择（第 1 级）")
+check(w6.sel_book is None and not w6.btn_learn.isEnabled(),
+      "跳过首次测试后是空选书（无默认选择、按钮禁用）")
+check(not w6.progress.get("book_confirmed"), "跳过首次测试不算确认书")
 stop_timer(w6)
+w6.close()
+pump(4)
+
+sb.write_progress({})
+w6b = sb.new_card(show=True)
+pump(8)
+check(w6b.mode == "welcome", "再次重置 -> 首次引导")
+w6b.btn_welcome_test.click()
+pump(6)
+w6b.quiz_timer.stop()
+while len(w6b.quiz_resp) < app_main.QUIZ_N:
+    it = w6b.quiz_items[w6b.quiz_i]
+    w6b._quiz_answer(it["correct"] if it["lvl"] <= 6 else (it["correct"] + 1) % 4)
+    w6b.quiz_timer.stop()
+    if len(w6b.quiz_resp) < app_main.QUIZ_N:
+        w6b._quiz_next()
+w6b._finish_quiz()
+check(w6b.mode == "result", "走完首次测试 -> 结果页")
+check(w6b.btn_start.text() == "选择词书" and w6b.result_ctx == "welcome_test",
+      "首次测试结果主按钮是「选择词书」")
+w6b._result_primary()
+pump(8)
+check(w6b.mode == "books" and w6b.nav_level == 1, "首次测试结束 -> 词书选择（第 1 级）")
+check(w6b.sel_book is None and not w6b.btn_learn.isEnabled(),
+      "首次测试结束也是空选书（无默认选择、按钮禁用）")
+check(not w6b.progress.get("book_confirmed"), "首次测试结束不算确认书")
+stop_timer(w6b)
+w6b.close()
 
 # ---- 24. 主题完整性 ----
 check(not th.missing(), "所有主题颜色齐全（缺 %s）" % (th.missing(),))
@@ -517,13 +610,6 @@ for key, t in th.THEMES.items():
     s = th.qss(t)
     check("%(" not in s and "#" in s, "主题 %s 的 QSS 渲染正常" % key)
 
-out.append("")
-out.append("全部通过 ✓" if not fails else "失败 %d 项：%s" % (len(fails), " / ".join(fails)))
-io.open(os.path.join(app_main.DATA, "smoke.txt"), "w", encoding="utf-8").write("\n".join(out))
-# smoke 自己生成的运行态文件（progress/_win）不留在数据目录里
-for _name in ("progress.json", "_win.json"):
-    try:
-        os.remove(os.path.join(app_main.DATA, _name))
-    except OSError:
-        pass
-print("WROTE %d LINES; FAILS %d" % (len(out), len(fails)))
+sb.__exit__(None, None, None)
+rc = sb.finish(out, fails, "smoke.txt")
+sys.exit(rc)

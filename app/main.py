@@ -23,6 +23,7 @@ import theme as th
 import books as bk
 
 PROGRESS_PATH = os.path.join(DATA, "progress.json")
+WIN_PATH = os.path.join(DATA, "_win.json")
 
 COMPACT_QSS = """
 QPushButton { font-size: 15px; padding: 4px 12px; border-radius: 12px; }
@@ -273,8 +274,8 @@ class Card(QWidget):
 
         self.theme_key = self.progress.get("theme") or th.DEFAULT
         self.t = th.get(self.theme_key)
-        self.book_id = self._resolve_saved_book(self.progress.get("book") or bk.DEFAULT)
-        self.sel_book = self.book_id
+        self.book_id = self._resolve_saved_book(self.progress.get("book"))
+        self.sel_book = None
         self.sel_order = (self.orders.get(self.book_id) or {}).get("mode", "shuffle")
         self.order_mode = self.sel_order
         self.books_src = "welcome"
@@ -300,7 +301,7 @@ class Card(QWidget):
         self.book_words = self._book_words(self.book_id)
         self.cursor = self.cursors.get(self.book_id, 0)
         self.queue_words = self._order_words(self.book_words, self.order_mode,
-                                             self._seed(self.book_id))
+                                             self._seed(self.book_id) if self.book_id else None)
 
         self.queue = []
         self.qi = 0
@@ -322,9 +323,8 @@ class Card(QWidget):
         self.quiz_timer.timeout.connect(self._quiz_next)
 
         self._build_ui()
-        self._new_session()
+        self._startup()                   # 先决定页面，再显示窗口；首次不预拉新词
         self.show()
-        QTimer.singleShot(400, self._startup)
 
     # ---------- 数据 ----------
     def _load_progress(self):
@@ -337,11 +337,11 @@ class Card(QWidget):
                 p = {}
         p.setdefault("states", {})
         p.setdefault("theme", th.DEFAULT)
-        p.setdefault("book", bk.DEFAULT)
+        p.setdefault("book", None)
         p.setdefault("cursors", {})
         p.setdefault("orders", {})
         p.pop("cursor", None)          # v1.0 的全局游标，v1.1 改为每本书一个
-        # V1.1 的 11 个词书 id 已并入 V2 的分组并集：把旧游标 / 词序顺到新 id 上
+        # V1.1 的 11 个词书 id 已并入三级目录的分组并集：保留旧游标 / 词序
         if p.get("book") in bk.LEGACY:
             p["book"] = bk.LEGACY[p["book"]]
         for old_id, new_id in bk.LEGACY.items():
@@ -349,9 +349,20 @@ class Card(QWidget):
                 p["orders"][new_id] = p["orders"][old_id]
             if old_id in p["cursors"] and new_id not in p["cursors"]:
                 p["cursors"][new_id] = p["cursors"][old_id]
+        if "book_confirmed" not in p:
+            # 旧版打开就填默认六级、生成 seed / 游标；这些不是选书完成的证据。
+            # 学习记录、已保存的其它词书或明确保存的顺序模式才证明真正用书开始过。
+            saved = p.get("book")
+            old_defaults = {bk.DEFAULT, "cet6", "cet6-all"}
+            saved_mode = (p["orders"].get(saved) or {}).get("mode")
+            p["book_confirmed"] = bool(
+                p["states"] or (saved and saved not in old_defaults) or saved_mode == "seq")
+        if p["book_confirmed"]:
+            p["book"] = p.get("book") or bk.DEFAULT  # 无 book 字段的 v1.0 学习记录兜底
+        else:
+            p["book"] = None             # 不把旧版默认占位当作新用户的选择
         if "welcome_done" not in p:
-            # 老用户（已经有学习记录）直接当引导已经走完
-            p["welcome_done"] = bool(p.get("states") or p.get("history"))
+            p["welcome_done"] = bool(p["book_confirmed"] or p.get("history"))
         return p
 
     def save(self):
@@ -379,7 +390,9 @@ class Card(QWidget):
 
     # ---------- 大词库 / 词书 ----------
     def _resolve_saved_book(self, saved):
-        """progress 里的 book 可能来自 V1.1（旧 id）或教材系列伪 id。"""
+        """恢复已确认的词书（兼容旧 id / 教材系列伪 id）；未选书不兜底。"""
+        if not saved:
+            return None
         if saved in bk.BY_ID:
             return saved
         gid, series = parse_series_id(saved)
@@ -389,6 +402,8 @@ class Card(QWidget):
 
     def _book_word_strs(self, book_id):
         """词书 / 并集 / 教材系列并集 -> A–Z 以外的原始词序（UI 层解析伪 id）。"""
+        if not book_id:
+            return []
         gid, series = parse_series_id(book_id)
         if gid:
             if gid not in bk.GROUPS:
@@ -402,6 +417,8 @@ class Card(QWidget):
 
     def _book_meta(self, book_id):
         """统一的词书显示信息：伪 id 不写进 books.py，显示名 / 路径在这里现算。"""
+        if not book_id:
+            return {"id": None, "name": "", "display": "", "count": 0, "path": []}
         gid, series = parse_series_id(book_id)
         if gid:
             g = bk.GROUPS.get(gid)
@@ -419,16 +436,20 @@ class Card(QWidget):
 
     def _book_name(self, book_id):
         m = self._book_meta(book_id)
-        return m.get("display") or m.get("name") or book_id
+        return m.get("display") or m.get("name") or book_id or ""
 
     def _book_path(self, book_id):
         m = self._book_meta(book_id)
         parts = [p for p in (m.get("path") or []) if p]
-        parts.append(m.get("display") or m.get("name") or book_id)
+        label = m.get("display") or m.get("name") or book_id
+        if label:
+            parts.append(label)
         return " · ".join(parts)
 
     def _book_short_name(self, book_id):
         """结果页里的一小段名字：真实书用所属分组名（六级/GRE…）。"""
+        if not book_id:
+            return ""
         gid, series = parse_series_id(book_id)
         if gid:
             return "%s 全选" % series
@@ -474,6 +495,9 @@ class Card(QWidget):
 
     # ---------- 学习队列：先复习（跨书），再一个个学新词（当前书） ----------
     def _new_session(self):
+        if not self.progress.get("book_confirmed") or not self.book_id:
+            self.open_books("welcome")
+            return
         self.queue = sch.review_items(self.bank, self.states, time.time())
         self.qi = 0
         if not self.queue and not self._pull_new():
@@ -520,8 +544,8 @@ class Card(QWidget):
             self.btn_gear.hide()
             self.setFixedSize(COMPACT_W, COMPACT_H)
         else:
-            self.status.show()
-            self.btn_gear.show()
+            self.status.setVisible(self.mode not in ("books", "settings", "welcome"))
+            self.btn_gear.setVisible(self.mode in ("front", "back", "empty"))
             self.setFixedSize(CARD_W, CARD_H)
 
     # ---------- UI ----------
@@ -557,9 +581,11 @@ class Card(QWidget):
 
         top = QHBoxLayout()
         top.setSpacing(4)
-        self.btn_back = MiniButton("back", "返回")
+        self.back_slot = QWidget()
+        self.back_slot.setFixedSize(22, 20)
+        self.btn_back = MiniButton("back", "返回", self.back_slot)
         self.btn_back.clicked.connect(self._page_back)
-        top.addWidget(self.btn_back)
+        top.addWidget(self.back_slot)
         self.btn_min = MiniButton("min", "缩小 / 展开")
         self.btn_min.clicked.connect(self.toggle_compact)
         top.addWidget(self.btn_min)
@@ -862,7 +888,8 @@ class Card(QWidget):
             b.clicked.connect(lambda _=False, m=mode: self._set_order(m))
             bottom.addWidget(b)
         bottom.addStretch(1)
-        self.btn_learn = QPushButton("开始学习")
+        self.btn_learn = QPushButton("用这本开始")
+        self.btn_learn.setEnabled(False)
         self.btn_learn.setObjectName("remember")
         self.btn_learn.setCursor(Qt.PointingHandCursor)
         self.btn_learn.setMinimumHeight(40)
@@ -1034,10 +1061,6 @@ class Card(QWidget):
         btn_change.clicked.connect(lambda: self.open_books("settings"))
         row2.addWidget(btn_change)
         sv.addLayout(row2)
-        sv.addSpacing(4)
-        self.lab_progress = QLabel("")
-        self.reg(self.lab_progress, "note", 12)
-        sv.addWidget(self.lab_progress)
         sv.addSpacing(12)
 
         sv.addWidget(self.reg(QLabel("词汇量测试"), "note", 12))
@@ -1087,6 +1110,12 @@ class Card(QWidget):
         else:
             self.open_settings()
 
+    def _refresh_back_control(self):
+        self.back_slot.setVisible(self.mode in ("settings", "books"))
+        self.btn_back.setVisible(
+            self.mode == "settings" or
+            (self.mode == "books" and (self.books_src == "settings" or self.nav_level > 1)))
+
     def _page_back(self):
         if self.mode == "settings":
             self.close_settings()
@@ -1095,8 +1124,7 @@ class Card(QWidget):
                 self._nav_back()
             elif self.books_src == "settings":
                 self.open_settings()
-            else:
-                self.close()          # 从引导/学习页进来：返回键 = 关闭，跟 V1.1 的 Esc 一致
+            # 首次选书的主分类没有上一级；隐藏箭头，Esc / 返回槽也不退出。
 
     def open_settings(self):
         if self.mode in ("front", "back", "empty"):
@@ -1105,6 +1133,9 @@ class Card(QWidget):
         self._set_mode("settings")
 
     def close_settings(self):
+        if not self.progress.get("book_confirmed"):
+            self.open_books("welcome")
+            return
         m = self.pre_settings_mode
         self._set_mode(m if m in ("front", "back", "empty") else "front")
 
@@ -1118,22 +1149,26 @@ class Card(QWidget):
         return self._book_stats(self.book_id)
 
     def _refresh_books(self):
-        learned, known, mastered, total = self._book_stats(self.sel_book)
         for bid, btn in self.book_btns.items():
             btn.setProperty("on", "1" if bid == self.sel_book else "0")
             btn.style().unpolish(btn)
             btn.style().polish(btn)
-        self.lab_book_stat.setText("%s · %s 词" %
-                                   (self._book_path(self.sel_book), format(total, ",")))
-        self.status.setText("已学 %s / %s · 已会 %s · 已掌握 %s" %
-                            (format(learned, ","), format(total, ","),
-                             format(known, ","), format(mastered, ",")))
+        if self.sel_book:
+            total = len(self._book_word_strs(self.sel_book))
+            self.lab_book_stat.setText("%s · %s 词" %
+                                       (self._book_path(self.sel_book), format(total, ",")))
+        else:
+            self.lab_book_stat.clear()
+        if self.mode == "books":
+            self.status.clear()
+            self.status.hide()
+        self._refresh_back_control()
         for chip, mode in ((self.chip_seq, "seq"), (self.chip_shuf, "shuffle")):
             chip.setProperty("on", "1" if mode == self.sel_order else "0")
             chip.style().unpolish(chip)
             chip.style().polish(chip)
-        same = (self.sel_book == self.book_id and self.sel_order == self.order_mode)
-        self.btn_learn.setText("开始学习" if same else "用这本开始")
+        self.btn_learn.setText("用这本开始")
+        self.btn_learn.setEnabled(bool(self.sel_book))
         if self.nav_level == 3 and self.sel_book in self.book_btns:
             try:
                 self.book_scroll.ensureWidgetVisible(self.book_btns[self.sel_book], 0, 6)
@@ -1151,8 +1186,8 @@ class Card(QWidget):
 
     def open_books(self, src="welcome"):
         self.books_src = src
-        self.sel_book = self.book_id
-        self.sel_order = self.order_mode
+        self.sel_book = self.book_id if src == "settings" else None
+        self.sel_order = self.order_mode if self.sel_book else "shuffle"
         self.nav_level = 1
         self.nav_main = None
         self.nav_group = None
@@ -1160,6 +1195,8 @@ class Card(QWidget):
         self._set_mode("books")
 
     def _start_learning(self):
+        if not self.sel_book:
+            return
         new_book = self.sel_book != self.book_id
         old_mode = (self.orders.get(self.sel_book) or {}).get("mode", "shuffle")
         if new_book:
@@ -1178,6 +1215,9 @@ class Card(QWidget):
         else:
             self.cursor = self.cursors.get(self.book_id, 0)
         self.progress["book"] = self.book_id
+        self.progress["book_confirmed"] = True
+        self.progress["welcome_done"] = True
+        self.progress.pop("quiz_from_welcome", None)
         self.sel_book = self.book_id
         self.save()
         self.setFixedSize(CARD_W, CARD_H)
@@ -1185,21 +1225,23 @@ class Card(QWidget):
 
     # ---------- 首次引导 ----------
     def _startup(self, force=False):
-        """打开应用时的入口：首次引导 / 续测 / 30 天到期测试。"""
-        if "--nottest" in sys.argv and not force:
+        """显示窗口前决定入口：续测 / 首次引导 / 待选书 / 到期测试 / 学习。"""
+        if self.progress.get("quiz_session"):
+            self.start_quiz()                     # 上次测到一半，直接接着来
             return
         if not self.progress.get("welcome_done"):
             self.welcome()
             return
-        if self.progress.get("quiz_session"):
-            self.start_quiz()                     # 上次测到一半，接着来
+        if not self.progress.get("book_confirmed"):
+            self.open_books("welcome")            # 是否测试不等于已经确认词书
             return
-        if self.progress.get("quiz_declined") and not (self.progress.get("history") or []):
-            return                                # 用户明确说了「不测了」
-        if self.progress.get("snooze_until", 0) > time.time():
-            return
-        if self._need_test():
+        allow_test = force or "--nottest" not in sys.argv
+        declined = self.progress.get("quiz_declined") and not self.progress.get("history")
+        snoozed = self.progress.get("snooze_until", 0) > time.time()
+        if allow_test and not declined and not snoozed and self._need_test():
             self.start_quiz()
+            return
+        self._new_session()
 
     def welcome(self):
         self._set_mode("welcome")
@@ -1219,12 +1261,12 @@ class Card(QWidget):
 
     # ---------- 设置内容 ----------
     def _refresh_settings(self):
-        learned, known, mastered, total = self._stats()
-        self.lab_book.setText(self._book_path(self.book_id))
-        self.lab_book.setToolTip(self._book_path(self.book_id))
-        self.lab_book_num.setText("已学 %s / %s" % (format(learned, ","), format(total, ",")))
-        self.lab_progress.setText("已掌握 %s · 测试判定已会 %s" %
-                                  (format(mastered, ","), format(known, ",")))
+        learned, _, _, total = self._stats()
+        path = self._book_path(self.book_id)
+        self.lab_book.setText(path or "未选择词书")
+        self.lab_book.setToolTip(path)
+        self.lab_book_num.setText("已学 %s / %s" % (format(learned, ","), format(total, ","))
+                                  if self.book_id else "")
         hist = self.progress.get("history") or []
         if hist:
             last = hist[-1]
@@ -1300,7 +1342,7 @@ class Card(QWidget):
         super().resizeEvent(ev)
         try:
             json.dump({"x": self.x(), "y": self.y(), "w": self.width(), "h": self.height()},
-                      io.open(os.path.join(DATA, "_win.json"), "w"))
+                      io.open(WIN_PATH, "w"))
         except Exception:
             pass
 
@@ -1310,7 +1352,8 @@ class Card(QWidget):
         study = mode in ("front", "back", "empty")
         self.btn_min.setVisible(study)
         self.btn_gear.setVisible(study and not self.compact)
-        self.btn_back.setVisible(mode == "settings" or mode == "books")
+        self._refresh_back_control()
+        self.status.setVisible(mode not in ("books", "settings", "welcome") and not self.compact)
         self.page_title.setVisible(mode in ("settings", "books"))
         self.page_title.setText({"settings": "设置", "books": "选择词书"}.get(mode, ""))
         self.stage.setVisible(study)
@@ -1322,11 +1365,11 @@ class Card(QWidget):
         self.books_page.setVisible(mode == "books")
         self.settings_page.setVisible(mode == "settings")
         self.btn_skip.setVisible(mode == "quiz")
-        # 词书页：底部/顶部信息随当前选择刷新；其它页面不留词书页的统计文字
+        # 词书页只刷新底部选择信息；设置 / 引导也不残留上一页的统计文字
         if mode == "books":
             self._refresh_books()
-        elif mode == "settings":
-            self.status.setText("")
+        elif mode in ("settings", "welcome"):
+            self.status.clear()
         # 所有页面都锁在固定尺寸里：避免长释义/历史结果把窗口撑大
         if mode == "quiz":
             pass                                # start_quiz 已经 setFixedSize(QUIZ_W, QUIZ_H)
@@ -1474,6 +1517,9 @@ class Card(QWidget):
 
     def start_quiz(self):
         self.quiz_timer.stop()
+        if not self.progress.get("book_confirmed"):
+            self.progress["welcome_done"] = True
+            self.progress["quiz_from_welcome"] = True
         if self.compact:
             self.set_compact(False)          # 测试固定大窗，不受缩小状态影响
         sess = self.progress.get("quiz_session")
@@ -1524,7 +1570,8 @@ class Card(QWidget):
         self.quiz_timer.stop()
         self.progress.pop("quiz_session", None)
         self.progress["snooze_until"] = int(time.time()) + SKIP_SNOOZE
-        from_welcome = bool(self.progress.pop("quiz_from_welcome", False))
+        from_welcome = bool(self.progress.pop("quiz_from_welcome", False) or
+                            not self.progress.get("book_confirmed"))
         self.save()
         self.setFixedSize(CARD_W, CARD_H)
         if from_welcome:
@@ -1653,7 +1700,8 @@ class Card(QWidget):
         }
         history.append(rec)
         self.progress["history"] = history
-        from_welcome = bool(self.progress.pop("quiz_from_welcome", False))
+        from_welcome = bool(self.progress.pop("quiz_from_welcome", False) or
+                            not self.progress.get("book_confirmed"))
         self.progress.pop("quiz_session", None)
         self.progress.pop("snooze_until", None)
         self.last_test = (rec, is_baseline)
@@ -1680,27 +1728,32 @@ class Card(QWidget):
         if rec.get("dontknow"):
             line += "  ·  不认识 %d 题" % rec["dontknow"]
 
-        learned, known, mastered, total = self._book_stats(self.book_id)
-        tail = "%s已会 %s / %s" % (self._book_short_name(self.book_id),
-                                   format(known, ","), format(total, ","))
+        tail = ""
+        if self.book_id:
+            _, known, _, total = self._book_stats(self.book_id)
+            tail = "%s已会 %s / %s" % (self._book_short_name(self.book_id),
+                                       format(known, ","), format(total, ","))
 
         if is_baseline:
             known_n = rec.get("known", len(self.known))
             to_learn = rec.get("to_learn", len(self.bank) - known_n)
-            self.res_note.setText("%s\n大词库判定已会 %s 个、剩 %s 个；%s" %
-                                  (line, format(known_n, ","), format(to_learn, ","), tail))
+            self.res_note.setText("%s\n大词库判定已会 %s 个、剩 %s 个%s" %
+                                  (line, format(known_n, ","), format(to_learn, ","),
+                                   "；" + tail if tail else ""))
         else:
             delta = rec["vocab"] - (base["vocab"] if base else rec["vocab"])
             d2 = rec["vocab"] - (prev["vocab"] if prev else rec["vocab"])
             sign = "+" if delta >= 0 else ""
             sign2 = "+" if d2 >= 0 else ""
-            self.res_note.setText("%s\n比首次 %s%s 词 · 比上次 %s%s 词 · %s" %
-                                  (line, sign, format(delta, ","), sign2, format(d2, ","), tail))
+            self.res_note.setText("%s\n比首次 %s%s 词 · 比上次 %s%s 词%s" %
+                                  (line, sign, format(delta, ","), sign2, format(d2, ","),
+                                   " · " + tail if tail else ""))
 
         self.chart.points = [(h["ts"], h["vocab"]) for h in hist][-12:]
         self.chart.update()
 
     def _show_result(self, rec, is_baseline, from_welcome=False):
+        from_welcome = from_welcome or not self.progress.get("book_confirmed")
         self.result_ctx = "welcome_test" if from_welcome else "test"
         self.btn_start.setText("选择词书" if from_welcome else "继续背单词")
         self.btn_rebase.setVisible(not is_baseline)
@@ -1830,6 +1883,9 @@ def main():
         w.states = states
         w._set_theta(0.8)
         w.progress["welcome_done"] = True
+        if not w.book_id:
+            w._pick_book(bk.DEFAULT)
+            w._start_learning()
         w.save()
 
     for _a in list(sys.argv):
@@ -1869,7 +1925,7 @@ def main():
         QTimer.singleShot(900, _seed_then_quiz)
     try:
         json.dump({"x": w.x(), "y": w.y(), "w": w.width(), "h": w.height()},
-                  io.open(os.path.join(DATA, "_win.json"), "w"))
+                  io.open(WIN_PATH, "w"))
     except Exception:
         pass
     sys.exit(app.exec_())

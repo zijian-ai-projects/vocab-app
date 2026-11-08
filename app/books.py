@@ -98,7 +98,7 @@ def _build(data):
 
 _data = _load()
 BY_ID, MAINS, GROUPS = _build(_data)
-# 新用户默认用「六级大纲英语词汇」（分组并集已不在界面展示）
+# 仅用于旧进度 / 失效 id 的兼容兜底；新用户不预选任何词书，必须主动确认。
 DEFAULT = "cet6-dg" if "cet6-dg" in BY_ID else next(iter(BY_ID))
 
 
