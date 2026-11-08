@@ -82,6 +82,10 @@ class PhraseTests(unittest.TestCase):
         self.assertEqual(entries.meaning(typed), "v. 将…考虑在内")
         self.assertEqual(entries.pronunciation({"w": "on the way", "ipa": "fake", "ph_raw": "fake"}), "")
         self.assertEqual(entries.pronunciation({"w": "word", "ipa": "wɜːd"}), "/wɜːd/")
+        self.assertEqual(entries.pronunciation({"w": "word", "ipa": "", "ph_raw": ""}), "")
+        self.assertEqual(entries.pronunciation({"w": "word", "ipa": " / / ", "ph_raw": ""}), "")
+        self.assertEqual(entries.pronunciation({"w": "word", "ipa": "p\\\\:sən", "ph_raw": ""}), "")
+        self.assertEqual(entries.pronunciation({"w": "word", "ipa": "\\\\", "ph_raw": " /wɜːd/ "}), "/wɜːd/")
         self.assertEqual(entries.meaning({"w": "an", "s": "art.一", "pos": ["art."]}), "art.一")
 
     def test_real_word_pos_prefixes_never_duplicate(self):

@@ -28,6 +28,7 @@ from windowing import WindowController
 from catalog import BookCatalog
 from entries import is_phrase, meaning as entry_meaning, pronunciation, memory_info
 import study_options
+from app_icon import application_icon, configure_application_icon, set_windows_app_id
 
 DEFAULT_PROGRESS_PATH, DEFAULT_WIN_PATH = storage.paths(ROOT)
 PROGRESS_PATH, WIN_PATH = DEFAULT_PROGRESS_PATH, DEFAULT_WIN_PATH
@@ -38,7 +39,7 @@ LEGACY_PROGRESS_PATHS = tuple(os.path.join(directory, "progress.json")
                               for directory in storage.legacy_dirs(ROOT))
 LEGACY_WIN_PATHS = tuple(os.path.join(directory, "_win.json")
                          for directory in storage.legacy_dirs(ROOT))
-VERSION = "1.3.2"
+VERSION = "1.3.3"
 
 COMPACT_QSS = """
 QPushButton { font-size: 15px; padding: 4px 12px; border-radius: 12px; }
@@ -363,6 +364,8 @@ class Card(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("背单词")
+        configure_application_icon(QApplication.instance())
+        self.setWindowIcon(application_icon())
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Window)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.resize(CARD_W, CARD_H)
@@ -392,6 +395,7 @@ class Card(QWidget):
         self.book_id = self._resolve_saved_book(self.progress.get("book"))
         self.sel_book = None
         self.sel_order = stored_order(self.orders, self.book_id)
+        self._order_selection_explicit = False
         self.order_mode = self.sel_order
         self.books_src = "welcome"
         self.pre_settings_mode = "front"
@@ -450,6 +454,7 @@ class Card(QWidget):
         self._due_timer.timeout.connect(self._check_due)
         self._build_ui()
         self.window_ctl = WindowController(self)
+        self.window_ctl.update_palette(self.t)
         self.window_ctl.changed.connect(self._window_changed)
         legacy_win = (LEGACY_WIN_PATHS if WIN_PATH == DEFAULT_WIN_PATH
                       and not os.environ.get("VOCABAPP_DATA_DIR") else None)
@@ -728,12 +733,16 @@ class Card(QWidget):
     def _window_changed(self):
         if not self._can_act() or not hasattr(self, "window_ctl"):
             return
+        if not self.window_ctl.can_persist_geometry:
+            return
         self.compact = self.window_ctl.compact
         self._apply_scaling()
         self._window_save_timer.start(400)
 
     def _save_window(self, force=False):
         if not hasattr(self, "window_ctl") or (not self._can_act() and not force):
+            return
+        if not self.window_ctl.can_persist_geometry:
             return
         record = dict(getattr(self, "window_record", {}))
         record.update(self.window_ctl.state())
@@ -758,7 +767,7 @@ class Card(QWidget):
     def _apply_scaling(self, force=False):
         if self._applying_scale or not hasattr(self, "root"):
             return
-        if hasattr(self, "window_ctl") and self.window_ctl.collapsed:
+        if hasattr(self, "window_ctl") and (self.window_ctl.collapsed or self.window_ctl.animating):
             return
         scale = self._ui_scale()
         signature = (scale, self.width(), self.height(), self.compact, self.mode,
@@ -1642,17 +1651,20 @@ class Card(QWidget):
 
     def _pick_book(self, bid):
         self.sel_book = bid
-        self.sel_order = stored_order(self.orders, bid)
+        if not self._order_selection_explicit:
+            self.sel_order = stored_order(self.orders, bid)
         self._refresh_books()
 
     def _set_order(self, mode):
         if mode not in ("seq", "shuffle"):
             return
         self.sel_order = mode
+        self._order_selection_explicit = True
         self._refresh_books()
 
     def open_books(self, src="welcome"):
         self.books_src = src
+        self._order_selection_explicit = False
         self.sel_book = self.book_id if src == "settings" else None
         self.sel_order = (self.order_mode if self.order_mode in ("seq", "shuffle")
                           else "seq") if self.sel_book else "seq"
@@ -1799,8 +1811,7 @@ class Card(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        if hasattr(self, "window_ctl") and self.window_ctl.collapsed:
-            painter.fillRect(self.rect(), QColor(self.t["accent"]))
+        if hasattr(self, "window_ctl") and self.window_ctl.paint_dock(painter):
             return
         path = QPainterPath()
         radius = min(18 * self._ui_scale(), self.width() / 2, self.height() / 2)
@@ -2059,17 +2070,9 @@ class Card(QWidget):
                                "wrong" if index == chosen else "")
             button.style().unpolish(button)
             button.style().polish(button)
-        state = self.states[self.queue[self.qi]["w"]["w"]]
-        level = state.get("lv", 0)
-        if remember:
-            # 答对不显示“答对 · 记忆等级 x”提示，直接给下一题按钮。
-            self.choice_hint.clear()
-            self.choice_hint.hide()
-        else:
-            text = ("未记住 · 保留记忆等级 %d" % level if level
-                    else "仍是新词 · 隔 %d 个其它新词重现" % self.retry_gap)
-            self.choice_hint.setText(text)
-            self.choice_hint.show()
+        # 正误由选项状态体现；不另显示等级或重现规则，也不保留提示占位。
+        self.choice_hint.clear()
+        self.choice_hint.hide()
         self.btn_study_dk.hide()
         self.btn_study_next.show()
         self._set_mode("choice_back")
@@ -2643,7 +2646,9 @@ class Card(QWidget):
 
 
 def main():
+    set_windows_app_id()
     app = QApplication(sys.argv)
+    configure_application_icon(app)
     destructive_debug = {"--seed", "--history", "--chart", "--result", "--back"}
     if destructive_debug.intersection(sys.argv) and not os.environ.get("VOCABAPP_DATA_DIR"):
         QMessageBox.critical(None, "调试需隔离资料", "造数据和自动答题只能在显式设置 VOCABAPP_DATA_DIR 的隔离目录中运行。\n默认学习记录未读取或修改。")

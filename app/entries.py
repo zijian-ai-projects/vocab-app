@@ -26,8 +26,21 @@ def meaning(entry):
 def pronunciation(entry):
     if is_phrase(entry):
         return ""
-    ipa = (entry.get("ipa") or entry.get("ph_raw") or "").strip().strip("/")
-    return "/%s/" % ipa if ipa else ""
+    # 仅采用已有且完整的音标；反斜杠是源库转义损坏，不能删掉后
+    # 把残缺音节冒充为正确读音。ipa 不可用时再试已有的 ph_raw。
+    for field in ("ipa", "ph_raw"):
+        value = entry.get(field)
+        if not isinstance(value, str):
+            continue
+        ipa = value.strip().strip("/").strip()
+        if not ipa or "\\" in ipa or any(ord(char) < 32 for char in ipa):
+            continue
+        if ipa.casefold() in ("n/a", "not available", "无", "暂无", "暂无音标"):
+            continue
+        if not any(char.isalpha() and char not in "ˈˌːˑ" for char in ipa):
+            continue
+        return "/%s/" % ipa
+    return ""
 
 
 def _count(value, default=0):

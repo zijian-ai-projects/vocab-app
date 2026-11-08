@@ -18,7 +18,7 @@ from PyQt5.QtCore import (QEvent, QModelIndex, QRect, QSize, Qt, QTimer,
 from PyQt5.QtGui import QColor, QFont, QFontMetrics, QPainter, QPen
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
                              QPushButton, QTableView, QHeaderView, QDialog,
-                             QAbstractItemView, QStyledItemDelegate,
+                             QAbstractItemView, QStyledItemDelegate, QStyle,
                              QStyleOptionViewItem)
 import theme as th
 from entries import CATEGORIES, meaning, memory_info
@@ -104,6 +104,7 @@ class LevelHeader(QHeaderView):
         self._icon_color = QColor("#8a929c")
         self.setSectionsClickable(True)
         self.setHighlightSections(False)
+        self.setFocusPolicy(Qt.NoFocus)
         self.badge = LevelBadge(self.viewport())
         self.badge.clicked.connect(self.level_clicked.emit)
         self.badge.hide()
@@ -162,7 +163,7 @@ class LevelHeader(QHeaderView):
 class NoSelectTableView(QTableView):
     """目录只读浏览：点击行不留下 current/selection 蓝色态。"""
 
-    def _clear_current(self):
+    def _clear_current(self, *_args):
         self.clearSelection()
         self.setCurrentIndex(QModelIndex())
 
@@ -180,10 +181,15 @@ class NoSelectTableView(QTableView):
 
 
 class TextWrapDelegate(QStyledItemDelegate):
-    """保留完整换行（ElideNone）并让 delegate 与行高测量一致。"""
+    """完整换行，并屏蔽只读目录的原生 focus/selection 绘制态。"""
 
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
+        # NoSelection 仍允许 currentIndex（表头点击/键盘/focus proxy 都会设置它）。
+        # 必须在 delegate 层清除 State_HasFocus，否则 Qt 会在单元格下画虚线框；
+        # 清除 Selected 也保证程序化 current/selection 不覆盖统一正文色。
+        option.state = QStyle.State(int(option.state) & ~int(
+            QStyle.State_HasFocus | QStyle.State_Selected))
         option.features |= QStyleOptionViewItem.WrapText
         option.textElideMode = Qt.ElideNone
 
@@ -408,6 +414,11 @@ class BookCatalog(QWidget):
         self.table.setColumnWidth(0, 142)
         self.table.setColumnWidth(2, 96)
         header.level_clicked.connect(self.show_levels)
+        # QTableView 内部已连接 sectionPressed -> selectColumn；即使 NoSelection
+        # 也会建立 (0, column) current。随后清理，不禁用表格键盘/滚动能力。
+        header.sectionPressed.connect(self.table._clear_current)
+        header.sectionClicked.connect(self.table._clear_current)
+        header.sectionDoubleClicked.connect(self.table._clear_current)
         header.sectionResized.connect(self._columns_resized)
         self.table.verticalScrollBar().valueChanged.connect(self._schedule_measure)
         self.table.viewport().installEventFilter(self)
@@ -579,7 +590,7 @@ class BookCatalog(QWidget):
             self.show_levels()
 
     def show_levels(self, index=None):
-        """由顶部「等级说明」chip 打开；点击表格行/等级列不再弹说明。"""
+        """由「记忆等级」表头文字或透明徽标打开；表格行不弹说明。"""
         if self.level_dialog is not None:
             self.level_dialog.close()
         dialog = QDialog(self.window())
@@ -634,10 +645,16 @@ class BookCatalog(QWidget):
         self.model.set_scale(scale)
         self.path_label.setStyleSheet(th.label_qss(self.theme, "mean", round(13 * scale)))
         self.table.setStyleSheet(
-            "QTableView{border:none;background:%s;selection-background-color:%s;}"
-            "QHeaderView::section{background:%s;color:%s;border:none;padding:%dpx;font-size:%dpx;}"
-            % (self.theme["bg"], self.theme["chip_bg"], self.theme["bg"], self.theme["muted"],
-               round(7 * scale), round(12 * scale)))
+            "QTableView{border:none;background:%(bg)s;color:%(fg_mean)s;outline:0;"
+            "selection-background-color:%(bg)s;selection-color:%(fg_mean)s;}"
+            "QTableView::item:selected,QTableView::item:focus{"
+            "background:%(bg)s;color:%(fg_mean)s;border:none;outline:0;}"
+            "QHeaderView{border:none;outline:0;}"
+            "QHeaderView::section{background:%(bg)s;color:%(muted)s;border:none;"
+            "padding:%(header_pad)dpx;font-size:%(header_size)dpx;}"
+            "QHeaderView::section:checked,QHeaderView::section:pressed{"
+            "background:%(bg)s;color:%(muted)s;}"
+            % dict(self.theme, header_pad=round(7 * scale), header_size=round(12 * scale)))
         self._applying_columns = True
         try:
             self.table.setColumnWidth(0, round(142 * scale))

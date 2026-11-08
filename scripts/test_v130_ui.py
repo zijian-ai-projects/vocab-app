@@ -45,7 +45,7 @@ import scheduler as sch
 import storage
 from catalog import LEVEL_LINES
 from entries import CATEGORIES, meaning, memory_info, pronunciation
-from windowing import WindowController
+from windowing import WindowController, DOCK_ANIM_MS, DOCK_LENGTH, STRIP_THICKNESS
 
 APP = new_app(sys.argv)
 APP.setQuitOnLastWindowClosed(False)
@@ -468,6 +468,7 @@ class Suite:
         self.check(w.choice_hint.isHidden() and w.choice_hint.text() == "", "撤销回未答时反馈重新清空隐藏")
         QTest.keyClick(w, Qt.Key_5)
         self.check(w.mode == "choice_back" and w.states["alpha"]["lv"] == 0, "5键不认识仍新词")
+        self.check(w.choice_hint.isHidden() and w.choice_hint.text() == "", "不认识后不显示等级/隔3新词提示")
         QTest.keyClick(w, Qt.Key_Right)
         self.check(key_of(w) == "bravo" and w.mode == "choice", "Right 下一题")
         self.check(w.choice_hint.isHidden() and w.status.isHidden(), "下一题无遗留反馈或状态HUD")
@@ -809,13 +810,15 @@ class Suite:
                 w._set_mode("front")
                 self.check(w.size() == QSize(356, 196) and c.dock_edge == edge, edge + " 小窗固定与贴边")
                 c._collapse_if_docked(force=True)
-                self.check(c.collapsed and (w.width() == 8 if edge in ("left", "right") else w.height() == 8), edge + " 收成8px条")
+                size = QSize(STRIP_THICKNESS, DOCK_LENGTH) if edge in ("left", "right") else QSize(DOCK_LENGTH, STRIP_THICKNESS)
+                self.check(c.collapsed and w.size() == size, edge + " 收成10×64短胶囊")
                 self.check(not w.stage.isVisibleTo(w), edge + " 收条隐藏学习内容")
                 w._save_window()
                 saved = self.sb.read_win()
                 self.check((saved["w"], saved["h"], saved["compact"], saved["dock_edge"]) == (356, 196, True, edge),
                            edge + " 保存展开逻辑尺寸而非条尺寸")
                 APP.sendEvent(w, QEvent(QEvent.Enter))
+                QTest.qWait(DOCK_ANIM_MS + 30)
                 self.check(not c.collapsed and w.size() == QSize(356, 196) and w.front_bar.isVisibleTo(w), edge + " hover恢复可见控件")
             c.set_compact(False, remember=True)
             self.check(not c._collapse_if_docked(force=True) and not c.collapsed, "正常窗永不收条")

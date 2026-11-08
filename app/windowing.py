@@ -5,7 +5,7 @@ WindowController 负责一个 frameless 顶层 QWidget 的实际窗口几何：
   * 正常窗：可四边鼠标拖拽缩放，最小 520×430；正常窗本身可放大到当前屏幕
     可用工作区（不是 1.6×；MAX_SCALE 只用于字体/控件 scale_factor），并限制在可见工作区；
   * 小窗：固定 356×196，不可 resize；靠近可用工作区任一边（8px 阈值）时吸附，
-    鼠标离开后缩成 8px 小条，悬停小条再展开；正常窗永不自动收条；
+    鼠标离开后缓动收成 10×64 短胶囊，悬停再展开；520×430 小巧正常窗也支持收起；
   * 支持多屏负坐标（用 QScreen.availableGeometry），窗口不会被拖到屏幕外；
   * restore/state 保存正常窗尺寸/位置、小窗展开的逻辑位置、用户小窗偏好；
     collapsed 小条尺寸与屏幕外坐标永远不会写进 state。
@@ -35,7 +35,7 @@ WindowController(widget: QWidget, parent: QObject | None = None)
     state() -> dict
         JSON 可序列化。键：version / normal_w / normal_h / normal_x / normal_y /
         compact_x / compact_y / x / y / w / h / compact / dock_edge。
-        其中 w/h 是「逻辑尺寸」：小窗永远 356×196，收条时也绝不写 8px；
+        其中 w/h 是「逻辑尺寸」：小窗永远 356×196，收条时也绝不写胶囊实际尺寸；
         x/y 是当前逻辑左上角；compact 是用户偏好，不是临时页面状态。
     reveal()
         收条 -> 展开回 356×196；未收条时 no-op。
@@ -53,19 +53,24 @@ WindowController(widget: QWidget, parent: QObject | None = None)
     * 接管正常/展开小窗的「背景拖拽」（只处理发到顶层 widget 本身的鼠标事件，
       子控件/按钮事件不拦截；Lead 可以移除 Card 旧 background drag）。
 """
-from PyQt5.QtCore import (QEvent, QObject, QPoint, QRect, QSize, Qt, QTimer,
-                          pyqtSignal)
-from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtCore import (QEvent, QObject, QPoint, QPointF, QRect, QRectF,
+                          QSize, Qt, QTimer, QVariantAnimation,
+                          QEasingCurve, pyqtSignal)
+from PyQt5.QtGui import (QColor, QCursor, QPainter, QPainterPath, QPen,
+                         QPixmap)
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 
 NORMAL_MIN = (520, 430)
 COMPACT_SIZE = (356, 196)
 MAX_SCALE = 1.6
 
-STRIP_THICKNESS = 8          # 收条后的厚度（~8px）
+STRIP_THICKNESS = 10         # 侧边胶囊厚度（8px 方向提示过窄，改为 10px）
+DOCK_LENGTH = 64             # 短圆角胶囊长度
+DOCK_ANIM_MS = 140           # 收起/展开短缓动
+DOCK_RADIUS = 4
 SNAP_DISTANCE = 8            # 贴边吸附阈值
 EDGE_RESIZE_MARGIN = 6       # 正常窗四边可拖拽的像素宽度
-HOVER_DELAY_MS = 120         # 鼠标离开后延迟收条，避免 child 间移动误触发
+HOVER_DELAY_MS = 180         # 鼠标离开后延迟收条，更宽容
 
 
 def _safe_int(v, default):
@@ -115,6 +120,21 @@ class WindowController(QObject):
         self._hover_timer.setInterval(HOVER_DELAY_MS)
         self._hover_timer.timeout.connect(self._on_hover_timeout)
 
+        self._dock_anim = QVariantAnimation(self)
+        self._dock_anim.setDuration(DOCK_ANIM_MS)
+        self._dock_anim.setEasingCurve(QEasingCurve.OutCubic)
+        self._dock_anim.setStartValue(0.0)
+        self._dock_anim.setEndValue(1.0)
+        self._dock_anim.valueChanged.connect(self._dock_anim_step)
+        self._dock_anim.finished.connect(self._dock_anim_finished)
+        self._dock_anim_target = None            # "collapse" / "expand"
+        self._dock_anim_from = QRect()
+        self._dock_anim_to = QRect()
+        self._dock_anim_edge = None
+        self._dock_anim_logical = QRect()
+        self._dock_overlay = None
+        self._dock_snapshot = None
+
         self.widget.installEventFilter(self)
         self.widget.setMouseTracking(True)
         self._install_child_filters()
@@ -154,8 +174,19 @@ class WindowController(QObject):
         return self._dock_edge
 
     @property
+    def animating(self):
+        """平滑收/展动画进行中；main 的 _window_changed/_apply_scaling 应跳过中间几何。"""
+        return (self._dock_anim_target is not None or
+                self._dock_anim.state() == QVariantAnimation.Running)
+
+    @property
+    def can_persist_geometry(self):
+        """动画结束后才允许按实际 widget geometry 持久化。"""
+        return not self.animating
+
+    @property
     def actual_size(self):
-        """当前实际窗口尺寸（收条时是 8px 小条；外部一般不用它做保存）。"""
+        """当前实际窗口尺寸（收条时是 10×64 胶囊；外部一般不用它做保存）。"""
         return QSize(self.widget.size())
 
     @property
@@ -295,11 +326,8 @@ class WindowController(QObject):
         finally:
             self._adjusting = False
 
-    def _set_strip_geometry(self):
-        """收条：按 dock_edge 缩成 8px 小条，逻辑尺寸保持不变。
-
-        compact 保持 356×196；520×430 小巧正常窗保持 520×430。
-        """
+    def _compute_strip_rect(self):
+        """计算短圆角胶囊 target，不修改 widget（供动画/最终落定共用）。"""
         logical = self._logical_size()
         if self._compact:
             if self._compact_logical_rect is None:
@@ -321,23 +349,28 @@ class WindowController(QObject):
             self._normal_pos = rect.topLeft()
         edge = self._dock_edge or self._detect_dock_edge(rect, geo)
         if not edge:
-            return False
+            return QRect(), rect, None
         self._dock_edge = edge
         self._preferred_dock_edge = edge
-        if edge == "left":
-            strip = QRect(geo.left(), rect.top(), STRIP_THICKNESS,
-                          min(rect.height(), geo.height()))
-        elif edge == "right":
-            strip = QRect(geo.left() + geo.width() - STRIP_THICKNESS, rect.top(),
-                          STRIP_THICKNESS, min(rect.height(), geo.height()))
-        elif edge == "top":
-            strip = QRect(rect.left(), geo.top(),
-                          min(rect.width(), geo.width()), STRIP_THICKNESS)
+        if edge in ("left", "right"):
+            length = min(DOCK_LENGTH, rect.height(), geo.height())
+            x = (geo.left() if edge == "left"
+                 else geo.left() + geo.width() - STRIP_THICKNESS)
+            strip = QRect(x, rect.top() + (rect.height() - length) // 2,
+                          STRIP_THICKNESS, length)
         else:
-            strip = QRect(rect.left(), geo.top() + geo.height() - STRIP_THICKNESS,
-                          min(rect.width(), geo.width()), STRIP_THICKNESS)
+            length = min(DOCK_LENGTH, rect.width(), geo.width())
+            y = (geo.top() if edge == "top"
+                 else geo.top() + geo.height() - STRIP_THICKNESS)
+            strip = QRect(rect.left() + (rect.width() - length) // 2, y,
+                          length, STRIP_THICKNESS)
         strip = QRect(self._clamp_pos_for(strip.topLeft(), strip.size(), geo),
                       strip.size())
+        return strip, rect, edge
+
+    def _apply_strip_geometry(self, strip):
+        """最终落定：窗口变成短胶囊，逻辑 rect 已由 _compute_strip_rect 维护。"""
+        strip = QRect(strip)
         self._adjusting = True
         try:
             self.widget.setMinimumSize(strip.width(), strip.height())
@@ -346,6 +379,13 @@ class WindowController(QObject):
         finally:
             self._adjusting = False
         self._collapsed = True
+
+    def _set_strip_geometry(self):
+        """立即收成短圆角胶囊（动画最终帧/同步测试 fallback）。"""
+        strip, _rect, edge = self._compute_strip_rect()
+        if not edge:
+            return False
+        self._apply_strip_geometry(strip)
         return True
 
     def _snap_pos(self, pos, size, edge, geo):
@@ -378,9 +418,13 @@ class WindowController(QObject):
     # ------------------------------------------------------------------
     # 公开状态控制
     # ------------------------------------------------------------------
-    def restore(self, saved, allow_compact=True):
-        """恢复窗口状态。saved 缺省/缺键时用 520×430 / 356×196。"""
+    def restore(self, saved, allow_compact=True, immediate=True):
+        """恢复窗口状态。saved 缺省/缺键时用 520×430 / 356×196。
+
+        immediate=True 时若有收/展动画先落定，避免 main 读到中间几何。
+        """
         saved = saved or {}
+        self._finish_dock_animation()
         self._hover_timer.stop()
         self._resizing = None
         self._suppress_changed = True
@@ -461,7 +505,8 @@ class WindowController(QObject):
         return QPoint(geo.left() + (geo.width() - size.width()) // 2,
                       geo.top() + (geo.height() - size.height()) // 2)
 
-    def set_compact(self, on, remember=True):
+    def set_compact(self, on, remember=True, immediate=True):
+        self._finish_dock_animation()
         on = bool(on)
         if remember:
             self._preferred_compact = on
@@ -505,7 +550,8 @@ class WindowController(QObject):
             self._set_normal_geometry()
         self._emit_changed()
 
-    def set_normal_size(self, width, height):
+    def set_normal_size(self, width, height, immediate=True):
+        self._finish_dock_animation()
         geo = self._work_area_for(self._logical_pos())
         size = self._clamp_normal_size(QSize(_safe_int(width, NORMAL_MIN[0]),
                                              _safe_int(height, NORMAL_MIN[1])), geo)
@@ -521,22 +567,176 @@ class WindowController(QObject):
             self._set_normal_geometry()
         self._emit_changed()
 
-    def reveal(self):
-        if not self._collapsed:
+    def _expanded_target(self):
+        """从当前逻辑位置计算展开后的 rect/edge（不直接写几何）。"""
+        if self._compact:
+            rect = QRect(self._compact_logical_rect or
+                         QRect(QPoint(self.widget.pos()), QSize(*COMPACT_SIZE)))
+            rect.setSize(QSize(*COMPACT_SIZE))
+            geo = self._work_area_for(rect.center())
+            rect = QRect(self._clamp_pos_for(rect.topLeft(), rect.size(), geo),
+                         rect.size())
+            edge = self._dock_edge
+            if edge:
+                rect = QRect(self._snap_pos(rect.topLeft(), rect.size(), edge, geo),
+                             rect.size())
+            return rect, edge
+        rect = QRect(self._small_logical_rect or
+                     QRect(self._normal_pos if self._normal_pos is not None
+                           else self.widget.pos(), QSize(self._normal_size)))
+        rect.setSize(self._normal_size)
+        geo = self._work_area_for(rect.center())
+        rect = QRect(self._clamp_pos_for(rect.topLeft(), rect.size(), geo),
+                     rect.size())
+        edge = self._dock_edge
+        if edge:
+            rect = QRect(self._snap_pos(rect.topLeft(), rect.size(), edge, geo),
+                         rect.size())
+        return rect, edge
+
+    def _show_dock_overlay(self):
+        if self._dock_snapshot is None:
             return
-        is_compact = self._compact
-        self._restore_children()
-        self._collapsed = False
-        if is_compact:
-            rect = (self._compact_logical_rect
-                    or QRect(QPoint(self.widget.pos()), QSize(*COMPACT_SIZE)))
-            self._set_compact_geometry(rect.topLeft(), self._dock_edge)
+        if self._dock_overlay is None:
+            overlay = QLabel(self.widget)
+            # 先登记再 show：ChildAdded filter 会立刻安装事件过滤器，Show 必须在
+            # collapsed visibility 分支里能识别这是 dock overlay 而不是页面 child。
+            self._dock_overlay = overlay
+            overlay.setAttribute(Qt.WA_TransparentForMouseEvents)
+            overlay.setScaledContents(True)
+            overlay.setPixmap(self._dock_snapshot)
+            overlay.setGeometry(self.widget.rect())
+            overlay.show()
+            overlay.raise_()
         else:
-            rect = (self._small_logical_rect
-                    or QRect(QPoint(self.widget.pos()), QSize(self._normal_size)))
-            self._normal_pos = rect.topLeft()
-            self._set_normal_geometry()
-        self._emit_changed()
+            self._dock_overlay.setGeometry(self.widget.rect())
+            self._dock_overlay.show()
+            self._dock_overlay.raise_()
+
+    def _remove_dock_overlay(self):
+        overlay = self._dock_overlay
+        if overlay is not None:
+            try:
+                overlay.hide()
+                overlay.deleteLater()
+            except RuntimeError:
+                pass
+        self._dock_overlay = None
+
+    def _start_dock_animation(self, target_rect, target, edge, logical):
+        self._dock_anim.stop()
+        self._dock_anim_from = QRect(self.widget.geometry())
+        self._dock_anim_to = QRect(target_rect)
+        self._dock_anim_target = target
+        self._dock_anim_edge = edge
+        self._dock_anim_logical = QRect(logical)
+        self._adjusting = True
+        try:
+            self.widget.setMinimumSize(1, 1)
+            self.widget.setMaximumSize(16777215, 16777215)
+        finally:
+            self._adjusting = False
+        self._show_dock_overlay()
+        self._dock_anim.start()
+
+    def _dock_anim_step(self, value):
+        if self._dock_anim_target is None:
+            return
+        t = float(value)
+        a, b = self._dock_anim_from, self._dock_anim_to
+        rect = QRect(
+            round(a.x() + (b.x() - a.x()) * t),
+            round(a.y() + (b.y() - a.y()) * t),
+            max(1, round(a.width() + (b.width() - a.width()) * t)),
+            max(1, round(a.height() + (b.height() - a.height()) * t)),
+        )
+        self._adjusting = True
+        try:
+            self.widget.setGeometry(rect)
+            if self._dock_overlay is not None:
+                self._dock_overlay.setGeometry(self.widget.rect())
+                self._dock_overlay.raise_()
+        finally:
+            self._adjusting = False
+        self.widget.update()
+
+    def _dock_anim_finished(self):
+        target = self._dock_anim_target
+        self._dock_anim_target = None
+        if target == "collapse":
+            self._remove_dock_overlay()
+            self._apply_strip_geometry(self._dock_anim_to)
+            self._collapsed = True
+            self._emit_changed()
+            if self._hover_inside:
+                self.reveal()
+        elif target == "expand":
+            self._remove_dock_overlay()
+            self._collapsed = False
+            self._restore_children()
+            if self._compact:
+                self._compact_logical_rect = QRect(self._dock_anim_logical)
+                self._set_compact_geometry(self._dock_anim_logical.topLeft(),
+                                           self._dock_anim_edge)
+            else:
+                self._small_logical_rect = QRect(self._dock_anim_logical)
+                self._normal_pos = self._dock_anim_logical.topLeft()
+                self._set_normal_geometry()
+            self._emit_changed()
+            if not self._hover_inside:
+                self._hover_timer.start()
+
+    def _finish_dock_animation(self):
+        """外部状态变更/close 时：立即落定当前动画目标，绝不保存中间帧。"""
+        if self._dock_anim_target is None:
+            return
+        if self._dock_anim.state() == QVariantAnimation.Running:
+            self._dock_anim.stop()
+        self._dock_anim_finished()
+
+    def reveal(self, immediate=True):
+        if immediate:
+            # 外部切页/主题/尺寸/shutdown 的 immediate 请求必须真正落定，
+            # 即使当前正在 expand 动画中，也不能被第一句 target 判断吞掉。
+            if self._dock_anim_target is not None:
+                self._finish_dock_animation()
+            if not self._collapsed:
+                self._hover_timer.stop()
+                return
+            self._dock_anim.stop()
+            self._dock_anim_target = None
+            self._remove_dock_overlay()
+            rect, edge = self._expanded_target()
+            self._restore_children()
+            self._collapsed = False
+            if self._compact:
+                self._compact_logical_rect = QRect(rect)
+                self._set_compact_geometry(rect.topLeft(), edge)
+            else:
+                self._small_logical_rect = QRect(rect)
+                self._normal_pos = rect.topLeft()
+                self._set_normal_geometry()
+            self._emit_changed()
+            return
+        if self._dock_anim_target == "expand":
+            return
+        if not self._collapsed and self._dock_anim_target != "collapse":
+            return
+        self._dock_anim.stop()
+        rect, edge = self._expanded_target()
+        if self._dock_overlay is None and self._dock_snapshot is None:
+            # 无快照（例如 restore 后的极端路径）：直接落定，避免卡住不可展开
+            self._collapsed = False
+            self._restore_children()
+            if self._compact:
+                self._set_compact_geometry(rect.topLeft(), edge)
+            else:
+                self._normal_pos = rect.topLeft()
+                self._set_normal_geometry()
+            self._emit_changed()
+            return
+        self._collapsed = True
+        self._start_dock_animation(rect, "expand", edge, rect)
 
     def state(self):
         """返回可 JSON 序列化的状态；小条尺寸/屏幕外坐标不会出现在这里。"""
@@ -575,8 +775,67 @@ class WindowController(QObject):
 
     def update_palette(self, theme):
         """可选：记录主题并请求重绘；布局缩放由 UI 层处理。"""
+        self._finish_dock_animation()
         self.theme = dict(theme or {})
         self.widget.update()
+
+    def paint_dock(self, painter):
+        """绘制主题化侧边短胶囊（main collapsed paint branch 调用）。
+
+        返回 True 表示当前是 collapsed 并已绘制；False 表示 main 应继续正常
+        paintEvent。只画胶囊，不负责整窗背景；颜色优先 dock_*，缺失回退旧 key。
+        """
+        if not self._collapsed or self._dock_edge not in (
+                "left", "right", "top", "bottom"):
+            return False
+        theme = self.theme or {}
+        bg = (theme.get("dock_hover") if self._hover_inside else None)
+        bg = (bg or theme.get("dock_bg") or theme.get("chip_bg")
+              or theme.get("bg") or "#23272f")
+        border = (theme.get("dock_border") or theme.get("border")
+                  or theme.get("muted") or "#3a4048")
+        fg = (theme.get("dock_fg") or theme.get("muted")
+              or theme.get("fg_mean") or "#c9ced6")
+        rect = QRectF(self.widget.rect()).adjusted(1.0, 1.0, -1.0, -1.0)
+        if rect.width() < 2 or rect.height() < 2:
+            return False
+        painter.save()
+        try:
+            painter.setRenderHint(QPainter.Antialiasing)
+            radius = min(DOCK_RADIUS, rect.width() / 2, rect.height() / 2)
+            path = QPainterPath()
+            path.addRoundedRect(rect, radius, radius)
+            painter.fillPath(path, QColor(bg))
+            pen = QPen(QColor(border))
+            pen.setWidthF(1.0)
+            painter.setPen(pen)
+            painter.drawPath(path)
+            pen = QPen(QColor(fg))
+            pen.setWidthF(1.2)
+            pen.setCapStyle(Qt.RoundCap)
+            painter.setPen(pen)
+            cx, cy = rect.center().x(), rect.center().y()
+            edge = self._dock_edge
+            if edge in ("left", "right"):
+                # 三个握柄点（纵向），方向箭头指向屏幕内侧
+                for dy in (-12.0, 0.0, 12.0):
+                    painter.drawEllipse(QRectF(cx - 1.1, cy + dy - 1.1, 2.2, 2.2))
+                sign = 1.0 if edge == "left" else -1.0
+                painter.drawLine(QPointF(cx + sign * 1.0, cy - 3.2),
+                                 QPointF(cx + sign * 3.4, cy))
+                painter.drawLine(QPointF(cx + sign * 3.4, cy),
+                                 QPointF(cx + sign * 1.0, cy + 3.2))
+            else:
+                for dx in (-12.0, 0.0, 12.0):
+                    painter.drawEllipse(QRectF(cx + dx - 1.1, cy - 1.1, 2.2, 2.2))
+                sign = 1.0 if edge == "top" else -1.0
+                painter.drawLine(QPointF(cx - 3.2, cy + sign * 1.0),
+                                 QPointF(cx, cy + sign * 3.4))
+                painter.drawLine(QPointF(cx, cy + sign * 3.4),
+                                 QPointF(cx + 3.2, cy + sign * 1.0))
+        finally:
+            painter.restore()
+        return True
 
     # ------------------------------------------------------------------
     # hover / 收条
@@ -592,12 +851,14 @@ class WindowController(QObject):
     def _on_hover_enter(self):
         self._hover_timer.stop()
         self._hover_inside = True
-        if self._collapsed:
-            self.reveal()
+        if self._collapsed or self._dock_anim_target == "collapse":
+            self.reveal(immediate=False)
 
     def _on_hover_leave(self):
         self._hover_inside = False
-        if self._auto_hide_enabled() and self._dock_edge and not self._collapsed:
+        if (self._auto_hide_enabled() and self._dock_edge
+                and not self._collapsed
+                and self._dock_anim_target != "expand"):
             self._hover_timer.start()
 
     def _on_hover_timeout(self):
@@ -606,9 +867,11 @@ class WindowController(QObject):
             return
         if self._cursor_inside():
             return
-        self._collapse_if_docked(force=True)
+        self._collapse_if_docked(force=True, immediate=False)
 
-    def _collapse_if_docked(self, force=False):
+    def _collapse_if_docked(self, force=False, immediate=True):
+        if self._dock_anim_target == "collapse":
+            return True
         if (not self._auto_hide_enabled() or self._collapsed
                 or not self._dock_edge):
             return False
@@ -623,11 +886,23 @@ class WindowController(QObject):
             else:
                 self._small_logical_rect = QRect(pos, logical)
                 self._normal_pos = pos
-        self._hide_children()
-        if not self._set_strip_geometry():
-            self._restore_children()
+        if immediate:
+            self._dock_anim.stop()
+            self._dock_anim_target = None
+            self._remove_dock_overlay()
+            self._hide_children()
+            if not self._set_strip_geometry():
+                self._restore_children()
+                return False
+            self._emit_changed()
+            return True
+        strip, rect, edge = self._compute_strip_rect()
+        if not edge or strip.isEmpty():
             return False
-        self._emit_changed()
+        self._dock_snapshot = self.widget.grab()
+        self._hide_children()
+        self._collapsed = True
+        self._start_dock_animation(strip, "collapse", edge, rect)
         return True
 
     def _hide_children(self):
@@ -637,8 +912,8 @@ class WindowController(QObject):
         try:
             for child in self.widget.findChildren(QWidget,
                                                   options=Qt.FindDirectChildrenOnly):
-                if child.isWindow():
-                    continue          # QDialog/弹出窗口不是页面，不参与收条
+                if child.isWindow() or child is self._dock_overlay:
+                    continue          # 弹出窗口 / 收条快照 overlay 不参与页面管理
                 if child.isVisible():
                     self._hidden_children.append([child, True])
                     child.hide()
@@ -669,7 +944,7 @@ class WindowController(QObject):
     def _track_child_visibility(self, child, visible):
         """收条期间如果页面代码切换了直接子控件可见性，记录最新状态供展开恢复。"""
         try:
-            if child.isWindow():
+            if child.isWindow() or child is self._dock_overlay:
                 return
         except RuntimeError:
             return
@@ -899,6 +1174,7 @@ class WindowController(QObject):
 
     def stop_timers(self):
         """closeEvent 用：停掉 hover 定时器与进行中的拖拽/resize。"""
+        self._finish_dock_animation()
         self._hover_timer.stop()
         self._resizing = None
         self._dragging = None
@@ -1028,6 +1304,8 @@ class WindowController(QObject):
             # 收条期间页面切换可见性：记录最新状态，并暂时压住（小条里不该有页面）
             if (et in (QEvent.Show, QEvent.Hide) and obj is not self.widget
                     and self._collapsed and not self._updating_children):
+                if obj is self._dock_overlay:
+                    return False          # 快照 overlay 自己管理可见性
                 try:
                     if obj.parent() is self.widget and not obj.isWindow():
                         self._track_child_visibility(obj, et == QEvent.Show)
@@ -1075,6 +1353,7 @@ class WindowController(QObject):
                 return False
             if et == QEvent.Hide and obj is self.widget:
                 self._hover_timer.stop()
+                self._finish_dock_animation()
                 return False
             if et == QEvent.Move and obj is self.widget:
                 return self._on_widget_move()

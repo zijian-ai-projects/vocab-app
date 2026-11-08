@@ -35,5 +35,8 @@ data/_layout*.png
 Thumbs.db
 .DS_Store
 
+# 本机启动快捷方式（移动目录后重新运行生成器）
+/背单词.lnk
+
 # 词表抽取的中间产物（raw / lists / gloss / report，可随时重建）
 build/

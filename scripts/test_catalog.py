@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""catalog.py 性能回归：16331 词大词书只测可见行 + 长行完整换行。
+r"""catalog.py 回归：16331 词仅测可见行、完整换行、表头无虚线焦点框。
 
 运行：
-  D:\software\anaconda\python.exe scripts\test_catalog.py
+  D:\software\anaconda\python.exe -B scripts\test_catalog.py
 默认 offscreen；真实 Sandbox（只读 bank/books，不写真实 records）。
+覆盖四主题/scale 1.0、1.6、透明徽标与表头文字的等级说明入口。
 """
 import os
 import sys
@@ -21,13 +22,18 @@ sys.path.insert(0, os.path.join(APP, "app"))
 from ui_test_support import configure_qt, Sandbox, set_nottest, new_app
 
 configure_qt("offscreen")
+# offscreen 也用系统真实字体，不依赖 Anaconda 已移除的 Qt fonts 子目录。
+_font_dir = os.path.join(os.environ.get("WINDIR", "C:\\Windows"), "Fonts")
+if os.name == "nt" and os.path.isdir(_font_dir):
+    os.environ.setdefault("QT_QPA_FONTDIR", _font_dir)
 set_nottest(True)
 
 from PyQt5.QtCore import Qt, QPoint, QTimer
-from PyQt5.QtGui import QFontMetrics, QColor
-from PyQt5.QtTest import QTest
+from PyQt5.QtGui import QFontMetrics, QColor, QImage, QPainter, QRegion, QPalette
+from PyQt5.QtTest import QTest, QSignalSpy
 from PyQt5.QtWidgets import (QApplication, QDialog, QHeaderView, QLabel,
-                             QPushButton, QAbstractItemView)
+                             QPushButton, QAbstractItemView, QWidget,
+                             QStyle, QStyleOptionViewItem)
 
 app = new_app(sys.argv)
 out = []
@@ -57,6 +63,26 @@ def wait_measure(catalog_widget, timeout=2.0):
     while catalog_widget._measure_timer.isActive() and time.time() < end:
         pump(0.02)
     pump(0.10)
+
+
+def render_cell(table, index, focused=False):
+    """比较真实 delegate 绘制的普通态与被注入的 focus/selection 态。"""
+    image = QImage(160, table.rowHeight(index.row()), QImage.Format_ARGB32)
+    image.fill(table.palette().color(QPalette.Base))
+    option = QStyleOptionViewItem()
+    option.initFrom(table)
+    option.widget = table
+    option.rect = image.rect()
+    state = int(option.state) & ~int(QStyle.State_HasFocus | QStyle.State_Selected)
+    if focused:
+        state |= int(QStyle.State_HasFocus | QStyle.State_Selected)
+    option.state = QStyle.State(state)
+    painter = QPainter(image)
+    try:
+        table.itemDelegate().paint(painter, option, index)
+    finally:
+        painter.end()
+    return image
 
 
 def main():
@@ -231,6 +257,69 @@ def main():
         check(catalog_widget.table.selectionModel().selectedRows() == [],
               "点击行不再出现选中态")
 
+        # Qt 的 NoSelection 仍会由 selectColumn 建立 current；按下/释放都必须清掉。
+        check(catalog_widget.table.selectionMode() == QAbstractItemView.NoSelection,
+              "目录保持 NoSelection")
+        check(header.focusPolicy() == Qt.NoFocus and not header.highlightSections(),
+              "表头保持 NoFocus / 无 section highlight")
+        check(catalog_widget.table.focusPolicy() != Qt.NoFocus,
+              "表格仍可键盘聚焦/滚动（不是禁用整个视图焦点）")
+        for col in range(3):
+            pos = QPoint(header.sectionViewportPosition(col) + 16, header.height() // 2)
+            QTest.mousePress(header.viewport(), Qt.LeftButton, Qt.NoModifier, pos)
+            pump(0.01)
+            check(not catalog_widget.table.currentIndex().isValid(),
+                  "按下表头 %d 不留下 current / 下方虚线框" % col)
+            QTest.mouseRelease(header.viewport(), Qt.LeftButton, Qt.NoModifier, pos)
+            pump(0.02)
+            check(not catalog_widget.table.currentIndex().isValid()
+                  and not catalog_widget.table.selectionModel().selectedIndexes(),
+                  "释放表头 %d 不留下 current/selection" % col)
+            if catalog_widget.level_dialog is not None:
+                catalog_widget.level_dialog.close()
+                pump(0.01)
+
+        delegate = catalog_widget.table.itemDelegate()
+        for col in range(3):
+            index = catalog_widget.model.index(0, col)
+            option = QStyleOptionViewItem()
+            option.state = QStyle.State_Enabled | QStyle.State_HasFocus | QStyle.State_Selected
+            delegate.initStyleOption(option, index)
+            check(not (int(option.state) & int(QStyle.State_HasFocus | QStyle.State_Selected)),
+                  "delegate 列 %d 屏蔽 State_HasFocus/Selected" % col)
+            check(bool(option.state & QStyle.State_Enabled)
+                  and bool(option.features & QStyleOptionViewItem.WrapText)
+                  and option.textElideMode == Qt.ElideNone,
+                  "delegate 列 %d 保留 enabled/WrapText/ElideNone" % col)
+            check(option.palette.color(QPalette.Text) == QColor(catalog_widget.theme["fg_mean"]),
+                  "delegate 列 %d 保留统一正文颜色" % col)
+        index = catalog_widget.model.index(0, 0)
+        check(render_cell(catalog_widget.table, index)
+              == render_cell(catalog_widget.table, index, focused=True),
+              "真实 delegate 的 focus/selection 注入绘图与普通态逐像素相同")
+
+        # 独立徽标直接点击路径（不只是向 header.viewport 发送事件）。
+        spy = QSignalSpy(header.level_clicked)
+        QTest.mouseClick(header.badge, Qt.LeftButton, Qt.NoModifier, header.badge.rect().center())
+        pump(0.03)
+        check(len(spy) == 1 and catalog_widget.level_dialog.isVisible(),
+              "透明徽标本身点击只发一次等级说明信号")
+        catalog_widget.level_dialog.close()
+        pump(0.02)
+        badge_image = QImage(header.badge.size(), QImage.Format_ARGB32)
+        badge_image.fill(Qt.transparent)
+        painter = QPainter(badge_image)
+        try:
+            header.badge.render(painter, QPoint(), QRegion(), QWidget.DrawChildren)
+        finally:
+            painter.end()
+        check(not header.badge.autoFillBackground()
+              and badge_image.pixelColor(0, 0).alpha() == 0,
+              "徽标未填背景，角落像素保持透明")
+        check(any(badge_image.pixelColor(x, y).alpha() > 0
+                  for x in range(badge_image.width()) for y in range(badge_image.height())),
+              "透明徽标仍绘制可见的描边圆圈/感叹号")
+
         # 图标点击 / 表头文字点击都能打开
         QTest.mouseClick(header.viewport(), Qt.LeftButton, Qt.NoModifier,
                          icon_rect.center())
@@ -298,6 +387,22 @@ def main():
               "滚动中部后累计测量 %d 行（16331 项中仍很小）" % mid_measured)
         check(mid_calls <= initial_calls + 5,
               "滚动中部只新增合并测量 %d 次（总计 %d）" % (mid_calls - initial_calls, mid_calls))
+
+        # 不靠 NoFocus 禁用整张表：键盘 PageDown 仍能滚动只读目录。
+        # 从最后可见行起测；从顶行按一次时 Qt 只把 current 移到同页底行，不必滚动。
+        last_visible = catalog_widget.table.rowAt(catalog_widget.table.viewport().height() - 1)
+        catalog_widget.table.setCurrentIndex(catalog_widget.model.index(max(0, last_visible), 0))
+        catalog_widget.table.setFocus()
+        pump(0.04)
+        before_key_scroll = bar.value()
+        QTest.keyClick(catalog_widget.table, Qt.Key_PageDown)
+        pump(0.04)
+        check(bar.value() > before_key_scroll,
+              "PageDown 键盘滚动仍有效：%d -> %d" % (before_key_scroll, bar.value()))
+        check(catalog_widget.table.selectionMode() == QAbstractItemView.NoSelection
+              and not catalog_widget.table.selectionModel().selectedIndexes(),
+              "键盘滚动仍不产生 selection")
+        catalog_widget.table._clear_current()
 
         # 视口/列宽 resize：coalesce 后仍只测可见附近
         resize_calls = catalog_widget.measure_calls
@@ -474,6 +579,58 @@ def main():
         check("QHeaderView::section" in qss and "padding:" in qss,
               "主题表头 QSS 仍保留")
         check(catalog_widget.theme["bg"] in qss, "主题背景仍写入表头 QSS")
+
+        # 四主题 / 两档缩放：焦点框、单色字体与选中样式都不能回归。
+        for theme_key in catalog.th.ORDER:
+            for scale in (1.0, 1.6):
+                palette = catalog.th.get(theme_key)
+                catalog_widget.set_palette(palette)
+                catalog_widget.set_scale(scale)
+                pump(0.03)
+                header = catalog_widget.level_header
+                header_errors = []
+                for col in range(3):
+                    pos = QPoint(header.sectionViewportPosition(col) + 16, header.height() // 2)
+                    QTest.mousePress(header.viewport(), Qt.LeftButton, Qt.NoModifier, pos)
+                    pump(0.01)
+                    if catalog_widget.table.currentIndex().isValid():
+                        header_errors.append((col, "press"))
+                    QTest.mouseRelease(header.viewport(), Qt.LeftButton, Qt.NoModifier, pos)
+                    pump(0.01)
+                    if (catalog_widget.table.currentIndex().isValid()
+                            or catalog_widget.table.selectionModel().selectedIndexes()):
+                        header_errors.append((col, "release"))
+                    if catalog_widget.level_dialog is not None:
+                        catalog_widget.level_dialog.close()
+                        pump(0.01)
+                check(not header_errors,
+                      "%s/scale%.1f 三个表头无 current/selection：%r" %
+                      (theme_key, scale, header_errors))
+                index = catalog_widget.model.index(0, 0)
+                check(render_cell(catalog_widget.table, index)
+                      == render_cell(catalog_widget.table, index, focused=True),
+                      "%s/scale%.1f focus/selected 注入仍无绘图差异" % (theme_key, scale))
+                color_model.palette = palette
+                color_model.set_scale(scale)
+                check(all(color_model.data(color_model.index(row, col), Qt.ForegroundRole)
+                          == QColor(palette["fg_mean"])
+                          for row in range(2) for col in range(3)),
+                      "%s/scale%.1f 认识/掌握三列仍统一正文色" % (theme_key, scale))
+                check(all(color_model.data(color_model.index(row, col), Qt.FontRole)
+                          == color_model.data(color_model.index(0, 0), Qt.FontRole)
+                          for row in range(2) for col in range(3)),
+                      "%s/scale%.1f 全等级/三列字体一致" % (theme_key, scale))
+                css = catalog_widget.table.styleSheet()
+                check("selection-background-color:%s;" % palette["bg"] in css
+                      and "selection-color:%s;" % palette["fg_mean"] in css
+                      and "outline:0;" in css,
+                      "%s/scale%.1f selection/focus QSS 使用中性正文/背景" % (theme_key, scale))
+                check(header.icon_color() == QColor(palette["muted"])
+                      and not header.badge.autoFillBackground(),
+                      "%s/scale%.1f 徽标跟随主题并保持透明" % (theme_key, scale))
+        catalog_widget.set_palette(old_theme)
+        catalog_widget.set_scale(1.6)
+        pump(0.03)
 
         # 真实 Card 主题样式（不是独立 widget）：单条极长中文/英文 + search 仅一条
         # 复现 memory-engine 的 CatalogCard 场景，验证不再 48/long 自触发振荡。

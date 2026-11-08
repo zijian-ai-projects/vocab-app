@@ -371,11 +371,15 @@ for edge in ("left", "right", "top", "bottom"):
         check(c.collapsed, "%s：鼠标离开 -> 收条" % edge)
         size = w.size()
         if edge in ("left", "right"):
-            check(size.width() == wd.STRIP_THICKNESS and size.height() == 196,
-                  "%s：竖条 8×196，实际 %r" % (edge, size))
+            check(size.width() == wd.STRIP_THICKNESS
+                  and size.height() == min(wd.DOCK_LENGTH, 196),
+                  "%s：竖胶囊 %d×%d，实际 %r" %
+                  (edge, wd.STRIP_THICKNESS, wd.DOCK_LENGTH, size))
         else:
-            check(size.height() == wd.STRIP_THICKNESS and size.width() == 356,
-                  "%s：横条 356×8，实际 %r" % (edge, size))
+            check(size.height() == wd.STRIP_THICKNESS
+                  and size.width() == min(wd.DOCK_LENGTH, 356),
+                  "%s：横胶囊 %d×%d，实际 %r" %
+                  (edge, wd.DOCK_LENGTH, wd.STRIP_THICKNESS, size))
         check(not w.a.isVisibleTo(w) and not w.b.isVisibleTo(w),
               "%s：收条隐藏直接子控件" % edge)
         st = c.state()
@@ -394,6 +398,7 @@ for edge in ("left", "right", "top", "bottom"):
         c._collapse_if_docked(force=True)
         check(c.collapsed, "%s：再次收条" % edge)
         c._on_hover_enter()
+        pump(0.30)
         check(not c.collapsed and w.size() == QSize(*wd.COMPACT_SIZE),
               "%s：hover enter 展开" % edge)
     else:
@@ -441,7 +446,7 @@ for other_size in ((640, 520), (760, 620)):
           "%d×%d 正常窗 _collapse_if_docked 无动作" % other_size)
     c._cursor_inside = lambda: False
     c._on_hover_leave()
-    pump(0.25)
+    pump(0.40)
     check(c.collapsed is False,
           "%d×%d 正常窗 hover leave 也不收条" % other_size)
     w.close()
@@ -472,8 +477,9 @@ for edge in ("left", "right", "top", "bottom"):
         check(w.geometry().bottom() == avail.bottom(), "bottom：520×430 贴下")
     check(c._collapse_if_docked(force=True), "%s：520×430 进入收条" % edge)
     check(c.collapsed and w.size() in (
-              QSize(wd.STRIP_THICKNESS, 430), QSize(520, wd.STRIP_THICKNESS)),
-          "%s：520×430 收成 8px 窄条（%r）" % (edge, w.size()))
+              QSize(wd.STRIP_THICKNESS, min(wd.DOCK_LENGTH, 430)),
+              QSize(min(wd.DOCK_LENGTH, 520), wd.STRIP_THICKNESS)),
+          "%s：520×430 收成短圆角胶囊（%r）" % (edge, w.size()))
     check(not w.a.isVisibleTo(w) and not w.b.isVisibleTo(w),
           "%s：520×430 收条隐藏直接子控件" % edge)
     st = c.state()
@@ -490,6 +496,7 @@ for edge in ("left", "right", "top", "bottom"):
           "%s：520×430 reveal 恢复子控件" % edge)
     c._collapse_if_docked(force=True)
     c._on_hover_enter()
+    pump(0.30)
     check(not c.collapsed and w.size() == QSize(520, 430),
           "%s：520×430 hover enter 展开" % edge)
     w.close()
@@ -504,15 +511,18 @@ check(c._docked_small and c.dock_edge == "left",
 check(c._collapse_if_docked(force=True) and c.collapsed,
       "520×430 拖到边缘后鼠标离开可收条")
 c._on_hover_enter()
+pump(0.30)
 check(not c.collapsed and w.size() == QSize(520, 430),
       "520×430 拖到边缘后 hover 展开仍是 520×430")
 c._cursor_inside = lambda: False
 c._on_hover_leave()
-pump(0.30)
+pump(0.40)
 check(c.collapsed and w.size() in (
-          QSize(wd.STRIP_THICKNESS, 430), QSize(520, wd.STRIP_THICKNESS)),
-      "520×430 hover leave 延迟后自动收成 8px")
+          QSize(wd.STRIP_THICKNESS, min(wd.DOCK_LENGTH, 430)),
+          QSize(min(wd.DOCK_LENGTH, 520), wd.STRIP_THICKNESS)),
+      "520×430 hover leave 延迟后自动收成短胶囊")
 c._on_hover_enter()
+pump(0.30)
 check(not c.collapsed and w.size() == QSize(520, 430),
       "520×430 hover enter 从 8px 展开回 520×430")
 saved = c.state()
@@ -535,15 +545,16 @@ c.restore({"compact": True, "dock_edge": "left",
            "x": avail.left(), "y": avail.top() + 100})
 c._cursor_inside = lambda: False
 c._on_hover_leave()
-pump(0.30)
+pump(0.40)
 check(c.collapsed, "hover leave + 延迟后自动收条")
 c._on_hover_enter()
+pump(0.30)
 check(not c.collapsed, "hover enter 自动展开")
 # 展开状态 hide -> timer 停止；show 后子控件不被残留 hidden
 c._cursor_inside = lambda: False
 c._on_hover_leave()
 w.hide()
-pump(0.30)
+pump(0.40)
 check(not c.collapsed, "hide 后 timer 不把窗口收条")
 w.show()
 pump()
