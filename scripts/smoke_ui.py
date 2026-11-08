@@ -178,9 +178,9 @@ w._page_back()
 check(w.mode == "books" and w.isVisible(), "初次主分类 _page_back 不退出")
 QTest.keyClick(w, Qt.Key_Escape)
 check(w.mode == "books" and w.isVisible(), "初次主分类 Esc 不退出")
-check(w.chip_seq.text() == "顺序" and w.chip_reverse.text() == "逆序"
-      and not hasattr(w, "chip_shuf"),
-      "词序只有 顺序/逆序 两个选择（默认顺序）")
+check(w.chip_seq.text() == "顺序" and w.chip_shuffle.text() == "乱序"
+      and not hasattr(w, "chip_reverse"),
+      "词序只有 顺序/乱序 两个选择（默认顺序）")
 
 # ---- 5. 第 1 级 -> 第 2 级 -> 返回 ----
 w._nav_into_main("university")
@@ -322,24 +322,26 @@ check(st.get("st") == "new" and st.get("lv") == 0 and st.get("lapse", 0) == 1
       "新词改判仍未学习、错误计数一次并进入重现队列（lapse=%s）" % st.get("lapse"))
 check(w.mode == "front", "选错了之后回到正面")
 
-# ---- 11. 换书 + 逆序 + 持久化 ----
+# ---- 11. 换书 + 乱序 + 持久化 ----
 w.open_books("welcome")
 w._nav_into_main("abroad")
 w._nav_into_group("gre")
 w._pick_book("gre-all")
 check(w.sel_order == "seq", "选择词书默认顺序：%s" % w.sel_order)
-w._set_order("reverse")
+w._set_order("shuffle")
 w._start_learning()
-check(w.book_id == "gre-all" and w.order_mode == "reverse", "换到 GRE 并集 / 逆序")
+check(w.book_id == "gre-all" and w.order_mode == "shuffle", "换到 GRE 并集 / 乱序")
 check(len(w.queue_words) == bk.size("gre-all"),
       "GRE 队列 %s 词" % format(len(w.queue_words), ","))
+check(sorted(x["w"] for x in w.queue_words) == sorted(bk.words("gre-all")),
+      "乱序队列与词书单词集合一致（无重复/丢失）")
 seed1 = (w.orders.get("gre-all") or {}).get("seed")
 first_rev = w.queue_words[0]["w"]
 w.save()
 w2 = sb.new_card(show=True)
 pump(8)
-check(w2.book_id == "gre-all" and w2.order_mode == "reverse", "重启后记住书 + 逆序")
-check(w2.queue_words[0]["w"] == first_rev, "逆序首个词稳定：%s" % first_rev)
+check(w2.book_id == "gre-all" and w2.order_mode == "shuffle", "重启后记住书 + 乱序")
+check(w2.queue_words[0]["w"] == first_rev, "乱序首个词稳定：%s" % first_rev)
 stop_timer(w, w2)
 
 # ---- 12. 到期优先，但仅复习当前词书 ----

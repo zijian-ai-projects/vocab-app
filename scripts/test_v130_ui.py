@@ -382,11 +382,14 @@ class Suite:
                               charlie=learning(2, self.clock() - 9000))
         orders = {BOOK: {"mode": mode, "seed": 42}}
         w = self.card(progress(states=states, orders=orders))
-        expected = ["alpha", "charlie"] if mode == "seq" else ["charlie", "alpha"]
+        source = [item["w"] for item in w.queue_words]
+        expected = [key for key in source if key in ("alpha", "charlie")]
+        if mode == "seq":
+            self.check(expected == ["alpha", "charlie"], "顺序模式源词序为 alpha/charlie")
         self.check(key_of(w) == expected[0], "到期优先，使用%s源词序而非最早due" % mode)
         self.submit(w, False)
         w._next()
-        self.check(key_of(w) == expected[1], "第二过期词按%s顺序" % mode)
+        self.check(key_of(w) == expected[1], "第二过期词按%s源顺序" % mode)
 
     def realtime_due(self):
         w = self.card(progress(states=all_mastered(alpha=learning(1, self.clock() + 2))))
@@ -443,12 +446,18 @@ class Suite:
         self.check("没有正确答案" not in q["options"] and "不认识" not in q["options"]
                    and w.btn_study_dk.isVisibleTo(w), "第五项独立不认识，无测试陷阱")
         self.check(all(any(meaning(row) == text for row in w.bank) for text in q["options"]), "四选项全部源自词库")
+        self.check(w.choice_word.font().pixelSize() == app_main.F_WORD[0]
+                   and w.choice_ipa.font().pixelSize() == app_main.F_IPA[0],
+                   "选择题单词/音标字号与刷词模式一致（%d/%d）" %
+                   (w.choice_word.font().pixelSize(), w.choice_ipa.font().pixelSize()))
+        self.check(w.choice_body.layout().contentsMargins().top() >= 10,
+                   "选择题词块整体下移（上留白 %d）" % w.choice_body.layout().contentsMargins().top())
         QTest.keyClick(w, Qt.Key_Space)
         self.check(w.mode == "choice" and not w.states.get("alpha"), "选择题 Space 不冒充答案")
         QTest.keyClick(w, Qt.Key_1 + q["correct"])
         self.check(w.mode == "choice_back" and w.choice_locked and w.states["alpha"]["lv"] == 1, "1-4键提交正确项")
-        self.check(w.status.isHidden() and w.choice_hint.isVisibleTo(w) and w.choice_hint.text().startswith("答对"),
-                   "提交后才显示答对反馈，学习HUD仍隐藏")
+        self.check(w.status.isHidden() and w.choice_hint.isHidden() and w.choice_hint.text() == "",
+                   "答对后不显示“答对 · 记忆等级x”提示，学习HUD仍隐藏")
         self.check(not any(button.isEnabled() for button in w.study_btns), "一次提交后锁四按钮")
         before = deepcopy(w.states)
         w._study_answer(q["correct"])
@@ -494,22 +503,22 @@ class Suite:
         w = self.card(progress(orders=old_orders))
         original = deepcopy(w.orders)
         raw = Path(self.sb.progress_path).read_bytes()
-        self.check(app_main.stored_order(w.orders, BOOK) == "seq" and w.orders == original,
-                   "旧shuffle读取显示seq但不破坏原词序/未知字段")
+        self.check(app_main.stored_order(w.orders, BOOK) == "shuffle" and w.orders == original,
+                   "旧shuffle记录仍显示乱序且不破坏原词序/未知字段")
         w.open_settings()
         w.open_books("settings")
         w._nav_into_main("fixture-main")
         w._nav_into_group("fixture-group")
         w._pick_book(BOOK)
         pump()
-        self.check(w.sel_order == "seq" and w.status.isHidden() and not hasattr(w, "chip_shuf"),
-                   "选书页旧乱序显示顺序，无状态HUD/乱序chip")
-        self.check(w.chip_seq.text() == "顺序" and w.chip_reverse.text() == "逆序"
-                   and w.btn_catalog_books.text() == "浏览词条", "选书页只有顺序/逆序与浏览词条入口")
-        QTest.mouseClick(w.chip_reverse, Qt.LeftButton)
-        self.check(w.sel_order == "reverse", "真实逆序chip选择逆序")
-        w._set_order("shuffle")
-        self.check(w.sel_order == "reverse", "_set_order乱序被忽略，不改变当前选择")
+        self.check(w.sel_order == "shuffle" and w.status.isHidden() and not hasattr(w, "chip_reverse"),
+                   "选书页旧乱序显示乱序，无状态HUD/逆序chip")
+        self.check(w.chip_seq.text() == "顺序" and w.chip_shuffle.text() == "乱序"
+                   and w.btn_catalog_books.text() == "浏览词条", "选书页只有顺序/乱序与浏览词条入口")
+        QTest.mouseClick(w.chip_shuffle, Qt.LeftButton)
+        self.check(w.sel_order == "shuffle", "真实乱序chip选择乱序")
+        w._set_order("reverse")
+        self.check(w.sel_order == "shuffle", "_set_order逆序被忽略，不改变当前选择")
         QTest.mouseClick(w.chip_seq, Qt.LeftButton)
         QTest.mouseClick(w.btn_catalog_books, Qt.LeftButton)
         pump()
@@ -525,7 +534,8 @@ class Suite:
         image = w.grab().toImage()
         origin = viewport.mapTo(w, QPoint(0, 0))
         points = ((2, 2), (viewport.width() - 3, 2),
-                  (2, viewport.height() - 3), (viewport.width() - 3, viewport.height() - 3))
+                  (2, viewport.height() - 3), (viewport.width() - 3, viewport.height() - 3),
+                  (2, viewport.height() // 2), (viewport.width() - 3, viewport.height() // 2))
         colors, blank_colors, covered = [], [], []
         for x, y in points:
             color = image.pixelColor(origin.x() + x, origin.y() + y).name()
@@ -654,19 +664,44 @@ class Suite:
         self.check(c.model.headerData(2, Qt.Horizontal, Qt.DisplayRole) == "记忆等级"
                    and "点击查看记忆等级说明" not in str(c.model.data(c.model.index(0, 2), Qt.ToolTipRole)),
                    "记忆等级表头无ⓘ且等级tooltip无失效点击提示")
-        self.check(not hasattr(c, "note"), "目录不再有底部提示note")
+        self.check(not hasattr(c, "note") and not hasattr(c, "btn_levels"),
+                   "目录不再有底部提示note或独立等级说明chip")
+        self.check(c.table.selectionMode() == c.table.NoSelection
+                   and not c.table.selectionModel().hasSelection(),
+                   "目录取消行选中设计（NoSelection/无选区）")
         for column in (0, 1, 2):
             index = c.model.index(0, column)
             QTest.mouseClick(c.table.viewport(), Qt.LeftButton, pos=c.table.visualRect(index).center())
             pump()
-            self.check(c.level_dialog is None, "点击表格第%d列不打开等级说明" % column)
+            self.check(c.level_dialog is None and not c.table.selectionModel().hasSelection(),
+                       "点击表格第%d列不打开等级说明也不留下选中" % column)
+        level_foreground = c.model.data(c.model.index(0, 2), Qt.ForegroundRole)
+        word_foreground = c.model.data(c.model.index(0, 0), Qt.ForegroundRole)
+        expected_foreground = c.theme["fg_mean"]
+        self.check(level_foreground is not None and word_foreground is not None
+                   and level_foreground.name() == expected_foreground
+                   and word_foreground.name() == expected_foreground,
+                   "记忆等级与单词列不加分类颜色（统一普通文字色）")
         pos = QPoint(header.sectionViewportPosition(2) + header.sectionSize(2) // 2, header.height() // 2)
         QTest.mouseClick(header.viewport(), Qt.LeftButton, pos=pos)
         pump()
-        self.check(c.level_dialog is None, "点击记忆等级表头也不打开说明")
-        QTest.mouseClick(c.btn_levels, Qt.LeftButton)
-        pump()
-        self.check(c.level_dialog is not None and c.level_dialog.isVisible(), "真实等级说明chip打开主题对话框", require=True)
+        self.check(c.level_dialog is not None and c.level_dialog.isVisible(),
+                   "点击记忆等级表头打开主题化说明", require=True)
+        badge = c.level_header.badge
+        icon = c.level_header.icon_rect()
+        painted = 0
+        header_image = c.level_header.viewport().grab().toImage()
+        muted = c.theme["muted"].lower()
+        for x in range(icon.x(), icon.x() + icon.width()):
+            for y in range(icon.y(), icon.y() + icon.height()):
+                if 0 <= x < header_image.width() and 0 <= y < header_image.height():
+                    color = header_image.pixelColor(x, y)
+                    if abs(color.red() - int(muted[1:3], 16)) <= 24 and \
+                            abs(color.green() - int(muted[3:5], 16)) <= 24 and \
+                            abs(color.blue() - int(muted[5:7], 16)) <= 24:
+                        painted += 1
+        self.check(badge.isVisible() and badge.geometry() == icon and painted >= 8,
+                   "记忆等级表头右上角真实绘制描边感叹号圆圈（像素 %d）" % painted)
         expected_lines = ("等级 0：新词", "等级 1：5 分钟后复习", "等级 2：30 分钟", "等级 3：12 小时",
                           "等级 4：1 天", "等级 5：2 天", "等级 6：4 天", "等级 7：7 天",
                           "等级 8：15 天", "等级 9：30 天", "等级 10：已掌握，不再出现")
@@ -822,6 +857,22 @@ class Suite:
                    and "应用尺寸" not in buttons, "删除旧重现间隔说明和应用尺寸按钮")
         self.check(w.lab_book_num.text() == "已学 1 / 8" and "更换" in buttons and "浏览词条" not in buttons,
                    "设置词书块只显示已学计数与更换，不含浏览词条")
+        self.check(w.lab_storage.text() == "V" + app_main.VERSION and not w.lab_storage.toolTip(),
+                   "设置底部只显示版本号，不显示记录位置或路径提示")
+        hint_text = "".join(labels)
+        self.check(all(text not in hint_text for text in
+                       ("记录位置", "尺寸限于", "小窗贴边后移出收起", "4 个真实释义 + 不认识")),
+                   "设置页已删除记录位置/尺寸限制/学习模式小字提示")
+        self.check(not hasattr(w, "mode_note") or not w.mode_note.isVisibleTo(w),
+                   "学习模式小字提示控件已移除")
+        row_buttons = list(w.size_chips.values()) + [w.btn_defaults]
+        centers = {round(button.pos().y() + button.height() / 2) for button in row_buttons}
+        self.check(len(centers) == 1 and w.btn_defaults.isVisibleTo(w),
+                   "三个尺寸chip与恢复默认在同一行：%r" % (sorted(centers),))
+        book_centers = {round(widget.pos().y() + widget.height() / 2) for widget in
+                        (w.lab_book, w.lab_book_num, w.btn_change_book)}
+        self.check(len(book_centers) == 1,
+                   "词书路径/已学计数/更换在同一行：%r" % (sorted(book_centers),))
         screen = FakeScreen(QRect(0, 0, 1600, 1000))
         with patch.object(WindowController, "_screens", lambda _: [screen]):
             for width, height in sorted(presets):
@@ -1228,7 +1279,7 @@ def run_suite():
                     for remember in (True, False):
                         suite.run("level%d-%s" % (level, "remember" if remember else "forget"),
                                   lambda lv=level, yes=remember: suite.level_transition(lv, yes))
-                for mode in ("seq", "reverse"):
+                for mode in ("seq", "shuffle"):
                     suite.run("due-" + mode, lambda order=mode: suite.due_source_order(order))
                 suite.run("realtime-due", suite.realtime_due)
                 suite.run("persistent-current-pending", suite.current_persistence)

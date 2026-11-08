@@ -426,24 +426,108 @@ dlg.close()
 w.close()
 
 # ======================================================================
-# 7. 正常窗永不自动收条
+# 7. 其它正常尺寸（640×520/760×620）永不自动收条
 # ======================================================================
-w, c = new_ctl()
-avail = primary_avail()
-c.set_compact(False, remember=False)
-w.move(avail.left(), avail.top() + 100)
-pump()
-check(c.collapsed is False, "正常窗贴边不 collapsed")
-check(c._collapse_if_docked(force=True) is False, "正常窗 _collapse_if_docked 无动作")
-c._cursor_inside = lambda: False
-c._on_hover_leave()
-pump(0.25)
-check(c.collapsed is False, "正常窗 hover leave 也不收条")
-w.close()
+for other_size in ((640, 520), (760, 620)):
+    w, c = new_ctl()
+    c.set_normal_size(*other_size)
+    pump()
+    avail = primary_avail()
+    w.move(avail.left(), avail.top() + 100)
+    pump()
+    check(c.collapsed is False,
+          "%d×%d 正常窗贴边不 collapsed" % other_size)
+    check(c._collapse_if_docked(force=True) is False,
+          "%d×%d 正常窗 _collapse_if_docked 无动作" % other_size)
+    c._cursor_inside = lambda: False
+    c._on_hover_leave()
+    pump(0.25)
+    check(c.collapsed is False,
+          "%d×%d 正常窗 hover leave 也不收条" % other_size)
+    w.close()
 
 # ======================================================================
-# 8. hover timer：离开后收条；hide 取消 timer，不留下 hidden 状态
+# 7b. 520×430 小巧正常窗也支持四边 8px 收条 / 悬停展开
 # ======================================================================
+for edge in ("left", "right", "top", "bottom"):
+    w, c = new_ctl()
+    avail = primary_avail()
+    c.restore({"normal_w": 520, "normal_h": 430,
+               "dock_edge": edge,
+               "normal_x": avail.left() + 100, "normal_y": avail.top() + 100,
+               "x": avail.left() + 100, "y": avail.top() + 100})
+    check(c.normal_size == QSize(520, 430) and not c.compact,
+          "%s：520×430 仍是正常窗" % edge)
+    check(c._docked_small and c.dock_edge == edge,
+          "%s：520×430 restore 后可贴边收起（edge=%r）" % (edge, c.dock_edge))
+    check(w.size() == QSize(520, 430),
+          "%s：520×430 展开尺寸不变" % edge)
+    if edge == "left":
+        check(w.x() == avail.left(), "left：520×430 贴左")
+    elif edge == "right":
+        check(w.geometry().right() == avail.right(), "right：520×430 贴右")
+    elif edge == "top":
+        check(w.y() == avail.top(), "top：520×430 贴上")
+    else:
+        check(w.geometry().bottom() == avail.bottom(), "bottom：520×430 贴下")
+    check(c._collapse_if_docked(force=True), "%s：520×430 进入收条" % edge)
+    check(c.collapsed and w.size() in (
+              QSize(wd.STRIP_THICKNESS, 430), QSize(520, wd.STRIP_THICKNESS)),
+          "%s：520×430 收成 8px 窄条（%r）" % (edge, w.size()))
+    check(not w.a.isVisibleTo(w) and not w.b.isVisibleTo(w),
+          "%s：520×430 收条隐藏直接子控件" % edge)
+    st = c.state()
+    check(st["normal_w"] == 520 and st["normal_h"] == 430
+          and st["w"] == 520 and st["h"] == 430,
+          "%s：520×430 收条不写入 8px 逻辑尺寸：%r" % (edge, st))
+    check((st["x"], st["y"]) == (c._small_logical_rect.x(),
+                                 c._small_logical_rect.y()),
+          "%s：520×430 state 位置来自展开逻辑 rect" % edge)
+    c.reveal()
+    check(not c.collapsed and w.size() == QSize(520, 430),
+          "%s：520×430 hover/reveal 展开回 520×430" % edge)
+    check(w.a.isVisibleTo(w) and w.b.isVisibleTo(w),
+          "%s：520×430 reveal 恢复子控件" % edge)
+    c._collapse_if_docked(force=True)
+    c._on_hover_enter()
+    check(not c.collapsed and w.size() == QSize(520, 430),
+          "%s：520×430 hover enter 展开" % edge)
+    w.close()
+
+# 拖到边缘自动吸附 + 保存/还原仍保持贴边与 520×430
+w, c = new_ctl()
+avail = primary_avail()
+w.move(avail.left(), avail.top() + 120)
+pump()
+check(c._docked_small and c.dock_edge == "left",
+      "520×430 直接 move 到左边 8px 阈值 -> 自动贴边")
+check(c._collapse_if_docked(force=True) and c.collapsed,
+      "520×430 拖到边缘后鼠标离开可收条")
+c._on_hover_enter()
+check(not c.collapsed and w.size() == QSize(520, 430),
+      "520×430 拖到边缘后 hover 展开仍是 520×430")
+c._cursor_inside = lambda: False
+c._on_hover_leave()
+pump(0.30)
+check(c.collapsed and w.size() in (
+          QSize(wd.STRIP_THICKNESS, 430), QSize(520, wd.STRIP_THICKNESS)),
+      "520×430 hover leave 延迟后自动收成 8px")
+c._on_hover_enter()
+check(not c.collapsed and w.size() == QSize(520, 430),
+      "520×430 hover enter 从 8px 展开回 520×430")
+saved = c.state()
+check(saved["normal_w"] == 520 and saved["normal_h"] == 430
+      and saved["compact"] is False and saved["dock_edge"] == "left",
+      "520×430 贴边状态保存 normal 尺寸 + dock_edge：%r" % (saved,))
+w.close()
+w2, c2 = new_ctl()
+c2.restore(saved)
+check(c2.normal_size == QSize(520, 430) and not c2.compact
+      and c2._docked_small and c2.dock_edge == "left",
+      "520×430 贴边状态 restart 恢复逻辑尺寸/贴边")
+check(w2.size() == QSize(520, 430), "520×430 restart 展开尺寸 520×430")
+w2.close()
+
 w, c = new_ctl()
 avail = primary_avail()
 c.restore({"compact": True, "dock_edge": "left",

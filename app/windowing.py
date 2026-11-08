@@ -98,6 +98,8 @@ class WindowController(QObject):
         self._dock_edge = None
         self._preferred_dock_edge = None      # 临时 normal 时仍保留“下次小窗贴哪边”
         self._compact_logical_rect = None      # 小窗展开时的逻辑 rect（收条也不丢）
+        self._docked_small = False             # 520×430 小巧正常窗也支持贴边隐藏
+        self._small_logical_rect = None        # 520×430 展开时的逻辑 rect（收条不丢）
 
         self._hidden_children = []             # [[child, was_visible], ...]
         self._updating_children = False
@@ -236,6 +238,14 @@ class WindowController(QObject):
             return QSize(*COMPACT_SIZE)
         return QSize(self._normal_size)
 
+    def _is_small_normal(self):
+        """520×430 的普通窗：尺寸仍算正常窗，但支持与 compact 相同的贴边收起。"""
+        return (not self._compact and
+                self._normal_size == QSize(*NORMAL_MIN))
+
+    def _auto_hide_enabled(self):
+        return bool(self._compact or self._is_small_normal())
+
     def _logical_pos(self):
         if self._compact:
             if self._compact_logical_rect is not None:
@@ -286,14 +296,29 @@ class WindowController(QObject):
             self._adjusting = False
 
     def _set_strip_geometry(self):
-        """收条：按 dock_edge 缩成 8px 小条，逻辑 rect 保持 356×196。"""
-        if self._compact_logical_rect is None:
-            self._compact_logical_rect = QRect(QPoint(self.widget.pos()),
-                                               QSize(*COMPACT_SIZE))
-        rect = QRect(self._compact_logical_rect)
+        """收条：按 dock_edge 缩成 8px 小条，逻辑尺寸保持不变。
+
+        compact 保持 356×196；520×430 小巧正常窗保持 520×430。
+        """
+        logical = self._logical_size()
+        if self._compact:
+            if self._compact_logical_rect is None:
+                self._compact_logical_rect = QRect(QPoint(self.widget.pos()), logical)
+            rect = QRect(self._compact_logical_rect)
+        else:
+            if self._small_logical_rect is None:
+                pos = (self._normal_pos if self._normal_pos is not None
+                       else QPoint(self.widget.pos()))
+                self._small_logical_rect = QRect(pos, logical)
+            rect = QRect(self._small_logical_rect)
+        rect.setSize(logical)
         geo = self._work_area_for(rect.center())
         rect = QRect(self._clamp_pos_for(rect.topLeft(), rect.size(), geo), rect.size())
-        self._compact_logical_rect = rect
+        if self._compact:
+            self._compact_logical_rect = rect
+        else:
+            self._small_logical_rect = rect
+            self._normal_pos = rect.topLeft()
         edge = self._dock_edge or self._detect_dock_edge(rect, geo)
         if not edge:
             return False
@@ -386,6 +411,11 @@ class WindowController(QObject):
             saved_edge = saved.get("dock_edge")
             if saved_edge in ("left", "right", "top", "bottom") and pref:
                 self._preferred_dock_edge = saved_edge
+            small_edge = (saved_edge
+                          if (not pref
+                              and self._normal_size == QSize(*NORMAL_MIN)
+                              and saved_edge in ("left", "right", "top", "bottom"))
+                          else None)
 
             # 正常窗位置：normal_x/y 优先，否则 x/y，否则居中
             normal_pos = self._saved_pos(saved, "normal_x", "normal_y",
@@ -404,8 +434,17 @@ class WindowController(QObject):
                 if edge not in ("left", "right", "top", "bottom"):
                     edge = None
                 self._set_compact_geometry(self._compact_logical_rect.topLeft(), edge)
+                self._docked_small = False
             else:
                 self._compact = False
+                self._docked_small = bool(small_edge)
+                if small_edge:
+                    self._dock_edge = small_edge
+                    self._preferred_dock_edge = small_edge
+                    self._normal_pos = self._snap_pos(
+                        self._normal_pos, self._normal_size, small_edge, geo)
+                    self._small_logical_rect = QRect(
+                        self._normal_pos, QSize(self._normal_size))
                 self._set_normal_geometry()
         finally:
             self._suppress_changed = False
@@ -435,6 +474,8 @@ class WindowController(QObject):
             # 从正常窗进入小窗：记下正常位置，展开位置用上次小窗位置
             if not self._collapsed:
                 self._normal_pos = QPoint(self.widget.pos())
+            self._docked_small = False
+            self._small_logical_rect = None
             self._restore_children()
             self._collapsed = False
             self._compact = True
@@ -457,6 +498,8 @@ class WindowController(QObject):
             self._collapsed = False
             self._compact = False
             self._dock_edge = None
+            self._docked_small = False
+            self._small_logical_rect = None
             if remember:
                 self._preferred_dock_edge = None
             self._set_normal_geometry()
@@ -467,6 +510,12 @@ class WindowController(QObject):
         size = self._clamp_normal_size(QSize(_safe_int(width, NORMAL_MIN[0]),
                                              _safe_int(height, NORMAL_MIN[1])), geo)
         self._normal_size = size
+        if (not self._compact and
+                self._normal_size != QSize(*NORMAL_MIN) and self._docked_small):
+            self._docked_small = False
+            self._dock_edge = None
+            self._preferred_dock_edge = None
+            self._small_logical_rect = None
         if not self._compact:
             self._normal_pos = self._clamp_pos_for(self._logical_pos(), size, geo)
             self._set_normal_geometry()
@@ -475,11 +524,18 @@ class WindowController(QObject):
     def reveal(self):
         if not self._collapsed:
             return
+        is_compact = self._compact
         self._restore_children()
         self._collapsed = False
-        rect = (self._compact_logical_rect
-                or QRect(QPoint(self.widget.pos()), QSize(*COMPACT_SIZE)))
-        self._set_compact_geometry(rect.topLeft(), self._dock_edge)
+        if is_compact:
+            rect = (self._compact_logical_rect
+                    or QRect(QPoint(self.widget.pos()), QSize(*COMPACT_SIZE)))
+            self._set_compact_geometry(rect.topLeft(), self._dock_edge)
+        else:
+            rect = (self._small_logical_rect
+                    or QRect(QPoint(self.widget.pos()), QSize(self._normal_size)))
+            self._normal_pos = rect.topLeft()
+            self._set_normal_geometry()
         self._emit_changed()
 
     def state(self):
@@ -511,8 +567,10 @@ class WindowController(QObject):
             "h": int(cur_size.height()),
             "compact": bool(self._preferred_compact),
             "dock_edge": (self._dock_edge if self._compact
-                          else (self._preferred_dock_edge
-                                if self._preferred_compact else None)),
+                          else ((self._dock_edge or self._preferred_dock_edge)
+                                if self._is_small_normal()
+                                else (self._preferred_dock_edge
+                                      if self._preferred_compact else None))),
         }
 
     def update_palette(self, theme):
@@ -539,25 +597,32 @@ class WindowController(QObject):
 
     def _on_hover_leave(self):
         self._hover_inside = False
-        if self._compact and self._dock_edge and not self._collapsed:
+        if self._auto_hide_enabled() and self._dock_edge and not self._collapsed:
             self._hover_timer.start()
 
     def _on_hover_timeout(self):
-        if not self._compact or self._collapsed or not self._dock_edge:
+        if (not self._auto_hide_enabled() or self._collapsed
+                or not self._dock_edge):
             return
         if self._cursor_inside():
             return
         self._collapse_if_docked(force=True)
 
     def _collapse_if_docked(self, force=False):
-        if not self._compact or self._collapsed or not self._dock_edge:
+        if (not self._auto_hide_enabled() or self._collapsed
+                or not self._dock_edge):
             return False
         if not force and self._cursor_inside():
             return False
         self._hover_timer.stop()
         if not self._collapsed:
-            self._compact_logical_rect = QRect(QPoint(self.widget.pos()),
-                                               QSize(*COMPACT_SIZE))
+            logical = self._logical_size()
+            pos = QPoint(self.widget.pos())
+            if self._compact:
+                self._compact_logical_rect = QRect(pos, logical)
+            else:
+                self._small_logical_rect = QRect(pos, logical)
+                self._normal_pos = pos
         self._hide_children()
         if not self._set_strip_geometry():
             self._restore_children()
@@ -791,6 +856,12 @@ class WindowController(QObject):
             edge = self._detect_dock_edge(QRect(target, size), geo)
             if edge:
                 target = self._snap_pos(target, size, edge, geo)
+        elif self._is_small_normal():
+            size = QSize(self._normal_size)
+            geo = self._work_area_for(target)
+            edge = self._detect_dock_edge(QRect(target, size), geo)
+            if edge:
+                target = self._snap_pos(target, size, edge, geo)
         self._adjusting = True
         try:
             self.widget.move(target)
@@ -801,6 +872,14 @@ class WindowController(QObject):
             self._dock_edge = self._detect_dock_edge(self._compact_logical_rect,
                                                      self._work_area_for(target))
             self._preferred_dock_edge = self._dock_edge
+        elif self._is_small_normal():
+            rect = QRect(target, QSize(self._normal_size))
+            edge = self._detect_dock_edge(rect, self._work_area_for(target))
+            self._dock_edge = edge
+            self._preferred_dock_edge = edge
+            self._docked_small = bool(edge)
+            self._small_logical_rect = rect
+            self._normal_pos = QPoint(target)
         else:
             self._normal_pos = QPoint(target)
         self._emit_changed()
@@ -810,6 +889,10 @@ class WindowController(QObject):
         if self._compact:
             self._compact_logical_rect = QRect(QPoint(self.widget.pos()),
                                                QSize(*COMPACT_SIZE))
+        elif self._is_small_normal():
+            self._normal_pos = QPoint(self.widget.pos())
+            self._small_logical_rect = QRect(self._normal_pos,
+                                             QSize(self._normal_size))
         else:
             self._normal_pos = QPoint(self.widget.pos())
         self._emit_changed()
@@ -846,7 +929,31 @@ class WindowController(QObject):
             else:
                 self._dock_edge = None
                 self._preferred_dock_edge = None
+        elif self._is_small_normal():
+            target = self.clamp_position(pos)
+            geo = self._work_area_for(target)
+            edge = self._detect_dock_edge(QRect(target, QSize(self._normal_size)),
+                                          geo)
+            if edge:
+                target = self._snap_pos(target, QSize(self._normal_size),
+                                        edge, geo)
+            if target != pos:
+                self._adjusting = True
+                try:
+                    self.widget.move(target)
+                finally:
+                    self._adjusting = False
+                pos = target
+            self._normal_pos = pos
+            self._dock_edge = edge
+            self._preferred_dock_edge = edge
+            self._docked_small = bool(edge)
+            self._small_logical_rect = QRect(pos, QSize(self._normal_size))
         else:
+            self._docked_small = False
+            self._dock_edge = None
+            self._preferred_dock_edge = None
+            self._small_logical_rect = None
             target = self.clamp_position(pos)
             if target != pos:
                 self._adjusting = True
@@ -887,6 +994,14 @@ class WindowController(QObject):
                 self._adjusting = False
         self._normal_size = QSize(size)
         self._normal_pos = QPoint(self.widget.pos())
+        if not self._is_small_normal():
+            self._docked_small = False
+            self._dock_edge = None
+            self._preferred_dock_edge = None
+            self._small_logical_rect = None
+        else:
+            self._small_logical_rect = QRect(self._normal_pos,
+                                             QSize(self._normal_size))
         self._emit_changed()
         return False
 

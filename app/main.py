@@ -38,7 +38,7 @@ LEGACY_PROGRESS_PATHS = tuple(os.path.join(directory, "progress.json")
                               for directory in storage.legacy_dirs(ROOT))
 LEGACY_WIN_PATHS = tuple(os.path.join(directory, "_win.json")
                          for directory in storage.legacy_dirs(ROOT))
-VERSION = "1.3.1"
+VERSION = "1.3.2"
 
 COMPACT_QSS = """
 QPushButton { font-size: 15px; padding: 4px 12px; border-radius: 12px; }
@@ -111,13 +111,13 @@ def series_label(series):
 
 
 def stored_order(orders, book_id):
-    """选择词书时的词序只有顺序/逆序。
+    """选择词书时的词序：顺序或乱序。
 
-    旧版保存的乱序记录仍原样留在 progress 里（不影响已学内容），但界面默认
-    按顺序显示；真正开始学习时才会把顺序写回记录。
+    旧版保存的逆序/乱序记录仍原样留在 progress 里（不影响已学内容），但界面
+    只提供顺序/乱序；旧逆序记录显示为顺序。
     """
     mode = (orders.get(book_id) or {}).get("mode")
-    return mode if mode in ("seq", "reverse") else "seq"
+    return mode if mode in ("seq", "shuffle") else "seq"
 
 
 def normalize_retry_gap(progress):
@@ -1023,17 +1023,17 @@ class Card(QWidget):
         self.choice_page.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.choice_body = QWidget()
         layout = QVBoxLayout(self.choice_body)
-        layout.setContentsMargins(0, 4, 0, 0)
+        layout.setContentsMargins(0, 14, 0, 0)
         layout.setSpacing(4)
         self.choice_word = QLabel("")
         self.choice_word.setWordWrap(True)
         self.choice_word.setTextFormat(Qt.PlainText)
         self.choice_word.setAlignment(Qt.AlignCenter)
         self.choice_word.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        layout.addWidget(self.reg(self.choice_word, "word", 30))
+        layout.addWidget(self.reg(self.choice_word, "word", F_WORD[0]))
         self.choice_ipa = QLabel("")
         self.choice_ipa.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.reg(self.choice_ipa, "ipa", 14))
+        layout.addWidget(self.reg(self.choice_ipa, "ipa", F_IPA[0]))
         layout.addStretch(1)
         self.study_btns = []
         for index in range(4):
@@ -1255,12 +1255,15 @@ class Card(QWidget):
         self.reg(lab_order, "note", 12)
         bottom.addWidget(lab_order)
         self.chip_seq = QPushButton("顺序")
-        self.chip_reverse = QPushButton("逆序")
-        for b, mode in ((self.chip_seq, "seq"), (self.chip_reverse, "reverse")):
+        self.chip_seq.setObjectName("chip")
+        self.chip_seq.clicked.connect(lambda: self._set_order("seq"))
+        self.chip_shuffle = QPushButton("乱序")
+        self.chip_shuffle.setObjectName("chip")
+        self.chip_shuffle.clicked.connect(lambda: self._set_order("shuffle"))
+        for b in (self.chip_seq, self.chip_shuffle):
             b.setObjectName("chip")
             b.setCursor(Qt.PointingHandCursor)
             b.setFixedHeight(28)
-            b.clicked.connect(lambda _=False, m=mode: self._set_order(m))
             bottom.addWidget(b)
         bottom.addStretch(1)
         self.btn_catalog_books = QPushButton("浏览词条")
@@ -1437,25 +1440,21 @@ class Card(QWidget):
                                    self._apply_window_size(w, h))
             sizes.addWidget(button)
             self.size_chips[(width, height)] = button
-        sizes.addStretch(1)
-        layout.addLayout(sizes)
-        window_row = QHBoxLayout()
         self.btn_defaults = QPushButton("恢复默认")
         self.btn_defaults.setObjectName("chip")
+        self.btn_defaults.setCursor(Qt.PointingHandCursor)
+        self.btn_defaults.setMinimumHeight(30)
         self.btn_defaults.setToolTip("恢复窗口尺寸、主题和学习模式；不清空学习记录和测试历史")
         self.btn_defaults.clicked.connect(self.restore_defaults)
-        window_row.addWidget(self.btn_defaults)
-        window_note = self.reg(QLabel("尺寸限于当前屏幕可用范围；字体和控件最多放大 1.6 倍。"),
-                               "note", 11)
-        window_note.setWordWrap(True)
-        window_row.addWidget(window_note, 1)
-        layout.addLayout(window_row)
+        sizes.addWidget(self.btn_defaults)
+        sizes.addStretch(1)
+        layout.addLayout(sizes)
         layout.addSpacing(6)
 
         layout.addWidget(self.reg(QLabel("学习模式"), "note", 12))
         modes = QHBoxLayout()
         self.study_mode_chips = {}
-        for key, text in (("brush", "刷词模式（支持窗口最小化）"), ("choice", "选择题模式")):
+        for key, text in (("brush", "刷词模式"), ("choice", "选择题模式")):
             button = QPushButton(text)
             button.setObjectName("chip")
             button.setMinimumHeight(30)
@@ -1464,25 +1463,24 @@ class Card(QWidget):
             modes.addWidget(button)
         modes.addStretch(1)
         layout.addLayout(modes)
-        self.mode_note = self.reg(QLabel(""), "note", 11)
-        self.mode_note.setWordWrap(True)
-        layout.addWidget(self.mode_note)
         layout.addSpacing(6)
 
         layout.addWidget(self.reg(QLabel("词书"), "note", 12))
+        book_row = QHBoxLayout()
+        book_row.setSpacing(8)
         self.lab_book = QLabel("")
         self.lab_book.setWordWrap(True)
-        layout.addWidget(self.reg(self.lab_book, "mean", 13))
-        book_row = QHBoxLayout()
+        self.lab_book.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        book_row.addWidget(self.reg(self.lab_book, "mean", 13), 1)
         self.lab_book_num = QLabel("")
         book_row.addWidget(self.reg(self.lab_book_num, "note", 13))
-        book_row.addStretch(1)
         change = QPushButton("更换")
         change.setObjectName("chip")
         change.setCursor(Qt.PointingHandCursor)
         change.setMinimumHeight(28)
         change.clicked.connect(lambda: self.open_books("settings"))
         book_row.addWidget(change)
+        self.btn_change_book = change
         layout.addLayout(book_row)
         layout.addSpacing(6)
 
@@ -1629,7 +1627,7 @@ class Card(QWidget):
             self.status.clear()
             self.status.hide()
         self._refresh_back_control()
-        for chip, mode in ((self.chip_seq, "seq"), (self.chip_reverse, "reverse")):
+        for chip, mode in ((self.chip_seq, "seq"), (self.chip_shuffle, "shuffle")):
             chip.setProperty("on", "1" if mode == self.sel_order else "0")
             chip.style().unpolish(chip)
             chip.style().polish(chip)
@@ -1648,7 +1646,7 @@ class Card(QWidget):
         self._refresh_books()
 
     def _set_order(self, mode):
-        if mode not in ("seq", "reverse"):
+        if mode not in ("seq", "shuffle"):
             return
         self.sel_order = mode
         self._refresh_books()
@@ -1656,7 +1654,7 @@ class Card(QWidget):
     def open_books(self, src="welcome"):
         self.books_src = src
         self.sel_book = self.book_id if src == "settings" else None
-        self.sel_order = (self.order_mode if self.order_mode in ("seq", "reverse")
+        self.sel_order = (self.order_mode if self.order_mode in ("seq", "shuffle")
                           else "seq") if self.sel_book else "seq"
         self.nav_level = 1
         self.nav_main = None
@@ -1739,14 +1737,10 @@ class Card(QWidget):
             button.setProperty("on", "1" if key == self.study_mode else "0")
             button.style().unpolish(button)
             button.style().polish(button)
-        self.mode_note.setText("刷词模式（支持窗口最小化）：小窗贴边后移出收起，悬停展开。"
-                               if self.study_mode == "brush" else
-                               "选择题模式：4 个真实释义 + 不认识，使用正常窗口。")
-        location = "V%s · 记录位置：%s" % (VERSION, os.path.dirname(PROGRESS_PATH))
+        location = "V%s" % VERSION
         if self.storage_notices:
             location += "\n" + "\n".join(self.storage_notices)
         self.lab_storage.setText(location)
-        self.lab_storage.setToolTip(PROGRESS_PATH)
         learned, _, _, total = self._stats()
         path = self._book_path(self.book_id)
         self.lab_book.setText(path or "未选择词书")
@@ -2068,11 +2062,14 @@ class Card(QWidget):
         state = self.states[self.queue[self.qi]["w"]["w"]]
         level = state.get("lv", 0)
         if remember:
-            text = "答对 · %s" % ("已掌握" if level == 10 else "记忆等级 %d" % level)
+            # 答对不显示“答对 · 记忆等级 x”提示，直接给下一题按钮。
+            self.choice_hint.clear()
+            self.choice_hint.hide()
         else:
-            text = "未记住 · 保留记忆等级 %d" % level if level else "仍是新词 · 隔 %d 个其它新词重现" % self.retry_gap
-        self.choice_hint.setText(text)
-        self.choice_hint.show()
+            text = ("未记住 · 保留记忆等级 %d" % level if level
+                    else "仍是新词 · 隔 %d 个其它新词重现" % self.retry_gap)
+            self.choice_hint.setText(text)
+            self.choice_hint.show()
         self.btn_study_dk.hide()
         self.btn_study_next.show()
         self._set_mode("choice_back")

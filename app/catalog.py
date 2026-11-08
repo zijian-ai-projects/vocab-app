@@ -13,9 +13,9 @@ V1.3.0 性能约束：
 import time
 from collections import OrderedDict
 
-from PyQt5.QtCore import (QEvent, QModelIndex, QSize, Qt, QTimer,
-                          QAbstractTableModel)
-from PyQt5.QtGui import QColor, QFont, QFontMetrics
+from PyQt5.QtCore import (QEvent, QModelIndex, QRect, QSize, Qt, QTimer,
+                          QAbstractTableModel, pyqtSignal)
+from PyQt5.QtGui import QColor, QFont, QFontMetrics, QPainter, QPen
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
                              QPushButton, QTableView, QHeaderView, QDialog,
                              QAbstractItemView, QStyledItemDelegate,
@@ -50,6 +50,133 @@ BUFFER_ROWS = 4
 DEFAULT_ROW = 48
 HEIGHT_CACHE_LIMIT = 1024
 MEASURE_DELAY_MS = 16
+
+
+class LevelBadge(QWidget):
+    """记忆等级表头右上角的描边感叹号圆圈（透明底、只画线条）。"""
+
+    clicked = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._color = QColor("#8a929c")
+        self._scale = 1.0
+        self.setAttribute(Qt.WA_TransparentForMouseEvents, False)
+
+    def set_style(self, color, scale, side):
+        self._color = QColor(color)
+        self._scale = max(1.0, min(1.6, float(scale)))
+        self.resize(side, side)
+        self.update()
+
+    def paintEvent(self, ev):
+        painter = QPainter(self)
+        try:
+            painter.setRenderHint(QPainter.Antialiasing)
+            pen = QPen(self._color)
+            pen.setWidthF(max(1.0, 1.2 * self._scale))
+            painter.setPen(pen)
+            painter.setBrush(Qt.NoBrush)
+            painter.drawEllipse(QRect(0, 0, self.width(), self.height()).adjusted(0, 0, -1, -1))
+            font = QFont(self.font())
+            font.setPixelSize(max(7, round(self.height() * 0.72)))
+            font.setBold(True)
+            painter.setFont(font)
+            painter.drawText(self.rect(), Qt.AlignCenter, "!")
+        finally:
+            painter.end()
+
+    def mouseReleaseEvent(self, ev):
+        if ev.button() == Qt.LeftButton and self.rect().contains(ev.pos()):
+            self.clicked.emit()
+        else:
+            super().mouseReleaseEvent(ev)
+
+
+class LevelHeader(QHeaderView):
+    """记忆等级表头：在文字右上方显示透明底、描边的感叹号圆圈。"""
+
+    level_clicked = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super().__init__(Qt.Horizontal, parent)
+        self._icon_scale = 1.0
+        self._icon_color = QColor("#8a929c")
+        self.setSectionsClickable(True)
+        self.setHighlightSections(False)
+        self.badge = LevelBadge(self.viewport())
+        self.badge.clicked.connect(self.level_clicked.emit)
+        self.badge.hide()
+
+    def mouseReleaseEvent(self, ev):
+        super().mouseReleaseEvent(ev)
+        if ev.button() == Qt.LeftButton and self.logicalIndexAt(ev.pos()) == 2:
+            self.level_clicked.emit()
+
+    def set_icon_style(self, color, scale):
+        self._icon_color = QColor(color)
+        self._icon_scale = max(1.0, min(1.6, float(scale)))
+        self.refresh_badge()
+        self.update()
+
+    def icon_color(self):
+        return QColor(self._icon_color)
+
+    def icon_rect(self):
+        """测试/无障碍用：当前图标的 header 局部矩形；无该列时为空。"""
+        if self.count() <= 2:
+            return QRect()
+        x = self.sectionViewportPosition(2)
+        w = self.sectionSize(2)
+        if w <= 0:
+            return QRect()
+        d = max(10, round(14 * self._icon_scale))
+        margin = max(2, round(3 * self._icon_scale))
+        right = x + w - margin
+        top = margin
+        return QRect(right - d, top, d, d)
+
+    def refresh_badge(self):
+        rect = self.icon_rect()
+        if rect.isEmpty() or self.width() <= 0:
+            self.badge.hide()
+            return
+        side = rect.width()
+        self.badge.set_style(self._icon_color, self._icon_scale, side)
+        self.badge.move(rect.x(), rect.y())
+        self.badge.show()
+        self.badge.raise_()
+
+    def resizeEvent(self, ev):
+        super().resizeEvent(ev)
+        self.refresh_badge()
+
+    def showEvent(self, ev):
+        super().showEvent(ev)
+        self.refresh_badge()
+
+    def paintSection(self, painter, rect, logicalIndex):
+        super().paintSection(painter, rect, logicalIndex)
+
+
+class NoSelectTableView(QTableView):
+    """目录只读浏览：点击行不留下 current/selection 蓝色态。"""
+
+    def _clear_current(self):
+        self.clearSelection()
+        self.setCurrentIndex(QModelIndex())
+
+    def mousePressEvent(self, ev):
+        super().mousePressEvent(ev)
+        self._clear_current()
+
+    def mouseReleaseEvent(self, ev):
+        super().mouseReleaseEvent(ev)
+        self._clear_current()
+
+    def mouseDoubleClickEvent(self, ev):
+        super().mouseDoubleClickEvent(ev)
+        self._clear_current()
 
 
 class TextWrapDelegate(QStyledItemDelegate):
@@ -206,9 +333,8 @@ class WordTableModel(QAbstractTableModel):
                 return label + stamp
             return entry["w"] + "\n" + (entry.get("raw") or self.meaning_for_row(row))
         if role == Qt.ForegroundRole:
-            key = ("ok" if category == "mastered" else
-                   "accent" if category == "known" else "fg_mean")
-            return QColor(self.palette[key])
+            # 单词列/释义/等级列统一普通文字色，不再按记忆分类染色。
+            return QColor(self.palette["fg_mean"])
         if role == Qt.FontRole:
             return QFont(self._font)
         if role == Qt.TextAlignmentRole:
@@ -251,12 +377,6 @@ class BookCatalog(QWidget):
             controls.addWidget(button)
             self.filter_chips[key] = button
         controls.addStretch(1)
-        self.btn_levels = QPushButton("等级说明")
-        self.btn_levels.setObjectName("chip")
-        self.btn_levels.setCursor(Qt.PointingHandCursor)
-        self.btn_levels.setMinimumHeight(28)
-        self.btn_levels.clicked.connect(self.show_levels)
-        controls.addWidget(self.btn_levels)
         layout.addLayout(controls)
         self.search = QLineEdit()
         self.search.setPlaceholderText("搜索单词、词组或释义")
@@ -264,7 +384,7 @@ class BookCatalog(QWidget):
         self.search.textChanged.connect(self._search_changed)
         layout.addWidget(self.search)
         self.model = WordTableModel(self)
-        self.table = QTableView()
+        self.table = NoSelectTableView()
         self.table.setModel(self.model)
         self.table.setWordWrap(True)
         self.table.setTextElideMode(Qt.ElideNone)
@@ -274,18 +394,20 @@ class BookCatalog(QWidget):
         self.table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.table.verticalHeader().setMinimumSectionSize(DEFAULT_ROW)
         self.table.verticalHeader().setDefaultSectionSize(DEFAULT_ROW)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.table.setSelectionMode(QAbstractItemView.NoSelection)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setAlternatingRowColors(False)
         self.table.setShowGrid(False)
         self.table.verticalHeader().hide()
-        header = self.table.horizontalHeader()
+        self.level_header = LevelHeader(self.table)
+        self.table.setHorizontalHeader(self.level_header)
+        header = self.level_header
         header.setSectionResizeMode(0, QHeaderView.Interactive)
         header.setSectionResizeMode(1, QHeaderView.Stretch)
         header.setSectionResizeMode(2, QHeaderView.Fixed)   # 不再 ResizeToContents
         self.table.setColumnWidth(0, 142)
         self.table.setColumnWidth(2, 96)
+        header.level_clicked.connect(self.show_levels)
         header.sectionResized.connect(self._columns_resized)
         self.table.verticalScrollBar().valueChanged.connect(self._schedule_measure)
         self.table.viewport().installEventFilter(self)
@@ -421,6 +543,8 @@ class BookCatalog(QWidget):
             return
         # 列宽变化只重新测量可见行；不清/不重置已测行高（避免滚动条循环）。
         self._schedule_measure()
+        if hasattr(self, "level_header"):
+            self.level_header.refresh_badge()
 
     # ------------------------------------------------------------------
     def set_book(self, book_id, path, entries, states, known=None):
@@ -432,6 +556,8 @@ class BookCatalog(QWidget):
         self.set_filter("all")
         self.table.scrollToTop()
         self._invalidate_rows()
+        if hasattr(self, "level_header"):
+            self.level_header.refresh_badge()
 
     def _search_changed(self, query):
         self.model.refilter(query=query)
@@ -447,6 +573,10 @@ class BookCatalog(QWidget):
             button.style().unpolish(button)
             button.style().polish(button)
         self._invalidate_rows()
+
+    def _level_header_clicked(self, section):
+        if section == 2:
+            self.show_levels()
 
     def show_levels(self, index=None):
         """由顶部「等级说明」chip 打开；点击表格行/等级列不再弹说明。"""
@@ -516,4 +646,6 @@ class BookCatalog(QWidget):
             self._applying_columns = False
         self.table.verticalHeader().setMinimumSectionSize(self._default_row())
         self.table.verticalHeader().setDefaultSectionSize(self._default_row())
+        if hasattr(self, "level_header"):
+            self.level_header.set_icon_style(self.theme["muted"], scale)
         self._invalidate_rows()

@@ -23,8 +23,9 @@ from ui_test_support import configure_qt, Sandbox, set_nottest, new_app
 configure_qt("offscreen")
 set_nottest(True)
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QFontMetrics
+from PyQt5.QtCore import Qt, QPoint, QTimer
+from PyQt5.QtGui import QFontMetrics, QColor
+from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import (QApplication, QDialog, QHeaderView, QLabel,
                              QPushButton, QAbstractItemView)
 
@@ -202,22 +203,50 @@ def main():
         check("记忆等级" in tip or "待学习" in tip or "已掌握" in tip or "认识" in tip,
               "等级列 tooltip 仍保留当前等级文字：%r" % tip)
 
-        # 顶部「等级说明」chip / 行点击不弹窗 / 底部 note 删除 / 主题化 11 行窗口
-        check(hasattr(catalog_widget, "btn_levels")
-              and catalog_widget.btn_levels.text() == "等级说明",
-              "顶部有「等级说明」chip")
+        # 表头图标/点击打开说明；独立 chip 删除；行点击不弹窗也不选中
+        check(not hasattr(catalog_widget, "btn_levels"),
+              "工具栏独立「等级说明」chip 已删除")
+        header = catalog_widget.level_header
+        icon_rect = header.icon_rect()
+        check(not icon_rect.isEmpty() and icon_rect.intersects(
+                  header.rect().adjusted(
+                      header.sectionViewportPosition(2), 0, 0, 0)),
+              "表头「记忆等级」右上角有感叹号圆圈图标 %r" % (icon_rect,))
+        check(catalog_widget.level_header.icon_color()
+              == QColor(catalog_widget.theme["muted"]),
+              "表头图标颜色等于表头主题文字色（非硬编码）")
         check(not hasattr(catalog_widget, "note"),
               "底部提示 note 已删除")
-        catalog_widget.table.clicked.emit(catalog_widget.model.index(0, 2))
-        catalog_widget.table.horizontalHeader().sectionClicked.emit(2)
+
+        # 行点击：不弹说明、不留下 selection/current
+        catalog_widget.table.selectionModel().clearSelection()
+        catalog_widget.table.setCurrentIndex(catalog_widget.model.index(-1, -1))
+        QTest.mouseClick(catalog_widget.table.viewport(), Qt.LeftButton,
+                         Qt.NoModifier, QPoint(12, 12))
         pump(0.03)
         check(catalog_widget.level_dialog is None,
-              "点击表格/等级列不再弹出说明")
-        catalog_widget.btn_levels.click()
+              "点击行不再弹出等级说明")
+        check(not catalog_widget.table.currentIndex().isValid(),
+              "点击行不再留下 current row")
+        check(catalog_widget.table.selectionModel().selectedRows() == [],
+              "点击行不再出现选中态")
+
+        # 图标点击 / 表头文字点击都能打开
+        QTest.mouseClick(header.viewport(), Qt.LeftButton, Qt.NoModifier,
+                         icon_rect.center())
+        pump(0.05)
+        check(isinstance(catalog_widget.level_dialog, QDialog)
+              and catalog_widget.level_dialog.isVisible(),
+              "点击表头感叹号图标打开等级说明")
+        catalog_widget.level_dialog.close()
+        pump(0.03)
+        text_pos = QPoint(header.sectionViewportPosition(2) + 16,
+                          header.height() // 2)
+        QTest.mouseClick(header.viewport(), Qt.LeftButton, Qt.NoModifier, text_pos)
         pump(0.05)
         dialog = catalog_widget.level_dialog
         check(isinstance(dialog, QDialog) and dialog.isVisible(),
-              "「等级说明」chip 打开主题化对话框")
+              "点击「记忆等级」表头文字打开等级说明")
         check(dialog.windowTitle() == "记忆等级", "说明窗口标题「记忆等级」")
         labels = dialog.findChildren(QLabel)
         level_labels = [label for label in labels
@@ -238,6 +267,26 @@ def main():
         pump(0.03)
         check(not dialog.isVisible(), "说明窗口可关闭")
         dialog = None
+
+        # 等级列/单词列文字只用主题普通文字色，不再按分类染色
+        ordinary = QColor(catalog_widget.theme["fg_mean"])
+        check(catalog_widget.model.data(catalog_widget.model.index(0, 0),
+                                        Qt.ForegroundRole) == ordinary,
+              "单词列 ForegroundRole == theme.fg_mean")
+        check(catalog_widget.model.data(catalog_widget.model.index(0, 2),
+                                        Qt.ForegroundRole) == ordinary,
+              "等级列 ForegroundRole == theme.fg_mean")
+        color_model = catalog.WordTableModel()
+        color_model.set_entries(
+            [{"w": "mastered-word", "s": "掌握释义"},
+             {"w": "known-word", "s": "认识释义"}],
+            {"mastered-word": {"st": "mastered", "lv": 10},
+             "known-word": {"st": "learning", "lv": 1}}, set())
+        for row in range(2):
+            for col in (0, 2):
+                check(color_model.data(color_model.index(row, col),
+                                       Qt.ForegroundRole) == ordinary,
+                      "分类行 %d 列 %d 仍为普通文字色" % (row, col))
 
         # 滚动到中部 / 底部：只增加可见附近行，不遍历全书
         bar = catalog_widget.table.verticalScrollBar()
@@ -391,6 +440,20 @@ def main():
         check(catalog_widget.table.verticalHeader().defaultSectionSize()
               == round(48 * 1.6),
               "scale=1.6 默认行高 %d" % catalog_widget.table.verticalHeader().defaultSectionSize())
+        check(catalog_widget.level_header.icon_color()
+              == QColor(catalog_widget.theme["muted"]),
+              "scale 变化后表头图标颜色仍等于主题文字色")
+        check(catalog_widget.level_header.icon_rect().width() >= 14,
+              "scale 变化后表头图标尺寸随 scale 更新：%d" %
+              catalog_widget.level_header.icon_rect().width())
+        old_theme = catalog_widget.theme
+        catalog_widget.set_palette(catalog.th.get("dark"))
+        pump(0.03)
+        check(catalog_widget.level_header.icon_color()
+              == QColor(catalog_widget.theme["muted"]),
+              "set_palette(dark) 后表头图标颜色跟随主题")
+        catalog_widget.set_palette(old_theme)
+        pump(0.03)
         check(catalog_widget.model.data(catalog_widget.model.index(0, 0),
                                         Qt.FontRole).pixelSize() == round(13 * 1.6),
               "scale=1.6 字体 %dpx" %
