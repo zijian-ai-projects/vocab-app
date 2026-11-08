@@ -2,10 +2,15 @@
 chcp 65001 >nul
 if not exist "%~dp0app\main.py" exit /b 1
 if not exist "%~dp0data\bank.json" exit /b 1
-echo 请先关闭背单词插件，再按任意键清空使用记录。词库不会删除。
-pause >nul
-for %%F in (progress.json progress.json.tmp _win.json) do if exist "%~dp0data\%%F" del /q "%~dp0data\%%F"
-for %%F in (progress.json progress.json.tmp _win.json) do if exist "%~dp0data\%%F" (echo 清空失败，请检查文件是否被占用或只读。 & pause & exit /b 1)
-echo 已清空使用记录，重新打开插件即可。
+if not exist "%~dp0scripts\reset_records.py" exit /b 1
+set "PY=D:\software\anaconda\python.exe"
+if defined VOCABAPP_PYTHON set "PY=%VOCABAPP_PYTHON%"
+if not exist "%PY%" (
+  echo 找不到 Python。请设置 VOCABAPP_PYTHON 为启动插件使用的 python.exe 完整路径。
+  pause
+  exit /b 1
+)
+"%PY%" -B "%~dp0scripts\reset_records.py" %*
+set "RC=%ERRORLEVEL%"
 pause
-exit /b 0
+exit /b %RC%

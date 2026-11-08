@@ -98,7 +98,7 @@ items = [it for g in groups for it in g["items"]]
 bank_words = {x["w"] for x in bank}
 check(len(mains) == 8, "主类 %d 个" % len(mains))
 check(len(groups) == 41, "分组 %d 个" % len(groups))
-check(len(items) == 175, "词书 %d 本" % len(items))
+check(len(items) == 183, "词书 %d 本（原175 + 8词组）" % len(items))
 check(len(bk.all()) == len(groups) + len(items),
       "扁平目录 %d = %d 个并集 + %d 本词书" % (len(bk.all()), len(groups), len(items)))
 check(len({b["id"] for b in bk.all()}) == len(bk.all()), "词书 id 无重复")
@@ -119,8 +119,9 @@ check(all(set(g["union"]["words"]) ==
       "每个分组并集 = 各词书 words 去重并集")
 check(all(g["union"]["count"] == len(set(g["union"]["words"])) for g in groups),
       "每个分组并集词数 = 去重后词数")
-check(all(wd in bank_words for b in bk.all() for wd in b["words"]),
-      "词书里所有单词都在大词库里")
+entry_words = {entry["w"] for entry in w.all_entries}
+check(all(wd in entry_words for b in bk.all() for wd in b["words"]),
+      "词书所有单词/词组都在合并词条库里")
 b = bk.get("cet6-all")
 check(b["path"] == ["大学", "六级"] and b["display"] == "六级词汇大全",
       "三级路径：%s" % bk.path("cet6-all"))
@@ -177,8 +178,9 @@ w._page_back()
 check(w.mode == "books" and w.isVisible(), "初次主分类 _page_back 不退出")
 QTest.keyClick(w, Qt.Key_Escape)
 check(w.mode == "books" and w.isVisible(), "初次主分类 Esc 不退出")
-check(w.chip_seq.text() == "顺序" and w.chip_shuf.text() == "乱序",
-      "保留 顺序/乱序 两个选择")
+check(w.chip_seq.text() == "顺序" and w.chip_reverse.text() == "逆序"
+      and not hasattr(w, "chip_shuf"),
+      "词序只有 顺序/逆序 两个选择（默认顺序）")
 
 # ---- 5. 第 1 级 -> 第 2 级 -> 返回 ----
 w._nav_into_main("university")
@@ -315,42 +317,49 @@ check(w.mode == "back" and w.meaning.text() != "", "认识 -> 翻面有释义")
 w.correct()
 check(w.qi == qi0 + 1, "选错了 -> 直接跳到下一个（qi %d -> %d）" % (qi0, w.qi))
 st = w.states.get(first) or {}
-check(st.get("st") == "learning" and st.get("lapse", 0) >= 1,
-      "选错了把状态改成不认识（lapse=%s）" % st.get("lapse"))
+check(st.get("st") == "new" and st.get("lv") == 0 and st.get("lapse", 0) == 1
+      and first in w.study_record["pending"],
+      "新词改判仍未学习、错误计数一次并进入重现队列（lapse=%s）" % st.get("lapse"))
 check(w.mode == "front", "选错了之后回到正面")
 
-# ---- 11. 换书 + 乱序 + seed 持久化 ----
+# ---- 11. 换书 + 逆序 + 持久化 ----
 w.open_books("welcome")
 w._nav_into_main("abroad")
 w._nav_into_group("gre")
 w._pick_book("gre-all")
-w._set_order("shuffle")
+check(w.sel_order == "seq", "选择词书默认顺序：%s" % w.sel_order)
+w._set_order("reverse")
 w._start_learning()
-check(w.book_id == "gre-all" and w.order_mode == "shuffle", "换到 GRE 并集 / 乱序")
+check(w.book_id == "gre-all" and w.order_mode == "reverse", "换到 GRE 并集 / 逆序")
 check(len(w.queue_words) == bk.size("gre-all"),
       "GRE 队列 %s 词" % format(len(w.queue_words), ","))
 seed1 = (w.orders.get("gre-all") or {}).get("seed")
-first_shuf = w.queue_words[0]["w"]
+first_rev = w.queue_words[0]["w"]
 w.save()
 w2 = sb.new_card(show=True)
 pump(8)
-check(w2.book_id == "gre-all" and w2.order_mode == "shuffle", "重启后记住书 + 乱序")
-check(w2.queue_words[0]["w"] == first_shuf, "乱序 seed 稳定：%s" % first_shuf)
+check(w2.book_id == "gre-all" and w2.order_mode == "reverse", "重启后记住书 + 逆序")
+check(w2.queue_words[0]["w"] == first_rev, "逆序首个词稳定：%s" % first_rev)
 stop_timer(w, w2)
 
-# ---- 12. 复习跨书 ----
+# ---- 12. 到期优先，但仅复习当前词书 ----
 cel = set(bk.words("cet6-all"))
 gre_only = next(x for x in bk.words("gre-all") if x not in cel)
+inside = next(x for x in bk.words("cet6-all") if x != first)
 w2.states[gre_only] = {"st": "learning", "lv": 2, "due": time.time() - 10,
                        "seen": 2, "lapse": 0, "streak": 0}
+w2.states[inside] = {"st": "learning", "lv": 3, "due": time.time() - 5,
+                     "seen": 3, "lapse": 0, "streak": 0}
 w2.open_books("welcome")
 w2._nav_into_main("university")
 w2._nav_into_group("cet6")
 w2._pick_book("cet6-all")
 w2._set_order("seq")
 w2._start_learning()
-check(w2.queue[0]["kind"] == "review" and w2.queue[0]["w"]["w"] == gre_only,
-      "复习跨书：先出 %s" % gre_only)
+check(w2.queue[0]["kind"] == "review" and w2.queue[0]["w"]["w"] == inside,
+      "当前书到期优先，先出 %s，不跨书出 %s" % (inside, gre_only))
+check(gre_only in w2.states and all(item["w"]["w"] != gre_only for item in w2.queue),
+      "外书记忆记录共享保留，但当前复习队列不纳入外书")
 
 # ---- 13. 设置页：当前词书路径 / 数量 / 进度 ----
 w2.open_settings()
@@ -364,6 +373,20 @@ check("已掌握" not in _settings_texts and "测试判定已会" not in _settin
       "设置页不再显示已掌握/测试判定已会")
 check(hasattr(w2, "lab_progress") is False,
       "设置页已删除 lab_progress 控件")
+check(getattr(w2, "size_chips", None) and len(w2.size_chips) == 3,
+      "设置页提供常用窗口尺寸：%r" % sorted(getattr(w2, "size_chips", {}) or {}))
+check(not hasattr(w2, "win_w") and not hasattr(w2, "win_h") and not hasattr(w2, "win_mode"),
+      "设置页不再有自定义尺寸/正常小窗切换控件")
+check(not hasattr(w2, "retry_combo") and w2.retry_gap == 3,
+      "重现间隔固定为 3 个其它新词，不再可设置")
+check(not hasattr(w2, "btn_catalog_settings"),
+      "设置词书块不再放浏览词条按钮")
+w2.open_books("settings")
+pump(6)
+check(w2.btn_catalog_books.text() == "浏览词条",
+      "浏览词条入口移到词书页：%r" % w2.btn_catalog_books.text())
+w2.open_settings()
+pump(4)
 w2.open_books("settings")
 pump(6)
 check(w2.mode == "books" and w2.nav_level == 1 and w2.btn_back.isVisibleTo(w2),
@@ -427,7 +450,8 @@ w2.save()
 # ---- 17. 关掉重开：续测 ----
 w3 = sb.new_card(show=True)
 pump(8)
-check(w3.mode == "quiz" and w3.quiz_i == 2, "重开后继续第 %d 题" % (w3.quiz_i + 1))
+check(w3.mode == "quiz" and w3.quiz_i == 3 and len(w3.quiz_resp) == 3,
+      "重开后继续未答第 %d 题且保留3条已提交答案" % (w3.quiz_i + 1))
 w3.skip_test()
 check(w3.progress.get("snooze_until", 0) > time.time(), "24h 内不再弹")
 w3.progress.pop("snooze_until", None)
@@ -489,10 +513,12 @@ finally:
 
 # ---- 20. 教材系列伪 id 重启恢复（已确认用户） ----
 expected_series = series_words("gz-text", "人教版")
-w3.progress["book"] = series_id
-w3.progress["book_confirmed"] = True
-w3.progress.setdefault("cursors", {})[series_id] = 0
-w3.save()
+fixture = json.loads(json.dumps(w3.progress))
+fixture["book"] = series_id
+fixture["book_confirmed"] = True
+fixture.setdefault("cursors", {})[series_id] = 0
+fixture.pop("quiz_session", None)
+sb.write_progress(fixture)
 w4 = sb.new_card(show=True)
 pump(8)
 check(w4.book_id == series_id, "重启后恢复系列并集 book id：%s" % w4.book_id)
@@ -506,9 +532,11 @@ check(w4.lab_book_num.text().endswith("/ " + format(len(expected_series), ",")),
 stop_timer(w4)
 
 # ---- 21. 旧进度里的 V1.1 词书 id 自动映射（已确认用户） ----
-w4.progress["book"] = "cet6"
-w4.progress["book_confirmed"] = True
-w4.save()
+w4.close()
+fixture = sb.read_progress()
+fixture["book"] = "cet6"
+fixture["book_confirmed"] = True
+sb.write_progress(fixture)
 w5 = sb.new_card(show=True)
 pump(8)
 check(w5.book_id == "cet6-all", "旧 book id cet6 重启 -> cet6-all")

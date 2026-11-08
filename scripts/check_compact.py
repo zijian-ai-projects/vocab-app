@@ -56,9 +56,10 @@ def check(cond, msg):
 
 
 def load(word):
-    w.queue = [{"kind": "new", "w": word, "st": None, "idx": 0}]
-    w.qi = 0
-    w._show_current()
+    w.queue_words = [word]
+    w.states.pop(word["w"], None)
+    w.study_records[w.book_id] = {"cursor": 0}
+    w._new_session()
     pump(4)
 
 

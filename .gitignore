@@ -5,7 +5,25 @@ __pycache__/
 
 # 本机运行态（每人的学习进度 / 窗口位置）
 data/progress.json
+data/progress.json.bak
+data/progress.json.tmp*
+data/progress.json.bak.tmp*
 data/_win.json
+data/_win.json.bak
+data/_win.json.tmp*
+data/_win.json.bak.tmp*
+**/vocab-app.lock
+# 显式覆盖资料目录也不得误提交记录
+**/progress.json
+**/progress.json.bak
+**/progress.json.tmp*
+**/progress.json.bak.tmp*
+**/_win.json
+**/_win.json.bak
+**/_win.json.tmp*
+**/_win.json.bak.tmp*
+# 启动排查日志（可能写在自定义资料目录里）
+**/startup.log
 
 # 自测输出
 data/smoke.txt

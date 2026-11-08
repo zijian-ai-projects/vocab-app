@@ -376,7 +376,11 @@ def t_quiz_resume_and_skip(sb):
     w2 = sb.new_card(show=True)
     pump(8)
     check(w2.mode == "quiz", "重启后优先续测，实际 %s" % w2.mode)
-    check(w2.quiz_i == 2, "续测题号保持：%d" % w2.quiz_i)
+    check(w2.quiz_i == 3 and len(w2.quiz_resp) == 3,
+          "已答第三题续测到未答第四题且不重复评分：i=%d / resp=%d" %
+          (w2.quiz_i, len(w2.quiz_resp)))
+    check(w2.quiz_items[w2.quiz_i]["idx"] != w.quiz_items[2]["idx"],
+          "续测不会重新显示已经提交的第三题")
     check(w2.book_id is None, "续测时仍无已确认书")
     w2.skip_test()
     pump(8)

@@ -31,7 +31,25 @@ LEGACY = {
 
 def _load():
     with io.open(os.path.join(DATA, "books.json"), encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+    supplement = os.path.join(DATA, "phrase_books.json")
+    if os.path.exists(supplement):
+        with io.open(supplement, encoding="utf-8") as f:
+            items = json.load(f).get("items", [])
+        groups = {g["id"]: g for m in data.get("mains", []) for g in m.get("groups", [])}
+        for item in items:
+            group = groups.get(item.get("group"))
+            if not group or any(old["id"] == item["id"] for old in group["items"]):
+                continue
+            group["items"].append(item)
+            union = group["union"]
+            seen = set(union["words"])
+            for word in item["words"]:
+                if word not in seen:
+                    union["words"].append(word)
+                    seen.add(word)
+            union["count"] = len(union["words"])
+    return data
 
 
 def _build(data):

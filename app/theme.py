@@ -208,6 +208,7 @@ QPushButton#book {
 QPushButton#book:hover { background: %(opt_hover)s; }
 QPushButton#book[on="1"] { background: %(chip_sel)s; color: %(chip_sel_fg)s; }
 QScrollArea { background: transparent; border: none; }
+QScrollArea > QWidget > QWidget { background: transparent; }
 QScrollBar:vertical { background: transparent; width: 6px; margin: 0; }
 QScrollBar::handle:vertical { background: %(muted)s; border-radius: 3px; min-height: 28px; }
 QScrollBar::handle:vertical:hover { background: %(bar)s; }
@@ -216,8 +217,25 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: trans
 """
 
 
-def qss(t):
-    return QSS % t
+def qss(t, scale=1.0):
+    import re
+    scale = max(1.0, min(1.6, float(scale)))
+    css = QSS % t
+    css += """
+QLineEdit, QSpinBox, QComboBox {
+    border: 1px solid %(border)s; border-radius: 7px; padding: 5px 7px;
+    background: %(opt_bg)s; color: %(fg_mean)s;
+    font-family: 'Microsoft YaHei UI'; font-size: 13px;
+}
+QComboBox QAbstractItemView { background: %(bg)s; color: %(fg_mean)s; }
+QPushButton#opt QLabel { background: transparent; color: %(opt_fg)s; font-size: 15px;
+    font-family: 'Microsoft YaHei UI'; }
+QPushButton#opt[state="correct"] QLabel { color: %(opt_ok_fg)s; }
+QPushButton#opt[state="wrong"] QLabel { color: %(opt_bad_fg)s; }
+""" % t
+    if scale != 1.0:
+        css = re.sub(r"(\d+)px", lambda match: "%dpx" % max(1, round(int(match.group(1)) * scale)), css)
+    return css
 
 
 # ---------- 文字样式 ----------

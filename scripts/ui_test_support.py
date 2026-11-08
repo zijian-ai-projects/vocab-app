@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
-"""UI 测试沙箱（V1.2.1）。
+"""UI 测试沙箱（V1.3.0）。
 
 所有 UI 自测都通过这里拿“隔离运行环境”：
-  * progress.json / _win.json 写到临时目录，绝不碰用户真实的 data/ 文件；
-  * 测试结果 / 截图写到独立的临时输出目录，打印路径，不写 data/；
-  * 进入沙箱时读取真实 progress/_win 的快照仅供校验；发现变化报错，绝不覆盖或回滚；
+  * progress.json / _win.json 写到临时目录，绝不碰用户真实记录；
+  * 同时守护 legacy data/progress.json、data/_win.json 和
+    app.DEFAULT_PROGRESS_PATH / DEFAULT_WIN_PATH（稳定记录目录）以及它们的
+    .bak / .tmp / .tmp-* / .bak.tmp-* 恢复文件；
+  * 进入沙箱时记录完整指纹；退出只校验、绝不覆盖/回滚/删除真实文件；
+  * 测试结果 / 截图写到 workspace 的 .vocab-ui-tests，不写 data/；
+  * 退出前先停掉所有 QTimer + window_ctl、关闭所有 Card 并 drain 事件，
+    最后才恢复 main 的全局路径，避免迟到回调写真实记录；
   * 退出码：调用 finish 的脚本失败时 exit 非 0。
 
 用法（必须在 import PyQt5 之前调用 configure_qt）：
@@ -75,6 +80,48 @@ def _snapshot(path):
         raise SandboxError("无法读取 %s：%r" % (path, e))
 
 
+def _related_paths(base):
+    """一个记录文件 + storage 可能留下的 .bak/.tmp/唯一 temp 恢复文件。"""
+    base = os.path.abspath(base)
+    out = {base, base + ".bak", base + ".tmp"}
+    directory = os.path.dirname(base)
+    name = os.path.basename(base)
+    try:
+        names = os.listdir(directory)
+    except FileNotFoundError:
+        names = []
+    except OSError as e:
+        raise SandboxError("无法列出真实记录目录 %s：%r" % (directory, e))
+    for fn in names:
+        if fn.startswith(name + ".tmp-") or fn.startswith(name + ".bak.tmp-"):
+            out.add(os.path.join(directory, fn))
+    return out
+
+
+def fingerprint(bases):
+    """{path: bytes|None}；同时覆盖尚不存在的路径，创建新文件也能被发现。"""
+    result = {}
+    seen = set()
+    for base in bases:
+        if not base:
+            continue
+        base = os.path.abspath(base)
+        if base in seen:
+            continue
+        seen.add(base)
+        for path in _related_paths(base):
+            result[path] = _snapshot(path)
+    return result
+
+
+def _fingerprint_changes(before, after):
+    changed = []
+    for path in sorted(set(before) | set(after)):
+        if before.get(path, "<missing>") != after.get(path, "<missing>"):
+            changed.append(path)
+    return changed
+
+
 class Sandbox:
     def __init__(self, app_main, label="ui"):
         self.app = app_main
@@ -86,6 +133,7 @@ class Sandbox:
         except OSError:
             pass
         self.dir = tempfile.mkdtemp(prefix="%s-sandbox-" % label, dir=TEST_ROOT)
+        self._root = os.path.realpath(self.dir)
         out_env = os.environ.get("VOCAB_TEST_OUT")
         if out_env:
             self.outdir = out_env
@@ -103,12 +151,26 @@ class Sandbox:
         self._orig_win_attr = None
         self._orig_resize = None
         self._real = {}
+        self._real_bases = []
+        self.watch_paths = []
         self._entered = False
 
     # ---------- 上下文 ----------
     def __enter__(self):
         self._entered = True
-        self._real = {"progress": _snapshot(REAL_PROGRESS), "win": _snapshot(REAL_WIN)}
+        # 真实记录：插件 data/* 目标 + 所有旧稳定资料目录的迁移来源。
+        legacy_p = getattr(self.app, "LEGACY_PROGRESS_PATH", REAL_PROGRESS)
+        legacy_w = getattr(self.app, "LEGACY_WIN_PATH", REAL_WIN)
+        stable_p = getattr(self.app, "DEFAULT_PROGRESS_PATH",
+                           getattr(self.app, "PROGRESS_PATH", REAL_PROGRESS))
+        stable_w = getattr(self.app, "DEFAULT_WIN_PATH",
+                           getattr(self.app, "WIN_PATH", REAL_WIN))
+        self._real_bases = [legacy_p, legacy_w, stable_p, stable_w]
+        self._real_bases.extend(getattr(self.app, "LEGACY_PROGRESS_PATHS", ()))
+        self._real_bases.extend(getattr(self.app, "LEGACY_WIN_PATHS", ()))
+        self.watch_paths = sorted(fingerprint(self._real_bases))
+        self._real = fingerprint(self._real_bases)
+
         self._orig_progress = self.app.PROGRESS_PATH
         self.app.PROGRESS_PATH = self.progress_path
         # 优先用 main.py 暴露的 WIN_PATH；没有就替换 Card.resizeEvent（它原本写真实 data/_win.json）
@@ -133,26 +195,33 @@ class Sandbox:
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        # 先在隔离路径仍然生效时停掉定时器、关窗、drain 事件；
-        # 之后再还原全局路径，避免迟到的 resize/quiz 写到真实 data。
+        # 1) 仍在隔离路径下：停 timer/controller、close、强制 terminal 清理、drain。
         for w in list(self.cards):
-            try:
-                w.quiz_timer.stop()
-            except Exception:
-                pass
+            self._stop_card(w)
             try:
                 w.close()
             except Exception:
                 pass
+        # close 可能因 StorageError 被 event.ignore：无论成功失败，强制终态，
+        # 保证迟到 timer/键盘/direct action 的 _can_act 全为 False，且窗口隐藏。
+        for w in list(self.cards):
+            self._force_terminal(w)
         try:
-            from PyQt5.QtWidgets import QApplication
-            app = QApplication.instance()
+            from PyQt5.QtCore import QCoreApplication, QEvent
+            app = QCoreApplication.instance()
             if app is not None:
-                for _ in range(6):
+                for _ in range(8):
+                    app.processEvents()
+                app.sendPostedEvents(None, QEvent.DeferredDelete)
+                for _ in range(8):
                     app.processEvents()
         except Exception:
             pass
-        # 恢复 main.py 的全局路径
+        # 再停一次（closeEvent 失败恢复分支可能重启 timer）
+        for w in list(self.cards):
+            self._stop_card(w)
+
+        # 2) 再恢复 main 的全局路径
         if self._orig_progress is not None:
             self.app.PROGRESS_PATH = self._orig_progress
         if self._had_win_attr:
@@ -160,27 +229,118 @@ class Sandbox:
         if self._orig_resize is not None:
             self.app.Card.resizeEvent = self._orig_resize
         self.cards = []
-        # 只校验真实数据：用户可能在测试期间正常学习，绝不能擅自覆盖/删除
-        self._verify_real(REAL_PROGRESS, "progress", "data/progress.json")
-        self._verify_real(REAL_WIN, "win", "data/_win.json")
+
+        # 3) 只校验真实文件（legacy + stable + 恢复文件），绝不覆盖/回滚
+        self.verify_real()
         if not self.keep:
-            shutil.rmtree(self.dir, ignore_errors=True)
+            self._safe_rmtree(self._root)
         else:
-            print("KEEP sandbox:", self.dir)
+            print("KEEP sandbox:", self._root)
         return False
 
-    def _verify_real(self, path, key, label):
+    def _stop_card(self, w):
         try:
-            now = _snapshot(path)
-        except Exception as e:
-            self.errors.append("无法校验真实 %s：%r" % (label, e))
+            from PyQt5.QtCore import QTimer
+            for timer in w.findChildren(QTimer):
+                timer.stop()
+            ctl = getattr(w, "window_ctl", None)
+            if ctl is not None:
+                ctl.stop_timers()
+        except Exception:
+            pass
+
+    def _force_terminal(self, w):
+        """close 被 event.ignore 也强制进入 closed，隐藏并 deleteLater；记录终态。"""
+        self._stop_card(w)
+        try:
+            w._closing = False
+            w._closed = True
+        except Exception:
+            pass
+        try:
+            w.hide()
+        except Exception:
+            pass
+        self._stop_card(w)
+        visible = False
+        active = 0
+        try:
+            visible = bool(w.isVisible())
+            from PyQt5.QtCore import QTimer
+            active = sum(1 for timer in w.findChildren(QTimer) if timer.isActive())
+        except Exception:
+            pass
+        try:
+            w._sandbox_terminal = {
+                "closed": bool(getattr(w, "_closed", False)),
+                "closing": bool(getattr(w, "_closing", False)),
+                "visible": visible,
+                "active_timers": active,
+            }
+        except Exception:
+            pass
+        try:
+            w.deleteLater()
+        except Exception:
+            pass
+
+    def _safe_rmtree(self, path):
+        """只删原始 mkdtemp 沙箱；绝不接受被改写的 self.dir/任意子路径。"""
+        root = os.path.realpath(path)
+        original = os.path.realpath(self._root)
+        base = os.path.realpath(TEST_ROOT)
+        try:
+            inside_test_root = os.path.commonpath([base, root]) == base and root != base
+        except ValueError:
+            inside_test_root = False
+        if root != original or not inside_test_root:
+            self.errors.append("拒绝删除非原始沙箱路径：%s（原始 %s）" % (root, original))
             return
-        if now != self._real.get(key):
-            self.errors.append("真实 %s 在测试期间发生变化（未覆盖，请确认是否有其它进程在写）" % label)
+        shutil.rmtree(root, ignore_errors=True)
+
+    def _fixture_target(self, path):
+        """校验夹具文件只能落在 self 原始 mkdtemp 目录内；防 mutated base 越界。"""
+        root = os.path.realpath(self._root)
+        target = os.path.realpath(os.path.abspath(path))
+        try:
+            inside = (os.path.commonpath([root, target]) == root
+                      and target != root)
+        except ValueError:
+            inside = False
+        if not inside:
+            raise SandboxError("拒绝访问沙箱外夹具路径：%s（沙箱 %s）" % (target, root))
+        return target
+
+    def verify_real(self):
+        """校验真实记录与恢复文件；只报告，不写/不恢复。"""
+        try:
+            now = fingerprint(self._real_bases)
+        except Exception as e:
+            self.errors.append("无法校验真实记录指纹：%r" % (e,))
+            return False
+        changed = _fingerprint_changes(self._real, now)
+        if changed:
+            self.errors.append("真实记录/恢复文件发生变化（未覆盖）：%s" %
+                               " ; ".join(changed[:8]))
+            return False
+        return True
+
+    def _clear_sidecars(self, base):
+        """只清沙箱内该记录文件的 .bak/.tmp/唯一 temp，不删 base，绝不碰真实目录。"""
+        base = self._fixture_target(base)
+        for path in _related_paths(base):
+            real = self._fixture_target(path)
+            if real == base:
+                continue
+            try:
+                if os.path.isfile(real):
+                    os.remove(real)
+            except OSError:
+                pass
 
     # ---------- 沙箱内数据 ----------
     def path(self, name):
-        return os.path.join(self.dir, name)
+        return os.path.join(self._root, name)
 
     def out(self, name):
         os.makedirs(self.outdir, exist_ok=True)
@@ -192,21 +352,58 @@ class Sandbox:
         return self.out(name)
 
     def write_progress(self, data):
+        target = self._fixture_target(self.progress_path)
+        self._clear_sidecars(target)
         if data is None:
             try:
-                os.remove(self.progress_path)
+                os.remove(target)
             except OSError:
                 pass
             return
-        with io.open(self.progress_path, "w", encoding="utf-8") as f:
+        with io.open(target, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)
 
     def read_progress(self):
+        target = self._fixture_target(self.progress_path)
         try:
-            with io.open(self.progress_path, encoding="utf-8") as f:
+            with io.open(target, encoding="utf-8") as f:
                 return json.load(f)
         except (FileNotFoundError, ValueError):
             return {}
+
+    def write_win(self, data):
+        target = self._fixture_target(self.win_path)
+        self._clear_sidecars(target)
+        if data is None:
+            try:
+                os.remove(target)
+            except OSError:
+                pass
+            return
+        with io.open(target, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+
+    def read_win(self):
+        target = self._fixture_target(self.win_path)
+        try:
+            with io.open(target, encoding="utf-8") as f:
+                return json.load(f)
+        except (FileNotFoundError, ValueError):
+            return {}
+
+    def clear_fixture_sidecars(self):
+        """只清夹具的 .bak/.tmp/唯一 temp，保留 base 文件。"""
+        self._clear_sidecars(self.progress_path)
+        self._clear_sidecars(self.win_path)
+
+    def reset(self, progress=None, win=None):
+        """重置夹具：None 表示删除该 base + 全部恢复文件；非 None 表示写入。
+
+        不是“只清 sidecar”；只清 sidecar 请用 clear_fixture_sidecars()。
+        所有路径都限定在原始 mkdtemp 沙箱内，绝不触碰真实记录。
+        """
+        self.write_progress(progress)
+        self.write_win(win)
 
     def new_card(self, progress=None, show=True):
         """创建 Card。show=False 时拦截 __init__ 末尾的 show()，用于检查 show 前状态。"""

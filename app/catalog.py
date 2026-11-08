@@ -1,0 +1,519 @@
+# -*- coding: utf-8 -*-
+"""词书内容浏览：模型表格避免给数千词条创建按钮，记忆说明不修改记录。
+
+V1.3.0 性能约束：
+  * 垂直表头 Fixed，默认行高 48*scale；不再对全表 ResizeToContents；
+  * 只为可见行 + BUFFER_ROWS 行用 QFontMetrics 测高（按实际列宽减 cell padding），
+    结果缓存（word + widths + scale + display text，容量 1024）；
+  * 滚动 / viewport Show,Resize / 列宽变化 / model reset / layoutChanged 用 16ms
+    singleShot QTimer 合并，不在 setBook / refilter 时同步测量全书；
+  * ElideNone + WordWrap；ScrollPerPixel 允许长词组行高于视口并完整换行；
+  * Model 一次缓存 meaning，搜索 / DisplayRole 不反复 format。
+"""
+import time
+from collections import OrderedDict
+
+from PyQt5.QtCore import (QEvent, QModelIndex, QSize, Qt, QTimer,
+                          QAbstractTableModel)
+from PyQt5.QtGui import QColor, QFont, QFontMetrics
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
+                             QPushButton, QTableView, QHeaderView, QDialog,
+                             QAbstractItemView, QStyledItemDelegate,
+                             QStyleOptionViewItem)
+import theme as th
+from entries import CATEGORIES, meaning, memory_info
+
+LEVEL_LINES = (
+    "等级 0：新词",
+    "等级 1：5 分钟后复习",
+    "等级 2：30 分钟",
+    "等级 3：12 小时",
+    "等级 4：1 天",
+    "等级 5：2 天",
+    "等级 6：4 天",
+    "等级 7：7 天",
+    "等级 8：15 天",
+    "等级 9：30 天",
+    "等级 10：已掌握，不再出现",
+)
+LEVEL_TEXT = "\n".join(LEVEL_LINES)
+
+
+def level_lines():
+    """说明窗口/测试共用的 11 行等级文案。"""
+    return LEVEL_LINES
+
+# 行高测量参数：与视图 delegate 的单元格内边距保持一致（见 TextWrapDelegate）
+CELL_PAD_X = 6
+CELL_PAD_Y = 6
+BUFFER_ROWS = 4
+DEFAULT_ROW = 48
+HEIGHT_CACHE_LIMIT = 1024
+MEASURE_DELAY_MS = 16
+
+
+class TextWrapDelegate(QStyledItemDelegate):
+    """保留完整换行（ElideNone）并让 delegate 与行高测量一致。"""
+
+    def initStyleOption(self, option, index):
+        super().initStyleOption(option, index)
+        option.features |= QStyleOptionViewItem.WrapText
+        option.textElideMode = Qt.ElideNone
+
+
+class WordTableModel(QAbstractTableModel):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.entries, self.rows = [], []
+        self.states, self.known = {}, set()
+        self.category, self.query = "all", ""
+        self.palette = th.get(th.DEFAULT)
+        self.scale = 1.0
+        self._font = QFont("Microsoft YaHei UI")
+        self._font.setPixelSize(13)
+        self._meanings = []          # 与 entries 对齐的 meaning，只 format 一次
+        self._search = []            # (word_casefold, meaning_casefold)
+        self._meta = []              # [(category, label)]，与 entries 对齐
+        self._pos_by_id = {}         # id(entry) -> entries 索引，避免 O(n) 查找
+        self._counts = {key: 0 for key, _ in CATEGORIES}
+        self._counts["all"] = 0
+        self._row_meta = []          # 与 rows 对齐，None 表示未构建
+        self._row_meta_dirty = True
+
+    # ---------- 数据缓存 ----------
+    def set_entries(self, entries, states, known=None):
+        self.entries = list(entries)
+        self.states = states
+        self.known = known or set()
+        self._pos_by_id = {id(entry): pos for pos, entry in enumerate(self.entries)}
+        self._meanings = [meaning(entry) for entry in self.entries]
+        self._search = [(entry["w"].casefold(), text.casefold())
+                        for entry, text in zip(self.entries, self._meanings)]
+        self._meta = []
+        self._counts = {key: 0 for key, _ in CATEGORIES}
+        self._counts["all"] = len(self.entries)
+        for entry, text in zip(self.entries, self._meanings):
+            category, _, label = memory_info(entry["w"], self.states, self.known)
+            self._meta.append((category, label))
+            self._counts[category] = self._counts.get(category, 0) + 1
+        self._row_meta_dirty = True
+        self.refilter()
+
+    def set_scale(self, scale):
+        scale = max(1.0, min(1.6, float(scale)))
+        if scale == self.scale:
+            return
+        self.scale = scale
+        self._font = QFont("Microsoft YaHei UI")
+        self._font.setPixelSize(round(13 * scale))
+        self.dataChanged.emit(self.index(0, 0),
+                              self.index(max(0, len(self.rows) - 1), 2),
+                              [Qt.FontRole])
+
+    def meaning(self, entry):
+        """入口缓存索引：按 entries 原始位置找一次，找不到才 format。"""
+        pos = self._pos_by_id.get(id(entry))
+        if pos is None:
+            return meaning(entry)
+        return self._meanings[pos] if pos < len(self._meanings) else meaning(entry)
+
+    def meaning_for_row(self, row):
+        if 0 <= row < len(self.rows):
+            entry = self.rows[row]
+            pos = self._pos_by_id.get(id(entry))
+            if pos is None:
+                return meaning(entry)
+            return self._meanings[pos] if pos < len(self._meanings) else meaning(entry)
+        return ""
+
+    def _build_row_meta(self):
+        self._row_meta = [
+            self._meta[self._pos_by_id[id(entry)]]
+            if id(entry) in self._pos_by_id else ("unlearned", "")
+            for entry in self.rows
+        ]
+        self._row_meta_dirty = False
+
+    def label_for_row(self, row):
+        if 0 <= row < len(self.rows):
+            if self._row_meta_dirty:
+                self._build_row_meta()
+            return self._row_meta[row][1]
+        return ""
+
+    def meta_for_row(self, row):
+        if 0 <= row < len(self.rows):
+            if self._row_meta_dirty:
+                self._build_row_meta()
+            return self._row_meta[row]
+        return ("unlearned", "")
+
+    def refilter(self, category=None, query=None):
+        if category is not None:
+            self.category = category
+        if query is not None:
+            self.query = query.strip().casefold()
+        self.beginResetModel()
+        cat = self.category
+        query = self.query
+        if cat == "all" and not query:
+            self.rows = list(self.entries)
+        else:
+            rows = []
+            for entry, (word_ci, meaning_ci), (entry_cat, _) in zip(
+                    self.entries, self._search, self._meta):
+                if cat != "all" and entry_cat != cat:
+                    continue
+                if query and query not in word_ci and query not in meaning_ci:
+                    continue
+                rows.append(entry)
+            self.rows = rows
+        self._row_meta_dirty = True
+        self.endResetModel()
+
+    def counts(self):
+        return dict(self._counts)
+
+    def rowCount(self, parent=QModelIndex()):
+        return 0 if parent.isValid() else len(self.rows)
+
+    def columnCount(self, parent=QModelIndex()):
+        return 0 if parent.isValid() else 3
+
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole and orientation == Qt.Horizontal:
+            return ("单词 / 词组", "释义", "记忆等级")[section]
+        return None
+
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid() or not (0 <= index.row() < len(self.rows)):
+            return None
+        row = index.row()
+        entry = self.rows[row]
+        if role == Qt.DisplayRole:
+            if index.column() == 0:
+                return entry["w"]
+            if index.column() == 1:
+                return self.meaning_for_row(row)
+            return self.label_for_row(row)
+        category, label = self.meta_for_row(row)
+        if role == Qt.ToolTipRole:
+            if index.column() == 2:
+                state = self.states.get(entry["w"]) or {}
+                due = state.get("due")
+                stamp = ("\n下次复习：" + time.strftime("%Y-%m-%d %H:%M", time.localtime(due))) \
+                    if isinstance(due, (int, float)) else ""
+                return label + stamp
+            return entry["w"] + "\n" + (entry.get("raw") or self.meaning_for_row(row))
+        if role == Qt.ForegroundRole:
+            key = ("ok" if category == "mastered" else
+                   "accent" if category == "known" else "fg_mean")
+            return QColor(self.palette[key])
+        if role == Qt.FontRole:
+            return QFont(self._font)
+        if role == Qt.TextAlignmentRole:
+            return int(Qt.AlignVCenter | (Qt.AlignCenter if index.column() == 2 else Qt.AlignLeft))
+        return None
+
+
+class BookCatalog(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("catalog")
+        self.theme = th.get(th.DEFAULT)
+        self.book_id = None
+        self.level_dialog = None
+        self._scale = 1.0
+        self._height_cache = OrderedDict()
+        self._measured_rows = set()
+        self._measure_calls = 0
+        self._columns_dirty = False
+        self._measure_timer = QTimer(self)
+        self._measure_timer.setSingleShot(True)
+        self._measure_timer.setInterval(MEASURE_DELAY_MS)
+        self._measure_timer.timeout.connect(self._measure_visible)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 8, 0, 0)
+        layout.setSpacing(8)
+        self.path_label = QLabel("")
+        self.path_label.setWordWrap(True)
+        self.path_label.setTextFormat(Qt.PlainText)
+        layout.addWidget(self.path_label)
+        controls = QHBoxLayout()
+        controls.setSpacing(6)
+        self.filter_chips = {}
+        for key, label in CATEGORIES:
+            button = QPushButton(label)
+            button.setObjectName("chip")
+            button.setCursor(Qt.PointingHandCursor)
+            button.clicked.connect(lambda _, k=key: self.set_filter(k))
+            controls.addWidget(button)
+            self.filter_chips[key] = button
+        controls.addStretch(1)
+        self.btn_levels = QPushButton("等级说明")
+        self.btn_levels.setObjectName("chip")
+        self.btn_levels.setCursor(Qt.PointingHandCursor)
+        self.btn_levels.setMinimumHeight(28)
+        self.btn_levels.clicked.connect(self.show_levels)
+        controls.addWidget(self.btn_levels)
+        layout.addLayout(controls)
+        self.search = QLineEdit()
+        self.search.setPlaceholderText("搜索单词、词组或释义")
+        self.search.setClearButtonEnabled(True)
+        self.search.textChanged.connect(self._search_changed)
+        layout.addWidget(self.search)
+        self.model = WordTableModel(self)
+        self.table = QTableView()
+        self.table.setModel(self.model)
+        self.table.setWordWrap(True)
+        self.table.setTextElideMode(Qt.ElideNone)
+        self.table.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.table.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.table.setItemDelegate(TextWrapDelegate(self.table))
+        self.table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        self.table.verticalHeader().setMinimumSectionSize(DEFAULT_ROW)
+        self.table.verticalHeader().setDefaultSectionSize(DEFAULT_ROW)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.setAlternatingRowColors(False)
+        self.table.setShowGrid(False)
+        self.table.verticalHeader().hide()
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Interactive)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.Fixed)   # 不再 ResizeToContents
+        self.table.setColumnWidth(0, 142)
+        self.table.setColumnWidth(2, 96)
+        header.sectionResized.connect(self._columns_resized)
+        self.table.verticalScrollBar().valueChanged.connect(self._schedule_measure)
+        self.table.viewport().installEventFilter(self)
+        self.model.modelReset.connect(self._schedule_measure)
+        self.model.layoutChanged.connect(self._schedule_measure)
+        layout.addWidget(self.table, 1)
+        self.set_palette(self.theme)
+
+    # ------------------------------------------------------------------
+    # 行高测量（只测 visible + buffer）
+    # ------------------------------------------------------------------
+    @property
+    def measured_rows(self):
+        return len(self._measured_rows)
+
+    @property
+    def measure_calls(self):
+        return self._measure_calls
+
+    def _schedule_measure(self, *_args):
+        if not hasattr(self, "_measure_timer"):
+            return
+        self._measure_timer.start()          # 16ms coalesce
+
+    def eventFilter(self, obj, ev):
+        if obj is self.table.viewport() and ev.type() in (
+                QEvent.Resize, QEvent.Show, QEvent.Polish):
+            self._schedule_measure()
+        return super().eventFilter(obj, ev)
+
+    def showEvent(self, ev):
+        super().showEvent(ev)
+        self._schedule_measure()
+
+    def resizeEvent(self, ev):
+        super().resizeEvent(ev)
+        self._schedule_measure()
+
+    def _default_row(self):
+        return max(1, round(DEFAULT_ROW * self._scale))
+
+    def _text_width(self, column):
+        # 不用固定 40 下限：用户可把 word 列拖到 header 最小宽度；
+        # 实际 delegate 文本宽只有 max(1, columnWidth - 2*CELL_PAD_X)。
+        width = self.table.columnWidth(column)
+        return max(1, width - 2 * CELL_PAD_X)
+
+    def _font(self):
+        font = QFont("Microsoft YaHei UI")
+        font.setPixelSize(round(13 * self._scale))
+        return font
+
+    def _cache_get(self, key):
+        value = self._height_cache.get(key)
+        if value is not None:
+            self._height_cache.move_to_end(key)
+        return value
+
+    def _cache_put(self, key, value):
+        self._height_cache[key] = value
+        self._height_cache.move_to_end(key)
+        while len(self._height_cache) > HEIGHT_CACHE_LIMIT:
+            self._height_cache.popitem(last=False)
+
+    def measure_height(self, text, width, word="", widths=None):
+        """单列文本高度；cache key 含 word + widths + 实际文本宽 + scale + text。"""
+        key = (str(word), tuple(widths or ()), int(width),
+               round(self._scale, 3), str(text))
+        cached = self._cache_get(key)
+        if cached is not None:
+            return cached
+        fm = QFontMetrics(self._font())
+        rect = fm.boundingRect(0, 0, max(1, int(width)), 0,
+                               Qt.TextWordWrap | Qt.AlignLeft, str(text))
+        height = max(self._default_row(), rect.height() + 2 * CELL_PAD_Y)
+        self._cache_put(key, height)
+        return height
+
+    def _row_height(self, row):
+        if not (0 <= row < self.model.rowCount()):
+            return self._default_row()
+        entry = self.model.rows[row]
+        widths = (self.table.columnWidth(0), self.table.columnWidth(1),
+                  self.table.columnWidth(2))
+        word = entry["w"]
+        heights = [
+            self.measure_height(word, self._text_width(0), word, widths),
+            self.measure_height(self.model.meaning_for_row(row),
+                                self._text_width(1), word, widths),
+            self.measure_height(self.model.label_for_row(row),
+                                self._text_width(2), word, widths),
+        ]
+        return max(self._default_row(), max(heights))
+
+    def _measure_visible(self):
+        if not hasattr(self, "table") or self.model.rowCount() == 0:
+            return
+        viewport = self.table.viewport()
+        if viewport.width() <= 0 or viewport.height() <= 0:
+            return
+        self._measure_calls += 1
+        count = self.model.rowCount()
+        first = self.table.rowAt(0)
+        last = self.table.rowAt(max(0, viewport.height() - 1))
+        if first < 0:
+            first = 0
+        if last < 0:
+            last = min(count - 1, first + 2 * BUFFER_ROWS)
+        first = max(0, first - BUFFER_ROWS)
+        last = min(count - 1, last + BUFFER_ROWS)
+        vh = self.table.verticalHeader()
+        for row in range(first, last + 1):
+            height = self._row_height(row)
+            self._measured_rows.add(row)
+            if vh.sectionSize(row) != height:
+                vh.resizeSection(row, height)
+
+    def _invalidate_rows(self):
+        """清缓存/已测标记，但不把当前已测行高重置成 48。
+
+        关键：长行测量后会出现/改变垂直滚动条，Stretch 列宽随之变化并触发
+        sectionResized；如果这里把行高重置为 48，会再次隐藏滚动条，形成
+        “48 -> 长行 -> 滚动条 -> 48” 的自触发循环。保持当前行高直到下一次
+        可见行重新测量即可，行数仍只限可见+buffer。
+        """
+        self._measured_rows.clear()
+        self._height_cache.clear()
+        self._columns_dirty = False
+        self._schedule_measure()
+
+    def _columns_resized(self, *_args):
+        if getattr(self, "_applying_columns", False):
+            return
+        # 列宽变化只重新测量可见行；不清/不重置已测行高（避免滚动条循环）。
+        self._schedule_measure()
+
+    # ------------------------------------------------------------------
+    def set_book(self, book_id, path, entries, states, known=None):
+        self.book_id = book_id
+        self.path_label.setText(path)
+        self.search.clear()
+        self.model.category = "all"
+        self.model.set_entries(entries, states, known)
+        self.set_filter("all")
+        self.table.scrollToTop()
+        self._invalidate_rows()
+
+    def _search_changed(self, query):
+        self.model.refilter(query=query)
+        self._schedule_measure()
+
+    def set_filter(self, category):
+        self.model.refilter(category=category)
+        counts = self.model.counts()
+        for key, label in CATEGORIES:
+            button = self.filter_chips[key]
+            button.setText("%s %s" % (label, format(counts.get(key, 0), ",")))
+            button.setProperty("on", "1" if key == category else "0")
+            button.style().unpolish(button)
+            button.style().polish(button)
+        self._invalidate_rows()
+
+    def show_levels(self, index=None):
+        """由顶部「等级说明」chip 打开；点击表格行/等级列不再弹说明。"""
+        if self.level_dialog is not None:
+            self.level_dialog.close()
+        dialog = QDialog(self.window())
+        dialog.setWindowTitle("记忆等级")
+        dialog.setWindowFlags(dialog.windowFlags() | Qt.WindowStaysOnTopHint)
+        dialog.resize(420, 520)
+        outer = QVBoxLayout(dialog)
+        outer.setContentsMargins(22, 18, 22, 18)
+        outer.setSpacing(7)
+        title = QLabel("记忆等级")
+        title.setStyleSheet(th.label_qss(self.theme, "title", 18))
+        outer.addWidget(title)
+        outer.addSpacing(6)
+        for line in LEVEL_LINES:
+            level_text, _, detail = line.partition("：")
+            row = QHBoxLayout()
+            row.setSpacing(10)
+            left = QLabel(level_text)
+            left.setStyleSheet(th.label_qss(self.theme, "title", 14))
+            left.setFixedWidth(max(72, round(76 * self._scale)))
+            row.addWidget(left)
+            right = QLabel(detail)
+            right.setWordWrap(True)
+            right.setStyleSheet(th.label_qss(self.theme, "mean", 14))
+            row.addWidget(right, 1)
+            outer.addLayout(row)
+        outer.addStretch(1)
+        close = QPushButton("知道了")
+        close.setObjectName("remember")
+        close.setCursor(Qt.PointingHandCursor)
+        close.setMinimumHeight(36)
+        close.clicked.connect(dialog.close)
+        outer.addWidget(close)
+        dialog.setStyleSheet(th.qss(self.theme) +
+                            "QDialog{background:%s;}" % self.theme["bg"])
+        self.level_dialog = dialog
+        dialog.show()
+
+    def set_palette(self, palette):
+        had_dialog = (self.level_dialog is not None
+                      and not self.level_dialog.isHidden())
+        self.theme = palette
+        self.model.palette = palette
+        self.set_scale(self._scale)
+        if had_dialog:
+            # 说明窗口若正开着，主题切换后按新主题重建
+            self.show_levels()
+
+    def set_scale(self, scale):
+        scale = max(1.0, min(1.6, float(scale)))
+        self._scale = scale
+        self.model.set_scale(scale)
+        self.path_label.setStyleSheet(th.label_qss(self.theme, "mean", round(13 * scale)))
+        self.table.setStyleSheet(
+            "QTableView{border:none;background:%s;selection-background-color:%s;}"
+            "QHeaderView::section{background:%s;color:%s;border:none;padding:%dpx;font-size:%dpx;}"
+            % (self.theme["bg"], self.theme["chip_bg"], self.theme["bg"], self.theme["muted"],
+               round(7 * scale), round(12 * scale)))
+        self._applying_columns = True
+        try:
+            self.table.setColumnWidth(0, round(142 * scale))
+            self.table.setColumnWidth(2, round(96 * scale))
+        finally:
+            self._applying_columns = False
+        self.table.verticalHeader().setMinimumSectionSize(self._default_row())
+        self.table.verticalHeader().setDefaultSectionSize(self._default_row())
+        self._invalidate_rows()
