@@ -1,0 +1,350 @@
+{
+  "schema": 1,
+  "classification": "community_compilation",
+  "note": "词表与词书 gloss 由民间整理；只冻结既有本地文字用于短释义复现，不主张官方来源。",
+  "files": [
+    {
+      "book_id": "cz1-1",
+      "original_local_path": "build/gloss/cz1-1.json",
+      "snapshot": "data/school_gloss/cz1-1.json",
+      "original_raw_sha256": "063b5da6d6edb639daaa9ec21b7b096389780d97a940f80b4ccc5ff9acde8200",
+      "bytes": 39427
+    },
+    {
+      "book_id": "cz1-2",
+      "original_local_path": "build/gloss/cz1-2.json",
+      "snapshot": "data/school_gloss/cz1-2.json",
+      "original_raw_sha256": "c8e953b66c5c3b7f0aa2386c7e958043be92cf6b8ed7809ae39bd53cc6399697",
+      "bytes": 46921
+    },
+    {
+      "book_id": "cz1-3",
+      "original_local_path": "build/gloss/cz1-3.json",
+      "snapshot": "data/school_gloss/cz1-3.json",
+      "original_raw_sha256": "05f047170b5eb1341b46a121a4260783dee1a06b9a6639c2096496c7992a7be2",
+      "bytes": 38540
+    },
+    {
+      "book_id": "cz1-4",
+      "original_local_path": "build/gloss/cz1-4.json",
+      "snapshot": "data/school_gloss/cz1-4.json",
+      "original_raw_sha256": "3f1ee14202cfcd9aff759a53a7ea7205b511cf43e1a33cb4129d6d95b9b4c273",
+      "bytes": 42779
+    },
+    {
+      "book_id": "cz1-5",
+      "original_local_path": "build/gloss/cz1-5.json",
+      "snapshot": "data/school_gloss/cz1-5.json",
+      "original_raw_sha256": "a2db1fb3c40dab0d3c3020a8965d1dafb14f1823d137c1a05150cafeb1474f5a",
+      "bytes": 53744
+    },
+    {
+      "book_id": "cz2-1",
+      "original_local_path": "build/gloss/cz2-1.json",
+      "snapshot": "data/school_gloss/cz2-1.json",
+      "original_raw_sha256": "09af94ed3495e6427aabc528bb04a34a81f629a7d7cb7a8fc09610f91d7b9939",
+      "bytes": 63273
+    },
+    {
+      "book_id": "cz2-2",
+      "original_local_path": "build/gloss/cz2-2.json",
+      "snapshot": "data/school_gloss/cz2-2.json",
+      "original_raw_sha256": "b144c67d76595cae6c29ecae72b8476ae9014d76481ba59e349fa570240bcca7",
+      "bytes": 45719
+    },
+    {
+      "book_id": "cz2-3",
+      "original_local_path": "build/gloss/cz2-3.json",
+      "snapshot": "data/school_gloss/cz2-3.json",
+      "original_raw_sha256": "5ee4114b9705289002f26da1b7669dcabaf1cd53e259b8f1ac1ac0c54be147f5",
+      "bytes": 31949
+    },
+    {
+      "book_id": "cz2-4",
+      "original_local_path": "build/gloss/cz2-4.json",
+      "snapshot": "data/school_gloss/cz2-4.json",
+      "original_raw_sha256": "3b764e9d2613bf71fe765096ebb09b6ca9c5919c9aef3ca29af0ea2e32d91d15",
+      "bytes": 27052
+    },
+    {
+      "book_id": "cz2-5",
+      "original_local_path": "build/gloss/cz2-5.json",
+      "snapshot": "data/school_gloss/cz2-5.json",
+      "original_raw_sha256": "b1eb16db2b89559b3a117782aa8d67776484107caa38cddf8bb567fc63e31d52",
+      "bytes": 34456
+    },
+    {
+      "book_id": "cz2-6",
+      "original_local_path": "build/gloss/cz2-6.json",
+      "snapshot": "data/school_gloss/cz2-6.json",
+      "original_raw_sha256": "7df696646774c320f10038c726078b662bb40b868189e13550b738fdc23ed1a0",
+      "bytes": 12640
+    },
+    {
+      "book_id": "cz3-1",
+      "original_local_path": "build/gloss/cz3-1.json",
+      "snapshot": "data/school_gloss/cz3-1.json",
+      "original_raw_sha256": "4ff767cd31559224a5abb7c4841f60f8a791838eada9ae117868fbed545a4f49",
+      "bytes": 31699
+    },
+    {
+      "book_id": "cz3-2",
+      "original_local_path": "build/gloss/cz3-2.json",
+      "snapshot": "data/school_gloss/cz3-2.json",
+      "original_raw_sha256": "44e8489bc33373adae36c0469336d7cd74695887460a079e4aafd19db603673c",
+      "bytes": 42531
+    },
+    {
+      "book_id": "cz3-3",
+      "original_local_path": "build/gloss/cz3-3.json",
+      "snapshot": "data/school_gloss/cz3-3.json",
+      "original_raw_sha256": "aab660004eced7ea4c64a6ec74a19f8fc9d6329ccdfd95c4fe33a5086717c925",
+      "bytes": 47714
+    },
+    {
+      "book_id": "cz3-4",
+      "original_local_path": "build/gloss/cz3-4.json",
+      "snapshot": "data/school_gloss/cz3-4.json",
+      "original_raw_sha256": "36fdf55ab2d9acdcb02530ea1585b11c6a44edfb710896a2a54dd572c8ec0456",
+      "bytes": 36929
+    },
+    {
+      "book_id": "cz3-5",
+      "original_local_path": "build/gloss/cz3-5.json",
+      "snapshot": "data/school_gloss/cz3-5.json",
+      "original_raw_sha256": "f9d49757d25c942dd1c2afd93ccc6ab9bf2217387a1197d3acb166ac75809a0e",
+      "bytes": 36325
+    },
+    {
+      "book_id": "cz3-6",
+      "original_local_path": "build/gloss/cz3-6.json",
+      "snapshot": "data/school_gloss/cz3-6.json",
+      "original_raw_sha256": "71e5e022906abf65d2bcd9cbdff02b6490824f281c342ca5032e4621de56e211",
+      "bytes": 16751
+    },
+    {
+      "book_id": "xx-dg",
+      "original_local_path": "build/gloss/xx-dg.json",
+      "snapshot": "data/school_gloss/xx-dg.json",
+      "original_raw_sha256": "b849fafa9d48478d79e2631d7f0f80659fc49dabe79db5a03358daf10f9529f0",
+      "bytes": 60785
+    },
+    {
+      "book_id": "xx-dg2011",
+      "original_local_path": "build/gloss/xx-dg2011.json",
+      "snapshot": "data/school_gloss/xx-dg2011.json",
+      "original_raw_sha256": "e48ab3274538debc40a1bf243ab773b912e5f0721eef3f5b2e7232e6cb703a11",
+      "bytes": 50316
+    },
+    {
+      "book_id": "xx-yle1",
+      "original_local_path": "build/gloss/xx-yle1.json",
+      "snapshot": "data/school_gloss/xx-yle1.json",
+      "original_raw_sha256": "031ae1992ad03b9e5611d316a837c80e328c1de5339425b2fe3bb13f7d0bfaaa",
+      "bytes": 49433
+    },
+    {
+      "book_id": "xx-yle2",
+      "original_local_path": "build/gloss/xx-yle2.json",
+      "snapshot": "data/school_gloss/xx-yle2.json",
+      "original_raw_sha256": "7b9f0c8b159418df56f61d27f2ea589b26d61d3d33f15e8cbfdda8bb7ec4954d",
+      "bytes": 88005
+    },
+    {
+      "book_id": "xx1-1",
+      "original_local_path": "build/gloss/xx1-1.json",
+      "snapshot": "data/school_gloss/xx1-1.json",
+      "original_raw_sha256": "8548ead51ea8889349881fe6f210d4ae8327462bb707d9247bbed72e1fe936da",
+      "bytes": 7217
+    },
+    {
+      "book_id": "xx1-2",
+      "original_local_path": "build/gloss/xx1-2.json",
+      "snapshot": "data/school_gloss/xx1-2.json",
+      "original_raw_sha256": "217d0c0fd93795c0b96614149db648a1790d727f27a0893ffa993c825783cd80",
+      "bytes": 7894
+    },
+    {
+      "book_id": "xx1-3",
+      "original_local_path": "build/gloss/xx1-3.json",
+      "snapshot": "data/school_gloss/xx1-3.json",
+      "original_raw_sha256": "964715898ebc12d6a2f9cb360413ce8c508a3fb2a6e872eea1422abe3810e022",
+      "bytes": 8427
+    },
+    {
+      "book_id": "xx1-4",
+      "original_local_path": "build/gloss/xx1-4.json",
+      "snapshot": "data/school_gloss/xx1-4.json",
+      "original_raw_sha256": "7bec71336ba220d2dabb1f26d125bb33212d103942182a039dd6cafad6a722f7",
+      "bytes": 8647
+    },
+    {
+      "book_id": "xx1-5",
+      "original_local_path": "build/gloss/xx1-5.json",
+      "snapshot": "data/school_gloss/xx1-5.json",
+      "original_raw_sha256": "27eb791199cf6faf9afe45be39be473348181d25b25b174c4b3ced59ea5193db",
+      "bytes": 12115
+    },
+    {
+      "book_id": "xx1-6",
+      "original_local_path": "build/gloss/xx1-6.json",
+      "snapshot": "data/school_gloss/xx1-6.json",
+      "original_raw_sha256": "275555af3c85c7f5cb394e6836997ec48b0b19a524d51777bbc0b63b8540f219",
+      "bytes": 13909
+    },
+    {
+      "book_id": "xx1-7",
+      "original_local_path": "build/gloss/xx1-7.json",
+      "snapshot": "data/school_gloss/xx1-7.json",
+      "original_raw_sha256": "083615af6991737d25942888d96892b8cc1deb923643295948de2b7f9456806a",
+      "bytes": 13874
+    },
+    {
+      "book_id": "xx1-8",
+      "original_local_path": "build/gloss/xx1-8.json",
+      "snapshot": "data/school_gloss/xx1-8.json",
+      "original_raw_sha256": "d13cd4a8ea33de3e1772c5ee5a8f4aa4b019f19129fb865a7b36d99ea3a8177a",
+      "bytes": 14072
+    },
+    {
+      "book_id": "xx2-1",
+      "original_local_path": "build/gloss/xx2-1.json",
+      "snapshot": "data/school_gloss/xx2-1.json",
+      "original_raw_sha256": "16f86fc8e0705f8587778fb81231342e2c6221deafb0b5e70d653a284d24e813",
+      "bytes": 14740
+    },
+    {
+      "book_id": "xx2-2",
+      "original_local_path": "build/gloss/xx2-2.json",
+      "snapshot": "data/school_gloss/xx2-2.json",
+      "original_raw_sha256": "8c674caf1c7629a4bf2e809494c3e001dd6e7a32d7b91d9454e1440837188808",
+      "bytes": 16902
+    },
+    {
+      "book_id": "xx2-3",
+      "original_local_path": "build/gloss/xx2-3.json",
+      "snapshot": "data/school_gloss/xx2-3.json",
+      "original_raw_sha256": "36249fce65c990a2db9a447f5faa8dcc4044166f3e647131a017cd898d46fafe",
+      "bytes": 13012
+    },
+    {
+      "book_id": "xx2-4",
+      "original_local_path": "build/gloss/xx2-4.json",
+      "snapshot": "data/school_gloss/xx2-4.json",
+      "original_raw_sha256": "1e8417c135f531a3dc7844c160ac0f490e03bf13b96d17a7d8309a5c83c61c5c",
+      "bytes": 15161
+    },
+    {
+      "book_id": "xx2-5",
+      "original_local_path": "build/gloss/xx2-5.json",
+      "snapshot": "data/school_gloss/xx2-5.json",
+      "original_raw_sha256": "f711b4e21c2ac75d1beb45c93ac2938db257019df78df6e2c7df4cf98f56fb8e",
+      "bytes": 16388
+    },
+    {
+      "book_id": "xx2-6",
+      "original_local_path": "build/gloss/xx2-6.json",
+      "snapshot": "data/school_gloss/xx2-6.json",
+      "original_raw_sha256": "8bf749402443fd98f66704f8de1a3a6559faf3b38693ef032955736cb61fbe4c",
+      "bytes": 17099
+    },
+    {
+      "book_id": "xx2-7",
+      "original_local_path": "build/gloss/xx2-7.json",
+      "snapshot": "data/school_gloss/xx2-7.json",
+      "original_raw_sha256": "2197857b58c02a169ae18c6ee56f91671a734f5ac133d61b8d0ee79d25059f12",
+      "bytes": 7842
+    },
+    {
+      "book_id": "xx2-8",
+      "original_local_path": "build/gloss/xx2-8.json",
+      "snapshot": "data/school_gloss/xx2-8.json",
+      "original_raw_sha256": "bb9490ae836b33d747af27a39bdf32e9735fef7f20a064c3813a185d12ee9dea",
+      "bytes": 11388
+    },
+    {
+      "book_id": "xx3-1",
+      "original_local_path": "build/gloss/xx3-1.json",
+      "snapshot": "data/school_gloss/xx3-1.json",
+      "original_raw_sha256": "1484958adeb0505e111084f7e4a9f19213e580c252c54bd7873b16b19a1b9198",
+      "bytes": 7489
+    },
+    {
+      "book_id": "xx3-2",
+      "original_local_path": "build/gloss/xx3-2.json",
+      "snapshot": "data/school_gloss/xx3-2.json",
+      "original_raw_sha256": "e16b5a932dab51e4bc3df25e6a790b6b49286833d60c1e3222e4ef2d42e8d133",
+      "bytes": 10774
+    },
+    {
+      "book_id": "xx3-3",
+      "original_local_path": "build/gloss/xx3-3.json",
+      "snapshot": "data/school_gloss/xx3-3.json",
+      "original_raw_sha256": "82766ac067e75c3dde619828f1e9c7a5c7a19042b68811a975377f013a58da32",
+      "bytes": 12086
+    },
+    {
+      "book_id": "xx3-4",
+      "original_local_path": "build/gloss/xx3-4.json",
+      "snapshot": "data/school_gloss/xx3-4.json",
+      "original_raw_sha256": "ea7463e2ecd37de51490d8fdd6237aaddb66fb702459efb9baae3fa1d99df569",
+      "bytes": 8588
+    },
+    {
+      "book_id": "xx3-5",
+      "original_local_path": "build/gloss/xx3-5.json",
+      "snapshot": "data/school_gloss/xx3-5.json",
+      "original_raw_sha256": "e3ee499f11c7de434aad876fb90b6b5e3fe98e396366a81d9799601106421cc0",
+      "bytes": 12625
+    },
+    {
+      "book_id": "xx3-6",
+      "original_local_path": "build/gloss/xx3-6.json",
+      "snapshot": "data/school_gloss/xx3-6.json",
+      "original_raw_sha256": "028a9502f7fa7edfbbf6803c1e2928d0cb2c9518493f3cf66a59046f81de04fe",
+      "bytes": 11129
+    },
+    {
+      "book_id": "xx3-7",
+      "original_local_path": "build/gloss/xx3-7.json",
+      "snapshot": "data/school_gloss/xx3-7.json",
+      "original_raw_sha256": "fc231d0343a0979040ac6be8189ffc3c4371fd2c1fde8520ad69560ddec90fa3",
+      "bytes": 13758
+    },
+    {
+      "book_id": "xx3-8",
+      "original_local_path": "build/gloss/xx3-8.json",
+      "snapshot": "data/school_gloss/xx3-8.json",
+      "original_raw_sha256": "22a2c8757558bae7e6cea804845a447c9edfa5a4642a3c8120d7989aa3b38dcf",
+      "bytes": 8768
+    },
+    {
+      "book_id": "zk-dg",
+      "original_local_path": "build/gloss/zk-dg.json",
+      "snapshot": "data/school_gloss/zk-dg.json",
+      "original_raw_sha256": "f9bf8f739cbfd0b2b23116f0a479b445867b2bc6a1c4672e58ee71a46977e427",
+      "bytes": 189892
+    },
+    {
+      "book_id": "zk-sg",
+      "original_local_path": "build/gloss/zk-sg.json",
+      "snapshot": "data/school_gloss/zk-sg.json",
+      "original_raw_sha256": "4b20ba22d8e2627bc0baa360d94ccb10a58556e97c71be5ff5ef02e747091580",
+      "bytes": 223997
+    },
+    {
+      "book_id": "zk-xh-tj",
+      "original_local_path": "build/gloss/zk-xh-tj.json",
+      "snapshot": "data/school_gloss/zk-xh-tj.json",
+      "original_raw_sha256": "f992cd45f288e0a98458d08e8b9916160e62b3cc9ac26db954c38e7f5952446b",
+      "bytes": 263695
+    },
+    {
+      "book_id": "zk-xh16",
+      "original_local_path": "build/gloss/zk-xh16.json",
+      "snapshot": "data/school_gloss/zk-xh16.json",
+      "original_raw_sha256": "4e87a4246e0a0435527094383f427ececf46b511d15e7e61b0f54413a6ffda1f",
+      "bytes": 263056
+    }
+  ]
+}

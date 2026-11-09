@@ -20,6 +20,7 @@ import os
 import sys
 import io
 import json
+import copy
 import time
 
 APP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -141,16 +142,50 @@ check(isinstance(c.normal_size, QSize) and c.normal_size == QSize(520, 430),
       "normal_size 是 QSize(520,430)：%r" % (c.normal_size,))
 check(c.compact is False and c.preferred_compact is False,
       "初始 compact/preferred_compact = False")
+check(c.edge_collapse_enabled is True,
+      "初始 edge_collapse_enabled=True")
 check(c.collapsed is False and c.dock_edge is None,
       "初始 collapsed=False / dock_edge=None")
 st = c.state()
 check(isinstance(st, dict) and st.get("version") == 1, "state 带 version=1")
+check(st.get("edge_collapse") is True, "state 保存 edge_collapse=True")
 for key in ("normal_w", "normal_h", "normal_x", "normal_y", "compact_x",
             "compact_y", "x", "y", "w", "h", "compact", "dock_edge"):
     check(key in st, "state 包含键 %s" % key)
 check(st["w"] == 520 and st["h"] == 430 and st["compact"] is False,
       "初始 state w/h=520×430、compact=False")
 check(len(json.dumps(st)) > 0, "state 可 JSON 序列化")
+w.close()
+
+# 1a. edge_collapse_enabled 持久化/旧记录/非法类型/unknown 字段
+w, c = new_ctl()
+check(c.set_edge_collapse_enabled is not None, "公开 set_edge_collapse_enabled")
+c.set_edge_collapse_enabled(False)
+check(c.edge_collapse_enabled is False and c.state()["edge_collapse"] is False,
+      "关闭后 state edge_collapse=False")
+c.restore({"normal_w": 520, "normal_h": 430, "edge_collapse": False,
+           "x": 100, "y": 100})
+check(c.edge_collapse_enabled is False,
+      "restore edge_collapse=False 保持关闭")
+c.restore({"normal_w": 520, "normal_h": 430, "x": 100, "y": 100})
+check(c.edge_collapse_enabled is True, "旧记录缺失 edge_collapse 默认 True")
+for bad in ("false", 0, 1, None, [], {}):
+    c.restore({"normal_w": 520, "normal_h": 430,
+               "edge_collapse": bad, "x": 100, "y": 100})
+    check(c.edge_collapse_enabled is True,
+          "非法 edge_collapse 类型 %r 保守恢复 True" % (bad,))
+unknown_saved = {"normal_w": 520, "normal_h": 430,
+                 "edge_collapse": False, "future_window_field": {"keep": 1}}
+unknown_before = copy.deepcopy(unknown_saved)
+c.restore(unknown_saved)
+check(unknown_saved == unknown_before,
+      "restore 不修改传入 unknown window 字段")
+persisted = c.state()
+w2, c2 = new_ctl()
+c2.restore(persisted)
+check(c2.edge_collapse_enabled is False,
+      "state edge_collapse=False 持久化后可恢复")
+w2.close()
 w.close()
 
 # ======================================================================
@@ -537,6 +572,51 @@ check(c2.normal_size == QSize(520, 430) and not c2.compact
       "520×430 贴边状态 restart 恢复逻辑尺寸/贴边")
 check(w2.size() == QSize(520, 430), "520×430 restart 展开尺寸 520×430")
 w2.close()
+
+# ======================================================================
+# 7c. edge_collapse_enabled：True/False 四边、compact/520、hover/force
+# ======================================================================
+for compact_mode in (False, True):
+    for edge in ("left", "right", "top", "bottom"):
+        w, c = new_ctl()
+        avail = primary_avail()
+        if compact_mode:
+            c.restore({"compact": True, "dock_edge": edge,
+                       "normal_w": 640, "normal_h": 520,
+                       "compact_x": avail.left() + 100,
+                       "compact_y": avail.top() + 100,
+                       "x": avail.left() + 100, "y": avail.top() + 100})
+            mode = "compact356"
+        else:
+            c.restore({"normal_w": 520, "normal_h": 430, "dock_edge": edge,
+                       "normal_x": avail.left() + 100,
+                       "normal_y": avail.top() + 100,
+                       "x": avail.left() + 100, "y": avail.top() + 100})
+            mode = "normal520"
+        c.set_edge_collapse_enabled(True)
+        check(c._auto_hide_enabled(), "%s/%s 开启后可自动收起" % (mode, edge))
+        check(c._collapse_if_docked(force=True, immediate=True),
+              "%s/%s 开启 force 收条成功" % (mode, edge))
+        check(c.collapsed, "%s/%s 收条后 collapsed" % (mode, edge))
+        c.reveal(immediate=True)
+        check(not c.collapsed, "%s/%s 收条后立即展开" % (mode, edge))
+        c.set_edge_collapse_enabled(False)
+        check(c.edge_collapse_enabled is False and not c._auto_hide_enabled(),
+              "%s/%s 关闭后不再自动收起" % (mode, edge))
+        check(c._collapse_if_docked(force=True, immediate=True) is False,
+              "%s/%s 关闭后 force 入口被阻止" % (mode, edge))
+        c._cursor_inside = lambda: False
+        c._on_hover_leave()
+        pump(0.40)
+        check(not c.collapsed,
+              "%s/%s 关闭后 hover leave 不收起" % (mode, edge))
+        check(c.state()["edge_collapse"] is False,
+              "%s/%s state edge_collapse=False" % (mode, edge))
+        c.set_edge_collapse_enabled(True)
+        check(c._auto_hide_enabled(), "%s/%s 重新开启恢复自动" % (mode, edge))
+        check(c._collapse_if_docked(force=True, immediate=True),
+              "%s/%s 重新开启可收条" % (mode, edge))
+        w.close()
 
 w, c = new_ctl()
 avail = primary_avail()

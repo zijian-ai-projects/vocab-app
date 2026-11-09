@@ -868,10 +868,15 @@ class Suite:
                    "设置页已删除记录位置/尺寸限制/学习模式小字提示")
         self.check(not hasattr(w, "mode_note") or not w.mode_note.isVisibleTo(w),
                    "学习模式小字提示控件已移除")
-        row_buttons = list(w.size_chips.values()) + [w.btn_defaults]
+        self.check({button.text() for button in w.size_chips.values()} == {"小巧", "标准", "大窗"},
+                   "三个窗口chip只显示名称，不显示尺寸数字")
+        self.check("背景" in labels and "背景风格" not in labels
+                   and "恢复默认" not in buttons and not hasattr(w, "btn_defaults"),
+                   "背景标题简化且恢复默认控件彻底移除")
+        row_buttons = list(w.size_chips.values()) + [w.btn_edge_collapse]
         centers = {round(button.pos().y() + button.height() / 2) for button in row_buttons}
-        self.check(len(centers) == 1 and w.btn_defaults.isVisibleTo(w),
-                   "三个尺寸chip与恢复默认在同一行：%r" % (sorted(centers),))
+        self.check(len(centers) == 1 and w.btn_edge_collapse.isVisibleTo(w),
+                   "窗口名称chip与贴边收起开关在同一行：%r" % (sorted(centers),))
         book_centers = {round(widget.pos().y() + widget.height() / 2) for widget in
                         (w.lab_book, w.lab_book_num, w.btn_change_book)}
         self.check(len(book_centers) == 1,
@@ -888,13 +893,19 @@ class Suite:
                            "真实尺寸chip应用%d×%d" % (width, height))
             w._apply_window_size(900, 700)
             self.check(w.window_ctl.normal_size == QSize(900, 700), "尺寸入口仍交控制器限制可用工作区")
-            w.settings_page.ensureWidgetVisible(w.btn_defaults)
+            w.settings_page.ensureWidgetVisible(w.btn_edge_collapse)
             pump()
-            QTest.mouseClick(w.btn_defaults, Qt.LeftButton)
-            self.check(w.study_mode == "brush" and w.retry_gap == 3 and w.window_ctl.normal_size == QSize(520, 430),
-                       "真实恢复默认按钮回刷词/固定3/520×430")
+            QTest.mouseClick(w.btn_edge_collapse, Qt.LeftButton)
+            self.check(not w.window_ctl.edge_collapse_enabled and not w.btn_edge_collapse.isChecked()
+                       and w.btn_edge_collapse.text() == "贴边收起：关",
+                       "真实贴边收起按钮关闭并同步状态")
+            QTest.mouseClick(w.btn_edge_collapse, Qt.LeftButton)
+            self.check(w.window_ctl.edge_collapse_enabled and w.btn_edge_collapse.isChecked()
+                       and w.study_mode == "choice" and w.retry_gap == 3
+                       and w.window_ctl.normal_size == QSize(900, 700),
+                       "开启贴边收起不恢复尺寸、学习模式或其它默认值")
         self.check(w.states == original_states and w.progress["history"] == history and w.progress["custom"] == custom,
-                   "尺寸/默认不清学习、历史或未知字段")
+                   "窗口预设/贴边开关不清学习、历史或未知字段")
         self.check(self.sb.read_progress()["states"] == original_states and self.sb.read_progress()["history"] == history
                    and self.sb.read_progress()["retry_gap"] == 3, "保存的学习/历史不清空且retry_gap恒3")
 

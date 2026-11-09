@@ -1,0 +1,3 @@
+# New deterministic overlay artifacts only; original V1.3.3 data rules stay unchanged.
+/data/level_meanings.json text eol=lf
+/data/school_gloss/*.json text eol=lf

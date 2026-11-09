@@ -100,6 +100,7 @@ class WindowController(QObject):
         self._compact = False
         self._preferred_compact = False
         self._collapsed = False
+        self._edge_collapse_enabled = True
         self._dock_edge = None
         self._preferred_dock_edge = None      # 临时 normal 时仍保留“下次小窗贴哪边”
         self._compact_logical_rect = None      # 小窗展开时的逻辑 rect（收条也不丢）
@@ -154,6 +155,11 @@ class WindowController(QObject):
     @property
     def preferred_compact(self):
         return bool(self._preferred_compact)
+
+    @property
+    def edge_collapse_enabled(self):
+        """用户设置：是否允许刷词小窗/小巧正常窗贴边自动收起。"""
+        return bool(self._edge_collapse_enabled)
 
     @preferred_compact.setter
     def preferred_compact(self, value):
@@ -275,7 +281,8 @@ class WindowController(QObject):
                 self._normal_size == QSize(*NORMAL_MIN))
 
     def _auto_hide_enabled(self):
-        return bool(self._compact or self._is_small_normal())
+        return bool(self._edge_collapse_enabled and
+                    (self._compact or self._is_small_normal()))
 
     def _logical_pos(self):
         if self._compact:
@@ -425,6 +432,11 @@ class WindowController(QObject):
         """
         saved = saved or {}
         self._finish_dock_animation()
+        raw_edge_collapse = saved.get("edge_collapse", True)
+        # 旧记录/非法类型保守恢复默认开启；只接受真正的 bool。
+        self._edge_collapse_enabled = (raw_edge_collapse
+                                       if isinstance(raw_edge_collapse, bool)
+                                       else True)
         self._hover_timer.stop()
         self._resizing = None
         self._suppress_changed = True
@@ -504,6 +516,30 @@ class WindowController(QObject):
         # 缺省居中
         return QPoint(geo.left() + (geo.width() - size.width()) // 2,
                       geo.top() + (geo.height() - size.height()) // 2)
+
+    def set_edge_collapse_enabled(self, enabled):
+        """设置是否允许贴边自动收起；关闭时立即完整展开并停止 hover/动画。
+
+        只影响自动/force 收条入口，不影响拖动、屏内限位、normal/compact
+        逻辑几何或主题；开启后仍需小窗/小巧正常窗且有 dock_edge 才自动收起。
+        """
+        enabled = bool(enabled)
+        changed = enabled != self._edge_collapse_enabled
+        self._edge_collapse_enabled = enabled
+        if not enabled:
+            self._hover_timer.stop()
+            self._finish_dock_animation()
+            if self._collapsed:
+                self.reveal(immediate=True)
+            self._hover_timer.stop()
+            self._remove_dock_overlay()
+            self._dock_anim.stop()
+            self._dock_anim_target = None
+        elif changed and self._auto_hide_enabled() and self._dock_edge \
+                and not self._collapsed and not self._hover_inside:
+            self._hover_timer.start()
+        if changed:
+            self._emit_changed()
 
     def set_compact(self, on, remember=True, immediate=True):
         self._finish_dock_animation()
@@ -755,6 +791,7 @@ class WindowController(QObject):
         cur_size = QSize(*COMPACT_SIZE) if self._compact else QSize(self._normal_size)
         return {
             "version": 1,
+            "edge_collapse": bool(self._edge_collapse_enabled),
             "normal_w": int(self._normal_size.width()),
             "normal_h": int(self._normal_size.height()),
             "normal_x": int(normal_pos.x()),

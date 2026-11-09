@@ -35,7 +35,8 @@ def _senses(text):
 def _signature(entry):
     pos = entry.get("pos") or ()
     first_pos = pos if isinstance(pos, str) else (pos[0] if pos else None)
-    return entry.get("w"), entry.get("s"), entry.get("raw"), first_pos
+    return (entry.get("w"), entry.get("s"), entry.get("raw"), first_pos,
+            entry.get("display_s"), entry.get("level_s"))
 
 
 def _usable(parsed):

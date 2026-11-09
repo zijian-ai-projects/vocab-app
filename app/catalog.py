@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdi
                              QAbstractItemView, QStyledItemDelegate, QStyle,
                              QStyleOptionViewItem)
 import theme as th
-from entries import CATEGORIES, meaning, memory_info
+from entries import CATEGORIES, meaning, memory_info, word_caption
 
 LEVEL_LINES = (
     "等级 0：新词",
@@ -325,7 +325,7 @@ class WordTableModel(QAbstractTableModel):
         entry = self.rows[row]
         if role == Qt.DisplayRole:
             if index.column() == 0:
-                return entry["w"]
+                return word_caption(entry)
             if index.column() == 1:
                 return self.meaning_for_row(row)
             return self.label_for_row(row)
@@ -337,7 +337,10 @@ class WordTableModel(QAbstractTableModel):
                 stamp = ("\n下次复习：" + time.strftime("%Y-%m-%d %H:%M", time.localtime(due))) \
                     if isinstance(due, (int, float)) else ""
                 return label + stamp
-            return entry["w"] + "\n" + (entry.get("raw") or self.meaning_for_row(row))
+            has_overlay = any(isinstance(entry.get(field), str) and entry[field].strip()
+                              for field in ("display_s", "level_s"))
+            detail = self.meaning_for_row(row) if has_overlay else (entry.get("raw") or self.meaning_for_row(row))
+            return word_caption(entry) + "\n" + detail
         if role == Qt.ForegroundRole:
             # 单词列/释义/等级列统一普通文字色，不再按记忆分类染色。
             return QColor(self.palette["fg_mean"])
@@ -505,7 +508,7 @@ class BookCatalog(QWidget):
                   self.table.columnWidth(2))
         word = entry["w"]
         heights = [
-            self.measure_height(word, self._text_width(0), word, widths),
+            self.measure_height(word_caption(entry), self._text_width(0), word, widths),
             self.measure_height(self.model.meaning_for_row(row),
                                 self._text_width(1), word, widths),
             self.measure_height(self.model.label_for_row(row),

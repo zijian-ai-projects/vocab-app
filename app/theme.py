@@ -6,6 +6,8 @@ V1.3.3：中深灰蓝 / 浅灰蓝 / 暖褐琥珀 / 鼠尾草；控件文字独�
 按钮/选中背景使用实色，避免半透明叠在不同父控件上改变文字对比度。
 正文与可用按钮（含 hover/pressed/selected）目标 >= 4.5:1；装饰线和禁用态除外。
 dock_* 供 windowing 的短胶囊使用，chip_fg 不再复用弱化提示色 muted。
+V1.3.4：三处「不认识」同用 #dontknow；灰蓝/钢蓝/暖褐/鼠尾草填充更清晰。
+dk normal/hover/pressed 与页面背景对比目标 >=1.5:1；选中反馈与其他配色保留。
 新增主题 = 在 THEMES 里加一份同 key 的字典，`missing()` 会自动检查。
 """
 
@@ -21,7 +23,7 @@ KEYS = (
     "link", "close", "close_hover",
     "opt_bg", "opt_fg", "opt_hover",
     "opt_ok_bg", "opt_ok_fg", "opt_bad_bg", "opt_bad_fg",
-    "dk_bg", "dk_hover", "dk_fg", "dk_pick", "dk_pick_fg",
+    "dk_bg", "dk_hover", "dk_pressed", "dk_fg", "dk_pick", "dk_pick_fg",
     "chip_bg", "chip_fg", "chip_hover", "chip_sel", "chip_sel_fg",
     "dock_bg", "dock_border", "dock_fg", "dock_hover",
     "chart_bg", "chart_grid", "chart_text", "chart_date", "chart_line",
@@ -44,7 +46,8 @@ THEMES = {
         "opt_bg": "#3c4655", "opt_fg": "#dee5ef", "opt_hover": "#465365",
         "opt_ok_bg": "#425950", "opt_ok_fg": "#d5e7dc",
         "opt_bad_bg": "#604c59", "opt_bad_fg": "#f0dae1",
-        "dk_bg": "#594f41", "dk_hover": "#655a49", "dk_fg": "#f0e1c4",
+        "dk_bg": "#566a81", "dk_hover": "#5d7188", "dk_pressed": "#4b6078",
+        "dk_fg": "#f6f8fb",
         "dk_pick": "#6d604d", "dk_pick_fg": "#f8edd7",
         "chip_bg": "#414d5d", "chip_fg": "#d3dce8", "chip_hover": "#4b586b",
         "chip_sel": "#52627a", "chip_sel_fg": "#edf2f8",
@@ -69,7 +72,8 @@ THEMES = {
         "opt_bg": "#eaf0f7", "opt_fg": "#34445b", "opt_hover": "#dce6f1",
         "opt_ok_bg": "#d5e4e3", "opt_ok_fg": "#355c5a",
         "opt_bad_bg": "#e8d7df", "opt_bad_fg": "#814d60",
-        "dk_bg": "#ece4d7", "dk_hover": "#e3d7c5", "dk_fg": "#705431",
+        "dk_bg": "#b7c8dd", "dk_hover": "#adbed6", "dk_pressed": "#a2b5ce",
+        "dk_fg": "#2e425d",
         "dk_pick": "#dcccb4", "dk_pick_fg": "#694d2c",
         "chip_bg": "#e4ebf4", "chip_fg": "#475d79", "chip_hover": "#d5e0ed",
         "chip_sel": "#cad9eb", "chip_sel_fg": "#355173",
@@ -94,7 +98,8 @@ THEMES = {
         "opt_bg": "#eee4d3", "opt_fg": "#624b34", "opt_hover": "#e6d8c0",
         "opt_ok_bg": "#e6d5af", "opt_ok_fg": "#684b22",
         "opt_bad_bg": "#e6cdc1", "opt_bad_fg": "#7c4333",
-        "dk_bg": "#e4dacb", "dk_hover": "#dacbb6", "dk_fg": "#654d34",
+        "dk_bg": "#cbbba2", "dk_hover": "#beab8d", "dk_pressed": "#b39e7c",
+        "dk_fg": "#45301a",
         "dk_pick": "#d4bf9e", "dk_pick_fg": "#644523",
         "chip_bg": "#e9dfce", "chip_fg": "#70563a", "chip_hover": "#e1d2b9",
         "chip_sel": "#dcc49b", "chip_sel_fg": "#65471f",
@@ -119,7 +124,8 @@ THEMES = {
         "opt_bg": "#f0f4ed", "opt_fg": "#3d5042", "opt_hover": "#e1eadd",
         "opt_ok_bg": "#cfdfd1", "opt_ok_fg": "#365c43",
         "opt_bad_bg": "#e1cfc5", "opt_bad_fg": "#754936",
-        "dk_bg": "#e5e2cf", "dk_hover": "#dad6be", "dk_fg": "#6a5934",
+        "dk_bg": "#b3c6af", "dk_hover": "#a9bda5", "dk_pressed": "#9eb39a",
+        "dk_fg": "#2b422e",
         "dk_pick": "#d1c9a8", "dk_pick_fg": "#5e4d2c",
         "chip_bg": "#dfe8dc", "chip_fg": "#49654e", "chip_hover": "#d2dfcf",
         "chip_sel": "#c7d8c6", "chip_sel_fg": "#35563f",
@@ -188,6 +194,7 @@ QPushButton#dontknow {
     border-radius: 12px;
 }
 QPushButton#dontknow:hover { background: %(dk_hover)s; }
+QPushButton#dontknow:pressed { background: %(dk_pressed)s; }
 QPushButton#dontknow[state="picked"] { background: %(dk_pick)s; color: %(dk_pick_fg)s; }
 QPushButton#plain {
     background: transparent; color: %(fg_sub)s; font-size: 15px;

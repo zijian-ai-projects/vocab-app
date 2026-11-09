@@ -3,7 +3,7 @@
 
 学习：自由节奏，先复习后新词；卡片上只有单词，点完才淡入释义。
 首次打开：先推荐做词汇量测试（也可以跳过，直接选词书开始学）。
-设置（⚙）：背景风格 / 词汇量测试入口与历史记录 / 词书与已学进度。
+设置（⚙）：背景 / 词汇量测试入口与历史记录 / 词书与已学进度。
 """
 import sys, os, io, json, time, copy, math, random, warnings, traceback
 
@@ -26,7 +26,8 @@ import storage
 from study_queue import StudyQueue, _count as _queue_count
 from windowing import WindowController
 from catalog import BookCatalog
-from entries import is_phrase, meaning as entry_meaning, pronunciation, memory_info
+from entries import is_phrase, meaning as entry_meaning, pronunciation, memory_info, word_caption
+import level_meanings
 import study_options
 from app_icon import application_icon, configure_application_icon, set_windows_app_id
 
@@ -39,7 +40,7 @@ LEGACY_PROGRESS_PATHS = tuple(os.path.join(directory, "progress.json")
                               for directory in storage.legacy_dirs(ROOT))
 LEGACY_WIN_PATHS = tuple(os.path.join(directory, "_win.json")
                          for directory in storage.legacy_dirs(ROOT))
-VERSION = "1.3.3"
+VERSION = "1.3.4"
 
 COMPACT_QSS = """
 QPushButton { font-size: 15px; padding: 4px 12px; border-radius: 12px; }
@@ -48,7 +49,7 @@ QPushButton#wrong { font-size: 14px; }
 """
 
 CARD_W, CARD_H = 520, 430
-# 设置里的常用窗口尺寸；恢复默认回到 520×430，仍受当前屏幕工作区限制。
+# 设置只显示常用窗口名称；内部几何尺寸仍受当前屏幕工作区限制。
 WINDOW_PRESETS = ((520, 430, "小巧"), (640, 520, "标准"), (760, 620, "大窗"))
 QUIZ_W, QUIZ_H = 520, 430
 COMPACT_W, COMPACT_H = 356, 196
@@ -62,6 +63,12 @@ MARGINS = ((22, 14, 22, 16), (14, 8, 14, 10))
 # 释义最多占 2 行（5556 词实测：大窗 476px 宽、小窗 312px 宽，都只到 2 行）。
 # 按行高留固定高度：翻面不跳位，长释义也不会被截掉。
 MEAN_LINES = 2
+
+
+def book_quantity(meta, total=None):
+    """所有民间词书统一显示实际成员数，不推算任何机构的词目配额。"""
+    total = meta.get("count", 0) if total is None else total
+    return "%s 词" % format(total, ",")
 
 
 def mean_h(i, scale=1.0):
@@ -416,6 +423,7 @@ class Card(QWidget):
         self.phrases = json.load(io.open(phrase_path, encoding="utf-8")) if os.path.exists(phrase_path) else []
         self.bank_map.update({x["w"]: x for x in self.phrases})
         self.all_entries = self.bank + self.phrases
+        self.level_meanings = level_meanings.load()
         self.bs = [x["b"] for x in self.bank]
         self.lvls = [x["lvl"] for x in self.bank]
         self.theta = self.progress.get("theta")
@@ -464,6 +472,7 @@ class Card(QWidget):
         self.storage_notices.extend(str(notice.message) for notice in notices)
         self.window_record = dict(saved_window)
         self.window_ctl.restore(saved_window, allow_compact=False)
+        self._refresh_window_controls()
         self._startup()                   # 首屏与尺寸都先确定，不闪默认学习卡片
         self._ready_for_close = True
         self._apply_scaling()
@@ -570,8 +579,56 @@ class Card(QWidget):
             return words or bk.words(gid)      # 系列失效时退回分组并集
         return bk.words(book_id)
 
+    def _book_level(self, book_id):
+        """按词书 / 分组 union / 教材系列伪 ID 的主分类返回学段。"""
+        if not book_id:
+            return None
+        gid, _series = parse_series_id(book_id)
+        if gid:
+            group = bk.GROUPS.get(gid) or {}
+            main = group.get("main")
+        else:
+            try:
+                main = bk.get(book_id).get("main")
+            except (KeyError, TypeError):
+                main = None
+        return level_meanings.stage_for_main(main)
+
     def _book_words(self, book_id):
-        return [self.bank_map[w] for w in self._book_word_strs(book_id) if w in self.bank_map]
+        """返回浅拷贝词条并附加学段释义；bank_map/稳定 w/学习状态绝不修改。"""
+        stage = self._book_level(book_id)
+        mapping = self.level_meanings.get(stage, {}) if stage else {}
+        return [level_meanings.decorate(self.bank_map[key], mapping)
+                for key in self._book_word_strs(book_id) if key in self.bank_map]
+
+    def _level_pool_entries(self, stage):
+        """该主分类（primary/middleschool）所有唯一成员的已适配词条。"""
+        mapping = self.level_meanings.get(stage, {})
+        seen = set()
+        entries = []
+        for group in bk.groups(stage):
+            for item in bk.items(group["id"]):
+                for key in bk.words(item["id"]):
+                    if key in seen or key not in self.bank_map:
+                        continue
+                    seen.add(key)
+                    entries.append(level_meanings.decorate(self.bank_map[key], mapping))
+        return entries
+
+    def _book_level_option_pool(self, book_id, stage):
+        """当前词书的学段释义池；不足时由调用方回退到同学段全分类池。"""
+        key = "__level_book__%s:%s" % (stage, book_id)
+        if key not in self._study_option_pools:
+            self._study_option_pools[key] = study_options.OptionPool(
+                self._book_words(book_id))
+        return self._study_option_pools[key]
+
+    def _level_option_pool(self, stage):
+        key = "__level__" + stage
+        if key not in self._study_option_pools:
+            self._study_option_pools[key] = study_options.OptionPool(
+                self._level_pool_entries(stage))
+        return self._study_option_pools[key]
 
     def _book_meta(self, book_id):
         """统一的词书显示信息：伪 id 不写进 books.py，显示名 / 路径在这里现算。"""
@@ -586,7 +643,9 @@ class Card(QWidget):
                 return {"id": book_id, "name": name, "display": name,
                         "count": len(series_union_words(gid, series)),
                         "path": [main["name"] if main else "", g["name"]],
-                        "group": gid, "series": series,
+                        "group": gid, "series": series, "main": g["main"],
+                        "source_status": "community_compilation", "source_version": "community",
+                        "source_note": "词表由民间整理；教材系列全选按现有成员首次出现去重。",
                         "is_union": False, "is_series": True}
         b = dict(bk.get(book_id))
         b["is_series"] = False
@@ -723,7 +782,7 @@ class Card(QWidget):
         self.window_ctl.set_compact(on, remember=True)
         self.compact = self.window_ctl.compact
         self._set_mode(self.mode)
-        self._save_window()
+        self._flush_window()
 
     def _ui_scale(self):
         if self.compact:
@@ -996,7 +1055,7 @@ class Card(QWidget):
         fb.setContentsMargins(0, 0, 0, 0)
         fb.setSpacing(10)
         self.btn_forget = QPushButton("不认识")
-        self.btn_forget.setObjectName("forget")
+        self.btn_forget.setObjectName("dontknow")
         self.btn_forget.clicked.connect(lambda: self.act("forget"))
         self.btn_remember = QPushButton("认识")
         self.btn_remember.setObjectName("remember")
@@ -1333,9 +1392,12 @@ class Card(QWidget):
         self._nav_labels.append(lbl)
 
     def _add_nav_item_row(self, it):
-        text = "%s　%s 词" % (it.get("display") or it["name"], format(it["count"], ","))
-        self._add_nav_row(text, it["id"],
-                          lambda _=False, bid=it["id"]: self._pick_book(bid), "book")
+        text = "%s　%s" % (it.get("display") or it["name"], book_quantity(it))
+        button = self._add_nav_row(text, it["id"],
+                                   lambda _=False, bid=it["id"]: self._pick_book(bid), "book")
+        note = it.get("source_note")
+        if isinstance(note, str) and note:
+            button.setToolTip(text + "\n" + note)
 
     def _build_nav_level(self):
         """按当前层级重建列表：1 主类 / 2 分组 / 3 词书 + 并集。"""
@@ -1420,7 +1482,7 @@ class Card(QWidget):
         layout.setContentsMargins(0, 2, 2, 6)
         layout.setSpacing(6)
 
-        layout.addWidget(self.reg(QLabel("背景风格"), "note", 12))
+        layout.addWidget(self.reg(QLabel("背景"), "note", 12))
         row = QHBoxLayout()
         row.setSpacing(8)
         self.theme_chips = {}
@@ -1441,7 +1503,7 @@ class Card(QWidget):
         sizes.setSpacing(6)
         self.size_chips = {}
         for width, height, name in WINDOW_PRESETS:
-            button = QPushButton("%s %d×%d" % (name, width, height))
+            button = QPushButton(name)
             button.setObjectName("chip")
             button.setCursor(Qt.PointingHandCursor)
             button.setMinimumHeight(30)
@@ -1449,13 +1511,17 @@ class Card(QWidget):
                                    self._apply_window_size(w, h))
             sizes.addWidget(button)
             self.size_chips[(width, height)] = button
-        self.btn_defaults = QPushButton("恢复默认")
-        self.btn_defaults.setObjectName("chip")
-        self.btn_defaults.setCursor(Qt.PointingHandCursor)
-        self.btn_defaults.setMinimumHeight(30)
-        self.btn_defaults.setToolTip("恢复窗口尺寸、主题和学习模式；不清空学习记录和测试历史")
-        self.btn_defaults.clicked.connect(self.restore_defaults)
-        sizes.addWidget(self.btn_defaults)
+        sizes.addSpacing(10)
+        self.btn_edge_collapse = QPushButton("贴边收起：开")
+        self.btn_edge_collapse.setObjectName("chip")
+        self.btn_edge_collapse.setCheckable(True)
+        self.btn_edge_collapse.setChecked(True)
+        self.btn_edge_collapse.setCursor(Qt.PointingHandCursor)
+        self.btn_edge_collapse.setMinimumHeight(30)
+        self.btn_edge_collapse.setToolTip(
+            "开启后，小巧窗口和刷词小窗靠边并移开鼠标时收起，悬停展开；关闭后不自动收起。")
+        self.btn_edge_collapse.clicked.connect(self._set_edge_collapse)
+        sizes.addWidget(self.btn_edge_collapse)
         sizes.addStretch(1)
         layout.addLayout(sizes)
         layout.addSpacing(6)
@@ -1521,9 +1587,33 @@ class Card(QWidget):
         self.root.addWidget(self.settings_page, 1)
         self.settings_page.hide()
 
+    def _refresh_window_controls(self):
+        if not hasattr(self, "window_ctl"):
+            return
+        size = self.window_ctl.normal_size
+        current = (size.width(), size.height())
+        for key, chip in self.size_chips.items():
+            chip.setProperty("on", "1" if key == current else "0")
+            chip.style().unpolish(chip)
+            chip.style().polish(chip)
+        enabled = self.window_ctl.edge_collapse_enabled
+        self.btn_edge_collapse.setChecked(enabled)
+        self.btn_edge_collapse.setText("贴边收起：开" if enabled else "贴边收起：关")
+        self.btn_edge_collapse.setProperty("on", "1" if enabled else "0")
+        self.btn_edge_collapse.style().unpolish(self.btn_edge_collapse)
+        self.btn_edge_collapse.style().polish(self.btn_edge_collapse)
+
+    def _set_edge_collapse(self, enabled):
+        if not self._can_act():
+            self._refresh_window_controls()
+            return
+        self.window_ctl.set_edge_collapse_enabled(bool(enabled))
+        self._flush_window()
+        self._refresh_window_controls()
+
     def _apply_window_size(self, width, height):
         self.window_ctl.set_normal_size(width, height)
-        self._save_window()
+        self._flush_window()
         self._refresh_settings()
 
     def set_study_mode(self, mode):
@@ -1540,7 +1630,7 @@ class Card(QWidget):
             self.study_engine.retry_gap = 3
         self.window_ctl.restore({}, allow_compact=False)
         self.set_theme(th.DEFAULT)
-        self._save_window()
+        self._flush_window()
         self._refresh_settings()
 
     # ---------- 主题 ----------
@@ -1628,8 +1718,8 @@ class Card(QWidget):
             btn.style().polish(btn)
         if self.sel_book:
             total = len(self._book_word_strs(self.sel_book))
-            self.lab_book_stat.setText("%s · %s 词" %
-                                       (self._book_path(self.sel_book), format(total, ",")))
+            self.lab_book_stat.setText("%s · %s" %
+                                       (self._book_path(self.sel_book), book_quantity(self._book_meta(self.sel_book), total)))
         else:
             self.lab_book_stat.clear()
         if self.mode == "books":
@@ -1738,13 +1828,7 @@ class Card(QWidget):
 
     # ---------- 设置内容 ----------
     def _refresh_settings(self):
-        if hasattr(self, "window_ctl"):
-            size = self.window_ctl.normal_size
-            current = (size.width(), size.height())
-            for key, chip in self.size_chips.items():
-                chip.setProperty("on", "1" if key == current else "0")
-                chip.style().unpolish(chip)
-                chip.style().polish(chip)
+        self._refresh_window_controls()
         for key, button in self.study_mode_chips.items():
             button.setProperty("on", "1" if key == self.study_mode else "0")
             button.style().unpolish(button)
@@ -1756,7 +1840,12 @@ class Card(QWidget):
         learned, _, _, total = self._stats()
         path = self._book_path(self.book_id)
         self.lab_book.setText(path or "未选择词书")
-        self.lab_book.setToolTip(path)
+        meta = self._book_meta(self.book_id) if self.book_id else {}
+        note = meta.get("source_note")
+        tooltip = [path, book_quantity(meta, total)] if self.book_id else []
+        if isinstance(note, str) and note:
+            tooltip.append(note)
+        self.lab_book.setToolTip("\n".join(tooltip))
         self.lab_book_num.setText("已学 %s / %s" % (format(learned, ","), format(total, ","))
                                   if self.book_id else "")
         hist = self.progress.get("history") or []
@@ -1917,24 +2006,38 @@ class Card(QWidget):
         _, level, _ = memory_info(word["w"], self.states, self.known)
         caption = "复习 · 记忆等级 %d" % level if item["kind"] == "review" else "新词" + (" · 重现" if item["kind"] == "retry" else "")
         self.status.setText(caption)
-        self.word.setText(word["w"])
+        self.word.setText(word_caption(word))
         self.ipa.setText(pronunciation(word))
         self.meaning.setText(entry_meaning(word))
         self.meaning.setTextFormat(Qt.PlainText)
         self.btn_next.setText("下一个  →")
         self.corrected = False
         if self.study_mode == "choice":
-            key = "phrase" if is_phrase(word) else "word"
-            if key not in self._study_option_pools:
-                self._study_option_pools[key] = study_options.OptionPool(self.phrases if key == "phrase" else self.bank)
-            try:
-                self.choice_question = study_options.make_options(word, self._study_option_pools[key], random)
-            except ValueError:
-                if "all" not in self._study_option_pools:
-                    self._study_option_pools["all"] = study_options.OptionPool(self.all_entries)
-                self.choice_question = study_options.make_options(word, self._study_option_pools["all"], random)
+            stage = self._book_level(self.book_id)
+            if stage:
+                try:
+                    self.choice_question = study_options.make_options(
+                        word, self._book_level_option_pool(self.book_id, stage), random)
+                except ValueError:
+                    # 当前书不足时只合并同一学段全部词书；绝不混入通用高级释义。
+                    self.choice_question = study_options.make_options(
+                        word, self._level_option_pool(stage), random)
+            else:
+                key = "phrase" if is_phrase(word) else "word"
+                if key not in self._study_option_pools:
+                    self._study_option_pools[key] = study_options.OptionPool(
+                        self.phrases if key == "phrase" else self.bank)
+                try:
+                    self.choice_question = study_options.make_options(
+                        word, self._study_option_pools[key], random)
+                except ValueError:
+                    if "all" not in self._study_option_pools:
+                        self._study_option_pools["all"] = study_options.OptionPool(
+                            self.all_entries)
+                    self.choice_question = study_options.make_options(
+                        word, self._study_option_pools["all"], random)
             self.choice_locked = False
-            self.choice_word.setText(word["w"])
+            self.choice_word.setText(word_caption(word))
             self.choice_ipa.setText(pronunciation(word))
             self.choice_ipa.setVisible(bool(self.choice_ipa.text()))
             for index, button in enumerate(self.study_btns):
@@ -2364,7 +2467,13 @@ class Card(QWidget):
     def _quiz_show(self):
         item = self.quiz_items[self.quiz_i]
         w = self.bank[item["idx"]]
-        self.quiz_word.setText(w["w"])
+        if not w.get("display_w"):
+            # 显示拼写可能来自当前词书的浅拷贝（通用 bank 仍保留稳定 w）。
+            for candidate in (getattr(self, "book_words", ()) or ()):
+                if candidate.get("w") == w.get("w") and candidate.get("display_w"):
+                    w = candidate
+                    break
+        self.quiz_word.setText(word_caption(w))
         self._quiz_status()
         for i, b in enumerate(self.opt_btns):
             b.setText("%s  %s" % (LETTERS[i], item["opts"][i]))

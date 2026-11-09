@@ -74,6 +74,11 @@ def _build(data):
                 "group": gid,
                 "main": m["id"],
                 "path": [m["name"], g["name"]],
+                "source_status": "community_compilation",
+                "source_version": "community",
+                "count_rule": "ordered_unique_first_occurrence_union",
+                "official_entry_count": None,
+                "source_note": "词表由民间整理；分组全选按现有成员首次出现去重。",
             }
             books[union_book["id"]] = union_book
             items = []
@@ -92,6 +97,13 @@ def _build(data):
                     "main": m["id"],
                     "path": [m["name"], g["name"]],
                 }
+                b.update({
+                    "source_status": "community_compilation",
+                    "source_version": "community",
+                    "count_rule": "existing_ordered_membership",
+                    "official_entry_count": None,
+                    "source_note": "词表由民间整理；保留原始成员与顺序。",
+                })
                 books[b["id"]] = b
                 items.append(b)
             series = []
@@ -174,3 +186,25 @@ def name(book_id):
 def path(book_id):
     b = get(book_id)
     return " · ".join(b["path"] + [b["display"]])
+
+
+def source_info(book_id):
+    """Return the uniform community-compilation description for a book."""
+    book = get(book_id)
+    return {
+        "status": "community_compilation",
+        "version": "community",
+        "study_count": book["count"],
+        "official_entry_count": None,
+        "count_basis": ("ordered_unique_first_occurrence_union"
+                        if book.get("is_union") else "existing_ordered_membership"),
+        "source_ids": [],
+        "sources": [],
+        "note": book.get("source_note") or "词表由民间整理。",
+    }
+
+
+def source_rows(book_id):
+    """No official/canonical rows are shipped for community word lists."""
+    get(book_id)  # keep invalid-id behavior consistent with the other helpers
+    return []

@@ -256,6 +256,36 @@ check(not c.animating and c.collapsed, "update_palette 中断动画并落定")
 check(c.theme["dock_bg"] == "#334455", "update_palette 记录新主题")
 w.close()
 
+# 4b. 收/展动画中关闭 edge_collapse → 立即完整展开、释放 overlay/hover
+w, c = new_ctl()
+dock_small(c, "left")
+c.update_palette(theme())
+c._collapse_if_docked(force=True, immediate=False)
+pump(0.03)
+c.set_edge_collapse_enabled(False)
+check(not c.animating and c.can_persist_geometry,
+      "收起动画中关闭 edge_collapse 立即落定")
+check(not c.collapsed and w.size() == QSize(520, 430),
+      "收起动画中关闭后完整展开 520×430")
+check(c._dock_overlay is None and not c._hover_timer.isActive(),
+      "关闭后 overlay 释放、hover timer 停止")
+check(c.state()["edge_collapse"] is False, "state edge_collapse=False")
+w.close()
+
+w, c = new_ctl()
+dock_small(c, "right")
+c.update_palette(theme())
+c._collapse_if_docked(force=True, immediate=False)
+wait_anim(c)
+c.reveal(immediate=False)
+pump(0.03)
+c.set_edge_collapse_enabled(False)
+check(not c.animating and not c.collapsed,
+      "展开动画中关闭 edge_collapse 立即完整展开")
+check(w.size() == QSize(520, 430), "展开动画中关闭后尺寸 520×430")
+check(c._dock_overlay is None, "展开动画中关闭后无 overlay")
+w.close()
+
 # 5. close/stop_timers 中断；paint fallback；640/760 不自动收
 w, c = new_ctl()
 dock_small(c, "left")

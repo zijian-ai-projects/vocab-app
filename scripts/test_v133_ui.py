@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 import test_v130_ui as base
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt
-from PyQt5.QtGui import QColor, QImage
+from PyQt5.QtGui import QColor, QCursor, QImage
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QMessageBox
 
@@ -159,6 +159,13 @@ class V133Suite(base.Suite):
         self.check(w.states == {} and w.orders[base.BOOK]["seed"] == 42, "两次改序不伪造记忆状态、不重新洗牌")
 
     def dock_ui(self):
+        original_cursor = QCursor.pos()
+        try:
+            self._dock_ui_with_cursor()
+        finally:
+            QCursor.setPos(original_cursor)
+
+    def _dock_ui_with_cursor(self):
         w = self.card()
         c = w.window_ctl
         area = base.APP.primaryScreen().availableGeometry()
@@ -168,12 +175,22 @@ class V133Suite(base.Suite):
                 c.restore({"normal_w": 520, "normal_h": 430, "normal_x": area.left() + 100,
                            "normal_y": area.top() + 100, "dock_edge": edge})
                 w._set_mode("front")
+                QTest.qWait(20)
+                # Native window restoration can queue Enter/Leave after a warp.
+                # Park only after restoring; this corner is outside every test rect.
+                QCursor.setPos(area.bottomRight() - QPoint(20, 20))
+                QTest.qWait(20)
                 c.stop_timers()
                 c._hover_inside = False
                 w._window_save_timer.stop()
                 before = deepcopy(c.state())
                 sig = w._scale_signature
-                self.check(c.theme == w.t, theme_key + "启动/切换后controller主题一致")
+                pointer = QCursor.pos()
+                self.out.append("POINTER %s/%s theme_equal=%s cursor=%s frame=%s" %
+                                (theme_key, edge, c.theme == w.t,
+                                 (pointer.x(), pointer.y()), w.frameGeometry().getRect()))
+                self.check(c.theme == w.t and not c._cursor_inside(),
+                           theme_key + "controller主题一致且真实鼠标停在窗外")
                 self.check(c._collapse_if_docked(force=True, immediate=False), edge + "启动缓动收起")
                 QTest.qWait(30)
                 self.check(c.animating and not c.can_persist_geometry, edge + "中间帧仍在动画中")

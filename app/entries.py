@@ -7,12 +7,26 @@ CATEGORIES = (("all", "全部"), ("mastered", "已掌握"),
 POS_RE = re.compile(r"^(?:n|v|vt|vi|adj|adv|prep|conj|pron|det|art|num|aux|int|interj|abbr)\.")
 
 
+def word_caption(entry):
+    """显示拼写与稳定记忆 key 分离（如显示 I，而学习 key 仍是 i）。"""
+    value = entry.get("display_w")
+    return value if isinstance(value, str) and value.strip() else entry["w"]
+
+
 def is_phrase(entry):
     return entry.get("type") == "phrase" or bool(re.search(r"\s", entry.get("w", "")))
 
 
 def meaning(entry):
-    text = (entry.get("s") or entry.get("raw") or "").strip()
+    # 学段覆盖：display_s / level_s 优先；空串/非字符串一律回退通用 s/raw。
+    text = ""
+    for field in ("display_s", "level_s"):
+        value = entry.get(field)
+        if isinstance(value, str) and value.strip():
+            text = value.strip()
+            break
+    if not text:
+        text = (entry.get("s") or entry.get("raw") or "").strip()
     pos = entry.get("pos") or []
     if isinstance(pos, str):
         pos = [pos]

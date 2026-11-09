@@ -17,6 +17,7 @@ sys.dont_write_bytecode = True
 APP = Path(__file__).resolve().parents[1] / "app"
 sys.path.insert(0, str(APP))
 import placement as pl
+from entries import word_caption
 
 
 NOW = 1000000
@@ -127,7 +128,7 @@ def make_subject(session=True, answered=False, index=0, count=1, history_count=1
                  baseline=True, theta=0.75, book_confirmed=False, record=None):
     store = MemoryStorage()
     dialogs = []
-    namespace = dict(copy=copy, random=random, pl=pl, storage=store, QUIZ_N=50,
+    namespace = dict(copy=copy, random=random, pl=pl, word_caption=word_caption, storage=store, QUIZ_N=50,
                      LETTERS="ABCD", VERSION="1.3.0", SKIP_SNOOZE=86400,
                      PROGRESS_PATH="memory://quiz-progress",
                      time=types.SimpleNamespace(time=lambda: NOW),
@@ -307,6 +308,21 @@ class QuizTransactionTests(unittest.TestCase):
             self.assertEqual(subject.btn_skip.text, "重试保存并继续")
             self.assertTrue(subject.btn_skip.visible)
         return before
+
+    def test_quiz_caption_is_optional_and_never_changes_identity(self):
+        subject = make_subject()
+        before = payload(subject)
+        bank_before = copy.deepcopy(subject.bank)
+        self.assertFalse(hasattr(subject, "book_words"))
+        self.assertEqual(subject.quiz_word.text, subject.bank[0]["w"])
+        subject.book_words = [dict(subject.bank[0], display_w="Visible Caption")]
+        subject._quiz_show()
+        self.assertEqual(subject.quiz_word.text, "Visible Caption")
+        subject.book_words = None
+        subject._quiz_show()
+        self.assertEqual(subject.quiz_word.text, subject.bank[0]["w"])
+        self.assertEqual(subject.bank, bank_before)
+        self.assertEqual(payload(subject), before)
 
     def test_plain_ast_subject_has_no_widget_constructor(self):
         subject = make_subject()

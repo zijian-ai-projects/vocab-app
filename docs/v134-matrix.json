@@ -1,0 +1,30 @@
+{
+  "version": "1.3.4",
+  "all_passed": true,
+  "successful_processes": 35,
+  "component_processes": 24,
+  "unittest_cases": 257,
+  "offscreen_ui_checks": 1302,
+  "native_ui_checks": 1314,
+  "launcher_scenarios": 4,
+  "compact_native_passed": true,
+  "protected_real_paths": 36,
+  "real_records_still_unchanged": true,
+  "same_frozen_source_across_all_groups": true,
+  "source_still_unchanged": true,
+  "source_and_provenance_files_frozen": 133,
+  "community_wordlists_preserved": true,
+  "school_meanings": {
+    "primary": 1478,
+    "middleschool": 4007
+  },
+  "school_ui_checks": 299,
+  "groups": {
+    "pure": "final-v134-pure-3lyli35r",
+    "ui": "final-v134-ui-q76mm_zr",
+    "native-ui": "final-v134-native-ui-y5wgr3z3",
+    "launcher": "final-v134-launcher-m8c2psxr",
+    "compact": "final-v134-compact-emj9osxg"
+  },
+  "scope_note": "All word and phrase books are community compilations. V1.3.3 bank, members and order are preserved; no official-list audit was performed. School meanings are source-backed display overlays, not new keys or dictionary replacements."
+}
