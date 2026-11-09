@@ -324,6 +324,17 @@ class QuizTransactionTests(unittest.TestCase):
         self.assertEqual(subject.bank, bank_before)
         self.assertEqual(payload(subject), before)
 
+    def test_school_caption_never_leaks_into_general_measurement(self):
+        subject = make_subject()
+        before = payload(subject)
+        bank_before = copy.deepcopy(subject.bank)
+        subject.book_words = [dict(subject.bank[0], display_w="School Name",
+                                   display_s="n.学校人名", _school_caption=True)]
+        subject._quiz_show()
+        self.assertEqual(subject.quiz_word.text, subject.bank[0]["w"])
+        self.assertEqual(subject.bank, bank_before)
+        self.assertEqual(payload(subject), before)
+
     def test_plain_ast_subject_has_no_widget_constructor(self):
         subject = make_subject()
         self.assertEqual(type(subject).__bases__, (object,))

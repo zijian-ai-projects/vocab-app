@@ -1,0 +1,34 @@
+  OK   进入 Sandbox 后真实记录指纹未变
+      REAL_FINGERPRINT protected=12
+  OK   默认目标缺失时真实 Card 完成 progress/_win 迁移
+  OK   迁移 history 完整 >=60 条：60
+  OK   迁移 history 内容逐条保留
+  OK   迁移保留未知 progress 扩展字段
+  OK   迁移保留未知 window 扩展字段
+  OK   迁移后固定 retry_gap=3（源=5）
+  OK   既有 memory_schema=2 兼容保留
+  OK   Card 内存 progress 保留完整 60+ history
+  OK   打开设置（仅显示最近5条）后 progress history 未截断：60
+  OK   旧 source 及其 .bak/.tmp sidecars 字节未变
+  OK   关闭后目标历史仍完整
+  OK   关闭后目标未知字段仍在
+  OK   已有 target wins：目标 history=70 不被旧源覆盖（实际 70）
+  OK   已有 target 的未知字段保留
+  OK   已有 target 不导入 legacy 扩展字段
+  OK   已有 target window 未知字段保留
+  OK   已有 target 时旧 source/sidecars 字节未变
+  OK   关闭后 target 扩展/完整 history 保持
+  OK   关闭后旧 source/sidecars 仍字节未变
+  OK   override 时不导入 legacy progress
+  OK   override 时不导入 legacy window
+  OK   override 时旧 source/sidecars 字节未变
+  OK   override 关闭后旧 source/sidecars 仍字节未变
+  OK   storage.paths(fake_root) -> fake_plugin/data
+  OK   legacy_dirs 排除当前 target
+  OK   legacy_dirs 候选来自 fake 旧目录：['D:\\user\\Documents\\deepseek-harness\\default-workspace\\.vocab-ui-tests\\plugin-records-sandbox-7wrgoi54\\fake_local\\VocabApp', 'D:\\user\\Documents\\deepseek-harness\\default-workspace\\.vocab-ui-tests\\plugin-records-sandbox-7wrgoi54\\fake_appdata\\VocabApp', 'D:\\user\\Documents\\deepseek-harness\\default-workspace\\.vocab-ui-tests\\plugin-records-sandbox-7wrgoi54\\fake_home\\AppData\\Local\\VocabApp']
+  OK   VOCABAPP_DATA_DIR override -> sandbox paths
+  OK   override 时 legacy_dirs 候选为空
+  OK   真实 records 指纹（含恢复文件）未变：[]
+      FINGERPRINT protected=12 unchanged=True
+
+全部通过 ✓

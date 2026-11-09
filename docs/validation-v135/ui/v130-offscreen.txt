@@ -1,0 +1,45 @@
+FT_New_Face failed with index 0 : 2
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-offscreen-out-j7o2grlt\v130-quiz-wrapped.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-offscreen-out-j7o2grlt\v130-settings-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-offscreen-out-j7o2grlt\v130-choice.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-offscreen-out-j7o2grlt\v130-phrase-compact.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-offscreen-out-j7o2grlt\v130-catalog.png
+WROTE 688 LINES; FAILS 0
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-offscreen-out-j7o2grlt\test_v130_ui.txt
+V130 CHECKS 606 FAILS 0

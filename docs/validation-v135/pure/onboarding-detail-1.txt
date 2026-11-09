@@ -1,0 +1,132 @@
+  OK   fresh Card 创建后即为 welcome（未先闪学习页），实际 welcome
+  OK   fresh book_id is None，实际 None
+  OK   fresh sel_book is None，实际 None
+  OK   show 前 queue 未被预拉：[]
+  OK   show 前 queue_words 为空：[]
+  OK   fresh book_words 为空：[]
+  OK   fresh progress 里没有 book：None
+  OK   fresh progress 里没有 book_confirmed
+  OK   fresh welcome_done 未提前写成 True：False
+  OK   首次创建用 show 拦截，检查的是 show 前状态
+  OK   第一次 show 的瞬间就是 welcome，实际 'welcome'
+  OK   第一次 show 时 book_id=None，实际 None
+  OK   第一次 show 时 queue 长度 0，实际 0
+  OK   第一次 show 时 queue_words 长度 0，实际 0
+  OK   show 前学习区不可见
+  OK   show 前没有预填单词：''
+  OK   show 前欢迎页已设为当前页
+  OK   show 后仍停在欢迎页，实际 welcome
+  OK   不测了 -> books 第 1 级，实际 books/1
+  OK   首次选书 sel_book is None，实际 None
+  OK   首次选书「开始」按钮禁用
+  OK   首次选书按钮文案统一「用这本开始」：'用这本开始'
+  OK   选书页顶部不再显示统计：''
+  OK   首次选书没有任何行处于选中态
+  OK   返回槽固定 22×20：(22, 20)
+  OK   初次主分类返回图标隐藏
+  OK   标题字号 15px，实际 15
+  OK   初始标题几何 = (54,14)，实际 (54, 14)
+  OK   窗口 520×430，实际 (520, 430)
+  OK   无选择时点开始不进入学习、不写 book_confirmed
+  OK   初次主分类 _page_back 不退出
+  OK   初次主分类 Esc 不退出
+  OK   初次主分类点隐藏返回槽不退出
+  OK   第 2 级有返回图标
+  OK   回到初次主分类后返回图标再次隐藏
+  OK   settings 入口 -> books 第 1 级
+  OK   settings 入口主分类返回图标可见
+  OK   settings 入口返回槽 22×20 仍占位
+  OK   settings 入口标题几何 = (54,14)，实际 (54, 14)
+  OK   settings 入口标题仍 15px，实际 15
+  OK   settings 入口窗口 520×430，实际 (520, 430)
+  OK   settings 入口主分类返回 -> 设置页，实际 settings
+  OK   点选词书：cet4-dg
+  OK   选中后开始按钮启用
+  OK   选中后按钮仍统一「用这本开始」：'用这本开始'
+  OK   选中行恰好一个高亮
+  OK   只点选不写 book_confirmed
+  OK   只点选不写 progress[book]：None
+  OK   未确认关闭重启 -> 选书页第 1 级，实际 books/1
+  OK   重启后仍没有默认选中
+  OK   重启后开始按钮仍禁用
+  OK   重启后仍无 book_confirmed
+  OK   点「用这本开始」-> 学习页，实际 front
+  OK   确认后 book_id = cet4-dg，实际 'cet4-dg'
+  OK   确认后 progress[book_confirmed]=True
+  OK   确认后 progress[book]=cet4-dg，实际 'cet4-dg'
+  OK   确认后学习队列/当前词已就绪
+  OK   已确认用户重启直接进学习页，实际 front
+  OK   已确认用户重启保留上次书：'cet4-dg'
+  OK   重启后 book_confirmed 保留
+  OK   首次引导点测试 -> quiz，实际 quiz
+  OK   中断时保存 quiz_session
+  OK   重启后优先续测，实际 quiz
+  OK   已答第三题续测到未答第四题且不重复评分：i=3 / resp=3
+  OK   续测不会重新显示已经提交的第三题
+  OK   续测时仍无已确认书
+  OK   首测跳过 -> 空选书页第 1 级，实际 books/1
+  OK   首测跳过后不默认选书
+  OK   首测跳过后未确认书
+  OK   首测跳过关闭重启 -> 仍在选书页，实际 books
+  OK   首测完成 -> 结果页，实际 result
+  OK   首测完成继续 -> 空选书页，实际 books/1
+  OK   首测完成后不默认选书
+  OK   首测完成不写 book_confirmed
+  OK   首测完成重启 -> 选书页，实际 books
+  OK   已确认用户可进设置
+  OK   设置页不存在「已掌握 / 测试判定已会」：背景 | 窗口 | 学习模式 | 词书 | 大学 · 四级 · 四级大纲英语词汇 | 已学 1 / 4,074 | 词汇量测试 | 上次 ≈ 5,000 词（2026-11-08） | 历史记录（点一条看结果，完整历史保留） | V1.3.5
+  OK   设置页保留已学/总：已学 1 / 4,074
+  OK   老用户设置页保留上次书路径：大学 · 四级 · 四级大纲英语词汇
+  OK   首次无书设置页显示「未选择词书」：'未选择词书'
+  OK   首次无书设置页词数行留空：''
+  OK   设置页不存在「已掌握 / 测试判定已会」：背景 | 窗口 | 学习模式 | 词书 | 未选择词书 |  | 词汇量测试 | 还没测过 | 历史记录（点一条看结果，完整历史保留） | 暂无记录 | V1.3.5
+  OK   fresh 无书也能打开设置页，实际 settings
+  OK   空书 _book_path(None) 返回空串
+  OK   空书设置页显示「未选择词书」：'未选择词书'
+  OK   空书设置页已学/总留空：''
+  OK   空书主题刷新（亮色）不报错且保持空态
+  OK   空书主题刷新（暗色）不报错且保持空态
+  OK   空书主题刷新（米黄）不报错且保持空态
+  OK   空书主题刷新（护眼绿）不报错且保持空态
+  OK   空书主题刷新后仍在设置页
+  OK   设置入口进入选书页
+  OK   已确认用户选书页顶部也无统计：''
+  OK   设置入口主分类返回可见
+  OK   进入选书页按钮就是「用这本开始」：'用这本开始'
+  OK   换选另一本后仍是「用这本开始」：'用这本开始'
+  OK   换选后开始按钮可用
+  OK   v1.1 有 states 的旧进度迁移 -> 学习页，实际 front
+  OK   旧 book cet6 -> cet6-all，实际 'cet6-all'
+  OK   有证据旧进度迁移为 book_confirmed=True
+  OK   设置页不存在「已掌握 / 测试判定已会」：背景 | 窗口 | 学习模式 | 词书 | 大学 · 六级 · 六级词汇大全 | 已学 1 / 8,470 | 词汇量测试 | 上次 ≈ 5,000 词（2026-11-08） | 历史记录（点一条看结果，完整历史保留） | V1.3.5
+  OK   纯历史/默认六级占位旧记录 -> 待选书（不误迁移），实际 books
+  OK   占位旧记录进选书页后无默认选择、按钮禁用
+  OK   占位旧记录不写 book_confirmed
+  OK   cet6-dg 占位（history=0 条）-> 待选书，实际 books
+  OK   cet6-dg 占位迁移后 book_id=None，实际 None
+  OK   cet6-dg 占位进选书页后空选择、按钮禁用
+  OK   cet6-dg 占位不写 book/book_confirmed
+  OK   cet6-dg 占位（history=1 条）-> 待选书，实际 books
+  OK   cet6-dg 占位迁移后 book_id=None，实际 None
+  OK   cet6-dg 占位进选书页后空选择、按钮禁用
+  OK   cet6-dg 占位不写 book/book_confirmed
+  OK   非默认已保存书的旧进度 -> 学习页，实际 front
+  OK   非默认旧书保留：'cet4-dg'
+  OK   系列伪 id 已确认进度 -> 学习页，实际 front
+  OK   系列伪 id 保留：'series:gz-text:人教版'
+  OK   系列伪 id 设置页路径：高中 · 高中教材 · 人教版 · 本版本全选
+  OK   无 welcome_done 但有 states 的旧进度 -> 学习页，实际 front
+  OK   迁移补 welcome_done=True
+  OK   迁移补 book_confirmed=True
+  OK   --nottest 下首次打开仍进欢迎页，实际 welcome
+  OK   --nottest 下已确认用户不自动弹周期测试，实际 front
+  OK   去掉 --nottest 后超过 30 天自动弹测试，实际 quiz
+  OK   存在 back_slot 返回槽属性
+  OK   back_slot 尺寸 22×20：(22, 20)
+  OK   初次主分类返回槽本身仍占位可见
+  OK   标题字号 15px：15
+  OK   第 1/2 级标题 x 一致：54 vs 54
+  OK   第 2 级返回图标可见
+  OK   真实 data/progress.json 与 _win.json 存在性未变
+
+全部通过 ✓

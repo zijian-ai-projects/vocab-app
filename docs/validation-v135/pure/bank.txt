@@ -1,0 +1,1 @@
+BANK CHECK: checks=1051 fails=0 (read-only)

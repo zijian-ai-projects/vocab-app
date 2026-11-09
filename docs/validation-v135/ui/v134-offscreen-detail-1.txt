@@ -1,0 +1,501 @@
+PLATFORM offscreen
+VERSION 1.3.5
+
+=== settings-light ===
+OK   settings-light | light保存的关闭偏好与可勾选设置立即同步
+OK   settings-light | 开关明确显示关闭状态
+OK   settings-light | 标题为背景
+OK   settings-light | 恢复默认控件不存在而非仅隐藏
+OK   settings-light | 窗口预设只显示名称
+OK   settings-light | 窗口控件文字与提示不暴露尺寸数字
+OK   settings-light | 三个预设与贴边开关在同一行
+OK   settings-light | 窗口行没有横向截断
+OK   settings-light | 鼠标点击开启并刷新chip状态
+OK   settings-light | 保存开关并保留未知窗口字段
+OK   settings-light | 开关不改学习进度、历史、模式或记录字节
+OK   settings-light | 空格键也可关闭开关
+OK   settings-light | states/progress/engine 保持同一共享 dict
+OK   settings-light | record/progress/engine 保持同一共享 dict
+OK   settings-light | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== dontknow-light ===
+OK   dontknow-light | light三处控件共用同一语义样式
+OK   dontknow-light | light三处文字使用相同DK前景色
+OK   dontknow-light | light三处控件共用同一语义样式
+OK   dontknow-light | light三处文字使用相同DK前景色
+OK   dontknow-light | light三处控件共用同一语义样式
+OK   dontknow-light | light三处文字使用相同DK前景色
+OK   dontknow-light | 不认识背景与页面背景不同
+OK   dontknow-light | DK包含正常、悬停、按下及文字色
+OK   dontknow-light | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== settings-dark ===
+OK   settings-dark | dark保存的关闭偏好与可勾选设置立即同步
+OK   settings-dark | 开关明确显示关闭状态
+OK   settings-dark | 标题为背景
+OK   settings-dark | 恢复默认控件不存在而非仅隐藏
+OK   settings-dark | 窗口预设只显示名称
+OK   settings-dark | 窗口控件文字与提示不暴露尺寸数字
+OK   settings-dark | 三个预设与贴边开关在同一行
+OK   settings-dark | 窗口行没有横向截断
+OK   settings-dark | 鼠标点击开启并刷新chip状态
+OK   settings-dark | 保存开关并保留未知窗口字段
+OK   settings-dark | 开关不改学习进度、历史、模式或记录字节
+OK   settings-dark | 空格键也可关闭开关
+OK   settings-dark | states/progress/engine 保持同一共享 dict
+OK   settings-dark | record/progress/engine 保持同一共享 dict
+OK   settings-dark | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== dontknow-dark ===
+OK   dontknow-dark | dark三处控件共用同一语义样式
+OK   dontknow-dark | dark三处文字使用相同DK前景色
+OK   dontknow-dark | dark三处控件共用同一语义样式
+OK   dontknow-dark | dark三处文字使用相同DK前景色
+OK   dontknow-dark | dark三处控件共用同一语义样式
+OK   dontknow-dark | dark三处文字使用相同DK前景色
+OK   dontknow-dark | 不认识背景与页面背景不同
+OK   dontknow-dark | DK包含正常、悬停、按下及文字色
+OK   dontknow-dark | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== settings-sepia ===
+OK   settings-sepia | sepia保存的关闭偏好与可勾选设置立即同步
+OK   settings-sepia | 开关明确显示关闭状态
+OK   settings-sepia | 标题为背景
+OK   settings-sepia | 恢复默认控件不存在而非仅隐藏
+OK   settings-sepia | 窗口预设只显示名称
+OK   settings-sepia | 窗口控件文字与提示不暴露尺寸数字
+OK   settings-sepia | 三个预设与贴边开关在同一行
+OK   settings-sepia | 窗口行没有横向截断
+OK   settings-sepia | 鼠标点击开启并刷新chip状态
+OK   settings-sepia | 保存开关并保留未知窗口字段
+OK   settings-sepia | 开关不改学习进度、历史、模式或记录字节
+OK   settings-sepia | 空格键也可关闭开关
+OK   settings-sepia | states/progress/engine 保持同一共享 dict
+OK   settings-sepia | record/progress/engine 保持同一共享 dict
+OK   settings-sepia | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== dontknow-sepia ===
+OK   dontknow-sepia | sepia三处控件共用同一语义样式
+OK   dontknow-sepia | sepia三处文字使用相同DK前景色
+OK   dontknow-sepia | sepia三处控件共用同一语义样式
+OK   dontknow-sepia | sepia三处文字使用相同DK前景色
+OK   dontknow-sepia | sepia三处控件共用同一语义样式
+OK   dontknow-sepia | sepia三处文字使用相同DK前景色
+OK   dontknow-sepia | 不认识背景与页面背景不同
+OK   dontknow-sepia | DK包含正常、悬停、按下及文字色
+OK   dontknow-sepia | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== settings-green ===
+OK   settings-green | green保存的关闭偏好与可勾选设置立即同步
+OK   settings-green | 开关明确显示关闭状态
+OK   settings-green | 标题为背景
+OK   settings-green | 恢复默认控件不存在而非仅隐藏
+OK   settings-green | 窗口预设只显示名称
+OK   settings-green | 窗口控件文字与提示不暴露尺寸数字
+OK   settings-green | 三个预设与贴边开关在同一行
+OK   settings-green | 窗口行没有横向截断
+OK   settings-green | 鼠标点击开启并刷新chip状态
+OK   settings-green | 保存开关并保留未知窗口字段
+OK   settings-green | 开关不改学习进度、历史、模式或记录字节
+OK   settings-green | 空格键也可关闭开关
+OK   settings-green | states/progress/engine 保持同一共享 dict
+OK   settings-green | record/progress/engine 保持同一共享 dict
+OK   settings-green | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== dontknow-green ===
+OK   dontknow-green | green三处控件共用同一语义样式
+OK   dontknow-green | green三处文字使用相同DK前景色
+OK   dontknow-green | green三处控件共用同一语义样式
+OK   dontknow-green | green三处文字使用相同DK前景色
+OK   dontknow-green | green三处控件共用同一语义样式
+OK   dontknow-green | green三处文字使用相同DK前景色
+OK   dontknow-green | 不认识背景与页面背景不同
+OK   dontknow-green | DK包含正常、悬停、按下及文字色
+OK   dontknow-green | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== preference-restart-False ===
+OK   preference-restart-False | 首次show前同步已保存偏好False
+OK   preference-restart-False | 显式变更保存bool而非字符串
+OK   preference-restart-False | 重启恢复变更后的偏好
+OK   preference-restart-False | 重启不丢未知字段
+OK   preference-restart-False | 偏好切换不修改正常尺寸
+OK   preference-restart-False | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== preference-restart-True ===
+OK   preference-restart-True | 首次show前同步已保存偏好True
+OK   preference-restart-True | 显式变更保存bool而非字符串
+OK   preference-restart-True | 重启恢复变更后的偏好
+OK   preference-restart-True | 重启不丢未知字段
+OK   preference-restart-True | 偏好切换不修改正常尺寸
+OK   preference-restart-True | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== legacy-preference ===
+OK   legacy-preference | 旧记录/非法类型保守保留开启：'missing'
+OK   legacy-preference | 保存时修正为实际bool：'missing'
+OK   legacy-preference | 旧记录/非法类型保守保留开启：None
+OK   legacy-preference | 保存时修正为实际bool：None
+OK   legacy-preference | 旧记录/非法类型保守保留开启：'false'
+OK   legacy-preference | 保存时修正为实际bool：'false'
+OK   legacy-preference | 旧记录/非法类型保守保留开启：0
+OK   legacy-preference | 保存时修正为实际bool：0
+OK   legacy-preference | 旧记录/非法类型保守保留开启：1
+OK   legacy-preference | 保存时修正为实际bool：1
+OK   legacy-preference | 旧记录/非法类型保守保留开启：[]
+OK   legacy-preference | 保存时修正为实际bool：[]
+OK   legacy-preference | 旧记录/非法类型保守保留开启：{}
+OK   legacy-preference | 保存时修正为实际bool：{}
+OK   legacy-preference | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-False-collapse-left ===
+POINTER compact=False phase=collapse edge=left cursor=(779, 579) frame=(0, 100, 520, 430)
+OK   toggle-False-collapse-left | 真实鼠标停在窗外并启动收起动画
+OK   toggle-False-collapse-left | 中间帧锁定几何保存
+OK   toggle-False-collapse-left | 关闭偏好立即完整展开并停止动画
+OK   toggle-False-collapse-left | 解除保存锁、释放快照并停止hover计时
+OK   toggle-False-collapse-left | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-False-collapse-left | force也不能绕过关闭设置
+OK   toggle-False-collapse-left | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-False-collapse-left | 重新开启后仍支持正常靠边收起
+OK   toggle-False-collapse-left | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-False-collapse-right ===
+POINTER compact=False phase=collapse edge=right cursor=(779, 579) frame=(280, 100, 520, 430)
+OK   toggle-False-collapse-right | 真实鼠标停在窗外并启动收起动画
+OK   toggle-False-collapse-right | 中间帧锁定几何保存
+OK   toggle-False-collapse-right | 关闭偏好立即完整展开并停止动画
+OK   toggle-False-collapse-right | 解除保存锁、释放快照并停止hover计时
+OK   toggle-False-collapse-right | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-False-collapse-right | force也不能绕过关闭设置
+OK   toggle-False-collapse-right | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-False-collapse-right | 重新开启后仍支持正常靠边收起
+OK   toggle-False-collapse-right | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-False-collapse-top ===
+POINTER compact=False phase=collapse edge=top cursor=(779, 579) frame=(100, 0, 520, 430)
+OK   toggle-False-collapse-top | 真实鼠标停在窗外并启动收起动画
+OK   toggle-False-collapse-top | 中间帧锁定几何保存
+OK   toggle-False-collapse-top | 关闭偏好立即完整展开并停止动画
+OK   toggle-False-collapse-top | 解除保存锁、释放快照并停止hover计时
+OK   toggle-False-collapse-top | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-False-collapse-top | force也不能绕过关闭设置
+OK   toggle-False-collapse-top | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-False-collapse-top | 重新开启后仍支持正常靠边收起
+OK   toggle-False-collapse-top | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-False-collapse-bottom ===
+POINTER compact=False phase=collapse edge=bottom cursor=(779, 579) frame=(100, 170, 520, 430)
+OK   toggle-False-collapse-bottom | 真实鼠标停在窗外并启动收起动画
+OK   toggle-False-collapse-bottom | 中间帧锁定几何保存
+OK   toggle-False-collapse-bottom | 关闭偏好立即完整展开并停止动画
+OK   toggle-False-collapse-bottom | 解除保存锁、释放快照并停止hover计时
+OK   toggle-False-collapse-bottom | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-False-collapse-bottom | force也不能绕过关闭设置
+OK   toggle-False-collapse-bottom | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-False-collapse-bottom | 重新开启后仍支持正常靠边收起
+OK   toggle-False-collapse-bottom | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-False-expand-left ===
+POINTER compact=False phase=expand edge=left cursor=(779, 579) frame=(0, 100, 520, 430)
+OK   toggle-False-expand-left | 真实鼠标停在窗外并启动收起动画
+OK   toggle-False-expand-left | 中间帧锁定几何保存
+OK   toggle-False-expand-left | 关闭偏好立即完整展开并停止动画
+OK   toggle-False-expand-left | 解除保存锁、释放快照并停止hover计时
+OK   toggle-False-expand-left | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-False-expand-left | force也不能绕过关闭设置
+OK   toggle-False-expand-left | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-False-expand-left | 重新开启后仍支持正常靠边收起
+OK   toggle-False-expand-left | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-False-expand-right ===
+POINTER compact=False phase=expand edge=right cursor=(779, 579) frame=(280, 100, 520, 430)
+OK   toggle-False-expand-right | 真实鼠标停在窗外并启动收起动画
+OK   toggle-False-expand-right | 中间帧锁定几何保存
+OK   toggle-False-expand-right | 关闭偏好立即完整展开并停止动画
+OK   toggle-False-expand-right | 解除保存锁、释放快照并停止hover计时
+OK   toggle-False-expand-right | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-False-expand-right | force也不能绕过关闭设置
+OK   toggle-False-expand-right | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-False-expand-right | 重新开启后仍支持正常靠边收起
+OK   toggle-False-expand-right | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-False-expand-top ===
+POINTER compact=False phase=expand edge=top cursor=(779, 579) frame=(100, 0, 520, 430)
+OK   toggle-False-expand-top | 真实鼠标停在窗外并启动收起动画
+OK   toggle-False-expand-top | 中间帧锁定几何保存
+OK   toggle-False-expand-top | 关闭偏好立即完整展开并停止动画
+OK   toggle-False-expand-top | 解除保存锁、释放快照并停止hover计时
+OK   toggle-False-expand-top | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-False-expand-top | force也不能绕过关闭设置
+OK   toggle-False-expand-top | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-False-expand-top | 重新开启后仍支持正常靠边收起
+OK   toggle-False-expand-top | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-False-expand-bottom ===
+POINTER compact=False phase=expand edge=bottom cursor=(779, 579) frame=(100, 170, 520, 430)
+OK   toggle-False-expand-bottom | 真实鼠标停在窗外并启动收起动画
+OK   toggle-False-expand-bottom | 中间帧锁定几何保存
+OK   toggle-False-expand-bottom | 关闭偏好立即完整展开并停止动画
+OK   toggle-False-expand-bottom | 解除保存锁、释放快照并停止hover计时
+OK   toggle-False-expand-bottom | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-False-expand-bottom | force也不能绕过关闭设置
+OK   toggle-False-expand-bottom | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-False-expand-bottom | 重新开启后仍支持正常靠边收起
+OK   toggle-False-expand-bottom | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-True-collapse-left ===
+POINTER compact=True phase=collapse edge=left cursor=(779, 579) frame=(0, 100, 356, 196)
+OK   toggle-True-collapse-left | 真实鼠标停在窗外并启动收起动画
+OK   toggle-True-collapse-left | 中间帧锁定几何保存
+OK   toggle-True-collapse-left | 关闭偏好立即完整展开并停止动画
+OK   toggle-True-collapse-left | 解除保存锁、释放快照并停止hover计时
+OK   toggle-True-collapse-left | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-True-collapse-left | force也不能绕过关闭设置
+OK   toggle-True-collapse-left | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-True-collapse-left | 重新开启后仍支持正常靠边收起
+OK   toggle-True-collapse-left | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-True-collapse-right ===
+POINTER compact=True phase=collapse edge=right cursor=(779, 579) frame=(444, 100, 356, 196)
+OK   toggle-True-collapse-right | 真实鼠标停在窗外并启动收起动画
+OK   toggle-True-collapse-right | 中间帧锁定几何保存
+OK   toggle-True-collapse-right | 关闭偏好立即完整展开并停止动画
+OK   toggle-True-collapse-right | 解除保存锁、释放快照并停止hover计时
+OK   toggle-True-collapse-right | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-True-collapse-right | force也不能绕过关闭设置
+OK   toggle-True-collapse-right | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-True-collapse-right | 重新开启后仍支持正常靠边收起
+OK   toggle-True-collapse-right | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-True-collapse-top ===
+POINTER compact=True phase=collapse edge=top cursor=(779, 579) frame=(100, 0, 356, 196)
+OK   toggle-True-collapse-top | 真实鼠标停在窗外并启动收起动画
+OK   toggle-True-collapse-top | 中间帧锁定几何保存
+OK   toggle-True-collapse-top | 关闭偏好立即完整展开并停止动画
+OK   toggle-True-collapse-top | 解除保存锁、释放快照并停止hover计时
+OK   toggle-True-collapse-top | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-True-collapse-top | force也不能绕过关闭设置
+OK   toggle-True-collapse-top | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-True-collapse-top | 重新开启后仍支持正常靠边收起
+OK   toggle-True-collapse-top | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-True-collapse-bottom ===
+POINTER compact=True phase=collapse edge=bottom cursor=(779, 579) frame=(100, 404, 356, 196)
+OK   toggle-True-collapse-bottom | 真实鼠标停在窗外并启动收起动画
+OK   toggle-True-collapse-bottom | 中间帧锁定几何保存
+OK   toggle-True-collapse-bottom | 关闭偏好立即完整展开并停止动画
+OK   toggle-True-collapse-bottom | 解除保存锁、释放快照并停止hover计时
+OK   toggle-True-collapse-bottom | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-True-collapse-bottom | force也不能绕过关闭设置
+OK   toggle-True-collapse-bottom | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-True-collapse-bottom | 重新开启后仍支持正常靠边收起
+OK   toggle-True-collapse-bottom | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-True-expand-left ===
+POINTER compact=True phase=expand edge=left cursor=(779, 579) frame=(0, 100, 356, 196)
+OK   toggle-True-expand-left | 真实鼠标停在窗外并启动收起动画
+OK   toggle-True-expand-left | 中间帧锁定几何保存
+OK   toggle-True-expand-left | 关闭偏好立即完整展开并停止动画
+OK   toggle-True-expand-left | 解除保存锁、释放快照并停止hover计时
+OK   toggle-True-expand-left | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-True-expand-left | force也不能绕过关闭设置
+OK   toggle-True-expand-left | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-True-expand-left | 重新开启后仍支持正常靠边收起
+OK   toggle-True-expand-left | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-True-expand-right ===
+POINTER compact=True phase=expand edge=right cursor=(779, 579) frame=(444, 100, 356, 196)
+OK   toggle-True-expand-right | 真实鼠标停在窗外并启动收起动画
+OK   toggle-True-expand-right | 中间帧锁定几何保存
+OK   toggle-True-expand-right | 关闭偏好立即完整展开并停止动画
+OK   toggle-True-expand-right | 解除保存锁、释放快照并停止hover计时
+OK   toggle-True-expand-right | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-True-expand-right | force也不能绕过关闭设置
+OK   toggle-True-expand-right | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-True-expand-right | 重新开启后仍支持正常靠边收起
+OK   toggle-True-expand-right | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-True-expand-top ===
+POINTER compact=True phase=expand edge=top cursor=(779, 579) frame=(100, 0, 356, 196)
+OK   toggle-True-expand-top | 真实鼠标停在窗外并启动收起动画
+OK   toggle-True-expand-top | 中间帧锁定几何保存
+OK   toggle-True-expand-top | 关闭偏好立即完整展开并停止动画
+OK   toggle-True-expand-top | 解除保存锁、释放快照并停止hover计时
+OK   toggle-True-expand-top | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-True-expand-top | force也不能绕过关闭设置
+OK   toggle-True-expand-top | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-True-expand-top | 重新开启后仍支持正常靠边收起
+OK   toggle-True-expand-top | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== toggle-True-expand-bottom ===
+POINTER compact=True phase=expand edge=bottom cursor=(779, 579) frame=(100, 404, 356, 196)
+OK   toggle-True-expand-bottom | 真实鼠标停在窗外并启动收起动画
+OK   toggle-True-expand-bottom | 中间帧锁定几何保存
+OK   toggle-True-expand-bottom | 关闭偏好立即完整展开并停止动画
+OK   toggle-True-expand-bottom | 解除保存锁、释放快照并停止hover计时
+OK   toggle-True-expand-bottom | 保存实际逻辑几何与false偏好，不写中间帧
+OK   toggle-True-expand-bottom | force也不能绕过关闭设置
+OK   toggle-True-expand-bottom | 动画中关闭偏好不修改任何学习记录字节
+OK   toggle-True-expand-bottom | 重新开启后仍支持正常靠边收起
+OK   toggle-True-expand-bottom | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== display-identity ===
+OK   display-identity | 显示拼写与稳定记忆key可分离
+OK   display-identity | 无效display字段安全退回原key
+OK   display-identity | 无效display字段安全退回原key
+OK   display-identity | 无效display字段安全退回原key
+OK   display-identity | 无效display字段安全退回原key
+OK   display-identity | 无效display字段安全退回原key
+OK   display-identity | 刷词/选择题呈现大小写不改current记忆key
+OK   display-identity | 词汇量测试也使用正确显示拼写
+OK   display-identity | 内容浏览单词列与Tooltip共享正确显示拼写
+OK   display-identity | 目录搜索与记忆key保持原始词形
+OK   display-identity | 宽显示拼写参与目录行高测量，缓存身份仍是稳定原key
+OK   display-identity | 显示文本是行高缓存维度，变化后不会误用旧raw短词高度
+OK   display-identity | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== window-save-failure ===
+OK   window-save-failure | 窗口保存失败不抛Qt槽异常，偏好与按钮仍同步当前关闭状态
+OK   window-save-failure | 窗口设置保存失败有明确提示而非静默成功
+OK   window-save-failure | 失败不覆盖旧有效窗口记录或学习数据
+OK   window-save-failure | preset保存失败仍更新实际尺寸且保留当前关闭偏好
+OK   window-save-failure | 故障解除后安全保存当前窗口/偏好及未知字段
+OK   window-save-failure | 窗口重试保存不改学习记录
+OK   window-save-failure | 动作被安全guard拒绝时按钮恢复controller实际偏好
+OK   window-save-failure | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== compact-save-failure ===
+OK   compact-save-failure | 小窗按钮保存失败不抛Qt槽异常，当前实际小窗完整生效
+OK   compact-save-failure | 小窗保存故障使用统一窗口设置错误提示
+OK   compact-save-failure | 小窗保存失败不覆盖旧有效窗口配置或学习记录
+OK   compact-save-failure | 故障期间仍能安全从小窗切回正常窗
+OK   compact-save-failure | 故障解除后小窗切换能持久化真实逻辑几何和未知字段
+OK   compact-save-failure | 小窗故障/恢复不改学习状态与历史
+OK   compact-save-failure | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== source-count-display ===
+OK   source-count-display | 民间词表按实际学习卡数显示
+OK   source-count-display | community 来源只展示实际成员数
+OK   source-count-display | 设置来源Tooltip展示民间注记/实际卡数
+OK   source-count-display | 选书说明显示实际卡数
+OK   source-count-display | 具体词书条目数量与民间来源Tooltip一致
+OK   source-count-display | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== book-composition-revision ===
+OK   book-composition-revision | 词表换版仍先恢复本书到期复习
+OK   book-composition-revision | 换版不伪造新词次数、不删除移出本书的历史词状态
+OK   book-composition-revision | 刷词提交后仅翻面
+OK   book-composition-revision | 到期复习后恢复保留的held_current
+OK   book-composition-revision | 刷词提交后仅翻面
+OK   book-composition-revision | 旧cursor即使在书末也补扫新增前缀，不永久跳新词
+OK   book-composition-revision | 移出本书的pending保留但不进入本书队列
+OK   book-composition-revision | 刷词提交后仅翻面
+OK   book-composition-revision | 新增词学习完成后正常结束，不跳词或循环
+OK   book-composition-revision | 历史及未知队列字段完整保留
+OK   book-composition-revision | 已移出的current不重现，但历史状态不抹掉
+OK   book-composition-revision | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== real-source-contract ===
+OK   real-source-contract | 真实2022小学词表保持 V1.3.3 原 525 成员/顺序
+OK   real-source-contract | 真实词表来源为民间整理，不冒充官方词目数
+OK   real-source-contract | 民间来源API不返回官方审计行，卡数=实际成员数
+OK   real-source-contract | 真实民间词书刷词/选择显示原成员，current保持稳定key
+OK   real-source-contract | 真实词表内容浏览显示原成员
+OK   real-source-contract | 真实设置词书Tooltip民间来源/数量与运行时meta一致
+OK   real-source-contract | 真实选书进度分母仍是实际学习卡数
+OK   real-source-contract | 真实民间词库测试页显示原成员
+OK   real-source-contract | 测试页面展示不改未答学习current的稳定key
+OK   real-source-contract | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== illustrations ===
+OK   illustrations | 保存隔离截图 v134-choice-light
+OK   illustrations | 保存隔离截图 v134-dk-choice-light
+OK   illustrations | 保存隔离截图 v134-settings-on-light
+OK   illustrations | 保存隔离截图 v134-settings-off-light
+OK   illustrations | 保存隔离截图 v134-brush-light
+OK   illustrations | 保存隔离截图 v134-dk-brush-light
+OK   illustrations | 保存隔离截图 v134-compact-light
+OK   illustrations | 保存隔离截图 v134-quiz-light
+OK   illustrations | 保存隔离截图 v134-dk-quiz-light
+OK   illustrations | 保存隔离截图 v134-choice-dark
+OK   illustrations | 保存隔离截图 v134-dk-choice-dark
+OK   illustrations | 保存隔离截图 v134-settings-on-dark
+OK   illustrations | 保存隔离截图 v134-settings-off-dark
+OK   illustrations | 保存隔离截图 v134-brush-dark
+OK   illustrations | 保存隔离截图 v134-dk-brush-dark
+OK   illustrations | 保存隔离截图 v134-compact-dark
+OK   illustrations | 保存隔离截图 v134-quiz-dark
+OK   illustrations | 保存隔离截图 v134-dk-quiz-dark
+OK   illustrations | 保存隔离截图 v134-choice-sepia
+OK   illustrations | 保存隔离截图 v134-dk-choice-sepia
+OK   illustrations | 保存隔离截图 v134-settings-on-sepia
+OK   illustrations | 保存隔离截图 v134-settings-off-sepia
+OK   illustrations | 保存隔离截图 v134-brush-sepia
+OK   illustrations | 保存隔离截图 v134-dk-brush-sepia
+OK   illustrations | 保存隔离截图 v134-compact-sepia
+OK   illustrations | 保存隔离截图 v134-quiz-sepia
+OK   illustrations | 保存隔离截图 v134-dk-quiz-sepia
+OK   illustrations | 保存隔离截图 v134-choice-green
+OK   illustrations | 保存隔离截图 v134-dk-choice-green
+OK   illustrations | 保存隔离截图 v134-settings-on-green
+OK   illustrations | 保存隔离截图 v134-settings-off-green
+OK   illustrations | 保存隔离截图 v134-brush-green
+OK   illustrations | 保存隔离截图 v134-dk-brush-green
+OK   illustrations | 保存隔离截图 v134-compact-green
+OK   illustrations | 保存隔离截图 v134-quiz-green
+OK   illustrations | 保存隔离截图 v134-dk-quiz-green
+OK   illustrations | light原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | light原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | light原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | dark原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | dark原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | dark原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | sepia原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | sepia原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | sepia原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | green原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | green原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | green原生控件图像可完整放入对比图（不缩放/拉伸）
+OK   illustrations | 保存四主题三入口对比图
+OK   illustrations | legacy/stable 与 bak/tmp 字节指纹不变
+OK   illustrations | 最终真实progress/window/bak/tmp字节均未改变
+
+CHECKS 374; FAILS 0
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-choice-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-choice-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-settings-on-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-settings-off-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-brush-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-brush-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-compact-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-quiz-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-quiz-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-choice-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-choice-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-settings-on-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-settings-off-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-brush-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-brush-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-compact-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-quiz-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-quiz-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-choice-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-choice-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-settings-on-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-settings-off-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-brush-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-brush-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-compact-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-quiz-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-quiz-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-choice-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-choice-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-settings-on-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-settings-off-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-brush-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-brush-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-compact-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-quiz-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dk-quiz-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v134-integration\v134-offscreen-ztlc15ol\v134-dontknow-overview.png
+
+全部通过 ✓

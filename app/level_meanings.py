@@ -5,6 +5,7 @@
   {"primary": {"word": "小学释义"}, "middleschool": {...}}
   {"levels": {"primary": {...}, "middleschool": {...}}}
 值可为字符串，或含 display_s/level_s（也接受 s/meaning/text/gloss）的对象；
+有效释义对象可附 display_w，学校词形与稳定key分离。
 任何缺失/损坏/非法字段都安全回退为空覆盖，不抛异常。
 """
 import io
@@ -35,6 +36,7 @@ def _text(value):
 
 
 def _normalise(value):
+    """归一有效显示释义及可选 display_w；无有效释义不接受单独别名。"""
     if isinstance(value, str):
         text = _text(value)
         if not text:
@@ -55,6 +57,10 @@ def _normalise(value):
                 out["display_s"] = text
                 out["level_s"] = text
                 break
+    if out:
+        display_word = _text(value.get("display_w"))
+        if display_word:
+            out["display_w"] = display_word
     return out
 
 
@@ -133,13 +139,15 @@ def mapping_for(stage):
 
 
 def decorate(entry, mapping=None):
-    """浅拷贝添加有效的显示义；原始 entry 与稳定 key 不变。"""
+    """浅拷贝有效显示义/可选学校词形；标记学校caption但绝不改原entry。"""
     copy = dict(entry)
     if mapping:
         override = mapping.get(copy.get("w"))
         if override:
-            for field in ("display_s", "level_s"):
+            for field in ("display_s", "level_s", "display_w"):
                 text = override.get(field)
                 if text:
                     copy[field] = text
+            if _text(override.get("display_w")):
+                copy["_school_caption"] = True
     return copy

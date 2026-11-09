@@ -1,0 +1,19 @@
+test_constants (__main__.SchedulerTests) ... ok
+test_due_order_is_book_order_including_reverse_and_shuffle (__main__.SchedulerTests) ... ok
+test_due_queue_is_recomputed_including_boundary_and_new_entries (__main__.SchedulerTests) ... ok
+test_every_level_and_mastered_never_returns (__main__.SchedulerTests) ... ok
+test_forget_all_learning_levels_without_demotion (__main__.SchedulerTests) ... ok
+test_forget_new_stays_new (__main__.SchedulerTests) ... ok
+test_fuzzy_refreshes_same_level (__main__.SchedulerTests) ... ok
+test_legacy_learning_levels_preserve_saved_fields_and_due (__main__.SchedulerTests) ... ok
+test_legacy_new_means_already_recognized_and_mastered_is_ten (__main__.SchedulerTests) ... ok
+test_modern_migration_is_idempotent_with_fresh_independent_copies (__main__.SchedulerTests) ... ok
+test_new_has_no_schedule_even_at_zero (__main__.SchedulerTests) ... ok
+test_next_new_compatibility (__main__.SchedulerTests) ... ok
+test_remember_zero_does_not_use_wall_clock (__main__.SchedulerTests) ... ok
+test_retire_returns_copy_and_never_queues (__main__.SchedulerTests) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.010s
+
+OK

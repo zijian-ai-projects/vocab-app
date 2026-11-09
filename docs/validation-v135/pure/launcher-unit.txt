@@ -1,0 +1,26 @@
+test_launcher_import_pulls_in_no_qt_and_no_app_main (__main__.IsolationTests) ... ok
+test_default_log_path_uses_plugin_data_without_creating_directories (__main__.LogTests) ... ok
+test_log_path_uses_profile_override_and_does_not_create (__main__.LogTests) ... ok
+test_write_log_creates_profile_and_appends (__main__.LogTests) ... ok
+test_write_log_never_raises_on_unwritable_target (__main__.LogTests) ... ok
+test_write_log_trims_oversized_history (__main__.LogTests) ... ok
+test_conda_library_bin_is_always_probed (__main__.QtPathTests) ... ok
+test_ensure_does_nothing_when_dll_missing (__main__.QtPathTests) ... ok
+test_ensure_prepends_once_and_is_idempotent (__main__.QtPathTests) ... ok
+test_find_qt_dll_dir_requires_real_file (__main__.QtPathTests) ... ok
+test_metric_wheel_directory_is_probed (__main__.QtPathTests) ... ok
+test_missing_qt_import_error_is_reported (__main__.RunTests) ... ok
+test_success_returns_zero_and_logs_start_and_exit (__main__.RunTests) ... ok
+test_system_exit_code_is_returned_without_extra_dialog (__main__.RunTests) ... ok
+test_unexpected_failure_shows_visible_error_and_traceback (__main__.RunTests) ... ok
+test_vbs_checks_missing_interpreter_and_launcher (__main__.VbsTests) ... ok
+test_vbs_is_unicode_with_bom (__main__.VbsTests) ... ok
+test_vbs_log_hint_uses_plugin_data_or_explicit_override (__main__.VbsTests) ... ok
+test_vbs_reports_failure_with_log_path (__main__.VbsTests) ... ok
+test_vbs_starts_through_bootstrap_not_main (__main__.VbsTests) ... ok
+test_vbs_uses_visible_window_style (__main__.VbsTests) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.565s
+
+OK

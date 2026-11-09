@@ -1,0 +1,59 @@
+  OK   展开状态 paint_dock 返回 False
+  OK   启动平滑收起
+  OK   收起动画中快照 overlay 实际可见
+  OK   快照 overlay 有非空 pixmap
+  OK   快照 overlay pixmap 有可见像素：891
+  OK   快照 overlay 不混入 hidden_children
+  OK   动画中 animating=True / can_persist_geometry=False
+  OK   动画结束 animating=False / can_persist_geometry=True
+  OK   平滑收起后 collapsed/edge 正确
+  OK   短圆角胶囊尺寸 PyQt5.QtCore.QSize(10, 64)
+  OK   收起不写入动画中间值/逻辑尺寸仍 520×430：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 0, 'normal_y': 100, 'compact_x': 100, 'compact_y': 100, 'x': 0, 'y': 100, 'w': 520, 'h': 430, 'compact': False, 'dock_edge': 'left'}
+  OK   收起结束移除快照 overlay
+  OK   collapsed paint_dock 返回 True
+  OK   paint_dock 使用 theme.dock_bg 绘制胶囊
+  OK   胶囊中部存在可见绘制像素
+  OK   展开前先收起
+  OK   已收起
+  OK   展开动画进行中
+  OK   展开动画完成
+  OK   展开恢复 520×430
+  OK   展开结束移除 overlay
+  OK   展开恢复直接子控件
+  OK   展开后 dock_edge/state 正确：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 280, 'normal_y': 100, 'compact_x': 100, 'compact_y': 100, 'x': 280, 'y': 100, 'w': 520, 'h': 430, 'compact': False, 'dock_edge': 'right'}
+  OK   收起中途 hover enter 反向
+  OK   快速反向结束后正常展开 520×430
+  OK   快速反向结束无 overlay/动画残留
+  OK   已展开时 hover enter 幂等
+  OK   真实 Leave 事件触发收条动画
+  OK   收条动画中真实 Enter 事件反向展开
+  OK   展开后真实 Leave 事件再次自动收条
+  OK   immediate reveal 在 expand target 中仍立即落定
+  OK   immediate reveal 后尺寸 520×430
+  OK   immediate reveal 后无 overlay
+  OK   restore 中断动画并落定
+  OK   restore 后尺寸 640×520
+  OK   restore 中断后无 overlay
+  OK   set_compact 中断动画
+  OK   set_compact 后实际小窗 356×196
+  OK   update_palette 中断动画并落定
+  OK   update_palette 记录新主题
+  OK   收起动画中关闭 edge_collapse 立即落定
+  OK   收起动画中关闭后完整展开 520×430
+  OK   关闭后 overlay 释放、hover timer 停止
+  OK   state edge_collapse=False
+  OK   展开动画中关闭 edge_collapse 立即完整展开
+  OK   展开动画中关闭后尺寸 520×430
+  OK   展开动画中关闭后无 overlay
+  OK   stop_timers 中断动画并落定
+  OK   stop_timers 后无 overlay
+  OK   无 dock_* 主题时 paint_dock fallback 可绘制
+  OK   640×520 不启用自动收条
+  OK   640×520 _collapse_if_docked 无动作
+  OK   640×520 不产生动画/collapsed
+  OK   760×620 不启用自动收条
+  OK   760×620 _collapse_if_docked 无动作
+  OK   760×620 不产生动画/collapsed
+  OK   胶囊有握柄/方向提示可见像素：346
+
+全部通过 ✓

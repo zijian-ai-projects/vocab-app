@@ -1,3 +1,6 @@
 # New deterministic overlay artifacts only; original V1.3.3 data rules stay unchanged.
 /data/level_meanings.json text eol=lf
+/data/school_meaning_reviews.json -text whitespace=cr-at-eol
 /data/school_gloss/*.json text eol=lf
+# Preserve the exact raw bytes cited by the frozen acceptance archive.
+/docs/validation-v135/** -text -whitespace

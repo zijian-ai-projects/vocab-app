@@ -1,14 +1,25 @@
 {
   "schema": 1,
-  "rule_version": "school-meaning-overlay-v3-community",
+  "rule_version": "school-meaning-overlay-v4-reviewed158-community",
   "description": "原民间词书的小学/初中短释义显示覆盖；不改通用词库或原成员，不主张官方来源。",
   "rules": {
     "general_bank_unchanged": true,
     "source_hash_normalization": "UTF-8 JSON bytes with CRLF converted to LF",
     "primary_max_sense_groups": 1,
     "middleschool_max_sense_groups": 2,
-    "fallback": "existing general first common sense; never invent or pad",
-    "selection": "hashed book-gloss fragment by existing POS, with verified source-fragment selectors for ambiguous school words"
+    "fallback": "existing general source sense for unreviewed items; never pad membership",
+    "selection": "explicit reviewed V135 school corrections first; otherwise hashed book-gloss fragments and verified selectors"
+  },
+  "wordwise_review": {
+    "version": "1.3.5",
+    "source": "data/school_meaning_reviews.json",
+    "unique_words": 158,
+    "stage_items": 183,
+    "stage_counts": {
+      "primary": 47,
+      "middleschool": 136
+    },
+    "method": "wordwise local-context and evidence review, including explicit editorial translations; not an official wordlist audit"
   },
   "sources": {
     "data/bank.json": {
@@ -226,6 +237,10 @@
     "data/school_gloss/zk-xh16.json": {
       "path": "data/school_gloss/zk-xh16.json",
       "sha256": "56922805bcd9c95f2bc8035aa20d4ce691e305d6f21ef0b89e5eba9e89750703"
+    },
+    "data/school_meaning_reviews.json": {
+      "path": "data/school_meaning_reviews.json",
+      "sha256": "ea898ab83e5730cb3fb7c58b8a694d58e7875a9b96d2073ef3f397103e009bbc"
     }
   },
   "stats": {
@@ -237,7 +252,7 @@
         "verified_preferred_fragment": 60,
         "preferred_pos_first_source_sense": 1367,
         "verified_legacy_casefold_fragment": 4,
-        "general_first_sense_fallback": 47
+        "reviewed_school_meaning_v135": 47
       }
     },
     "middleschool": {
@@ -247,41 +262,15 @@
       "rules": {
         "verified_preferred_fragment": 51,
         "preferred_pos_first_source_sense": 3043,
-        "general_first_sense_fallback": 909,
-        "verified_legacy_casefold_fragment": 4
+        "reviewed_school_meaning_v135": 136,
+        "verified_legacy_casefold_fragment": 4,
+        "general_first_sense_fallback": 773
       }
     }
   },
   "review_required": {
-    "primary": [
-      {
-        "word": "bds",
-        "reason": "成员缩写的教材上下文未随本地 gloss 提供；当前只能保留通用 bank 回退。",
-        "fallback_meaning": "abbr.用硬纸板作封面"
-      },
-      {
-        "word": "alice",
-        "reason": "书籍成员疑似人名 Alice，但本地词书无中文 gloss；当前只能保留通用 bank 回退。",
-        "fallback_meaning": "应用语言接口转换与扩充"
-      },
-      {
-        "word": "matt",
-        "reason": "书籍成员疑似人名 Matt，但本地词书无中文 gloss；当前只能保留通用 bank 回退。",
-        "fallback_meaning": "adj.表面暗淡的"
-      }
-    ],
-    "middleschool": [
-      {
-        "word": "alice",
-        "reason": "书籍成员疑似人名 Alice，但本地词书无中文 gloss；当前只能保留通用 bank 回退。",
-        "fallback_meaning": "应用语言接口转换与扩充"
-      },
-      {
-        "word": "matt",
-        "reason": "书籍成员疑似人名 Matt，但本地词书无中文 gloss；当前只能保留通用 bank 回退。",
-        "fallback_meaning": "adj.表面暗淡的"
-      }
-    ]
+    "primary": [],
+    "middleschool": []
   },
   "levels": {
     "primary": {
@@ -2684,12 +2673,22 @@
       "sydney": {
         "meaning": "n.悉尼",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "sydney",
+          "review_stage": "primary",
+          "action": "retain",
+          "category": "place_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Sydney"
       },
       "fly": {
         "meaning": "vi.飞",
@@ -4776,12 +4775,22 @@
       "august": {
         "meaning": "n.八月",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "august",
+          "review_stage": "primary",
+          "action": "retain",
+          "category": "month_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "August"
       },
       "september": {
         "meaning": "n.九月",
@@ -4904,14 +4913,24 @@
         }
       },
       "thanksgiving": {
-        "meaning": "n.感恩",
+        "meaning": "n.感恩节",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "thanksgiving",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "holiday",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Thanksgiving"
       },
       "christmas": {
         "meaning": "n.圣诞节",
@@ -4956,12 +4975,23 @@
       "rsvp": {
         "meaning": "abbr.请回复",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "rsvp",
+          "review_stage": "primary",
+          "action": "retain",
+          "category": "abbreviation",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context",
+            "local_gloss"
+          ]
+        },
+        "display_w": "RSVP"
       },
       "by": {
         "meaning": "prep.通过",
@@ -5608,14 +5638,26 @@
         }
       },
       "bds": {
-        "meaning": "abbr.用硬纸板作封面",
+        "meaning": "abbr.北斗卫星导航系统",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "bds",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "abbreviation",
+          "evidence_kinds": [
+            "authoritative_definition",
+            "contextual_review",
+            "local_bank",
+            "local_context",
+            "textbook_excerpt"
+          ]
+        },
+        "display_w": "BDS"
       },
       "gave": {
         "meaning": "v.给予",
@@ -5988,13 +6030,22 @@
         }
       },
       "word": {
-        "meaning": "n.字",
+        "meaning": "n.单词，词",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "word",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
         }
       },
       "postcard": {
@@ -7564,11 +7615,20 @@
       "am": {
         "meaning": "v.是",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "am",
+          "review_stage": "primary",
+          "action": "retain",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
         }
       },
       "i'm": {
@@ -7704,14 +7764,26 @@
         }
       },
       "ms": {
-        "meaning": "abbr.毫秒",
+        "meaning": "abbr.女士（用于女子姓名前）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "ms",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "title",
+          "evidence_kinds": [
+            "contextual_review",
+            "dictionary_excerpt",
+            "local_bank",
+            "local_context",
+            "textbook_excerpt"
+          ]
+        },
+        "display_w": "Ms"
       },
       "whoops": {
         "meaning": "int.哎呀！",
@@ -7946,13 +8018,23 @@
         }
       },
       "here's": {
-        "meaning": "abbr.干杯",
+        "meaning": "abbr.这是（here is的缩约）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "here's",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "contraction",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context",
+            "local_gloss"
+          ]
         }
       },
       "present": {
@@ -8137,13 +8219,23 @@
         }
       },
       "they're": {
-        "meaning": "abbr.他们是",
+        "meaning": "abbr.他们（她们、它们）是",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "they're",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "contraction",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context",
+            "local_gloss"
+          ]
         }
       },
       "baby": {
@@ -9380,13 +9472,23 @@
         }
       },
       "er": {
-        "meaning": "铒",
+        "meaning": "int.呃（表示犹豫）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "er",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "interjection",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context",
+            "textbook_excerpt"
+          ]
         }
       },
       "cheese": {
@@ -10335,11 +10437,20 @@
       "north": {
         "meaning": "n.北",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "north",
+          "review_stage": "primary",
+          "action": "retain",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
         }
       },
       "rest": {
@@ -10846,12 +10957,22 @@
       "dvd": {
         "meaning": "abbr.数字化视频光盘",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "dvd",
+          "review_stage": "primary",
+          "action": "retain",
+          "category": "abbreviation",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "DVD"
       },
       "lucky": {
         "meaning": "adj.幸运的",
@@ -11897,13 +12018,23 @@
         }
       },
       "e-friend": {
-        "meaning": "网友",
+        "meaning": "n.网友",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "e-friend",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context",
+            "local_gloss"
+          ]
         }
       },
       "australia": {
@@ -12277,14 +12408,25 @@
         }
       },
       "bund": {
-        "meaning": "同盟",
+        "meaning": "n.外滩（上海地名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "bund",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "place_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context",
+            "textbook_excerpt"
+          ]
+        },
+        "display_w": "the Bund"
       },
       "office": {
         "meaning": "n.办公室",
@@ -12931,22 +13073,42 @@
       "disneyland": {
         "meaning": "n.迪斯尼乐园",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "disneyland",
+          "review_stage": "primary",
+          "action": "retain",
+          "category": "place_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Disneyland"
       },
       "taipei": {
         "meaning": "n.台北",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "taipei",
+          "review_stage": "primary",
+          "action": "retain",
+          "category": "place_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Taipei"
       },
       "traveller": {
         "meaning": "n.旅行者",
@@ -13952,64 +14114,125 @@
         }
       },
       "alice": {
-        "meaning": "应用语言接口转换与扩充",
+        "meaning": "n.爱丽丝（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "alice",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context",
+            "user_instruction"
+          ]
+        },
+        "display_w": "Alice"
       },
       "ann": {
-        "meaning": "n.安",
+        "meaning": "n.安（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "ann",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Ann"
       },
       "anna": {
-        "meaning": "n.安娜",
+        "meaning": "n.安娜（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "anna",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Anna"
       },
       "ben": {
-        "meaning": "n.内室",
+        "meaning": "n.本（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "ben",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Ben"
       },
       "bill": {
-        "meaning": "n.账单",
+        "meaning": "n.比尔（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "bill",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Bill"
       },
       "eva": {
-        "meaning": "n.伊娃",
+        "meaning": "n.伊娃（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "eva",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Eva"
       },
       "jill": {
         "meaning": "n.少女",
@@ -14022,94 +14245,184 @@
         }
       },
       "kim": {
-        "meaning": "n.金姆",
+        "meaning": "n.金姆（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "kim",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Kim"
       },
       "lucy": {
-        "meaning": "n.露西",
+        "meaning": "n.露西（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "lucy",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Lucy"
       },
       "mark": {
-        "meaning": "n.痕迹",
+        "meaning": "n.马克（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "mark",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Mark"
       },
       "matt": {
-        "meaning": "adj.表面暗淡的",
+        "meaning": "n.马特（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "matt",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Matt"
       },
       "nick": {
-        "meaning": "n.监狱",
+        "meaning": "n.尼克（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "nick",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Nick"
       },
       "pat": {
-        "meaning": "v.轻拍",
+        "meaning": "n.帕特（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "pat",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Pat"
       },
       "sam": {
-        "meaning": "安全性帐户管理器",
+        "meaning": "n.萨姆（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "sam",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Sam"
       },
       "sue": {
-        "meaning": "vt.控告",
+        "meaning": "n.苏（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "sue",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Sue"
       },
       "tom": {
-        "meaning": "n.雄性动物",
+        "meaning": "n.汤姆（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "tom",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Tom"
       },
       "cage": {
         "meaning": "n.笼",
@@ -14663,13 +14976,22 @@
         }
       },
       "app": {
-        "meaning": "应用",
+        "meaning": "n.应用程序",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "app",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
         }
       },
       "band": {
@@ -15014,144 +15336,284 @@
         }
       },
       "clare": {
-        "meaning": "n.克莱尔",
+        "meaning": "n.克莱尔（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "clare",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Clare"
       },
       "daisy": {
-        "meaning": "n.雏菊",
+        "meaning": "n.黛西（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "daisy",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Daisy"
       },
       "fred": {
-        "meaning": "n.佛瑞德",
+        "meaning": "n.弗雷德（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "fred",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Fred"
       },
       "jack": {
-        "meaning": "n.千斤顶",
+        "meaning": "n.杰克（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jack",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Jack"
       },
       "jane": {
-        "meaning": "n.简",
+        "meaning": "n.简（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jane",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Jane"
       },
       "jim": {
-        "meaning": "n.吉姆",
+        "meaning": "n.吉姆（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jim",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Jim"
       },
       "julia": {
-        "meaning": "n.朱莉娅",
+        "meaning": "n.朱莉娅（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "julia",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Julia"
       },
       "lily": {
-        "meaning": "n.百合",
+        "meaning": "n.莉莉（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "lily",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Lily"
       },
       "mary": {
-        "meaning": "n.玛丽",
+        "meaning": "n.玛丽（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "mary",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Mary"
       },
       "paul": {
-        "meaning": "n.保罗",
+        "meaning": "n.保罗（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "paul",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Paul"
       },
       "peter": {
-        "meaning": "vi.逐渐消失",
+        "meaning": "n.彼得（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "peter",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Peter"
       },
       "sally": {
-        "meaning": "n.突击",
+        "meaning": "n.萨莉（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "sally",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Sally"
       },
       "vicky": {
-        "meaning": "n.维姬",
+        "meaning": "n.维姬（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "vicky",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Vicky"
       },
       "zoe": {
-        "meaning": "n.生命",
+        "meaning": "n.佐伊（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "zoe",
+          "review_stage": "primary",
+          "action": "replace",
+          "category": "personal_name",
+          "evidence_kinds": [
+            "editorial_transliteration",
+            "local_bank",
+            "local_context"
+          ]
+        },
+        "display_w": "Zoe"
       }
     },
     "middleschool": {
@@ -15248,13 +15710,22 @@
         }
       },
       "am": {
-        "meaning": "v.是；abbr.上午",
+        "meaning": "v.是（be的第一人称单数形式）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "am",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "original_bank"
+          ]
         }
       },
       "fine": {
@@ -15288,14 +15759,25 @@
         }
       },
       "hb": {
-        "meaning": "abbr.厚膛壁身管",
+        "meaning": "abbr.（铅笔芯）硬黑",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "hb",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "abbreviation",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "external_textbook_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "HB"
       },
       "cd": {
         "meaning": "abbr.光盘",
@@ -15318,84 +15800,168 @@
         }
       },
       "alice": {
-        "meaning": "应用语言接口转换与扩充",
+        "meaning": "n.爱丽丝（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "alice",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_textbook_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "Alice"
       },
       "bob": {
-        "meaning": "vt.剪短；vi.振动",
+        "meaning": "n.鲍勃（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "bob",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_textbook_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "Bob"
       },
       "cindy": {
         "meaning": "n.辛迪",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "cindy",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Cindy"
       },
       "dale": {
-        "meaning": "n.小谷",
+        "meaning": "n.戴尔（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "dale",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_textbook_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "Dale"
       },
       "eric": {
-        "meaning": "abbr.科教资源信息中心",
+        "meaning": "n.埃里克（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "eric",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_textbook_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "Eric"
       },
       "frank": {
-        "meaning": "adj.坦率的；vt.盖邮资已付印记",
+        "meaning": "n.弗兰克（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "frank",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_textbook_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "Frank"
       },
       "grace": {
-        "meaning": "n.优美；vt.为增色",
+        "meaning": "n.格雷丝（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "grace",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_textbook_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "Grace"
       },
       "helen": {
         "meaning": "n.海伦",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "helen",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Helen"
       },
       "what": {
         "meaning": "pron.什么；conj.什么",
@@ -15589,12 +16155,21 @@
       "nba": {
         "meaning": "abbr.全美篮球协会",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "nba",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "abbreviation",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "NBA"
       },
       "kg": {
         "meaning": "n.千克",
@@ -16149,112 +16724,223 @@
       "gina": {
         "meaning": "n.吉娜",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "gina",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Gina"
       },
       "jenny": {
-        "meaning": "n.纺纱机",
+        "meaning": "n.珍妮（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jenny",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jenny"
       },
       "alan": {
         "meaning": "n.艾伦",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "alan",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Alan"
       },
       "tom": {
-        "meaning": "n.雄性动物",
+        "meaning": "n.汤姆（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "tom",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Tom"
       },
       "mike": {
-        "meaning": "vi.偷懒；n.休息",
+        "meaning": "n.迈克（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "mike",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Mike"
       },
       "jack": {
-        "meaning": "n.千斤顶；vt.用千斤顶托起",
+        "meaning": "n.杰克（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jack",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_html_metadata_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jack"
       },
       "mary": {
         "meaning": "n.玛丽",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "mary",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Mary"
       },
       "miller": {
-        "meaning": "n.厂主",
+        "meaning": "n.米勒（姓）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "miller",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_html_metadata_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "Miller"
       },
       "linda": {
         "meaning": "n.琳达",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "linda",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Linda"
       },
       "jane": {
         "meaning": "n.简",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jane",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jane"
       },
       "smith": {
-        "meaning": "n.铁匠",
+        "meaning": "n.史密斯（姓）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "smith",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_html_metadata_excerpt",
+            "original_bank"
+          ]
+        },
+        "display_w": "Smith"
       },
       "sister": {
         "meaning": "n.姐妹；adj.姐妹般的",
@@ -16621,44 +17307,84 @@
         }
       },
       "sally": {
-        "meaning": "n.突击；vi.突击",
+        "meaning": "n.萨莉（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "sally",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Sally"
       },
       "kate": {
         "meaning": "n.凯特",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "kate",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Kate"
       },
       "paul": {
         "meaning": "n.保罗",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "paul",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Paul"
       },
       "john": {
-        "meaning": "n.盥洗室",
+        "meaning": "n.约翰（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "john",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "John"
       },
       "pencil": {
         "meaning": "n.铅笔；vt.用铅笔写",
@@ -16981,11 +17707,19 @@
       "e-mail": {
         "meaning": "n.电子邮件；v.给…发电子邮件",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "e-mail",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
         }
       },
       "email": {
@@ -17055,22 +17789,40 @@
       "anna": {
         "meaning": "n.安娜",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "anna",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Anna"
       },
       "david": {
         "meaning": "n.大卫",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "david",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "David"
       },
       "where": {
         "meaning": "adv.在哪里；pron.哪里",
@@ -18641,14 +19393,25 @@
         }
       },
       "august": {
-        "meaning": "n.八月；adj.威严的",
+        "meaning": "n.八月",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "august",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "month",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "August"
       },
       "september": {
         "meaning": "n.九月",
@@ -19471,12 +20234,21 @@
       "lisa": {
         "meaning": "n.丽莎",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "lisa",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Lisa"
       },
       "jill": {
         "meaning": "n.少女",
@@ -19489,14 +20261,25 @@
         }
       },
       "peter": {
-        "meaning": "vi.逐渐消失",
+        "meaning": "n.彼得（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "peter",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Peter"
       },
       "up": {
         "meaning": "adv.起来；prep.在…之上",
@@ -19866,44 +20649,84 @@
         }
       },
       "rick": {
-        "meaning": "n.草堆；vt.把…堆成垛",
+        "meaning": "n.里克（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "rick",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Rick"
       },
       "jim": {
         "meaning": "n.吉姆",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jim",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jim"
       },
       "scott": {
         "meaning": "n.斯科特",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "scott",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Scott"
       },
       "tony": {
-        "meaning": "adj.高贵的",
+        "meaning": "n.托尼（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "tony",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Tony"
       },
       "train": {
         "meaning": "n.火车；v.培养",
@@ -20278,12 +21101,21 @@
       "dave": {
         "meaning": "n.戴夫",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "dave",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Dave"
       },
       "rule": {
         "meaning": "n.统治；v.统治",
@@ -20637,32 +21469,61 @@
       "clark": {
         "meaning": "n.克拉克",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "clark",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Clark"
       },
       "amy": {
         "meaning": "n.艾米",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "amy",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Amy"
       },
       "molly": {
-        "meaning": "n.懦夫",
+        "meaning": "n.莫莉（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "molly",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Molly"
       },
       "panda": {
         "meaning": "n.熊猫",
@@ -21040,22 +21901,42 @@
       "julie": {
         "meaning": "n.朱莉",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "julie",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Julie"
       },
       "becky": {
-        "meaning": "n.上挂钩",
+        "meaning": "n.贝基（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "becky",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Becky"
       },
       "thailand": {
         "meaning": "n.泰国",
@@ -21402,22 +22283,40 @@
       "steve": {
         "meaning": "n.史蒂夫",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "steve",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Steve"
       },
       "laura": {
         "meaning": "n.劳拉",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "laura",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Laura"
       },
       "rain": {
         "meaning": "n.雨；v.下雨",
@@ -21794,24 +22693,45 @@
         }
       },
       "joe": {
-        "meaning": "n.家伙",
+        "meaning": "n.乔（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "joe",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Joe"
       },
       "jeff": {
         "meaning": "n.杰夫",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jeff",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jeff"
       },
       "moscow": {
         "meaning": "n.莫斯科",
@@ -21826,12 +22746,22 @@
       "toronto": {
         "meaning": "n.多伦多",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "toronto",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "place_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Toronto"
       },
       "boston": {
         "meaning": "n.波士顿",
@@ -21999,11 +22929,19 @@
       "north": {
         "meaning": "n.北；adj.北方的",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "north",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
         }
       },
       "along": {
@@ -22538,44 +23476,86 @@
         }
       },
       "johnny": {
-        "meaning": "n.男子",
+        "meaning": "n.约翰尼（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "johnny",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Johnny"
       },
       "dean": {
-        "meaning": "n.院长",
+        "meaning": "n.迪安（姓）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "dean",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Dean"
       },
       "tina": {
         "meaning": "n.蒂娜",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "tina",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Tina"
       },
       "jackson": {
         "meaning": "n.杰克逊",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jackson",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jackson"
       },
       "noodle": {
         "meaning": "n.面条；v.拨弄乐器",
@@ -23244,14 +24224,25 @@
         }
       },
       "carol": {
-        "meaning": "n.颂歌；v.唱",
+        "meaning": "n.卡罗尔（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "carol",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Carol"
       },
       "camp": {
         "meaning": "n.露营；v.野营",
@@ -23623,12 +24614,22 @@
       "lucy": {
         "meaning": "n.露西",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "lucy",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Lucy"
       },
       "anyone": {
         "meaning": "pron.任何人",
@@ -24044,12 +25045,22 @@
       "georgetown": {
         "meaning": "n.乔治城",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "georgetown",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "place_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "external_textbook_example",
+            "original_bank"
+          ]
+        },
+        "display_w": "Georgetown"
       },
       "mark": {
         "meaning": "n.标志；v.做记号",
@@ -24115,11 +25126,19 @@
       "internet": {
         "meaning": "n.互联网",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "internet",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
         }
       },
       "program": {
@@ -24414,22 +25433,42 @@
       "claire": {
         "meaning": "n.克莱儿",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "claire",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Claire"
       },
       "sue": {
-        "meaning": "vt.控告；vi.提出诉讼",
+        "meaning": "n.苏（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "sue",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_example",
+            "original_bank"
+          ]
+        },
+        "display_w": "Sue"
       },
       "outgoing": {
         "meaning": "adj.对人友好的；n.外出",
@@ -24793,24 +25832,46 @@
         }
       },
       "tara": {
-        "meaning": "int.再会！",
+        "meaning": "n.塔拉（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "tara",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Tara"
       },
       "sam": {
-        "meaning": "安全性帐户管理器",
+        "meaning": "n.萨姆（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "sam",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Sam"
       },
       "nelly": {
         "meaning": "n.傻瓜",
@@ -25202,12 +26263,21 @@
       "greg": {
         "meaning": "n.格雷格",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "greg",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Greg"
       },
       "danny": {
         "meaning": "n.手",
@@ -25222,32 +26292,61 @@
       "eliza": {
         "meaning": "n.伊莱扎",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "eliza",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Eliza"
       },
       "vera": {
-        "meaning": "abbr.通用实验性反应堆装置",
+        "meaning": "n.维拉（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "vera",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Vera"
       },
       "dennis": {
         "meaning": "n.丹尼斯",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "dennis",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Dennis"
       },
       "sitcom": {
         "meaning": "n.情景喜剧",
@@ -25960,32 +27059,63 @@
       "andy": {
         "meaning": "n.安迪",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "andy",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Andy"
       },
       "ken": {
-        "meaning": "n.视野范围",
+        "meaning": "n.肯（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "ken",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Ken"
       },
       "hemingway": {
-        "meaning": "海明威",
+        "meaning": "n.海明威（美国作家）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "hemingway",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "frozen_book_raw_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Hemingway"
       },
       "kelly": {
         "meaning": "n.黄绿色",
@@ -26380,34 +27510,63 @@
         }
       },
       "word": {
-        "meaning": "n.字；vt.措辞",
+        "meaning": "n.单词，词",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "word",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "original_bank"
+          ]
         }
       },
       "nick": {
-        "meaning": "n.监狱；v.刻痕于",
+        "meaning": "n.尼克（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "nick",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_example",
+            "original_bank"
+          ]
+        },
+        "display_w": "Nick"
       },
       "james": {
         "meaning": "n.詹姆斯",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "james",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "James"
       },
       "shake": {
         "meaning": "v.摇动；n.摇动",
@@ -26669,14 +27828,24 @@
         }
       },
       "thanksgiving": {
-        "meaning": "n.感恩",
+        "meaning": "n.感恩节",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "thanksgiving",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "festival",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "original_bank"
+          ]
+        },
+        "display_w": "Thanksgiving"
       },
       "traditional": {
         "meaning": "adj.传统的",
@@ -27157,54 +28326,105 @@
         }
       },
       "ted": {
-        "meaning": "vt.翻晒",
+        "meaning": "n.特德（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "ted",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Ted"
       },
       "vince": {
         "meaning": "n.文斯",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "vince",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Vince"
       },
       "steen": {
-        "meaning": "adj.许许多多的",
+        "meaning": "n.斯蒂恩（姓）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "steen",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Steen"
       },
       "jake": {
-        "meaning": "adj.满意的；n.乡下佬",
+        "meaning": "n.杰克（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jake",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jake"
       },
       "susan": {
         "meaning": "n.苏珊",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "susan",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Susan"
       },
       "meeting": {
         "meaning": "n.会议；v.会面",
@@ -27515,42 +28735,81 @@
       "karen": {
         "meaning": "n.凯伦",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "karen",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Karen"
       },
       "ben": {
-        "meaning": "n.内室",
+        "meaning": "n.本（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "ben",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Ben"
       },
       "michael": {
         "meaning": "n.迈克尔",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "michael",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Michael"
       },
       "mills": {
         "meaning": "n.米尔斯",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "mills",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Mills"
       },
       "robert": {
         "meaning": "n.罗伯特",
@@ -27691,14 +28950,24 @@
         }
       },
       "x-ray": {
-        "meaning": "n.射线；v.用 X 光拍片",
+        "meaning": "n.X射线，X光；n.X光照片",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "x-ray",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "original_bank"
+          ]
+        },
+        "display_w": "X-ray"
       },
       "toothache": {
         "meaning": "n.牙痛",
@@ -28063,24 +29332,44 @@
         }
       },
       "nancy": {
-        "meaning": "n.女性化的男人；adj.女性化的",
+        "meaning": "n.南希（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "nancy",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Nancy"
       },
       "mandy": {
         "meaning": "n.曼蒂",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "mandy",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Mandy"
       },
       "utah": {
         "meaning": "n.美国犹他州",
@@ -28480,22 +29769,42 @@
       "mario": {
         "meaning": "n.马里奥",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "mario",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Mario"
       },
       "jimmy": {
-        "meaning": "n.铁撬；vt.撬",
+        "meaning": "n.吉米（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jimmy",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_textbook_example",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jimmy"
       },
       "rubbish": {
         "meaning": "n.垃圾；v.严厉批评",
@@ -28829,14 +30138,25 @@
         }
       },
       "sandy": {
-        "meaning": "adj.沙地的",
+        "meaning": "n.桑迪（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "sandy",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_textbook_example",
+            "original_bank"
+          ]
+        },
+        "display_w": "Sandy"
       },
       "allow": {
         "meaning": "v.允许",
@@ -29224,22 +30544,40 @@
       "cathy": {
         "meaning": "n.凯茜",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "cathy",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Cathy"
       },
       "taylor": {
         "meaning": "n.泰勒",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "taylor",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Taylor"
       },
       "rainstorm": {
         "meaning": "n.暴风雨",
@@ -29584,12 +30922,21 @@
       "allen": {
         "meaning": "n.艾伦",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "allen",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Allen"
       },
       "alabama": {
         "meaning": "n.阿拉巴马州",
@@ -29634,13 +30981,23 @@
         }
       },
       "god": {
-        "meaning": "n.上帝；vt.使神化",
+        "meaning": "n.神，上帝",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "god",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "local_school_gloss",
+            "original_bank"
+          ]
         }
       },
       "remind": {
@@ -30006,22 +31363,40 @@
       "claudia": {
         "meaning": "n.克劳迪娅",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "claudia",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Claudia"
       },
       "cinderella": {
         "meaning": "n.灰姑娘",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "cinderella",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "fictional_character",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Cinderella"
       },
       "square": {
         "meaning": "adj.平方的；n.平方",
@@ -30298,13 +31673,22 @@
         }
       },
       "cm": {
-        "meaning": "厘米",
+        "meaning": "abbr.厘米",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "cm",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "abbreviation",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "original_bank"
+          ]
         }
       },
       "centimeter": {
@@ -30847,12 +32231,21 @@
       "nashville": {
         "meaning": "n.那什维尔",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "nashville",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "place_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Nashville"
       },
       "tennessee": {
         "meaning": "n.田纳西州",
@@ -31202,12 +32595,21 @@
       "disneyland": {
         "meaning": "n.迪斯尼乐园",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "disneyland",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "place_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Disneyland"
       },
       "singapore": {
         "meaning": "n.新加坡",
@@ -31888,12 +33290,22 @@
       "annie": {
         "meaning": "n.安妮",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "annie",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Annie"
       },
       "mooncake": {
         "meaning": "n.月饼",
@@ -32238,22 +33650,44 @@
       "clara": {
         "meaning": "n.克拉拉",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "clara",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Clara"
       },
       "scrooge": {
-        "meaning": "n.吝啬鬼",
+        "meaning": "n.斯克鲁奇（小说人物）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "scrooge",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "fictional_character",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_teaching_context",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Scrooge"
       },
       "restroom": {
         "meaning": "n.厕所",
@@ -32633,12 +34067,22 @@
       "tim": {
         "meaning": "n.蒂姆",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "tim",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Tim"
       },
       "humorous": {
         "meaning": "adj.诙谐的",
@@ -32958,52 +34402,103 @@
       "paula": {
         "meaning": "n.宝拉",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "paula",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Paula"
       },
       "alfred": {
         "meaning": "n.阿尔弗雷德",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "alfred",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Alfred"
       },
       "billy": {
-        "meaning": "n.警棍",
+        "meaning": "n.比利（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "billy",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Billy"
       },
       "jerry": {
-        "meaning": "n.〈英",
+        "meaning": "n.杰里（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jerry",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jerry"
       },
       "emily": {
         "meaning": "n.埃米莉",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "emily",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Emily"
       },
       "chopstick": {
         "meaning": "n.筷子",
@@ -33463,11 +34958,19 @@
       "polish": {
         "meaning": "v.擦亮；n.上光剂",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "polish",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
         }
       },
       "complete": {
@@ -33511,14 +35014,25 @@
         }
       },
       "pam": {
-        "meaning": "脉冲幅度调制",
+        "meaning": "n.帕姆（人名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "pam",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Pam"
       },
       "heel": {
         "meaning": "n.脚后跟；v.倾斜",
@@ -33699,13 +35213,23 @@
         }
       },
       "saint": {
-        "meaning": "n.圣者；v.把…正式封为圣者",
+        "meaning": "n.圣人，圣徒",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "saint",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "local_school_gloss",
+            "original_bank"
+          ]
         }
       },
       "national": {
@@ -33987,32 +35511,61 @@
       "cba": {
         "meaning": "abbr.中国篮球协会",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "cba",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "abbreviation",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "CBA"
       },
       "roy": {
         "meaning": "n.罗伊",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "roy",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Roy"
       },
       "ruby": {
-        "meaning": "n.红宝石；adj.深红色的",
+        "meaning": "n.鲁比（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "ruby",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_transliteration",
+            "original_bank"
+          ]
+        },
+        "display_w": "Ruby"
       },
       "license": {
         "meaning": "n.执照；vt.许可",
@@ -34723,32 +36276,64 @@
       "carla": {
         "meaning": "n.卡拉",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "carla",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Carla"
       },
       "victor": {
-        "meaning": "n.胜利者",
+        "meaning": "n.维克托（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "victor",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Victor"
       },
       "jean": {
-        "meaning": "n.牛仔裤",
+        "meaning": "n.琼（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jean",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jean"
       },
       "prefer": {
         "meaning": "vt.更喜欢",
@@ -35114,12 +36699,22 @@
       "carmen": {
         "meaning": "n.卡门",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "carmen",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Carmen"
       },
       "custom": {
         "meaning": "n.习惯；adj.定做的",
@@ -35502,34 +37097,67 @@
         }
       },
       "katie": {
-        "meaning": "n.卡蒂",
+        "meaning": "n.凯蒂（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "katie",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Katie"
       },
       "sato": {
-        "meaning": "abbr.自对准厚氧化物层",
+        "meaning": "n.佐藤（日本姓）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "sato",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Sato"
       },
       "marie": {
         "meaning": "n.玛丽",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "marie",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Marie"
       },
       "rather": {
         "meaning": "adv.宁可；int.当然啦",
@@ -35877,22 +37505,43 @@
       "bert": {
         "meaning": "n.伯特",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "bert",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Bert"
       },
       "holly": {
-        "meaning": "n.冬青树",
+        "meaning": "n.霍莉（女名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "holly",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Holly"
       },
       "unexpected": {
         "meaning": "adj.意外的",
@@ -36236,24 +37885,45 @@
         }
       },
       "matt": {
-        "meaning": "adj.表面暗淡的",
+        "meaning": "n.马特（男名）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "matt",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_name_entry",
+            "original_bank"
+          ]
+        },
+        "display_w": "Matt"
       },
       "kevin": {
         "meaning": "n.凯文",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "kevin",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Kevin"
       },
       "carl": {
         "meaning": "n.粗野之人",
@@ -36596,44 +38266,85 @@
         }
       },
       "wwf": {
-        "meaning": "abbr.世界野生动物基金",
+        "meaning": "abbr.世界自然基金会",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "wwf",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "abbreviation",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "external_organization_example",
+            "external_organization_name",
+            "original_bank"
+          ]
+        },
+        "display_w": "WWF"
       },
       "jason": {
         "meaning": "n.杰森",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jason",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jason"
       },
       "hayes": {
-        "meaning": "n.海耶斯",
+        "meaning": "n.海斯（姓）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "hayes",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Hayes"
       },
       "jessica": {
         "meaning": "n.杰西卡",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "jessica",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Jessica"
       },
       "survey": {
         "meaning": "n.调查；v.做民意测验",
@@ -36937,42 +38648,84 @@
       "luke": {
         "meaning": "n.卢克",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "luke",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Luke"
       },
       "brian": {
         "meaning": "n.布莱恩",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "brian",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "person_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Brian"
       },
       "griffin": {
-        "meaning": "n.希腊神话中半狮半鹫的怪兽",
+        "meaning": "n.格里芬（姓）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "griffin",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_transliteration",
+            "external_textbook_excerpt",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Griffin"
       },
       "trent": {
         "meaning": "n.特伦特",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "trent",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "surname",
+          "evidence_kinds": [
+            "contextual_review",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Trent"
       },
       "i'm": {
         "meaning": "abbr.我是",
@@ -37056,14 +38809,26 @@
         }
       },
       "ms": {
-        "meaning": "abbr.毫秒",
+        "meaning": "n.女士（不指明婚姻状况）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "ms",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "title",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "external_title_entry",
+            "local_school_gloss",
+            "original_bank"
+          ]
+        },
+        "display_w": "Ms"
       },
       "america": {
         "meaning": "n.美洲",
@@ -37466,12 +39231,21 @@
       "pacific": {
         "meaning": "n.太平洋；adj.太平洋的",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "pacific",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "place_name",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Pacific"
       },
       "world-famous": {
         "meaning": "adj.举世闻名的",
@@ -37677,12 +39451,21 @@
       "olympics": {
         "meaning": "n.奥林匹克运动会",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "olympics",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "sports_event",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Olympics"
       },
       "stadium": {
         "meaning": "n.体育场",
@@ -39277,12 +41060,21 @@
       "westerner": {
         "meaning": "n.西方人",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "westerner",
+          "review_stage": "middleschool",
+          "action": "retain",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "original_bank"
+          ]
+        },
+        "display_w": "Westerner"
       },
       "secretary": {
         "meaning": "n.秘书",
@@ -42786,14 +44578,24 @@
         }
       },
       "dvd": {
-        "meaning": "abbr.数字化视频光盘；n.光盘",
+        "meaning": "abbr.数字视频光盘",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
-        }
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "dvd",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "abbreviation",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "original_bank"
+          ]
+        },
+        "display_w": "DVD"
       },
       "tale": {
         "meaning": "n.故事",
@@ -43706,13 +45508,22 @@
         }
       },
       "app": {
-        "meaning": "应用",
+        "meaning": "n.应用程序",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "app",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "original_bank"
+          ]
         }
       },
       "average": {
@@ -46893,13 +48704,22 @@
         }
       },
       "pole": {
-        "meaning": "n.杆；v.用篙撑",
+        "meaning": "n.杆，柱；n.极（点）",
         "provenance": {
-          "source": "data/bank.json",
+          "source": "data/school_meaning_reviews.json",
           "sources": [
-            "data/bank.json"
+            "data/school_meaning_reviews.json"
           ],
-          "rule": "general_first_sense_fallback"
+          "rule": "reviewed_school_meaning_v135",
+          "review_word": "pole",
+          "review_stage": "middleschool",
+          "action": "replace",
+          "category": "common_word",
+          "evidence_kinds": [
+            "contextual_review",
+            "editorial_definition",
+            "original_bank"
+          ]
         }
       },
       "political": {

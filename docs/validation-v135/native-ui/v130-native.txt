@@ -1,0 +1,14 @@
+QWindowsWindow::setGeometry: Unable to set geometry 356x196+100+100 (frame: 356x196+100+100) on QWidgetWindow/"CardClassWindow" on "\\.\DISPLAY1". Resulting geometry: 356x371+100+100 (frame: 356x371+100+100) margins: 0, 0, 0, 0 minimum size: 356x196 maximum size: 356x196 MINMAXINFO maxSize=0,0 maxpos=0,0 mintrack=356,196 maxtrack=356,196)
+QWindowsWindow::setGeometry: Unable to set geometry 356x371+700+300 (frame: 356x371+700+300) on QWidgetWindow/"CardClassWindow" on "\\.\DISPLAY1". Resulting geometry: 356x196+700+300 (frame: 356x196+700+300) margins: 0, 0, 0, 0 minimum size: 356x196 maximum size: 356x196 MINMAXINFO maxSize=0,0 maxpos=0,0 mintrack=356,196 maxtrack=356,196)
+QWindowsWindow::setGeometry: Unable to set geometry 356x196+440+235 (frame: 356x196+440+235) on QWidgetWindow/"CardClassWindow" on "\\.\DISPLAY1". Resulting geometry: 356x234+440+235 (frame: 356x234+440+235) margins: 0, 0, 0, 0 minimum size: 356x196 maximum size: 356x196 MINMAXINFO maxSize=0,0 maxpos=0,0 mintrack=356,196 maxtrack=356,196)
+QWindowsWindow::setGeometry: Unable to set geometry 356x234+0+150 (frame: 356x234+0+150) on QWidgetWindow/"CardClassWindow" on "\\.\DISPLAY1". Resulting geometry: 356x196+0+150 (frame: 356x196+0+150) margins: 0, 0, 0, 0 minimum size: 356x196 maximum size: 356x196 MINMAXINFO maxSize=0,0 maxpos=0,0 mintrack=356,196 maxtrack=356,196)
+QWindowsWindow::setGeometry: Unable to set geometry 356x196+700+300 (frame: 356x196+700+300) on QWidgetWindow/"CardClassWindow" on "\\.\DISPLAY1". Resulting geometry: 356x209+700+300 (frame: 356x209+700+300) margins: 0, 0, 0, 0 minimum size: 356x196 maximum size: 356x196 MINMAXINFO maxSize=0,0 maxpos=0,0 mintrack=356,196 maxtrack=356,196)
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-quiz-wrapped.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-settings-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-choice.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-phrase-compact.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-catalog.png
+WROTE 698 LINES; FAILS 0
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\test_v130_ui.txt
+V130 CHECKS 616 FAILS 0
+can't open file for write !

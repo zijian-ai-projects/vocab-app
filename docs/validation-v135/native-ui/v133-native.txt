@@ -1,0 +1,16 @@
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-dock-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-dock-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-dock-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-dock-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-choice-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-settings-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-choice-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-settings-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-choice-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-settings-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-choice-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-settings-green.png
+WROTE 368 LINES; FAILS 0
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\test_v133_ui.txt
+V133 CHECKS 324 FAILS 0
+can't open file for write !

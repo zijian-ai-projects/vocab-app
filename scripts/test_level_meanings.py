@@ -43,6 +43,7 @@ class LevelMeaningDataTests(unittest.TestCase):
         cls.bank = {row["w"]: row for row in read_json(builder.BANK_PATH)}
         if os.path.isfile(builder.PHRASES_PATH):
             cls.bank.update({row["w"]: row for row in read_json(builder.PHRASES_PATH)})
+        cls.reviews = builder.read_school_reviews(cls.bank)
 
     def test_schema_and_runtime_loader(self):
         self.assertEqual(self.data["schema"], 1)
@@ -74,7 +75,16 @@ class LevelMeaningDataTests(unittest.TestCase):
                 self.assertLessEqual(text.count("；") + 1, groups, (stage, word, text))
                 self.assertEqual(text.count("（"), text.count("）"), (stage, word, text))
                 self.assertEqual(text.count("("), text.count(")"), (stage, word, text))
-                self.assertIsNone(BAD_RE.search(text), (stage, word, text))
+                if row["provenance"]["rule"] == builder.REVIEW_RULE:
+                    reviewed = self.reviews[stage][word]
+                    self.assertEqual(text, reviewed["meaning"])
+                    self.assertIsNone(re.search(r"俚语|粗俗|\[医\]|\[计\]|\[法\]|（俚）", text),
+                                      (stage, word, text))
+                    if "人名" in text or "姓氏" in text:
+                        self.assertIn(reviewed["category"],
+                                      ("personal_name", "person_name", "surname", "fictional_character"))
+                else:
+                    self.assertIsNone(BAD_RE.search(text), (stage, word, text))
 
     def test_every_entry_has_hashed_provenance(self):
         sources = self.data["sources"]
@@ -154,6 +164,15 @@ class LevelMeaningDataTests(unittest.TestCase):
         for stage in builder.STAGES:
             for word, row in self.data["levels"][stage].items():
                 provenance = row["provenance"]
+                if provenance["rule"] == builder.REVIEW_RULE:
+                    reviewed = self.reviews[stage][word]
+                    self.assertEqual(row["meaning"], reviewed["meaning"])
+                    self.assertEqual(provenance["source"], builder.relpath(builder.REVIEW_PATH))
+                    self.assertEqual(provenance["sources"], [builder.relpath(builder.REVIEW_PATH)])
+                    self.assertEqual(provenance["review_word"], word)
+                    self.assertEqual(provenance["review_stage"], stage)
+                    self.assertTrue(reviewed["references"] and reviewed["reason"])
+                    continue
                 originals = []
                 for source in provenance.get("sources", [provenance["source"]]):
                     raw = source_rows[source].get(word, {})
@@ -214,7 +233,13 @@ class LevelMeaningDataTests(unittest.TestCase):
                                   (stage, second, mapping[second]))
         reviews = self.data.get("review_required") or {}
         listed = {item["word"] for rows in reviews.values() for item in rows}
-        self.assertTrue({"alice", "matt", "bds"} <= listed)
+        self.assertFalse({"alice", "matt", "bds"} & listed)
+        for stage, expected in (
+                ("primary", {"alice": "爱丽丝", "matt": "马特", "bds": "北斗卫星导航系统"}),
+                ("middleschool", {"alice": "爱丽丝", "matt": "马特"})):
+            for word, fragment in expected.items():
+                self.assertIn(fragment, self.data["levels"][stage][word]["meaning"])
+                self.assertEqual(self.data["levels"][stage][word]["provenance"]["rule"], builder.REVIEW_RULE)
 
     def test_levels_are_versions_not_bank_mutations(self):
         primary = self.data["levels"]["primary"]

@@ -1,0 +1,3 @@
+FT_New_Face failed with index 0 : 2
+WROTE 34 LINES; FAILS 0
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\plugin-records-out-2g4xe97s\test_plugin_records.txt

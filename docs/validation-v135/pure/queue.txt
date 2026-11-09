@@ -1,0 +1,37 @@
+test_all_ten_levels_through_queue (__main__.StudyQueueTests) ... ok
+test_answer_counts_once_and_rejects_stale_item (__main__.StudyQueueTests) ... ok
+test_book_end_multiple_unknowns_early_retry_fair_and_restartable (__main__.StudyQueueTests) ... ok
+test_due_order_current_book_only_and_dynamic_enqueues (__main__.StudyQueueTests) ... ok
+test_due_review_precedes_ready_retry (__main__.StudyQueueTests) ... ok
+test_empty_book_has_no_items_or_future_due (__main__.StudyQueueTests) ... ok
+test_engine_does_not_open_files (__main__.StudyQueueTests) ... ok
+test_exact_gap_three_and_five_first_new_answers (__main__.StudyQueueTests) ... ok
+test_explicit_forgotten_before_cursor_beats_known_estimate (__main__.StudyQueueTests) ... ok
+test_foreign_pending_preserved_but_only_current_book_presented (__main__.StudyQueueTests) ... ok
+test_held_unknown_invalidated_when_shared_word_is_recognized (__main__.StudyQueueTests) ... ok
+test_invalid_current_state_is_not_resurrected (__main__.StudyQueueTests) ... ok
+test_known_skips_only_words_without_explicit_state (__main__.StudyQueueTests) ... ok
+test_legacy_cursor_and_reorder_do_not_lose_untouched_words (__main__.StudyQueueTests) ... ok
+test_legacy_full_item_current_is_canonicalized_by_key (__main__.StudyQueueTests) ... ok
+test_memory_shared_cross_books_but_queues_are_book_local (__main__.StudyQueueTests) ... ok
+test_multiple_ready_retry_target_then_book_index (__main__.StudyQueueTests) ... ok
+test_next_due_time_future_only_and_current_book_only (__main__.StudyQueueTests) ... ok
+test_pending_unknown_survives_reverse_then_shuffle (__main__.StudyQueueTests) ... ok
+test_record_defaults_shared_identity_and_unanswered_current (__main__.StudyQueueTests) ... ok
+test_restart_during_held_review_and_reverse_order (__main__.StudyQueueTests) ... ok
+test_restart_of_early_retry_keeps_unanswered_current (__main__.StudyQueueTests) ... ok
+test_restart_preserves_pending_and_gap_change_affects_next_forget_only (__main__.StudyQueueTests) ... ok
+test_restart_unanswered_new_uses_key_and_never_skips_prefix (__main__.StudyQueueTests) ... ok
+test_retry_forget_refreshes_gap_without_count_or_level_change (__main__.StudyQueueTests) ... ok
+test_review_does_not_use_up_new_word_gap (__main__.StudyQueueTests) ... ok
+test_review_forget_preserves_grade_and_never_adds_pending (__main__.StudyQueueTests) ... ok
+test_single_word_end_early_retry_then_future_review (__main__.StudyQueueTests) ... ok
+test_unanswered_new_held_behind_all_due_reviews_then_restored (__main__.StudyQueueTests) ... ok
+test_unanswered_retry_held_without_gap_target_or_count_change (__main__.StudyQueueTests) ... ok
+test_wrong_answer_snapshot_restores_counter_and_pending (__main__.StudyQueueTests) ... ok
+test_zero_clock_and_default_wall_clock (__main__.StudyQueueTests) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 0.017s
+
+OK

@@ -24,8 +24,16 @@ PHRASES_PATH = os.path.join(DATA, "phrases.json")
 PHRASE_BOOKS_PATH = os.path.join(DATA, "phrase_books.json")
 BOOKS_PATH = os.path.join(DATA, "books.json")
 OUT_PATH = os.path.join(DATA, "level_meanings.json")
+REVIEW_PATH = os.path.join(DATA, "school_meaning_reviews.json")
 STAGES = ("primary", "middleschool")
-RULE_VERSION = "school-meaning-overlay-v3-community"
+RULE_VERSION = "school-meaning-overlay-v4-reviewed158-community"
+REVIEW_RULE = "reviewed_school_meaning_v135"
+REVIEW_ORIGIN_SHA256 = "afbc132aa0627a33108816924003f669ad01fdd146ef39d245722a4dac9c931c"
+REVIEW_SCOPE_HASHES = {
+    "primary": "3fab1d4627952f2657020b543749d9b3e5a59741fb76094d76669691f4d21d45",
+    "middleschool": "d62d751467097d0567c5dce651272eaf0bf291b9e6300633ef61aeafc60fa453",
+}
+REVIEW_SCOPE_COUNTS = {"primary": 47, "middleschool": 136}
 REVIEW_NOTES = {
     "alice": "书籍成员疑似人名 Alice，但本地词书无中文 gloss；当前只能保留通用 bank 回退。",
     "matt": "书籍成员疑似人名 Matt，但本地词书无中文 gloss；当前只能保留通用 bank 回退。",
@@ -404,6 +412,81 @@ def select_meaning(stage, word, entry, gloss_items, casefold_selectors=None):
     }
 
 
+def review_scope_digest(words):
+    encoded = json.dumps(sorted(words), ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def read_school_reviews(entries):
+    """Load explicit V135 editorial corrections; never pretend they are old gloss fragments."""
+    data = read_json(REVIEW_PATH)
+    if not isinstance(data, dict) or data.get("schema") != 1:
+        raise ValueError("invalid school review schema")
+    scope = data.get("scope") or {}
+    if (scope.get("origin_version") != "1.3.4" or
+            scope.get("origin_overlay_sha256") != REVIEW_ORIGIN_SHA256):
+        raise ValueError("school review origin is not the frozen V134 layer")
+    original_inputs = scope.get("original_inputs_normalized_sha256") or {}
+    input_paths = {"bank.json": BANK_PATH, "books.json": BOOKS_PATH,
+                   "phrases.json": PHRASES_PATH, "phrase_books.json": PHRASE_BOOKS_PATH}
+    if set(original_inputs) != set(input_paths) or any(
+            source_record(path)["sha256"] != original_inputs[name]
+            for name, path in input_paths.items()):
+        raise ValueError("original school inputs changed since the wordwise audit")
+    rows = data.get("entries")
+    if not isinstance(rows, list) or len(rows) != 158:
+        raise ValueError("school review must contain exactly 158 distinct words")
+    result, seen = {stage: {} for stage in STAGES}, set()
+    for record in rows:
+        word = record.get("w") if isinstance(record, dict) else None
+        if not isinstance(word, str) or word in seen or word not in entries:
+            raise ValueError("invalid/duplicate school review identity: %r" % word)
+        seen.add(word)
+        levels = record.get("levels")
+        if not isinstance(levels, dict) or not levels or set(levels) - set(STAGES):
+            raise ValueError("invalid school review levels: %s" % word)
+        for stage, row in levels.items():
+            if not isinstance(row, dict) or row.get("status") != "reviewed":
+                raise ValueError("unreviewed correction: %s/%s" % (stage, word))
+            text, old = row.get("meaning"), row.get("old_meaning")
+            maximum, groups = (32, 1) if stage == "primary" else (58, 2)
+            if (not isinstance(text, str) or text != text.strip() or not CJK_RE.search(text) or
+                    len(text) > maximum or text.count("；") + 1 > groups or ";" in text or
+                    "\n" in text or "\r" in text or "\x00" in text):
+                raise ValueError("invalid school review text: %s/%s" % (stage, word))
+            if text.count("（") != text.count("）") or text.count("(") != text.count(")"):
+                raise ValueError("unbalanced review meaning: %s/%s" % (stage, word))
+            if not isinstance(old, str) or not old.strip():
+                raise ValueError("old review meaning missing: %s/%s" % (stage, word))
+            if (not re.match(r"^(?:n|v|vt|vi|adj|adv|prep|conj|pron|det|art|num|aux|int|interj|abbr)\.", text)
+                    or re.search(r"俚语|粗俗|\[医\]|\[计\]|\[法\]|（俚）", text)):
+                raise ValueError("unsuitable school review labels: %s/%s" % (stage, word))
+            if (("人名" in text or "姓氏" in text) and row.get("category") not in
+                    ("personal_name", "person_name", "surname", "fictional_character")):
+                raise ValueError("name label without reviewed name context: %s/%s" % (stage, word))
+            action = "retain" if text == old else "replace"
+            if row.get("action") != action or not row.get("category") or not row.get("reason"):
+                raise ValueError("invalid review decision: %s/%s" % (stage, word))
+            headword = row.get("headword")
+            if not isinstance(headword, str) or not headword.strip() or len(headword) > 64:
+                raise ValueError("invalid school caption: %s/%s" % (stage, word))
+            references = row.get("references")
+            if not isinstance(references, list) or not references or any(
+                    not isinstance(ref, dict) or not ref.get("kind") or not ref.get("title")
+                    for ref in references):
+                raise ValueError("review evidence missing: %s/%s" % (stage, word))
+            if not isinstance(row.get("context_books"), list) or not row["context_books"]:
+                raise ValueError("review book context missing: %s/%s" % (stage, word))
+            result[stage][word] = row
+    for stage in STAGES:
+        if (len(result[stage]) != REVIEW_SCOPE_COUNTS[stage] or
+                review_scope_digest(result[stage]) != REVIEW_SCOPE_HASHES[stage]):
+            raise ValueError("school review changes the frozen word scope: " + stage)
+    if len(set(result["primary"]) | set(result["middleschool"])) != 158:
+        raise ValueError("school review unique word count changed")
+    return result
+
+
 def build():
     books = read_json(BOOKS_PATH)
     phrase_books = read_json(PHRASE_BOOKS_PATH) if os.path.isfile(PHRASE_BOOKS_PATH) else {}
@@ -411,9 +494,12 @@ def build():
     phrase_rows = read_json(PHRASES_PATH) if os.path.isfile(PHRASES_PATH) else []
     entries = {row["w"]: row for row in bank_rows}
     entries.update({row["w"]: row for row in phrase_rows})
+    reviews = read_school_reviews(entries)
+    review_source = relpath(REVIEW_PATH)
     sources = {
         relpath(BOOKS_PATH): source_record(BOOKS_PATH),
         relpath(BANK_PATH): source_record(BANK_PATH),
+        review_source: source_record(REVIEW_PATH),
     }
     if os.path.isfile(PHRASES_PATH):
         sources[relpath(PHRASES_PATH)] = source_record(PHRASES_PATH)
@@ -427,6 +513,15 @@ def build():
     review_required = {}
     for stage in STAGES:
         words, book_ids = ordered_stage_words(books, stage, phrase_books)
+        if set(reviews[stage]) - set(words):
+            raise ValueError("reviewed word is not a real school member: " + stage)
+        actual_books = {item["id"]: set(item.get("words", []))
+                        for main in books["mains"] if main["id"] == stage
+                        for group in main.get("groups", []) for item in group.get("items", [])}
+        for reviewed_word, reviewed_row in reviews[stage].items():
+            if any(reviewed_word not in actual_books.get(book_id, set())
+                   for book_id in reviewed_row["context_books"]):
+                raise ValueError("invalid review book context: %s/%s" % (stage, reviewed_word))
         glosses = gloss_index(book_ids, sources)
         mapping = {}
         rules = {}
@@ -438,10 +533,22 @@ def build():
                 continue
             context = CASEFOLD_CONTEXT.get(word)
             selectors = context[1].get(stage) if context and context[0] not in entries else None
-            meaning, provenance = select_meaning(
-                stage, word, entry, glosses.get(word, []), selectors)
+            reviewed = reviews[stage].get(word)
+            if reviewed is not None:
+                meaning = reviewed["meaning"]
+                provenance = {
+                    "source": review_source, "sources": [review_source], "rule": REVIEW_RULE,
+                    "review_word": word, "review_stage": stage,
+                    "action": reviewed["action"], "category": reviewed["category"],
+                    "evidence_kinds": sorted({ref["kind"] for ref in reviewed["references"]}),
+                }
+            else:
+                meaning, provenance = select_meaning(
+                    stage, word, entry, glosses.get(word, []), selectors)
             mapping[word] = {"meaning": meaning, "provenance": provenance}
-            if word in REVIEW_NOTES and not glosses.get(word):
+            if reviewed is not None and reviewed["headword"] != word:
+                mapping[word]["display_w"] = reviewed["headword"]
+            if reviewed is None and word in REVIEW_NOTES and not glosses.get(word):
                 review_required[stage].append({
                     "word": word, "reason": REVIEW_NOTES[word],
                     "fallback_meaning": meaning,
@@ -464,8 +571,13 @@ def build():
             "source_hash_normalization": "UTF-8 JSON bytes with CRLF converted to LF",
             "primary_max_sense_groups": 1,
             "middleschool_max_sense_groups": 2,
-            "fallback": "existing general first common sense; never invent or pad",
-            "selection": "hashed book-gloss fragment by existing POS, with verified source-fragment selectors for ambiguous school words",
+            "fallback": "existing general source sense for unreviewed items; never pad membership",
+            "selection": "explicit reviewed V135 school corrections first; otherwise hashed book-gloss fragments and verified selectors",
+        },
+        "wordwise_review": {
+            "version": "1.3.5", "source": review_source, "unique_words": 158,
+            "stage_items": 183, "stage_counts": dict(REVIEW_SCOPE_COUNTS),
+            "method": "wordwise local-context and evidence review, including explicit editorial translations; not an official wordlist audit",
         },
         "sources": dict(sorted(sources.items())),
         "stats": stats,

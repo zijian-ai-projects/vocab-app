@@ -1,0 +1,32 @@
+test_catalog_order_and_refilter_are_stable_without_committing_selection (__main__.OrderChangeTests) ... REAL_GUARD test_catalog_order_and_refilter_are_stable_without_committing_selection PATHS 12 UNCHANGED True
+ok
+test_cursor_tail_then_prefix_scan_never_loses_or_repeats_new_words (__main__.OrderChangeTests) ... REAL_GUARD test_cursor_tail_then_prefix_scan_never_loses_or_repeats_new_words PATHS 12 UNCHANGED True
+ok
+test_due_filter_uses_shuffled_book_order_not_due_timestamp (__main__.OrderChangeTests) ... REAL_GUARD test_due_filter_uses_shuffled_book_order_not_due_timestamp PATHS 12 UNCHANGED True
+ok
+test_explicit_change_after_row_rebuilds_pointers_and_preserves_records (__main__.OrderChangeTests) ... UI_TRACE row-before-shuffle {"book": "fixture-order-a", "sel_book": "fixture-order-a", "sel_order": "shuffle", "order_mode": "shuffle", "current": ["new", "delta"], "record": {"cursor": 0, "new_count": 1, "pending": {"alpha": 4}, "current": {"kind": "new", "key": "delta"}, "held_current": null, "last_retry": "alpha", "unknown": {"keep": [7, "queue"]}}, "queue_words": ["delta", "echo", "golf", "hotel", "charlie", "foxtrot", "alpha", "bravo"], "orders": {"fixture-order-a": {"mode": "shuffle", "seed": 42}, "fixture-order-b": {"mode": "shuffle", "seed": 52}}}
+REAL_GUARD test_explicit_change_after_row_rebuilds_pointers_and_preserves_records PATHS 12 UNCHANGED True
+ok
+test_new_book_same_mode_resumes_its_saved_current_and_shared_states (__main__.OrderChangeTests) ... REAL_GUARD test_new_book_same_mode_resumes_its_saved_current_and_shared_states PATHS 12 UNCHANGED True
+ok
+test_readonly_real_book_copy_ui_matches_review_current_then_shuffle_trace (__main__.OrderChangeTests) ... READONLY_REAL_UI_TRACE [["review", "paint", 1118, 0, 0], ["review", "age", 758, 0, 0], ["review", "afternoon", 1179, 0, 0], ["review", "erase", 1276, 0, 0], ["review", "cowboy", 1321, 0, 0], ["review", "an", 2114, 0, 0], ["review", "about", 2167, 0, 0], ["review", "comfort", 2339, 0, 0], ["review", "shock", 2952, 0, 0], ["review", "dual", 3075, 0, 0], ["review", "again", 3432, 0, 0], ["review", "inquiry", 3444, 0, 0], ["review", "chess", 3844, 0, 0], ["review", "ease", 4278, 0, 0], ["review", "after", 4446, 0, 0]]
+REAL_GUARD test_readonly_real_book_copy_ui_matches_review_current_then_shuffle_trace PATHS 12 UNCHANGED True
+ok
+test_same_shuffle_start_and_restart_preserve_unanswered_current (__main__.OrderChangeTests) ... REAL_GUARD test_same_shuffle_start_and_restart_preserve_unanswered_current PATHS 12 UNCHANGED True
+ok
+test_saved_book_mode_is_restored_when_no_explicit_selection (__main__.OrderChangeTests) ... REAL_GUARD test_saved_book_mode_is_restored_when_no_explicit_selection PATHS 12 UNCHANGED True
+ok
+test_seq_before_book_with_saved_shuffle_is_not_silently_discarded (__main__.OrderChangeTests) ... UI_TRACE explicit-seq-before-row-fixture-order-b {"book": "fixture-order-b", "sel_book": "fixture-order-b", "sel_order": "seq", "order_mode": "seq", "current": ["new", "echo"], "record": {"cursor": 0, "new_count": 0, "pending": {}, "current": {"kind": "new", "key": "echo"}, "held_current": null, "last_retry": null}, "queue_words": ["echo", "foxtrot", "golf", "hotel", "alpha", "bravo", "charlie", "delta"], "orders": {"fixture-order-a": {"mode": "seq", "seed": 42}, "fixture-order-b": {"mode": "seq", "seed": 52}}}
+REAL_GUARD test_seq_before_book_with_saved_shuffle_is_not_silently_discarded PATHS 12 UNCHANGED True
+ok
+test_shuffle_before_first_book_row_is_not_silently_discarded (__main__.OrderChangeTests) ... UI_TRACE explicit-shuffle-before-row-fixture-order-a {"book": "fixture-order-a", "sel_book": "fixture-order-a", "sel_order": "shuffle", "order_mode": "shuffle", "current": ["new", "delta"], "record": {"cursor": 0, "new_count": 0, "pending": {}, "current": {"kind": "new", "key": "delta"}, "held_current": null, "last_retry": null}, "queue_words": ["delta", "echo", "golf", "hotel", "charlie", "foxtrot", "alpha", "bravo"], "orders": {"fixture-order-a": {"mode": "shuffle", "seed": 42}, "fixture-order-b": {"mode": "shuffle", "seed": 52}}}
+REAL_GUARD test_shuffle_before_first_book_row_is_not_silently_discarded PATHS 12 UNCHANGED True
+ok
+test_shuffle_before_same_book_row_is_not_silently_discarded (__main__.OrderChangeTests) ... UI_TRACE explicit-shuffle-before-row-fixture-order-a {"book": "fixture-order-a", "sel_book": "fixture-order-a", "sel_order": "shuffle", "order_mode": "shuffle", "current": ["new", "delta"], "record": {"cursor": 0, "new_count": 0, "pending": {}, "current": {"kind": "new", "key": "delta"}, "held_current": null, "last_retry": null}, "queue_words": ["delta", "echo", "golf", "hotel", "charlie", "foxtrot", "alpha", "bravo"], "orders": {"fixture-order-a": {"mode": "shuffle", "seed": 42}, "fixture-order-b": {"mode": "shuffle", "seed": 52}}}
+REAL_GUARD test_shuffle_before_same_book_row_is_not_silently_discarded PATHS 12 UNCHANGED True
+ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 9.904s
+
+OK

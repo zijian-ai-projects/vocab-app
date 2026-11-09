@@ -1,0 +1,4500 @@
+{
+  "schema": 1,
+  "version": "1.3.5",
+  "origin_version": "1.3.4",
+  "origin_overlay_sha256": "afbc132aa0627a33108816924003f669ad01fdd146ef39d245722a4dac9c931c",
+  "unique_words": 158,
+  "stage_counts": {
+    "primary": 47,
+    "middleschool": 136
+  },
+  "stage_items": 183,
+  "wordlist_policy": "community_compilation",
+  "original_inputs_raw_sha256": {
+    "bank.json": "e4f6d3283349a32076c5cc3fcc875d064ff5e5cfdb2d7310e5d0515ff0d9a126",
+    "books.json": "99648ed217329e33df69cb05462bd1e2d8a73c57e4407510cd2f54521f15705a",
+    "phrases.json": "9b9a060f87d13bcbe0bfb081b1c0ce5e45b810272f42404e45357ee5cc81b5f9",
+    "phrase_books.json": "350a9a5559d02d4f15ab4dc61e0e40a1bf52ffb7c9593bff1d9b6e7037f6b1f7"
+  },
+  "entries": [
+    {
+      "w": "alice",
+      "bank": {
+        "w": "alice",
+        "ipa": "'ælis",
+        "pos": [],
+        "s": "应用语言接口转换与扩充",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "[计] 应用语言接口转换与扩充",
+        "ph_raw": "'ælis",
+        "lvl": 1,
+        "b": -2.1149
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "应用语言接口转换与扩充",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 438,
+              "nearby_words": [
+                "which",
+                "who",
+                "whose",
+                "alex",
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 770,
+              "nearby_words": [
+                "where",
+                "whose",
+                "why",
+                "alex",
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "应用语言接口转换与扩充",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 16,
+              "nearby_words": [
+                "ok",
+                "hb",
+                "cd",
+                "bbc",
+                "alice",
+                "bob",
+                "cindy",
+                "dale",
+                "eric"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "am",
+      "bank": {
+        "w": "am",
+        "ipa": "æm; əm",
+        "pos": [
+          "v.",
+          "abbr."
+        ],
+        "s": "v.是；abbr.上午",
+        "tags": [
+          "gk"
+        ],
+        "frq": 1192,
+        "collins": "",
+        "raw": "be的单数第一人称\\n[计] 存取管理程序, 寻址方式, 地址标记, 变址数, 调幅, 辅助存储器",
+        "ph_raw": "æm",
+        "lvl": 0,
+        "b": -2.9567
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "v.是",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx2-1",
+              "book_name": "外研版三年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 0,
+              "nearby_words": [
+                "am",
+                "i'm",
+                "aah",
+                "hello",
+                "hi"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx2-4",
+              "book_name": "外研版四年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 47,
+              "nearby_words": [
+                "so",
+                "cloudy",
+                "weather",
+                "was",
+                "am",
+                "is",
+                "then",
+                "grandparent",
+                "were"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx3-1",
+              "book_name": "译林版三年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 6,
+              "nearby_words": [
+                "i'm",
+                "are",
+                "you",
+                "yes",
+                "am",
+                "no",
+                "not",
+                "my",
+                "friend"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-dg",
+              "book_name": "小学英语大纲词汇",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 32,
+              "nearby_words": [
+                "ball",
+                "banana",
+                "basketball",
+                "be",
+                "am",
+                "is",
+                "are",
+                "beach",
+                "bear"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-dg2011",
+              "book_name": "2011 小学英语大纲词汇",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 29,
+              "nearby_words": [
+                "ball",
+                "banana",
+                "basketball",
+                "be",
+                "am",
+                "is",
+                "are",
+                "bear",
+                "beautiful"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "v.是；abbr.上午",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 9,
+              "nearby_words": [
+                "evening",
+                "how",
+                "are",
+                "you",
+                "am",
+                "fine",
+                "thanks",
+                "ok",
+                "hb"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "cz2-1",
+              "book_name": "外研版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 10,
+              "nearby_words": [
+                "good",
+                "morning",
+                "afternoon",
+                "goodbye",
+                "am",
+                "i'm",
+                "mr",
+                "what",
+                "your"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-dg",
+              "book_name": "中考大纲英语词汇",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 125,
+              "nearby_words": [
+                "bat",
+                "bath",
+                "bathroom",
+                "be",
+                "am",
+                "is",
+                "are",
+                "beach",
+                "bean"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "ann",
+      "bank": {
+        "w": "ann",
+        "ipa": "æn",
+        "pos": [
+          "n."
+        ],
+        "s": "n.安",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 安（女子名）",
+        "ph_raw": "æn",
+        "lvl": 1,
+        "b": -1.9613
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.安",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 439,
+              "nearby_words": [
+                "who",
+                "whose",
+                "alex",
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 771,
+              "nearby_words": [
+                "whose",
+                "why",
+                "alex",
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "anna",
+      "bank": {
+        "w": "anna",
+        "ipa": "'ænә",
+        "pos": [
+          "n."
+        ],
+        "s": "n.安娜",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 安娜（女子名）",
+        "ph_raw": "'ænә",
+        "lvl": 1,
+        "b": -2.1751
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.安娜",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 440,
+              "nearby_words": [
+                "whose",
+                "alex",
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva",
+                "jill"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 772,
+              "nearby_words": [
+                "why",
+                "alex",
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva",
+                "jill"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.安娜",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 184,
+              "nearby_words": [
+                "call",
+                "lost",
+                "must",
+                "set",
+                "anna",
+                "david",
+                "where",
+                "table",
+                "bed"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "app",
+      "bank": {
+        "w": "app",
+        "ipa": "",
+        "pos": [],
+        "s": "应用，应用程序；相联并行处理器",
+        "tags": [],
+        "frq": 16510,
+        "collins": "",
+        "raw": "[计] 应用, 应用程序; 相联并行处理器",
+        "ph_raw": "",
+        "lvl": 6,
+        "b": -0.3177
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "应用",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 439,
+              "nearby_words": [
+                "sport",
+                "tablet",
+                "tennis",
+                "throw",
+                "app",
+                "band",
+                "music",
+                "cd",
+                "comic"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "应用",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "zk-dg",
+              "book_name": "中考大纲英语词汇",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 73,
+              "nearby_words": [
+                "anything",
+                "anyway",
+                "anywhere",
+                "apartment",
+                "app",
+                "application",
+                "appear",
+                "apple",
+                "area"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "august",
+      "bank": {
+        "w": "august",
+        "ipa": "ˈɔːɡəst",
+        "pos": [
+          "n.",
+          "adj."
+        ],
+        "s": "n.八月；adj.威严的，令人敬畏的",
+        "tags": [
+          "zk",
+          "gk",
+          "ielts",
+          "gre"
+        ],
+        "frq": 22206,
+        "collins": "4",
+        "raw": "n.八月(大写时）adj.威严的尊严的(小写时）",
+        "ph_raw": "'ɔ:gʌst",
+        "lvl": 7,
+        "b": 0.0747
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.八月",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx1-6",
+              "book_name": "人教PEP版五年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "人教 PEP",
+              "word_index": 51,
+              "nearby_words": [
+                "april",
+                "may",
+                "june",
+                "july",
+                "august",
+                "september",
+                "october",
+                "november",
+                "december"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx3-6",
+              "book_name": "译林版五年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 96,
+              "nearby_words": [
+                "april",
+                "together",
+                "march",
+                "july",
+                "august",
+                "december",
+                "hero",
+                "play",
+                "number"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.八月；adj.威严的",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 335,
+              "nearby_words": [
+                "april",
+                "may",
+                "june",
+                "july",
+                "august",
+                "september",
+                "october",
+                "november",
+                "december"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "cz2-2",
+              "book_name": "外研版初中英语七年级下册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 276,
+              "nearby_words": [
+                "march",
+                "april",
+                "june",
+                "july",
+                "august",
+                "september",
+                "october",
+                "november",
+                "december"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-sg",
+              "book_name": "中考词汇闪过",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 1130,
+              "nearby_words": [
+                "april",
+                "area",
+                "art",
+                "asia",
+                "august",
+                "bag",
+                "ball",
+                "balloon",
+                "bamboo"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-xh16",
+              "book_name": "星火初中 1600 词",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 822,
+              "nearby_words": [
+                "artist",
+                "asia",
+                "asian",
+                "atlantic",
+                "august",
+                "aunt",
+                "australia",
+                "australian",
+                "autumn"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "bds",
+      "bank": {
+        "w": "bds",
+        "ipa": "",
+        "pos": [
+          "abbr."
+        ],
+        "s": "abbr.用硬纸板作封面",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "abbr. 用硬纸板作封面（bound in boards）",
+        "ph_raw": "",
+        "lvl": 11,
+        "b": 1.2042
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "abbr.用硬纸板作封面",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx1-7",
+              "book_name": "人教PEP版六年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "人教 PEP",
+              "word_index": 18,
+              "nearby_words": [
+                "restaurant",
+                "pizza",
+                "street",
+                "get",
+                "bds",
+                "gave",
+                "give",
+                "feature",
+                "follow"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "ben",
+      "bank": {
+        "w": "ben",
+        "ipa": "ben",
+        "pos": [
+          "n."
+        ],
+        "s": "n.内室；贝昂",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 内室\\n[医] 贝昂(俗名,一般指辣木Moringa oleifera,有时也指一些不同属的植物)",
+        "ph_raw": "ben",
+        "lvl": 1,
+        "b": -2.2576
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.内室",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 441,
+              "nearby_words": [
+                "alex",
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva",
+                "jill",
+                "kim"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 773,
+              "nearby_words": [
+                "alex",
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva",
+                "jill",
+                "kim"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.内室",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-3",
+              "book_name": "人教版初中英语八年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 387,
+              "nearby_words": [
+                "experience",
+                "halfway",
+                "else",
+                "karen",
+                "ben",
+                "michael",
+                "laura",
+                "mills",
+                "robert"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "bill",
+      "bank": {
+        "w": "bill",
+        "ipa": "bɪl",
+        "pos": [
+          "n.",
+          "vt."
+        ],
+        "s": "n.账单；vt.开账单",
+        "tags": [
+          "zk",
+          "gk",
+          "cet4",
+          "ky",
+          "toefl",
+          "ielts"
+        ],
+        "frq": 8026,
+        "collins": "4",
+        "raw": "n.比尔(男名)账单钞票招贴票据清单议案法案广告鸟嘴喙vt.开帐单用海报宣传把...列成表",
+        "ph_raw": "bil",
+        "lvl": 3,
+        "b": -1.1594
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.账单",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 442,
+              "nearby_words": [
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva",
+                "jill",
+                "kim",
+                "lucy"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 774,
+              "nearby_words": [
+                "alice",
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva",
+                "jill",
+                "kim",
+                "lucy"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "bund",
+      "bank": {
+        "w": "bund",
+        "ipa": "bʌnd, bʌnt",
+        "pos": [],
+        "s": "同盟，联盟",
+        "tags": [],
+        "frq": 32488,
+        "collins": "",
+        "raw": "(政治上的)同盟, 联盟",
+        "ph_raw": "bʌnd, bʌnt",
+        "lvl": 9,
+        "b": 0.5844
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "同盟",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx3-7",
+              "book_name": "译林版六年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 39,
+              "nearby_words": [
+                "lose",
+                "know",
+                "holiday",
+                "call",
+                "bund",
+                "star",
+                "excited",
+                "paper",
+                "ask"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "clare",
+      "bank": {
+        "w": "clare",
+        "ipa": "kleә",
+        "pos": [
+          "n."
+        ],
+        "s": "n.克莱尔",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 克莱尔（女子名）",
+        "ph_raw": "kleә",
+        "lvl": 1,
+        "b": -1.9895
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.克莱尔",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 788,
+              "nearby_words": [
+                "sam",
+                "sue",
+                "tom",
+                "charlie",
+                "clare",
+                "daisy",
+                "fred",
+                "jack",
+                "jane"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "daisy",
+      "bank": {
+        "w": "daisy",
+        "ipa": "ˈdeɪzi",
+        "pos": [
+          "n."
+        ],
+        "s": "n.雏菊，菊科植物",
+        "tags": [
+          "toefl"
+        ],
+        "frq": 10897,
+        "collins": "1",
+        "raw": "n. 雏菊, 一流人物\\na. 第一流的",
+        "ph_raw": "'deizi",
+        "lvl": 4,
+        "b": -0.8142
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.雏菊",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 789,
+              "nearby_words": [
+                "sue",
+                "tom",
+                "charlie",
+                "clare",
+                "daisy",
+                "fred",
+                "jack",
+                "jane",
+                "jim"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "disneyland",
+      "bank": {
+        "w": "disneyland",
+        "ipa": "'diznilænd",
+        "pos": [
+          "n."
+        ],
+        "s": "n.迪斯尼乐园",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 迪斯尼乐园",
+        "ph_raw": "'diznilænd",
+        "lvl": 6,
+        "b": -0.2735
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.迪斯尼乐园",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx3-8",
+              "book_name": "译林版六年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 63,
+              "nearby_words": [
+                "oxford",
+                "like",
+                "month",
+                "sound",
+                "disneyland",
+                "taipei",
+                "photo",
+                "travel",
+                "traveller"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.迪斯尼乐园",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-4",
+              "book_name": "人教版初中英语八年级下册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 359,
+              "nearby_words": [
+                "whenever",
+                "spring",
+                "mostly",
+                "location",
+                "disneyland",
+                "singapore",
+                "yard",
+                "sweet",
+                "memory"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "dvd",
+      "bank": {
+        "w": "dvd",
+        "ipa": "ˌdiː viː ˈdiː",
+        "pos": [
+          "abbr.",
+          "n."
+        ],
+        "s": "abbr.Digital Video…；n.DVD 光盘",
+        "tags": [
+          "zk",
+          "gk"
+        ],
+        "frq": 0,
+        "collins": "",
+        "raw": "abbr. 数字化视频光盘（Digital Video Disk）",
+        "ph_raw": "",
+        "lvl": 12,
+        "b": 1.4405
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "abbr.数字化视频光盘",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx2-7",
+              "book_name": "外研版六年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 43,
+              "nearby_words": [
+                "chopsticks",
+                "japanese",
+                "believe",
+                "snake",
+                "dvd",
+                "together",
+                "lucky",
+                "bamboo",
+                "its"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 445,
+              "nearby_words": [
+                "music",
+                "cd",
+                "comic",
+                "dance",
+                "dvd",
+                "e-book",
+                "email",
+                "film",
+                "movie"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "abbr.数字化视频光盘；n.光盘",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz3-5",
+              "book_name": "译林版牛津英语九年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 286,
+              "nearby_words": [
+                "park",
+                "row",
+                "amazed",
+                "mistake",
+                "dvd",
+                "actor",
+                "tale",
+                "dinosaur",
+                "cancel"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "e-friend",
+      "bank": {
+        "w": "e-friend",
+        "ipa": "",
+        "pos": [],
+        "s": "网友",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "= e-pal",
+        "ph_raw": "",
+        "lvl": 12,
+        "b": 1.447
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "网友",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx3-5",
+              "book_name": "译林版五年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 69,
+              "nearby_words": [
+                "driver",
+                "farmer",
+                "nurse",
+                "policeman",
+                "e-friend",
+                "send",
+                "email",
+                "to",
+                "live"
+              ],
+              "raw_gloss_case_matches": [
+                {
+                  "key": "e-friend",
+                  "row": {
+                    "tr": "= e-pal",
+                    "ipa": ""
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "er",
+      "bank": {
+        "w": "er",
+        "ipa": "ʌ:, ә:,ә",
+        "pos": [],
+        "s": "铒",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "[医] 铒(68号元素)",
+        "ph_raw": "ʌ:, ә:,ә",
+        "lvl": 0,
+        "b": -3.2
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "铒",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx2-5",
+              "book_name": "外研版五年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 17,
+              "nearby_words": [
+                "ran",
+                "run",
+                "love",
+                "list",
+                "er",
+                "need",
+                "first",
+                "can",
+                "lost"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "eva",
+      "bank": {
+        "w": "eva",
+        "ipa": "'i:vә",
+        "pos": [
+          "n."
+        ],
+        "s": "n.伊娃",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 伊娃（女子名）",
+        "ph_raw": "'i:vә",
+        "lvl": 2,
+        "b": -1.4083
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.伊娃",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 443,
+              "nearby_words": [
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva",
+                "jill",
+                "kim",
+                "lucy",
+                "mark"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 775,
+              "nearby_words": [
+                "ann",
+                "anna",
+                "ben",
+                "bill",
+                "eva",
+                "jill",
+                "kim",
+                "lucy",
+                "mark"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "fred",
+      "bank": {
+        "w": "fred",
+        "ipa": "fred",
+        "pos": [
+          "n."
+        ],
+        "s": "n.佛瑞德",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 佛瑞德（男子名）",
+        "ph_raw": "fred",
+        "lvl": 1,
+        "b": -2.0006
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.佛瑞德",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 790,
+              "nearby_words": [
+                "tom",
+                "charlie",
+                "clare",
+                "daisy",
+                "fred",
+                "jack",
+                "jane",
+                "jim",
+                "julia"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "here's",
+      "bank": {
+        "w": "here's",
+        "ipa": "hɪəz",
+        "pos": [
+          "abbr."
+        ],
+        "s": "abbr.! 干杯；这里有",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "abbr. (=here is. Here's to you)! 干杯\\n[网络] 这里有；这里是；用",
+        "ph_raw": "hɪəz",
+        "lvl": 12,
+        "b": 1.6556
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "abbr.干杯",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx2-1",
+              "book_name": "外研版三年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 75,
+              "nearby_words": [
+                "twelve",
+                "happy",
+                "birthday",
+                "here",
+                "here's",
+                "present",
+                "this",
+                "pencil",
+                "pen"
+              ],
+              "raw_gloss_case_matches": [
+                {
+                  "key": "here's",
+                  "row": {
+                    "tr": "=here is",
+                    "ipa": ""
+                  }
+                }
+              ]
+            },
+            {
+              "book_id": "xx3-2",
+              "book_name": "译林版三年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 72,
+              "nearby_words": [
+                "eleven",
+                "twelve",
+                "bag",
+                "these",
+                "here's",
+                "farm",
+                "they",
+                "they're",
+                "pig"
+              ],
+              "raw_gloss_case_matches": [
+                {
+                  "key": "here's",
+                  "row": {
+                    "tr": "=here is",
+                    "ipa": ""
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "jack",
+      "bank": {
+        "w": "jack",
+        "ipa": "dʒæk",
+        "pos": [
+          "n.",
+          "vt."
+        ],
+        "s": "n.千斤顶，起重器；vt.用千斤顶托起",
+        "tags": [
+          "cet6"
+        ],
+        "frq": 11765,
+        "collins": "2",
+        "raw": "n. 插座, 千斤顶, 男人\\nvt. 抬起, 提醒, 扛举, 增加, 提高, 放弃\\na. 雄的\\n[计] 插座",
+        "ph_raw": "dʒæk",
+        "lvl": 4,
+        "b": -0.729
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.千斤顶",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 791,
+              "nearby_words": [
+                "charlie",
+                "clare",
+                "daisy",
+                "fred",
+                "jack",
+                "jane",
+                "jim",
+                "julia",
+                "lily"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.千斤顶；vt.用千斤顶托起",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 100,
+              "nearby_words": [
+                "jenny",
+                "alan",
+                "tom",
+                "mike",
+                "jack",
+                "mary",
+                "miller",
+                "linda",
+                "jane"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "jane",
+      "bank": {
+        "w": "jane",
+        "ipa": "dʒein",
+        "pos": [
+          "n."
+        ],
+        "s": "n.简",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 简（女子名）",
+        "ph_raw": "dʒein",
+        "lvl": 0,
+        "b": -2.4406
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.简",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 792,
+              "nearby_words": [
+                "clare",
+                "daisy",
+                "fred",
+                "jack",
+                "jane",
+                "jim",
+                "julia",
+                "lily",
+                "mary"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.简",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 104,
+              "nearby_words": [
+                "jack",
+                "mary",
+                "miller",
+                "linda",
+                "jane",
+                "smith",
+                "sister",
+                "mother",
+                "father"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "jim",
+      "bank": {
+        "w": "jim",
+        "ipa": "dʒim",
+        "pos": [
+          "n."
+        ],
+        "s": "n.吉姆",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 吉姆（人名）",
+        "ph_raw": "dʒim",
+        "lvl": 0,
+        "b": -2.4602
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.吉姆",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 793,
+              "nearby_words": [
+                "daisy",
+                "fred",
+                "jack",
+                "jane",
+                "jim",
+                "julia",
+                "lily",
+                "mary",
+                "paul"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.吉姆",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-2",
+              "book_name": "人教版初中英语七年级下册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 67,
+              "nearby_words": [
+                "taste",
+                "life",
+                "lives",
+                "rick",
+                "jim",
+                "scott",
+                "tony",
+                "train",
+                "bus"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "julia",
+      "bank": {
+        "w": "julia",
+        "ipa": "'dʒu:ljә",
+        "pos": [
+          "n."
+        ],
+        "s": "n.朱莉娅",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 朱莉娅（女子名）",
+        "ph_raw": "'dʒu:ljә",
+        "lvl": 1,
+        "b": -1.7619
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.朱莉娅",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 794,
+              "nearby_words": [
+                "fred",
+                "jack",
+                "jane",
+                "jim",
+                "julia",
+                "lily",
+                "mary",
+                "paul",
+                "peter"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "kim",
+      "bank": {
+        "w": "kim",
+        "ipa": "",
+        "pos": [
+          "n."
+        ],
+        "s": "n.金姆",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 金姆（人名）",
+        "ph_raw": "",
+        "lvl": 2,
+        "b": -1.6641
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.金姆",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 445,
+              "nearby_words": [
+                "ben",
+                "bill",
+                "eva",
+                "jill",
+                "kim",
+                "lucy",
+                "mark",
+                "matt",
+                "may"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 777,
+              "nearby_words": [
+                "ben",
+                "bill",
+                "eva",
+                "jill",
+                "kim",
+                "lucy",
+                "mark",
+                "matt",
+                "may"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "lily",
+      "bank": {
+        "w": "lily",
+        "ipa": "ˈlɪli",
+        "pos": [
+          "n.",
+          "adj."
+        ],
+        "s": "n.百合；adj.纯洁的，洁白的",
+        "tags": [
+          "cet6"
+        ],
+        "frq": 7313,
+        "collins": "1",
+        "raw": "n. 百合, 百合花\\na. 洁白的, 纯白色的, 纯洁的",
+        "ph_raw": "'lili",
+        "lvl": 2,
+        "b": -1.2561
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.百合",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 795,
+              "nearby_words": [
+                "jack",
+                "jane",
+                "jim",
+                "julia",
+                "lily",
+                "mary",
+                "paul",
+                "peter",
+                "sally"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "lucy",
+      "bank": {
+        "w": "lucy",
+        "ipa": "ˈluːsi",
+        "pos": [
+          "n."
+        ],
+        "s": "n.露西；1974年在埃塞俄比亚发现的…",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 露西（女子名）",
+        "ph_raw": "'lu:si",
+        "lvl": 1,
+        "b": -2.1554
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.露西",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 446,
+              "nearby_words": [
+                "bill",
+                "eva",
+                "jill",
+                "kim",
+                "lucy",
+                "mark",
+                "matt",
+                "may",
+                "nick"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 778,
+              "nearby_words": [
+                "bill",
+                "eva",
+                "jill",
+                "kim",
+                "lucy",
+                "mark",
+                "matt",
+                "may",
+                "nick"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.露西",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-2",
+              "book_name": "人教版初中英语七年级下册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 434,
+              "nearby_words": [
+                "wake",
+                "into",
+                "forest",
+                "ear",
+                "lucy"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "mark",
+      "bank": {
+        "w": "mark",
+        "ipa": "mɑːrk",
+        "pos": [
+          "n.",
+          "v."
+        ],
+        "s": "n.痕迹，污点；v.做记号，做标记",
+        "tags": [
+          "zk",
+          "gk",
+          "cet4",
+          "ky"
+        ],
+        "frq": 1683,
+        "collins": "4",
+        "raw": "n.斑点污迹记号标记分数烙印纪录vt.标明做标记于留意打分数留下污痕使...明显vi.做标志记分留下印记",
+        "ph_raw": "mɑ:k",
+        "lvl": 0,
+        "b": -2.6531
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.痕迹",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 447,
+              "nearby_words": [
+                "eva",
+                "jill",
+                "kim",
+                "lucy",
+                "mark",
+                "matt",
+                "may",
+                "nick",
+                "pat"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 779,
+              "nearby_words": [
+                "eva",
+                "jill",
+                "kim",
+                "lucy",
+                "mark",
+                "matt",
+                "may",
+                "nick",
+                "pat"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "mary",
+      "bank": {
+        "w": "mary",
+        "ipa": "'meәri",
+        "pos": [
+          "n."
+        ],
+        "s": "n.玛丽",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 玛丽（女子名）",
+        "ph_raw": "'meәri",
+        "lvl": 0,
+        "b": -2.8576
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.玛丽",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 796,
+              "nearby_words": [
+                "jane",
+                "jim",
+                "julia",
+                "lily",
+                "mary",
+                "paul",
+                "peter",
+                "sally",
+                "vicky"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.玛丽",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 101,
+              "nearby_words": [
+                "alan",
+                "tom",
+                "mike",
+                "jack",
+                "mary",
+                "miller",
+                "linda",
+                "jane",
+                "smith"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "matt",
+      "bank": {
+        "w": "matt",
+        "ipa": "mæt",
+        "pos": [
+          "adj."
+        ],
+        "s": "adj.表面暗淡的；无光泽",
+        "tags": [],
+        "frq": 38941,
+        "collins": "1",
+        "raw": "a. 表面暗淡的, 无光泽的, 表面粗糙的, 不光滑的\\n[医] 无光泽",
+        "ph_raw": "mæt",
+        "lvl": 10,
+        "b": 0.8199
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "adj.表面暗淡的",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 448,
+              "nearby_words": [
+                "jill",
+                "kim",
+                "lucy",
+                "mark",
+                "matt",
+                "may",
+                "nick",
+                "pat",
+                "sam"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 780,
+              "nearby_words": [
+                "jill",
+                "kim",
+                "lucy",
+                "mark",
+                "matt",
+                "may",
+                "nick",
+                "pat",
+                "sam"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "adj.表面暗淡的",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-5",
+              "book_name": "人教版初中英语九年级全册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 469,
+              "nearby_words": [
+                "disappear",
+                "embarrassing",
+                "italy",
+                "mars",
+                "matt",
+                "kevin",
+                "carl",
+                "litter",
+                "bottom"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "ms",
+      "bank": {
+        "w": "ms",
+        "ipa": "ˌem ˈes",
+        "pos": [
+          "abbr."
+        ],
+        "s": "abbr.毫秒；手稿",
+        "tags": [],
+        "frq": 1145,
+        "collins": "5",
+        "raw": "美国微软公司\\n[计] 主存储器, 制造系统, 毫秒, 微软公司",
+        "ph_raw": "miz",
+        "lvl": 0,
+        "b": -2.9929
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "abbr.毫秒",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx2-1",
+              "book_name": "外研版三年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 14,
+              "nearby_words": [
+                "morning",
+                "fine",
+                "thank",
+                "you",
+                "ms",
+                "boy",
+                "girl",
+                "whoops",
+                "and"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-dg",
+              "book_name": "小学英语大纲词汇",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 296,
+              "nearby_words": [
+                "mouth",
+                "move",
+                "mr",
+                "mrs",
+                "ms",
+                "much",
+                "music",
+                "must",
+                "my"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-dg2011",
+              "book_name": "2011 小学英语大纲词汇",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 246,
+              "nearby_words": [
+                "mother",
+                "mouth",
+                "mr",
+                "mrs",
+                "ms",
+                "much",
+                "mum",
+                "mom",
+                "music"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "abbr.毫秒",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz2-1",
+              "book_name": "外研版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 161,
+              "nearby_words": [
+                "from",
+                "where",
+                "year",
+                "about",
+                "ms",
+                "america",
+                "not",
+                "england",
+                "hi"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-dg",
+              "book_name": "中考大纲英语词汇",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 926,
+              "nearby_words": [
+                "move",
+                "movie",
+                "mr",
+                "mrs",
+                "ms",
+                "much",
+                "museum",
+                "music",
+                "must"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-xh16",
+              "book_name": "星火初中 1600 词",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 1231,
+              "nearby_words": [
+                "mouth",
+                "movie",
+                "mr",
+                "mrs",
+                "ms",
+                "museum",
+                "music",
+                "musician",
+                "my"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "nick",
+      "bank": {
+        "w": "nick",
+        "ipa": "nɪk",
+        "pos": [
+          "n.",
+          "v."
+        ],
+        "s": "n.监狱，警察局；v.刻痕于，使有缺口",
+        "tags": [
+          "gre"
+        ],
+        "frq": 17704,
+        "collins": "2",
+        "raw": "n. 刻痕, 缺口, 划痕\\nvt. 刻痕于, 弄缺, 擦伤\\nvi. 狙击",
+        "ph_raw": "nik",
+        "lvl": 6,
+        "b": -0.2246
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.监狱",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 450,
+              "nearby_words": [
+                "lucy",
+                "mark",
+                "matt",
+                "may",
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 782,
+              "nearby_words": [
+                "lucy",
+                "mark",
+                "matt",
+                "may",
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.监狱；v.刻痕于",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-3",
+              "book_name": "人教版初中英语八年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 274,
+              "nearby_words": [
+                "probably",
+                "during",
+                "holiday",
+                "word",
+                "nick",
+                "james",
+                "white",
+                "shake",
+                "blender"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "north",
+      "bank": {
+        "w": "north",
+        "ipa": "nɔːrθ",
+        "pos": [
+          "n.",
+          "adj."
+        ],
+        "s": "n.北，北方；adj.北方的，朝北的",
+        "tags": [
+          "zk",
+          "gk"
+        ],
+        "frq": 578,
+        "collins": "4",
+        "raw": "n.北北方adj.北北方的adv.向北方",
+        "ph_raw": "nɔ:θ",
+        "lvl": 0,
+        "b": -3.2
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.北",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx2-6",
+              "book_name": "外研版五年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 86,
+              "nearby_words": [
+                "remember",
+                "june",
+                "east",
+                "best",
+                "north",
+                "rest",
+                "rode",
+                "evening",
+                "late"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.北；adj.北方的",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-2",
+              "book_name": "人教版初中英语七年级下册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 273,
+              "nearby_words": [
+                "front",
+                "behind",
+                "town",
+                "around",
+                "north",
+                "along",
+                "turn",
+                "right",
+                "left"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "cz2-3",
+              "book_name": "外研版初中英语八年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 47,
+              "nearby_words": [
+                "million",
+                "pretty",
+                "than",
+                "get",
+                "north",
+                "south",
+                "west",
+                "especially",
+                "university"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "cz3-2",
+              "book_name": "译林版牛津英语七年级下册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 139,
+              "nearby_words": [
+                "smell",
+                "drive",
+                "follow",
+                "path",
+                "north",
+                "west",
+                "south",
+                "east",
+                "trip"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-dg",
+              "book_name": "中考大纲英语词汇",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 964,
+              "nearby_words": [
+                "noodle",
+                "noon",
+                "nor",
+                "normal",
+                "north",
+                "nose",
+                "not",
+                "note",
+                "notebook"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-sg",
+              "book_name": "中考词汇闪过",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 900,
+              "nearby_words": [
+                "smoke",
+                "record",
+                "patient",
+                "key",
+                "north",
+                "shape",
+                "fear",
+                "pull",
+                "dress"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-xh16",
+              "book_name": "星火初中 1600 词",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 460,
+              "nearby_words": [
+                "noise",
+                "noisy",
+                "none",
+                "nor",
+                "north",
+                "nothing",
+                "notice",
+                "now",
+                "number"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-xh-tj",
+              "book_name": "星火初中图解版",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 520,
+              "nearby_words": [
+                "noise",
+                "noisy",
+                "none",
+                "nor",
+                "north",
+                "nothing",
+                "notice",
+                "now",
+                "number"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "pat",
+      "bank": {
+        "w": "pat",
+        "ipa": "pæt",
+        "pos": [
+          "v.",
+          "n."
+        ],
+        "s": "v.轻拍；n.轻拍",
+        "tags": [
+          "cet4",
+          "cet6",
+          "ky"
+        ],
+        "frq": 4539,
+        "collins": "2",
+        "raw": "n. 轻拍\\nv. 轻拍\\nadv. 适时, 正好, 恰好, 毫不迟疑, 熟记地\\na. 恰好的, 合适的, 熟练的, 坚定的, 人为的",
+        "ph_raw": "pæt",
+        "lvl": 1,
+        "b": -1.7363
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "v.轻拍",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 451,
+              "nearby_words": [
+                "mark",
+                "matt",
+                "may",
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 783,
+              "nearby_words": [
+                "mark",
+                "matt",
+                "may",
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom",
+                "charlie"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "paul",
+      "bank": {
+        "w": "paul",
+        "ipa": "pɔ:l",
+        "pos": [
+          "n."
+        ],
+        "s": "n.保罗",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 保罗（男子名）",
+        "ph_raw": "pɔ:l",
+        "lvl": 0,
+        "b": -3.2
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.保罗",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 797,
+              "nearby_words": [
+                "jim",
+                "julia",
+                "lily",
+                "mary",
+                "paul",
+                "peter",
+                "sally",
+                "vicky",
+                "zoe"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.保罗",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 144,
+              "nearby_words": [
+                "girl",
+                "dog",
+                "sally",
+                "kate",
+                "paul",
+                "john",
+                "pencil",
+                "book",
+                "eraser"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "peter",
+      "bank": {
+        "w": "peter",
+        "ipa": "'pi:tә",
+        "pos": [
+          "vi."
+        ],
+        "s": "vi.逐渐消失，逐渐减少",
+        "tags": [],
+        "frq": 19939,
+        "collins": "1",
+        "raw": "vi. 逐渐消失, 逐渐减少",
+        "ph_raw": "'pi:tә",
+        "lvl": 7,
+        "b": -0.0721
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "vi.逐渐消失",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 798,
+              "nearby_words": [
+                "julia",
+                "lily",
+                "mary",
+                "paul",
+                "peter",
+                "sally",
+                "vicky",
+                "zoe"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "vi.逐渐消失",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-2",
+              "book_name": "人教版初中英语七年级下册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 30,
+              "nearby_words": [
+                "teach",
+                "musician",
+                "lisa",
+                "jill",
+                "peter",
+                "up",
+                "dress",
+                "brush",
+                "tooth"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "rsvp",
+      "bank": {
+        "w": "rsvp",
+        "ipa": "ˌɑːr es viː ˈpiː",
+        "pos": [
+          "abbr."
+        ],
+        "s": "abbr.请回复",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "请赐复, 请答覆, 请答复",
+        "ph_raw": "",
+        "lvl": 11,
+        "b": 1.0782
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "abbr.请回复",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx1-6",
+              "book_name": "人教PEP版五年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "人教 PEP",
+              "word_index": 70,
+              "nearby_words": [
+                "christmas",
+                "game",
+                "riddle",
+                "act",
+                "rsvp",
+                "by",
+                "first",
+                "second",
+                "third"
+              ],
+              "raw_gloss_case_matches": [
+                {
+                  "key": "rsvp",
+                  "row": {
+                    "tr": "abbr. 请回复 Répondez s'il vous plaît.（法语）",
+                    "ipa": ""
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "sally",
+      "bank": {
+        "w": "sally",
+        "ipa": "'sæli",
+        "pos": [
+          "n.",
+          "vi."
+        ],
+        "s": "n.突击，出击；vi.突击，出击",
+        "tags": [],
+        "frq": 30693,
+        "collins": "",
+        "raw": "n. 突击, 出击, 远足\\nvi. 突击, 出击, 出发",
+        "ph_raw": "'sæli",
+        "lvl": 9,
+        "b": 0.5045
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.突击",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 799,
+              "nearby_words": [
+                "lily",
+                "mary",
+                "paul",
+                "peter",
+                "sally",
+                "vicky",
+                "zoe"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.突击；vi.突击",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 142,
+              "nearby_words": [
+                "next",
+                "picture",
+                "girl",
+                "dog",
+                "sally",
+                "kate",
+                "paul",
+                "john",
+                "pencil"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "sam",
+      "bank": {
+        "w": "sam",
+        "ipa": "sæm",
+        "pos": [],
+        "s": "安全性帐户管理器",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "[计] 安全性帐户管理器",
+        "ph_raw": "sæm",
+        "lvl": 1,
+        "b": -2.2397
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "安全性帐户管理器",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 452,
+              "nearby_words": [
+                "matt",
+                "may",
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 784,
+              "nearby_words": [
+                "matt",
+                "may",
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom",
+                "charlie",
+                "clare"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "安全性帐户管理器",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-3",
+              "book_name": "人教版初中英语八年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 116,
+              "nearby_words": [
+                "similar",
+                "primary",
+                "information",
+                "tara",
+                "sam",
+                "nelly",
+                "larry",
+                "theater",
+                "theatre"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "sue",
+      "bank": {
+        "w": "sue",
+        "ipa": "suː",
+        "pos": [
+          "vt.",
+          "vi."
+        ],
+        "s": "vt.控告，起诉；vi.提出诉讼，提出请求",
+        "tags": [
+          "cet6",
+          "ky",
+          "toefl",
+          "ielts"
+        ],
+        "frq": 3137,
+        "collins": "2",
+        "raw": "vt. 控告,请愿",
+        "ph_raw": "sju:",
+        "lvl": 1,
+        "b": -2.0874
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "vt.控告",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 453,
+              "nearby_words": [
+                "may",
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 785,
+              "nearby_words": [
+                "may",
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom",
+                "charlie",
+                "clare",
+                "daisy"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "vt.控告；vi.提出诉讼",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-3",
+              "book_name": "人教版初中英语八年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 79,
+              "nearby_words": [
+                "none",
+                "less",
+                "point",
+                "claire",
+                "sue",
+                "outgoing",
+                "both",
+                "better",
+                "loudly"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "sydney",
+      "bank": {
+        "w": "sydney",
+        "ipa": "ˈsɪdni",
+        "pos": [
+          "n."
+        ],
+        "s": "n.悉尼",
+        "tags": [
+          "ielts"
+        ],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 悉尼（澳大利亚港市）",
+        "ph_raw": "'sidni",
+        "lvl": 2,
+        "b": -1.5044
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.悉尼",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx1-4",
+              "book_name": "人教PEP版四年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "人教 PEP",
+              "word_index": 30,
+              "nearby_words": [
+                "world",
+                "london",
+                "moscow",
+                "singapore",
+                "sydney",
+                "fly",
+                "love",
+                "tomato",
+                "potato"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx3-8",
+              "book_name": "译林版六年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 55,
+              "nearby_words": [
+                "magazine",
+                "kangaroo",
+                "koala",
+                "exciting",
+                "sydney",
+                "welcome",
+                "visitor",
+                "london",
+                "oxford"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "taipei",
+      "bank": {
+        "w": "taipei",
+        "ipa": "'tai'pei, -'bei",
+        "pos": [
+          "n."
+        ],
+        "s": "n.台北",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 台北",
+        "ph_raw": "'tai'pei, -'bei",
+        "lvl": 9,
+        "b": 0.377
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.台北",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx3-8",
+              "book_name": "译林版六年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 64,
+              "nearby_words": [
+                "like",
+                "month",
+                "sound",
+                "disneyland",
+                "taipei",
+                "photo",
+                "travel",
+                "traveller",
+                "different"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "thanksgiving",
+      "bank": {
+        "w": "thanksgiving",
+        "ipa": "ˌθæŋksˈɡɪvɪŋ",
+        "pos": [
+          "n."
+        ],
+        "s": "n.感恩",
+        "tags": [
+          "cet6",
+          "ky"
+        ],
+        "frq": 4464,
+        "collins": "1",
+        "raw": "n.感恩节",
+        "ph_raw": "‘θæŋksgiviŋ",
+        "lvl": 1,
+        "b": -1.7536
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.感恩",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx1-6",
+              "book_name": "人教PEP版五年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "人教 PEP",
+              "word_index": 65,
+              "nearby_words": [
+                "plant",
+                "contest",
+                "national",
+                "american",
+                "thanksgiving",
+                "christmas",
+                "game",
+                "riddle",
+                "act"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx2-7",
+              "book_name": "外研版六年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 19,
+              "nearby_words": [
+                "stamp",
+                "hobby",
+                "doll",
+                "bicycle",
+                "thanksgiving",
+                "flag",
+                "fly",
+                "special",
+                "meal"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.感恩",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-3",
+              "book_name": "人教版初中英语八年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 302,
+              "nearby_words": [
+                "butter",
+                "turkey",
+                "lettuce",
+                "piece",
+                "thanksgiving",
+                "traditional",
+                "autumn",
+                "celebrate",
+                "prepare"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-xh16",
+              "book_name": "星火初中 1600 词",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 2330,
+              "nearby_words": [
+                "terrific",
+                "terrorist",
+                "textbook",
+                "thankful",
+                "thanksgiving",
+                "theme",
+                "theory",
+                "therefore",
+                "thinking"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-xh-tj",
+              "book_name": "星火初中图解版",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 2332,
+              "nearby_words": [
+                "terrific",
+                "terrorist",
+                "textbook",
+                "thankful",
+                "thanksgiving",
+                "theme",
+                "therefore",
+                "thinking",
+                "thirst"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "they're",
+      "bank": {
+        "w": "they're",
+        "ipa": "ðeə(r)",
+        "pos": [
+          "abbr."
+        ],
+        "s": "abbr.they are 他们是",
+        "tags": [],
+        "frq": 0,
+        "collins": "5",
+        "raw": "abbr. they are 他们是",
+        "ph_raw": "ðeə(r)",
+        "lvl": 14,
+        "b": 3.2
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "abbr.他们是",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx2-2",
+              "book_name": "外研版三年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 5,
+              "nearby_words": [
+                "tv",
+                "favourite",
+                "colour",
+                "they",
+                "they're",
+                "monkey",
+                "baby",
+                "all",
+                "zoo"
+              ],
+              "raw_gloss_case_matches": [
+                {
+                  "key": "they're",
+                  "row": {
+                    "tr": "= they are",
+                    "ipa": ""
+                  }
+                }
+              ]
+            },
+            {
+              "book_id": "xx3-2",
+              "book_name": "译林版三年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "译林版",
+              "word_index": 75,
+              "nearby_words": [
+                "these",
+                "here's",
+                "farm",
+                "they",
+                "they're",
+                "pig",
+                "those",
+                "cow",
+                "apple"
+              ],
+              "raw_gloss_case_matches": [
+                {
+                  "key": "they're",
+                  "row": {
+                    "tr": "= they are",
+                    "ipa": ""
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "tom",
+      "bank": {
+        "w": "tom",
+        "ipa": "tɒm",
+        "pos": [
+          "n."
+        ],
+        "s": "n.雄性动物，雄猫",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 雄性动物, 雄猫",
+        "ph_raw": "tɒm",
+        "lvl": 0,
+        "b": -2.6401
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.雄性动物",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 454,
+              "nearby_words": [
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 786,
+              "nearby_words": [
+                "nick",
+                "pat",
+                "sam",
+                "sue",
+                "tom",
+                "charlie",
+                "clare",
+                "daisy",
+                "fred"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.雄性动物",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-1",
+              "book_name": "人教版初中英语七年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 98,
+              "nearby_words": [
+                "school",
+                "gina",
+                "jenny",
+                "alan",
+                "tom",
+                "mike",
+                "jack",
+                "mary",
+                "miller"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "vicky",
+      "bank": {
+        "w": "vicky",
+        "ipa": "'viki",
+        "pos": [
+          "n."
+        ],
+        "s": "n.维姬",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 维姬（女子名）",
+        "ph_raw": "'viki",
+        "lvl": 5,
+        "b": -0.6105
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.维姬",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 800,
+              "nearby_words": [
+                "mary",
+                "paul",
+                "peter",
+                "sally",
+                "vicky",
+                "zoe"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "word",
+      "bank": {
+        "w": "word",
+        "ipa": "wɜːrd",
+        "pos": [
+          "n.",
+          "vt."
+        ],
+        "s": "n.字，词；vt.措辞，用词",
+        "tags": [
+          "zk",
+          "gk"
+        ],
+        "frq": 244,
+        "collins": "5",
+        "raw": "n.词单词话消息语言诺言vt.用词语表达",
+        "ph_raw": "wə:d",
+        "lvl": 0,
+        "b": -3.2
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.字",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx1-7",
+              "book_name": "人教PEP版六年级上（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "人教 PEP",
+              "word_index": 58,
+              "nearby_words": [
+                "tonight",
+                "tomorrow",
+                "dictionary",
+                "comic",
+                "word",
+                "postcard",
+                "lesson",
+                "space",
+                "travel"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx2-6",
+              "book_name": "外研版五年级下（三年级起点）",
+              "group_id": "xx-text",
+              "group_name": "小学教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 101,
+              "nearby_words": [
+                "worry",
+                "paper",
+                "chinese",
+                "so",
+                "word",
+                "drew",
+                "draw",
+                "cut",
+                "piece"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-dg",
+              "book_name": "小学英语大纲词汇",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 510,
+              "nearby_words": [
+                "with",
+                "woman",
+                "women",
+                "wonderful",
+                "word",
+                "work",
+                "worker",
+                "world",
+                "worry"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-dg2011",
+              "book_name": "2011 小学英语大纲词汇",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 423,
+              "nearby_words": [
+                "with",
+                "woman",
+                "women",
+                "wonderful",
+                "word",
+                "work",
+                "worker",
+                "worry",
+                "write"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle1",
+              "book_name": "剑桥少儿英语一级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 244,
+              "nearby_words": [
+                "teacher",
+                "tell",
+                "tick",
+                "understand",
+                "word",
+                "write",
+                "badminton",
+                "ball",
+                "baseball"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 392,
+              "nearby_words": [
+                "teacher",
+                "tell",
+                "tick",
+                "understand",
+                "word",
+                "write",
+                "break",
+                "homework",
+                "mistake"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        },
+        "middleschool": {
+          "old_meaning": "n.字；vt.措辞",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "cz1-3",
+              "book_name": "人教版初中英语八年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "人教版",
+              "word_index": 273,
+              "nearby_words": [
+                "side",
+                "probably",
+                "during",
+                "holiday",
+                "word",
+                "nick",
+                "james",
+                "white",
+                "shake"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "cz2-3",
+              "book_name": "外研版初中英语八年级上册",
+              "group_id": "cz-text",
+              "group_name": "初中教材",
+              "kind": "maimemo",
+              "series": "外研版",
+              "word_index": 3,
+              "nearby_words": [
+                "pair",
+                "correct",
+                "spelling",
+                "word",
+                "practise",
+                "match",
+                "meaning",
+                "complete"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-dg",
+              "book_name": "中考大纲英语词汇",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 1631,
+              "nearby_words": [
+                "women",
+                "wonder",
+                "wonderful",
+                "wood",
+                "word",
+                "work",
+                "worker",
+                "world",
+                "worry"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-sg",
+              "book_name": "中考词汇闪过",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 1057,
+              "nearby_words": [
+                "wallet",
+                "wife",
+                "wing",
+                "wolf",
+                "word",
+                "worker",
+                "eat",
+                "repeat",
+                "british"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-xh16",
+              "book_name": "星火初中 1600 词",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 1600,
+              "nearby_words": [
+                "wise",
+                "woman",
+                "wonderful",
+                "wood",
+                "word",
+                "worker",
+                "world",
+                "writer",
+                "x-ray"
+              ],
+              "raw_gloss_case_matches": []
+            },
+            {
+              "book_id": "zk-xh-tj",
+              "book_name": "星火初中图解版",
+              "group_id": "zhongkao",
+              "group_name": "中考",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 1602,
+              "nearby_words": [
+                "wise",
+                "woman",
+                "wonderful",
+                "wood",
+                "word",
+                "worker",
+                "world",
+                "writer",
+                "x-ray"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "w": "zoe",
+      "bank": {
+        "w": "zoe",
+        "ipa": "'zәui",
+        "pos": [
+          "n."
+        ],
+        "s": "n.生命",
+        "tags": [],
+        "frq": 0,
+        "collins": "",
+        "raw": "n. 生命",
+        "ph_raw": "'zәui",
+        "lvl": 5,
+        "b": -0.5928
+      },
+      "stages": {
+        "primary": {
+          "old_meaning": "n.生命",
+          "old_provenance": {
+            "source": "data/bank.json",
+            "sources": [
+              "data/bank.json"
+            ],
+            "rule": "general_first_sense_fallback"
+          },
+          "books": [
+            {
+              "book_id": "xx-yle2",
+              "book_name": "剑桥少儿英语二级",
+              "group_id": "xx-ci",
+              "group_name": "小学词汇",
+              "kind": "maimemo",
+              "series": "",
+              "word_index": 801,
+              "nearby_words": [
+                "paul",
+                "peter",
+                "sally",
+                "vicky",
+                "zoe"
+              ],
+              "raw_gloss_case_matches": []
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "review_stage": "primary"
+}

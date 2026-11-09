@@ -1,0 +1,176 @@
+  OK   真实最大词书 cgcf-all = 16331 词
+  OK   CATEGORIES unlearned 显示「待学习」
+  OK   未学习 -> 0 · 待学习
+  OK   待重现 -> 0 · 待学习
+  OK   等级1-9 -> Lv n · 认识
+  OK   等级10 -> 10 · 已掌握
+  OK   测试估计仍是认识、不是真实等级
+  OK   seen1 新词 + 测试估计 -> 0 · 待学习（估计不覆盖实际作答）
+  OK   lapse1 新词 + 测试估计 -> 0 · 待学习
+  OK   seen0 未作答 + 测试估计 -> known,None（不伪造等级）
+  OK   seen0 未作答且无估计 -> 0 · 待学习
+  OK   seen/lapse 非法计数安全按 0 处理，不崩
+  OK   memory_info 纯只读，不修改 states/known
+  OK   等级说明只有 11 行常量
+  OK   等级说明逐字对齐用户要求（2-9 不带「后复习」）
+  OK   等级说明首尾文案正确
+  OK   等级说明不再写升降级规则长文
+  OK   16331 项 set_book 0.068s < 2s
+  OK   set_entries 对 16331 项各 format meaning 一次（实际 16331）
+  OK   model rowCount = 16331
+  OK   垂直表头 Fixed（不再 ResizeToContents）
+  OK   记忆等级列 Fixed（不再 ResizeToContents）
+  OK   默认行高 48：48
+  OK   最小行高 48：48
+  OK   ElideNone 保留完整换行
+  OK   垂直滚动 ScrollPerPixel（允许长行超视口）
+  OK   setBook 后仅合并测量 1 次（不是全书）
+  OK   首屏仅测可见+buffer 14 行（book 16331）
+  OK   没有遍历全书测量：measure_calls 1 << 16331
+  OK   表头为纯「记忆等级」且无 ⓘ
+  OK   等级列 tooltip 不再包含失效点击提示：'0 · 待学习'
+  OK   等级列 tooltip 仍保留当前等级文字：'0 · 待学习'
+  OK   工具栏独立「等级说明」chip 已删除
+  OK   表头「记忆等级」右上角有感叹号圆圈图标 PyQt5.QtCore.QRect(869, 3, 14, 14)
+  OK   表头图标颜色等于表头主题文字色（非硬编码）
+  OK   底部提示 note 已删除
+  OK   点击行不再弹出等级说明
+  OK   点击行不再留下 current row
+  OK   点击行不再出现选中态
+  OK   目录保持 NoSelection
+  OK   表头保持 NoFocus / 无 section highlight
+  OK   表格仍可键盘聚焦/滚动（不是禁用整个视图焦点）
+  OK   按下表头 0 不留下 current / 下方虚线框
+  OK   释放表头 0 不留下 current/selection
+  OK   按下表头 1 不留下 current / 下方虚线框
+  OK   释放表头 1 不留下 current/selection
+  OK   按下表头 2 不留下 current / 下方虚线框
+  OK   释放表头 2 不留下 current/selection
+  OK   delegate 列 0 屏蔽 State_HasFocus/Selected
+  OK   delegate 列 0 保留 enabled/WrapText/ElideNone
+  OK   delegate 列 0 保留统一正文颜色
+  OK   delegate 列 1 屏蔽 State_HasFocus/Selected
+  OK   delegate 列 1 保留 enabled/WrapText/ElideNone
+  OK   delegate 列 1 保留统一正文颜色
+  OK   delegate 列 2 屏蔽 State_HasFocus/Selected
+  OK   delegate 列 2 保留 enabled/WrapText/ElideNone
+  OK   delegate 列 2 保留统一正文颜色
+  OK   真实 delegate 的 focus/selection 注入绘图与普通态逐像素相同
+  OK   透明徽标本身点击只发一次等级说明信号
+  OK   徽标未填背景，角落像素保持透明
+  OK   透明徽标仍绘制可见的描边圆圈/感叹号
+  OK   点击表头感叹号图标打开等级说明
+  OK   点击「记忆等级」表头文字打开等级说明
+  OK   说明窗口标题「记忆等级」
+  OK   说明窗口 11 行等级齐全
+  OK   说明窗口等级/时间/已掌握文案齐全
+  OK   说明窗口使用当前主题背景
+  OK   说明窗口有关闭按钮
+  OK   说明窗口可关闭
+  OK   单词列 ForegroundRole == theme.fg_mean
+  OK   等级列 ForegroundRole == theme.fg_mean
+  OK   分类行 0 列 0 仍为普通文字色
+  OK   分类行 0 列 2 仍为普通文字色
+  OK   分类行 1 列 0 仍为普通文字色
+  OK   分类行 1 列 2 仍为普通文字色
+  OK   滚动中部后累计测量 33 行（16331 项中仍很小）
+  OK   滚动中部只新增合并测量 1 次（总计 2）
+  OK   PageDown 键盘滚动仍有效：391746 -> 392178
+  OK   键盘滚动仍不产生 selection
+  OK   resize/列宽变化后累计测量仍限可见附近：42
+  OK   resize/列宽变化只合并测量少量次数：4 -> 6
+  OK   搜索后仍有结果：8976
+  OK   搜索后累计测量仍限可见附近：42
+  OK   筛选后累计测量仍限可见附近：0
+  OK   极长行高 1152 > 视口 262（ScrollPerPixel 可滚动）
+  OK   极长行高 1152 >= FontMetrics 完整换行 1140 + padding
+  OK   长行仍只测可见附近：measure_calls=10
+  OK   单条极长行行高 6813 > 默认 48（不再被反复重置）
+  OK   单条极长行 6813 > 视口 292，ScrollPerPixel 可滚动
+  OK   单条极长行出现垂直滚动条
+  OK   单条长行测量收敛，timer 已停止
+  OK   收敛后 measure_calls 不再增长（12）
+  OK   窄 word 列实际文本宽 26 < 40（columnWidth=38）
+  OK   短语 on the part of 在窄列需要 69px + padding > 默认 48
+  OK   窄列完整换行：行高 81 >= 需要 69 + padding
+  OK   行高缓存 key 区分实际文本宽（40px/26px 各一条缓存，1 -> 2）
+  OK   行高缓存容量 <=1024：1024
+  OK   行高缓存有界（1024 < 1200 插入）
+  OK   scale=1.0 默认行高 48
+  OK   scale=1.0 字体 13px
+  OK   scale=1.6 默认行高 77
+  OK   scale 变化后表头图标颜色仍等于主题文字色
+  OK   scale 变化后表头图标尺寸随 scale 更新：22
+  OK   set_palette(dark) 后表头图标颜色跟随主题
+  OK   scale=1.6 字体 21px
+  OK   scale 变化后累计测量仍限可见附近：1
+  OK   scale 变化没有遍历全书测量：19
+  OK   scale=1.6 最小行高 77
+  OK   主题表头 QSS 仍保留
+  OK   主题背景仍写入表头 QSS
+  OK   light/scale1.0 三个表头无 current/selection：[]
+  OK   light/scale1.0 focus/selected 注入仍无绘图差异
+  OK   light/scale1.0 认识/掌握三列仍统一正文色
+  OK   light/scale1.0 全等级/三列字体一致
+  OK   light/scale1.0 selection/focus QSS 使用中性正文/背景
+  OK   light/scale1.0 徽标跟随主题并保持透明
+  OK   light/scale1.6 三个表头无 current/selection：[]
+  OK   light/scale1.6 focus/selected 注入仍无绘图差异
+  OK   light/scale1.6 认识/掌握三列仍统一正文色
+  OK   light/scale1.6 全等级/三列字体一致
+  OK   light/scale1.6 selection/focus QSS 使用中性正文/背景
+  OK   light/scale1.6 徽标跟随主题并保持透明
+  OK   dark/scale1.0 三个表头无 current/selection：[]
+  OK   dark/scale1.0 focus/selected 注入仍无绘图差异
+  OK   dark/scale1.0 认识/掌握三列仍统一正文色
+  OK   dark/scale1.0 全等级/三列字体一致
+  OK   dark/scale1.0 selection/focus QSS 使用中性正文/背景
+  OK   dark/scale1.0 徽标跟随主题并保持透明
+  OK   dark/scale1.6 三个表头无 current/selection：[]
+  OK   dark/scale1.6 focus/selected 注入仍无绘图差异
+  OK   dark/scale1.6 认识/掌握三列仍统一正文色
+  OK   dark/scale1.6 全等级/三列字体一致
+  OK   dark/scale1.6 selection/focus QSS 使用中性正文/背景
+  OK   dark/scale1.6 徽标跟随主题并保持透明
+  OK   sepia/scale1.0 三个表头无 current/selection：[]
+  OK   sepia/scale1.0 focus/selected 注入仍无绘图差异
+  OK   sepia/scale1.0 认识/掌握三列仍统一正文色
+  OK   sepia/scale1.0 全等级/三列字体一致
+  OK   sepia/scale1.0 selection/focus QSS 使用中性正文/背景
+  OK   sepia/scale1.0 徽标跟随主题并保持透明
+  OK   sepia/scale1.6 三个表头无 current/selection：[]
+  OK   sepia/scale1.6 focus/selected 注入仍无绘图差异
+  OK   sepia/scale1.6 认识/掌握三列仍统一正文色
+  OK   sepia/scale1.6 全等级/三列字体一致
+  OK   sepia/scale1.6 selection/focus QSS 使用中性正文/背景
+  OK   sepia/scale1.6 徽标跟随主题并保持透明
+  OK   green/scale1.0 三个表头无 current/selection：[]
+  OK   green/scale1.0 focus/selected 注入仍无绘图差异
+  OK   green/scale1.0 认识/掌握三列仍统一正文色
+  OK   green/scale1.0 全等级/三列字体一致
+  OK   green/scale1.0 selection/focus QSS 使用中性正文/背景
+  OK   green/scale1.0 徽标跟随主题并保持透明
+  OK   green/scale1.6 三个表头无 current/selection：[]
+  OK   green/scale1.6 focus/selected 注入仍无绘图差异
+  OK   green/scale1.6 认识/掌握三列仍统一正文色
+  OK   green/scale1.6 全等级/三列字体一致
+  OK   green/scale1.6 selection/focus QSS 使用中性正文/背景
+  OK   green/scale1.6 徽标跟随主题并保持透明
+  OK   light/scale1.0 Card 搜索只留 1 条
+  OK   light/scale1.0 真实 Card 单条长行测量 timer 已停
+  OK   light/scale1.0 真实 Card 行高 7289 > 视口 236
+  OK   light/scale1.0 真实 Card 长行垂直滚动条可见
+  OK   light/scale1.0 收敛后 measure_calls 不再增长（2）
+      CARD light scale=1.0 height=7289 viewport=236 calls=2
+  OK   dark/scale1.6 Card 搜索只留 1 条
+  OK   dark/scale1.6 真实 Card 单条长行测量 timer 已停
+  OK   dark/scale1.6 真实 Card 行高 59413 > 视口 209
+  OK   dark/scale1.6 真实 Card 长行垂直滚动条可见
+  OK   dark/scale1.6 收敛后 measure_calls 不再增长（4）
+      CARD dark scale=1.6 height=59413 viewport=209 calls=4
+      SOURCE catalog=D:\user\Documents\deepseek-harness\default-workspace\vocab-app\app\catalog.py data=D:\user\Documents\deepseek-harness\default-workspace\vocab-app\data\bank.json
+      TIMING set_book=0.068s measure_calls=29 measured_rows=1
+  OK   Sandbox 真实 records 指纹未变：[]
+      FINGERPRINT protected=12 unchanged=True
+
+全部通过 ✓

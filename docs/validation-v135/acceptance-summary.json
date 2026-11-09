@@ -1,0 +1,52 @@
+{
+  "version": "1.3.5",
+  "all_passed": true,
+  "successful_processes": 38,
+  "component_processes": 25,
+  "unittest_cases": 270,
+  "offscreen_ui_checks": 2495,
+  "native_ui_checks": 2512,
+  "launcher_scenarios": 4,
+  "compact_native_passed": true,
+  "protected_real_paths": 36,
+  "real_records_still_unchanged": true,
+  "same_frozen_source_across_all_groups": true,
+  "source_still_unchanged": true,
+  "source_and_provenance_files_frozen": 148,
+  "community_wordlists_preserved": true,
+  "school_meanings": {
+    "primary": 1478,
+    "middleschool": 4007
+  },
+  "school_ui_checks": 299,
+  "groups": {
+    "pure": "final-v135-pure-3_rjc_0i",
+    "ui": "final-v135-ui-e9idqibm",
+    "native-ui": "final-v135-native-ui-9q41lm8u",
+    "launcher": "final-v135-launcher-_cn6g2_w",
+    "compact": "final-v135-compact-l9i42a7f"
+  },
+  "review_source_sha256": "1273ea1530fe305afd47b9492b1e72ab5d512ed63983aee0ed1c2fdcb46f7d88",
+  "level_meanings_sha256": "960671eb308e1afed1947267ee1276e132e14d96d2c001737627a3a4cf685a8c",
+  "wordwise_review": {
+    "unique_words": 158,
+    "stage_items": 183,
+    "stage_counts": {
+      "primary": 47,
+      "middleschool": 136
+    },
+    "changed_unique_words": 89,
+    "retained_unique_words": 69,
+    "replace_stage_items": 103,
+    "retain_stage_items": 80,
+    "unchanged_out_of_scope_rows": 5302,
+    "unchanged_unreviewed_phrases": 773,
+    "source_inputs": 55,
+    "review_method": "AI-assisted wordwise contextual/evidence review by two scoped reviewers, reconciled by Lead; not an official wordlist audit or human-expert certification."
+  },
+  "reviewed_word_ui_checks": {
+    "ui": 1193,
+    "native-ui": 1198
+  },
+  "scope_note": "All word and phrase books are community compilations. V1.3.3 bank, members and order are preserved; no official-list audit was performed. Exactly 158 words / 183 stage items received AI-assisted editorial review; other 5302 rows including 773 phrases are unchanged. School meanings are traceable display overlays, not new keys, official-list audits, expert certification or dictionary replacements."
+}

@@ -1,0 +1,18 @@
+test_ambiguous_school_senses (__main__.LevelMeaningDataTests) ... ok
+test_every_entry_has_hashed_provenance (__main__.LevelMeaningDataTests) ... ok
+test_exact_school_membership_coverage (__main__.LevelMeaningDataTests) ... ok
+test_levels_are_versions_not_bank_mutations (__main__.LevelMeaningDataTests) ... ok
+test_meanings_are_short_real_chinese (__main__.LevelMeaningDataTests) ... ok
+test_pos_and_parenthetical_parsing (__main__.LevelMeaningDataTests) ... ok
+test_rebuild_is_byte_identical (__main__.LevelMeaningDataTests) ... ok
+test_reviewed_classroom_polysemy (__main__.LevelMeaningDataTests) ... ok
+test_schema_and_runtime_loader (__main__.LevelMeaningDataTests) ... ok
+test_shipped_school_gloss_snapshot (__main__.LevelMeaningDataTests) ... ok
+test_source_fragments_are_recoverable (__main__.LevelMeaningDataTests) ... ok
+test_source_hash_ignores_checkout_newlines (__main__.LevelMeaningDataTests) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 6.675s
+
+OK
+LEVEL_MEANING_DATA tests=12 failures=0 errors=0

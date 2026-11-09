@@ -1,0 +1,1819 @@
+{
+  "schema": 1,
+  "stage": "primary",
+  "scope_origin_sha256": "afbc132aa0627a33108816924003f669ad01fdd146ef39d245722a4dac9c931c",
+  "items": [
+    {
+      "w": "alice",
+      "old_meaning": "应用语言接口转换与扩充",
+      "meaning": "n.爱丽丝（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Alice",
+      "reason": "xx-yle1/2 尾段 alice 与 alex/ann/anna/ben 连续列在人名段；按用户明确要求用爱丽丝人名，排除应用语言接口专业缩写。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "which / who / whose / alex / alice / ann / anna / ben / bill",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "where / whose / why / alex / alice / ann / anna / ben / bill",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：alice",
+          "quote": "s: 应用语言接口转换与扩充\nraw: [计] 应用语言接口转换与扩充",
+          "note": "原bank只给计算机义，不能支持这里的人名译写；不沿用该义。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Alice",
+          "note": "译写依据是用户明确说明和词段语境，不是冻结bank或本地gloss中的中文。未声称取得具体人物课文。"
+        },
+        {
+          "kind": "user_instruction",
+          "title": "本任务用户对 Alice 小学义项的明确说明",
+          "quote": "明确 Alice 小学是爱丽丝人名。",
+          "note": "直接人类要求；配合冻结输入中的连续人名段，将 alice 解释为 Alice 人名。没有本地中文 gloss 引文。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "am",
+      "old_meaning": "v.是",
+      "meaning": "v.是",
+      "category": "common_word",
+      "action": "retain",
+      "headword": "am",
+      "reason": "xx2-1 的 am/i'm 开篇自我介绍、xx3-1 的 are/you/yes/am 以及 be/am/is/are 词段都指 be 的第一人称单数现在时；原小学义已经正确，严格原样保留。",
+      "context_books": [
+        "xx2-1",
+        "xx2-4",
+        "xx3-1",
+        "xx-dg",
+        "xx-dg2011"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "外研版三年级上（三年级起点）（xx2-1）",
+          "quote": "am / i'm / aah / hello / hi",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "外研版四年级下（三年级起点）（xx2-4）",
+          "quote": "so / cloudy / weather / was / am / is / then / grandparent / were",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "译林版三年级上（三年级起点）（xx3-1）",
+          "quote": "i'm / are / you / yes / am / no / not / my / friend",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "小学英语大纲词汇（xx-dg）",
+          "quote": "ball / banana / basketball / be / am / is / are / beach / bear",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "2011 小学英语大纲词汇（xx-dg2011）",
+          "quote": "ball / banana / basketball / be / am / is / are / bear / beautiful",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：am",
+          "quote": "s: v.是；abbr.上午\nraw: be的单数第一人称\\n[计] 存取管理程序, 寻址方式, 地址标记, 变址数, 调幅, 辅助存储器",
+          "note": "bank.s 有 v.是，bank.raw 明示 be 的单数第一人称。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：am",
+          "note": "保留一个基础动词义，不混入上午或计算机缩写。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "ann",
+      "old_meaning": "n.安",
+      "meaning": "n.安（女名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Ann",
+      "reason": "xx-yle1/2 中 Ann 位于 Alice/Anna/Ben 等连续人名段；原bank.raw 已明示安（女子名），沿用安并补回女名标签，避免把单字安当通用义。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "who / whose / alex / alice / ann / anna / ben / bill / eva",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "whose / why / alex / alice / ann / anna / ben / bill / eva",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：ann",
+          "quote": "s: n.安\nraw: n. 安（女子名）",
+          "note": "bank.raw 为 n. 安（女子名），支持本译写及女名标签；并非词书gloss。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Ann",
+          "note": "中文安与女子名身份来自冻结bank.raw；仅规范标签为女名，不另造教材人物身份。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "anna",
+      "old_meaning": "n.安娜",
+      "meaning": "n.安娜（女名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Anna",
+      "reason": "xx-yle1/2 的 Ann/Anna/Ben 人名邻段与原bank.raw 的女子名一致；保留安娜译写，仅明确女名。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "whose / alex / alice / ann / anna / ben / bill / eva / jill",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "why / alex / alice / ann / anna / ben / bill / eva / jill",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：anna",
+          "quote": "s: n.安娜\nraw: n. 安娜（女子名）",
+          "note": "bank.raw 为 n. 安娜（女子名），不是本地教材gloss。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Anna",
+          "note": "沿用原bank人名译写，补回其raw中的身份说明。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "app",
+      "old_meaning": "应用",
+      "meaning": "n.应用程序",
+      "category": "common_word",
+      "action": "replace",
+      "headword": "app",
+      "reason": "xx-yle2 的 tablet/app/music/CD 生活及电子媒介语境指应用程序；原应用过于含混，选原bank已有的应用程序并明确名词，不取相联并行处理器。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "sport / tablet / tennis / throw / app / band / music / cd / comic",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：app",
+          "quote": "s: 应用，应用程序；相联并行处理器\nraw: [计] 应用, 应用程序; 相联并行处理器",
+          "note": "bank.s/raw 已有应用程序，也混有处理器专业义；只采用前者。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：app",
+          "note": "应用程序直接见原bank.s/raw；这里做义项选择和词性补全，不编造缩写展开。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "august",
+      "old_meaning": "n.八月",
+      "meaning": "n.八月",
+      "category": "month_name",
+      "action": "retain",
+      "headword": "August",
+      "reason": "xx1-6 的 July/August/September 连续月份段及 xx3-6 月份邻段均支持八月；原小学义正确，保留，不带 august 的威严形容词义。",
+      "context_books": [
+        "xx1-6",
+        "xx3-6"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "人教PEP版五年级下（三年级起点）（xx1-6）",
+          "quote": "april / may / june / july / august / september / october / november / december",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "译林版五年级下（三年级起点）（xx3-6）",
+          "quote": "april / together / march / july / august / december / hero / play / number",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：august",
+          "quote": "s: n.八月；adj.威严的，令人敬畏的\nraw: n.八月(大写时）adj.威严的尊严的(小写时）",
+          "note": "bank.s 的首组 n.八月和 bank.raw 的大写月份说明支持保留。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：August",
+          "note": "规范英文显示为 August；稳定w仍为august。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "bds",
+      "old_meaning": "abbr.用硬纸板作封面",
+      "meaning": "abbr.北斗卫星导航系统",
+      "category": "abbreviation",
+      "action": "replace",
+      "headword": "BDS",
+      "reason": "xx1-7 的 restaurant/pizza/street/get/BDS/gave/give/feature/follow 导航邻段，与 PEP 六上 Robin 用 BDS 引路的可读配套课件一致；课件与北斗官网均明确 BeiDou Navigation Satellite System，替换硬纸板封面义。",
+      "context_books": [
+        "xx1-7"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "人教PEP版六年级上（三年级起点）（xx1-7）",
+          "quote": "restaurant / pizza / street / get / bds / gave / give / feature / follow",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：bds",
+          "quote": "s: abbr.用硬纸板作封面\nraw: abbr. 用硬纸板作封面（bound in boards）",
+          "note": "原bank是 bound in boards 的书籍装帧义，与本段导航不符，拒绝沿用。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：BDS",
+          "note": "已核实导航缩写，不是仅凭字母猜全称。官网是系统名称依据，不作官方词表审核。"
+        },
+        {
+          "kind": "textbook_excerpt",
+          "title": "人教版PEP英语六年级上册 Unit 1 Part B 第3课时课件 — 教习网",
+          "url": "https://www.51jiaoxi.com/doc-17445469.html",
+          "quote": "BDS英文BeiDou Navigation Satellite System（北斗卫星导航系统）的简称，拥有行车导航功能。能够准确地帮助人们找到所要去的地方，便捷而实用。Wu Yifan’s grandpa gave Robin a new feature. He now has BDS.",
+          "note": "Firecrawl 实际读取的第三方教材配套课件正文，另见 Robin 引路到 Italian restaurant 和 My BDS works!；与 xx1-7 的 restaurant/pizza/street/get/BDS/gave/give/feature/follow 邻段吻合。不是已取得出版社完整教材或本地 gloss；仅作本词导航义的可核实旁证。"
+        },
+        {
+          "kind": "authoritative_definition",
+          "title": "BeiDou Navigation Satellite System — System / Overview",
+          "url": "http://en.beidou.gov.cn/SYSTEMS/System/",
+          "quote": "The BeiDou Navigation Satellite System (BDS) has been independently constructed and operated by China with an eye on the needs of the country’s national security and economic and social development. As a temporal-spatial infrastructure of national significance, the BDS provides all-time, all-weather and high-accuracy positioning, navigation and timing services to global users.",
+          "note": "web_fetch 实际读取北斗官网系统介绍，验证英文简称及导航功能。官网仅验证系统名称和词义，不构成官方小学词表审计。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "ben",
+      "old_meaning": "n.内室",
+      "meaning": "n.本（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Ben",
+      "reason": "xx-yle1/2 中 Ben 连在 Anna/Bill/Eva 人名尾段；这里应是人名，不是苏格兰内室或植物贝昂。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "alex / alice / ann / anna / ben / bill / eva / jill / kim",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "alex / alice / ann / anna / ben / bill / eva / jill / kim",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：ben",
+          "quote": "s: n.内室；贝昂\nraw: n. 内室\\n[医] 贝昂(俗名,一般指辣木Moringa oleifera,有时也指一些不同属的植物)",
+          "note": "原bank内室/贝昂不支持本的人名译写，不能当作译写原文。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Ben",
+          "note": "本为常用人名译写的编辑校订；原bank和本地gloss没有这个人名中文。仅以连续人名段判定名字，不声称具体课文角色。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "bill",
+      "old_meaning": "n.账单",
+      "meaning": "n.比尔（男名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Bill",
+      "reason": "xx-yle1/2 的 Ben/Bill/Eva 人名尾段排除普通账单义；原bank.raw 已列比尔(男名)，采用该明确人名义。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "alice / ann / anna / ben / bill / eva / jill / kim / lucy",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "alice / ann / anna / ben / bill / eva / jill / kim / lucy",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：bill",
+          "quote": "s: n.账单；vt.开账单\nraw: n.比尔(男名)账单钞票招贴票据清单议案法案广告鸟嘴喙vt.开帐单用海报宣传把...列成表",
+          "note": "bank.raw 开头 n.比尔(男名) 已有正确人名义；bank.s 的账单首义不适用于本段。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Bill",
+          "note": "译写比尔和男名标签均直接见冻结bank.raw，不是编造本地gloss。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "bund",
+      "old_meaning": "同盟",
+      "meaning": "n.外滩（上海地名）",
+      "category": "place_name",
+      "action": "replace",
+      "headword": "the Bund",
+      "reason": "xx3-7 位于 holiday/call/bund 邻段，译林六上 Holiday fun 配套学案明确 the Bund 外滩并置于上海景点语境；这里不是政治同盟。",
+      "context_books": [
+        "xx3-7"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "译林版六年级上（三年级起点）（xx3-7）",
+          "quote": "lose / know / holiday / call / bund / star / excited / paper / ask",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：bund",
+          "quote": "s: 同盟，联盟\nraw: (政治上的)同盟, 联盟",
+          "note": "原bank只有政治同盟/联盟义，与旅行景点语境不符。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：the Bund",
+          "note": "中文地名由实际读取的配套学案核实；the Bund 是规范英文，不改稳定w。"
+        },
+        {
+          "kind": "textbook_excerpt",
+          "title": "同步学案+练习 Unit 3 Holiday fun 第1课时 Story time — 二一教育",
+          "url": "https://zy.21cnjy.com/21069486",
+          "quote": "知识点四 景点\n【知识精讲】\nthe Bund 外滩\nthe Shanghai Museum上海博物馆",
+          "note": "web_fetch 实际读取 2024-08-19 的牛津译林版配套学案；正文还在上海景点题中使用 the Bund。结合 xx3-7 的 holiday/call/bund 邻段，解释为上海外滩，规范 headword 为 the Bund；不采用政治同盟义。第三方配套资料，并非本地中文 gloss。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "clare",
+      "old_meaning": "n.克莱尔",
+      "meaning": "n.克莱尔（女名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Clare",
+      "reason": "xx-yle2 中 Clare 处于 Charlie/Daisy/Fred 连续人名段，原bank.raw 也标女子名；沿用克莱尔并明确身份。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "sam / sue / tom / charlie / clare / daisy / fred / jack / jane",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：clare",
+          "quote": "s: n.克莱尔\nraw: n. 克莱尔（女子名）",
+          "note": "bank.raw 为 n. 克莱尔（女子名）。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Clare",
+          "note": "译写与女名标签均依据原bank.raw；不另行假定教材角色。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "daisy",
+      "old_meaning": "n.雏菊",
+      "meaning": "n.黛西（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Daisy",
+      "reason": "xx-yle2 中 Daisy 连在 Clare/Fred/Jack 人名尾段，应取人名而非花卉雏菊义。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "sue / tom / charlie / clare / daisy / fred / jack / jane / jim",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：daisy",
+          "quote": "s: n.雏菊，菊科植物\nraw: n. 雏菊, 一流人物\\na. 第一流的",
+          "note": "原bank的雏菊/一流人物义不能作为黛西译写的字面来源。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Daisy",
+          "note": "黛西是常用译写的编辑校订，原bank只有雏菊普通词义；没有本地中文人名gloss，不声称取得人物全文。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "disneyland",
+      "old_meaning": "n.迪斯尼乐园",
+      "meaning": "n.迪斯尼乐园",
+      "category": "place_name",
+      "action": "retain",
+      "headword": "Disneyland",
+      "reason": "xx3-8 中 Disneyland 与 Taipei/photo/travel 相邻，指旅行目的地迪斯尼乐园；原bank和原小学义正确，不无谓改换既有中文译名。",
+      "context_books": [
+        "xx3-8"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "译林版六年级下（三年级起点）（xx3-8）",
+          "quote": "oxford / like / month / sound / disneyland / taipei / photo / travel / traveller",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：disneyland",
+          "quote": "s: n.迪斯尼乐园\nraw: n. 迪斯尼乐园",
+          "note": "bank.s/raw 均为 n.迪斯尼乐园，支持严格retain。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Disneyland",
+          "note": "保留原义原字，不改为另一种品牌译写；仅规范英文大小写。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "dvd",
+      "old_meaning": "abbr.数字化视频光盘",
+      "meaning": "abbr.数字化视频光盘",
+      "category": "abbreviation",
+      "action": "retain",
+      "headword": "DVD",
+      "reason": "xx2-7 的 snake/DVD/bamboo 影音学习语境和 xx-yle2 的 CD/comic/dance/DVD/film 媒介词段均支持视频光盘；原小学义准确且短，保留。",
+      "context_books": [
+        "xx2-7",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "外研版六年级上（三年级起点）（xx2-7）",
+          "quote": "chopsticks / japanese / believe / snake / dvd / together / lucky / bamboo / its",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "music / cd / comic / dance / dvd / e-book / email / film / movie",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：dvd",
+          "quote": "s: abbr.Digital Video…；n.DVD 光盘\nraw: abbr. 数字化视频光盘（Digital Video Disk）",
+          "note": "bank.raw 明确 abbr.数字化视频光盘，原小学义与其中文相同。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：DVD",
+          "note": "保留正确小学中文，不扩写技术标准，也不借机改写原释义。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "e-friend",
+      "old_meaning": "网友",
+      "meaning": "n.网友",
+      "category": "common_word",
+      "action": "replace",
+      "headword": "e-friend",
+      "reason": "xx3-5 的 e-friend/send/email/live 网络交友语境与原bank.s 网友一致；中文不改义，只补正确名词词性。",
+      "context_books": [
+        "xx3-5"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "译林版五年级上（三年级起点）（xx3-5）",
+          "quote": "driver / farmer / nurse / policeman / e-friend / send / email / to / live",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_gloss",
+          "title": "译林版五年级上（三年级起点） 原gloss：e-friend",
+          "quote": "= e-pal",
+          "note": "仅为原gloss字段原文；英文等式不冒称新增中文的字面来源。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：e-friend",
+          "quote": "s: 网友\nraw: = e-pal",
+          "note": "bank.s 是网友，bank.raw 是 = e-pal；将中文与英文等式证据分开说明。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：e-friend",
+          "note": "本地gloss只写 = e-pal；中文网友来自bank.s和语境，不能冒充本地gloss中文。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "er",
+      "old_meaning": "铒",
+      "meaning": "int.呃（表示犹豫）",
+      "category": "interjection",
+      "action": "replace",
+      "headword": "er",
+      "reason": "xx2-5 的 list/er/need 邻段对应外研五上 Module 2；可读配套课件明确这是思索说什么时的呃声，替换化学元素铒义。",
+      "context_books": [
+        "xx2-5"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "外研版五年级上（三年级起点）（xx2-5）",
+          "quote": "ran / run / love / list / er / need / first / can / lost",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：er",
+          "quote": "s: 铒\nraw: [医] 铒(68号元素)",
+          "note": "原bank的医用元素铒义错误套入会话语境，拒绝保留。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：er",
+          "note": "由配套课件的感叹词说明与例句核实 int.；不是 Er 元素符号。"
+        },
+        {
+          "kind": "textbook_excerpt",
+          "title": "外研版三起五年级上册 Module 2 单词讲解课件+素材 — 二一教育",
+          "url": "https://zy.21cnjy.com/20749056",
+          "quote": "（感叹词） 哦，嗯，呃\nEr... I don’t know his name.\n呃……我不知道他的名字。",
+          "note": "web_fetch 实际读取配套课件，注明是思索接着说什么时发出的声音；与 xx2-5 的 list/er/need 邻段吻合，词性为 int.，不是元素 Er 铒。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "eva",
+      "old_meaning": "n.伊娃",
+      "meaning": "n.伊娃（女名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Eva",
+      "reason": "xx-yle1/2 的 Bill/Eva/Jill/Kim 人名尾段与原bank.raw 女子名一致；保留伊娃译写并补回女名说明。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "ann / anna / ben / bill / eva / jill / kim / lucy / mark",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "ann / anna / ben / bill / eva / jill / kim / lucy / mark",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：eva",
+          "quote": "s: n.伊娃\nraw: n. 伊娃（女子名）",
+          "note": "bank.raw 为 n. 伊娃（女子名）。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Eva",
+          "note": "保留冻结bank已有中文，不冒充本地gloss或角色全文。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "fred",
+      "old_meaning": "n.佛瑞德",
+      "meaning": "n.弗雷德（男名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Fred",
+      "reason": "xx-yle2 的 Daisy/Fred/Jack 人名段且原bank.raw 标男子名；采用常用弗雷德译写，明确属于对原佛瑞德的编辑译写校订。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "tom / charlie / clare / daisy / fred / jack / jane / jim / julia",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：fred",
+          "quote": "s: n.佛瑞德\nraw: n. 佛瑞德（男子名）",
+          "note": "bank.raw 为 n. 佛瑞德（男子名）；引用只证明人名/男名，定稿弗雷德不是此字段原文。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Fred",
+          "note": "弗雷德不同于bank.raw的佛瑞德，必须标为editorial_transliteration；原bank仅直接支持人名及男子名身份，不支持新译写字面。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "here's",
+      "old_meaning": "abbr.干杯",
+      "meaning": "abbr.这是（here is的缩约）",
+      "category": "contraction",
+      "action": "replace",
+      "headword": "here's",
+      "reason": "xx2-1 的 birthday/here/here's/present 赠礼语境和两份本地gloss =here is 均指 here is 的缩约，不是 Here's to you 的干杯祝酒句。",
+      "context_books": [
+        "xx2-1",
+        "xx3-2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "外研版三年级上（三年级起点）（xx2-1）",
+          "quote": "twelve / happy / birthday / here / here's / present / this / pencil / pen",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_gloss",
+          "title": "外研版三年级上（三年级起点） 原gloss：here's",
+          "quote": "=here is",
+          "note": "仅为原gloss字段原文；英文等式不冒称新增中文的字面来源。"
+        },
+        {
+          "kind": "local_context",
+          "title": "译林版三年级下（三年级起点）（xx3-2）",
+          "quote": "eleven / twelve / bag / these / here's / farm / they / they're / pig",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_gloss",
+          "title": "译林版三年级下（三年级起点） 原gloss：here's",
+          "quote": "=here is",
+          "note": "仅为原gloss字段原文；英文等式不冒称新增中文的字面来源。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：here's",
+          "quote": "s: abbr.! 干杯；这里有\nraw: abbr. (=here is. Here's to you)! 干杯\\n[网络] 这里有；这里是；用",
+          "note": "bank.raw 同时列 =here is 与祝酒用法；选缩约本身，不能拿整句干杯替代词项。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：here's",
+          "note": "本地gloss只有 =here is；新中文这是是基础会话的语境释义，并非该gloss的中文原文。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "jack",
+      "old_meaning": "n.千斤顶",
+      "meaning": "n.杰克（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Jack",
+      "reason": "xx-yle2 的 Fred/Jack/Jane/Jim 连续人名尾段应取 Jack 人名，不是千斤顶或插座。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "charlie / clare / daisy / fred / jack / jane / jim / julia / lily",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：jack",
+          "quote": "s: n.千斤顶，起重器；vt.用千斤顶托起\nraw: n. 插座, 千斤顶, 男人\\nvt. 抬起, 提醒, 扛举, 增加, 提高, 放弃\\na. 雄的\\n[计] 插座",
+          "note": "原bank的插座/千斤顶/男人等普通义不支持杰克译写字面。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Jack",
+          "note": "杰克是常用人名译写的编辑校订，冻结bank/raw_gloss未给此中文人名；不声称已取得具体人物课文。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "jane",
+      "old_meaning": "n.简",
+      "meaning": "n.简（女名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Jane",
+      "reason": "xx-yle2 中 Jane 位于 Jack/Jim/Julia 人名段，原bank.raw 明示简（女子名）；补回女名标签，使单字简不被当普通形容词。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "clare / daisy / fred / jack / jane / jim / julia / lily / mary",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：jane",
+          "quote": "s: n.简\nraw: n. 简（女子名）",
+          "note": "bank.raw 为 n. 简（女子名）。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Jane",
+          "note": "沿用bank.raw的简译写和女子名说明。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "jim",
+      "old_meaning": "n.吉姆",
+      "meaning": "n.吉姆（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Jim",
+      "reason": "xx-yle2 的 Jane/Jim/Julia 人名尾段且原bank.raw 明示吉姆（人名）；保留吉姆中文并补人名身份。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "daisy / fred / jack / jane / jim / julia / lily / mary / paul",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：jim",
+          "quote": "s: n.吉姆\nraw: n. 吉姆（人名）",
+          "note": "bank.raw 为 n. 吉姆（人名），支持译写和身份说明。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Jim",
+          "note": "bank.raw只明确人名，因此不额外指定实际教材人物性别。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "julia",
+      "old_meaning": "n.朱莉娅",
+      "meaning": "n.朱莉娅（女名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Julia",
+      "reason": "xx-yle2 中 Julia 连在 Jim/Lily/Mary 人名段，原bank.raw 为女子名；沿用朱莉娅并明确女名。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "fred / jack / jane / jim / julia / lily / mary / paul / peter",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：julia",
+          "quote": "s: n.朱莉娅\nraw: n. 朱莉娅（女子名）",
+          "note": "bank.raw 为 n. 朱莉娅（女子名）。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Julia",
+          "note": "直接沿用原bank中文人名，不另改译写。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "kim",
+      "old_meaning": "n.金姆",
+      "meaning": "n.金姆（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Kim",
+      "reason": "xx-yle1/2 的 Jill/Kim/Lucy 连续人名段且原bank.raw 标人名；沿用金姆译写，不无据改名或指定性别。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "ben / bill / eva / jill / kim / lucy / mark / matt / may",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "ben / bill / eva / jill / kim / lucy / mark / matt / may",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：kim",
+          "quote": "s: n.金姆\nraw: n. 金姆（人名）",
+          "note": "bank.raw 为 n. 金姆（人名）。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Kim",
+          "note": "译写直接来自bank.raw；仅标人名，不从词段推断具体角色性别。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "lily",
+      "old_meaning": "n.百合",
+      "meaning": "n.莉莉（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Lily",
+      "reason": "xx-yle2 的 Julia/Lily/Mary/Paul 人名尾段表明此处是 Lily 人名，不是百合植物或纯洁形容词。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "jack / jane / jim / julia / lily / mary / paul / peter / sally",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：lily",
+          "quote": "s: n.百合；adj.纯洁的，洁白的\nraw: n. 百合, 百合花\\na. 洁白的, 纯白色的, 纯洁的",
+          "note": "原bank只给百合及纯洁普通词义，不能直接证明莉莉译写。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Lily",
+          "note": "莉莉是连续人名段下采用的常用译写，原bank未给该中文名字；明确是编辑译写，不称本地gloss文字。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "lucy",
+      "old_meaning": "n.露西",
+      "meaning": "n.露西（女名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Lucy",
+      "reason": "xx-yle1/2 的 Kim/Lucy/Mark 人名尾段及原bank.raw 女子名支持露西；仅补回女名，不取bank.s中另混的古人类化石说明。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "bill / eva / jill / kim / lucy / mark / matt / may / nick",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "bill / eva / jill / kim / lucy / mark / matt / may / nick",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：lucy",
+          "quote": "s: n.露西；1974年在埃塞俄比亚发现的…\nraw: n. 露西（女子名）",
+          "note": "bank.raw 为 n. 露西（女子名），而bank.s另有化石截断义。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Lucy",
+          "note": "中文人名保留原bank.raw；不把化石实体义添加给小学。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "mark",
+      "old_meaning": "n.痕迹",
+      "meaning": "n.马克（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Mark",
+      "reason": "xx-yle1/2 的 Lucy/Mark/Matt/May 连续人名段应取 Mark 人名，不是痕迹或做记号动词。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "eva / jill / kim / lucy / mark / matt / may / nick / pat",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "eva / jill / kim / lucy / mark / matt / may / nick / pat",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：mark",
+          "quote": "s: n.痕迹，污点；v.做记号，做标记\nraw: n.斑点污迹记号标记分数烙印纪录vt.标明做标记于留意打分数留下污痕使...明显vi.做标志记分留下印记",
+          "note": "原bank痕迹/污点/做记号等普通义不支持马克译写字面。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Mark",
+          "note": "马克为常用人名译写的编辑校订；原bank和本地gloss没有该中文名字，无完整人物教材文本，不指认具体角色。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "mary",
+      "old_meaning": "n.玛丽",
+      "meaning": "n.玛丽（女名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Mary",
+      "reason": "xx-yle2 的 Lily/Mary/Paul/Peter 人名尾段与原bank.raw 女子名一致；沿用玛丽并补回女名。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "jane / jim / julia / lily / mary / paul / peter / sally / vicky",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：mary",
+          "quote": "s: n.玛丽\nraw: n. 玛丽（女子名）",
+          "note": "bank.raw 为 n. 玛丽（女子名）。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Mary",
+          "note": "原中文人名不更换，身份说明来自bank.raw。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "matt",
+      "old_meaning": "adj.表面暗淡的",
+      "meaning": "n.马特（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Matt",
+      "reason": "xx-yle1/2 的 Mark/Matt/May/Nick 人名尾段应是 Matt 人名，不是表面暗淡无光泽形容词。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "jill / kim / lucy / mark / matt / may / nick / pat / sam",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "jill / kim / lucy / mark / matt / may / nick / pat / sam",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：matt",
+          "quote": "s: adj.表面暗淡的；无光泽\nraw: a. 表面暗淡的, 无光泽的, 表面粗糙的, 不光滑的\\n[医] 无光泽",
+          "note": "原bank的无光泽形容词义不支持马特译写原文。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Matt",
+          "note": "马特为常用人名译写的编辑校订；本地没有这个名字中文，依据边界是连续人名段而非已核验的角色全文。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "ms",
+      "old_meaning": "abbr.毫秒",
+      "meaning": "abbr.女士（用于女子姓名前）",
+      "category": "title",
+      "action": "replace",
+      "headword": "Ms",
+      "reason": "xx2-1 的日常问候及 xx-dg/xx-dg2011 的 Mr/Mrs/Ms 称谓段，配套课件 I’m Ms Smart 与词典姓名前称谓义一致；替换毫秒义。",
+      "context_books": [
+        "xx2-1",
+        "xx-dg",
+        "xx-dg2011"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "外研版三年级上（三年级起点）（xx2-1）",
+          "quote": "morning / fine / thank / you / ms / boy / girl / whoops / and",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "小学英语大纲词汇（xx-dg）",
+          "quote": "mouth / move / mr / mrs / ms / much / music / must / my",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "2011 小学英语大纲词汇（xx-dg2011）",
+          "quote": "mother / mouth / mr / mrs / ms / much / mum / mom / music",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：ms",
+          "quote": "s: abbr.毫秒；手稿\nraw: 美国微软公司\\n[计] 主存储器, 制造系统, 毫秒, 微软公司",
+          "note": "原bank的毫秒/手稿/微软等首义与姓名前称谓语境不符。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Ms",
+          "note": "Ms 是女士称谓略称，不是小写ms单位或MS专业缩写；不猜全称或婚姻状态。"
+        },
+        {
+          "kind": "textbook_excerpt",
+          "title": "Module 2 Unit 1 I'm Ms Smart. 课件 — 二一教育",
+          "url": "https://zy.21cnjy.com/17350424",
+          "quote": "Good morning, boys and girls. I’m Ms Smart.\nGood morning, Ms Smart.",
+          "note": "web_fetch 实际读取外研三起三上配套课件；该页单词讲解有女士，且姓名前使用 Ms。证实 xx2-1 中的女士称谓，不能用毫秒。不是本地 gloss 引文。"
+        },
+        {
+          "kind": "dictionary_excerpt",
+          "title": "MS. / Ms. Definition & Meaning — Merriam-Webster（称谓分项）",
+          "url": "https://www.merriam-webster.com/dictionary/Ms.",
+          "quote": "—used as a conventional title of courtesy before a woman's surname My history teacher is Ms. Judson.",
+          "note": "Firecrawl directQuote 仅提取 Ms. 女士称谓分项；同页同时收录 ms 毫秒等其他大小写义，不能照首义机械回退。此引文验证姓名前称谓，不猜测一个不存在的 MS 全称。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "nick",
+      "old_meaning": "n.监狱",
+      "meaning": "n.尼克（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Nick",
+      "reason": "xx-yle1/2 的 May/Nick/Pat/Sam 连续人名尾段应是 Nick 人名，不是监狱、警察局或刻痕。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "lucy / mark / matt / may / nick / pat / sam / sue / tom",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "lucy / mark / matt / may / nick / pat / sam / sue / tom",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：nick",
+          "quote": "s: n.监狱，警察局；v.刻痕于，使有缺口\nraw: n. 刻痕, 缺口, 划痕\\nvt. 刻痕于, 弄缺, 擦伤\\nvi. 狙击",
+          "note": "原bank监狱/刻痕等义不支持尼克译写字面。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Nick",
+          "note": "尼克是常用人名译写的编辑校订，未在冻结bank或本地gloss中出现；不声称具体人物文本已核验。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "north",
+      "old_meaning": "n.北",
+      "meaning": "n.北",
+      "category": "common_word",
+      "action": "retain",
+      "headword": "north",
+      "reason": "xx2-6 的 east/north 方向词语境和原bank的北/北方名词义一致；原小学义正确，严格保留而不无谓简化或扩成多词性组。",
+      "context_books": [
+        "xx2-6"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "外研版五年级下（三年级起点）（xx2-6）",
+          "quote": "remember / june / east / best / north / rest / rode / evening / late",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：north",
+          "quote": "s: n.北，北方；adj.北方的，朝北的\nraw: n.北北方adj.北北方的adv.向北方",
+          "note": "bank.s/raw 均有北名词义，支持retain。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：north",
+          "note": "保留一个正常小学方向名词义。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "pat",
+      "old_meaning": "v.轻拍",
+      "meaning": "n.帕特（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Pat",
+      "reason": "xx-yle1/2 中 Pat 连在 Nick/Sam/Sue 人名尾段；应取名字，不是轻拍动词或名词。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "mark / matt / may / nick / pat / sam / sue / tom",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "mark / matt / may / nick / pat / sam / sue / tom / charlie",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：pat",
+          "quote": "s: v.轻拍；n.轻拍\nraw: n. 轻拍\\nv. 轻拍\\nadv. 适时, 正好, 恰好, 毫不迟疑, 熟记地\\na. 恰好的, 合适的, 熟练的, 坚定的, 人为的",
+          "note": "原bank的轻拍普通词义不支持帕特译写原文。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Pat",
+          "note": "帕特为常用人名译写编辑校订；只有连续人名段证据，无中文本地gloss或完整人物全文，不从名字推断性别。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "paul",
+      "old_meaning": "n.保罗",
+      "meaning": "n.保罗（男名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Paul",
+      "reason": "xx-yle2 的 Mary/Paul/Peter 人名尾段与原bank.raw 男子名一致；保留保罗译写并补身份。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "jim / julia / lily / mary / paul / peter / sally / vicky / zoe",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：paul",
+          "quote": "s: n.保罗\nraw: n. 保罗（男子名）",
+          "note": "bank.raw 为 n. 保罗（男子名）。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Paul",
+          "note": "沿用原bank中文及男名说明，不另造新译名。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "peter",
+      "old_meaning": "vi.逐渐消失",
+      "meaning": "n.彼得（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Peter",
+      "reason": "xx-yle2 的 Paul/Peter/Sally/Vicky 连续人名段应是 Peter 名字，不是逐渐消失的 peter out 动词义。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "julia / lily / mary / paul / peter / sally / vicky / zoe",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：peter",
+          "quote": "s: vi.逐渐消失，逐渐减少\nraw: vi. 逐渐消失, 逐渐减少",
+          "note": "原bank逐渐消失/减少义不适用人名尾段，不能证明彼得译写字面。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Peter",
+          "note": "彼得为常用人名译写的编辑校订，原bank只给动词普通义，没有本地中文人物gloss；不声称角色全文已取得。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "rsvp",
+      "old_meaning": "abbr.请回复",
+      "meaning": "abbr.请回复",
+      "category": "abbreviation",
+      "action": "retain",
+      "headword": "RSVP",
+      "reason": "xx1-6 的 Christmas/game/riddle/act/RSVP/by 邀请活动词段且本地gloss明示请回复 Répondez s'il vous plaît；原小学义正确，严格保留。",
+      "context_books": [
+        "xx1-6"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "人教PEP版五年级下（三年级起点）（xx1-6）",
+          "quote": "christmas / game / riddle / act / rsvp / by / first / second / third",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_gloss",
+          "title": "人教PEP版五年级下（三年级起点） 原gloss：rsvp",
+          "quote": "abbr. 请回复 Répondez s'il vous plaît.（法语）",
+          "note": "仅为原gloss字段原文；英文等式不冒称新增中文的字面来源。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：rsvp",
+          "quote": "s: abbr.请回复\nraw: 请赐复, 请答覆, 请答复",
+          "note": "bank.s 为 abbr.请回复，bank.raw的请赐复/答覆同义。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：RSVP",
+          "note": "直接有本地中文gloss及法语展开，不猜缩写，不添加不必要义组。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "sally",
+      "old_meaning": "n.突击",
+      "meaning": "n.萨莉（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Sally",
+      "reason": "xx-yle2 的 Peter/Sally/Vicky/Zoe 连续人名尾段表明 Sally 名字，不是突击出击义。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "lily / mary / paul / peter / sally / vicky / zoe",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：sally",
+          "quote": "s: n.突击，出击；vi.突击，出击\nraw: n. 突击, 出击, 远足\\nvi. 突击, 出击, 出发",
+          "note": "原bank的突击/出击普通义不支持萨莉译写字面。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Sally",
+          "note": "萨莉是常用译写的编辑校订；冻结bank/raw_gloss无此人名中文，依连续人名段判名，不冒充完整教材角色证据。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "sam",
+      "old_meaning": "安全性帐户管理器",
+      "meaning": "n.萨姆（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Sam",
+      "reason": "xx-yle1/2 的 Pat/Sam/Sue/Tom 连续人名尾段应是 Sam 人名，不是安全性帐户管理器专业缩写。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "matt / may / nick / pat / sam / sue / tom",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "matt / may / nick / pat / sam / sue / tom / charlie / clare",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：sam",
+          "quote": "s: 安全性帐户管理器\nraw: [计] 安全性帐户管理器",
+          "note": "原bank仅给计算机安全性帐户管理器，不能作人名译写原文。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Sam",
+          "note": "萨姆为常用人名译写的编辑校订；原bank及本地gloss没有这个中文名字，不推断账号缩写或具体人物剧情。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "sue",
+      "old_meaning": "vt.控告",
+      "meaning": "n.苏（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Sue",
+      "reason": "xx-yle1/2 的 Sam/Sue/Tom 人名尾段应取 Sue 名字，不是控告起诉动词。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "may / nick / pat / sam / sue / tom",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "may / nick / pat / sam / sue / tom / charlie / clare / daisy",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：sue",
+          "quote": "s: vt.控告，起诉；vi.提出诉讼，提出请求\nraw: vt. 控告,请愿",
+          "note": "原bank的控告/起诉普通动词义不支持苏译写字面。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Sue",
+          "note": "苏是常用人名译写的编辑校订；原bank没有该中文名字，连续人名段只证明名字用法，不证明具体角色全文。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "sydney",
+      "old_meaning": "n.悉尼",
+      "meaning": "n.悉尼",
+      "category": "place_name",
+      "action": "retain",
+      "headword": "Sydney",
+      "reason": "xx1-4 的 London/Moscow/Singapore/Sydney 城市段与 xx3-8 的 kangaroo/koala/Sydney/visitor 澳大利亚旅行语境都指悉尼城市；原小学义正确，保留而非误作同名人物。",
+      "context_books": [
+        "xx1-4",
+        "xx3-8"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "人教PEP版四年级下（三年级起点）（xx1-4）",
+          "quote": "world / london / moscow / singapore / sydney / fly / love / tomato / potato",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "译林版六年级下（三年级起点）（xx3-8）",
+          "quote": "magazine / kangaroo / koala / exciting / sydney / welcome / visitor / london / oxford",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：sydney",
+          "quote": "s: n.悉尼\nraw: n. 悉尼（澳大利亚港市）",
+          "note": "bank.s 为 n.悉尼，bank.raw为悉尼（澳大利亚港市）。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Sydney",
+          "note": "原bank.raw 明示澳大利亚港市，与词书地理语境一致。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "taipei",
+      "old_meaning": "n.台北",
+      "meaning": "n.台北",
+      "category": "place_name",
+      "action": "retain",
+      "headword": "Taipei",
+      "reason": "xx3-8 的 Disneyland/Taipei/photo/travel 旅行目的地邻段指台北；原bank及原小学义正确，严格保留。",
+      "context_books": [
+        "xx3-8"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "译林版六年级下（三年级起点）（xx3-8）",
+          "quote": "like / month / sound / disneyland / taipei / photo / travel / traveller / different",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：taipei",
+          "quote": "s: n.台北\nraw: n. 台北",
+          "note": "bank.s/raw 均是 n.台北。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Taipei",
+          "note": "只规范英文大小写，不扩写原正常地名释义。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "thanksgiving",
+      "old_meaning": "n.感恩",
+      "meaning": "n.感恩节",
+      "category": "holiday",
+      "action": "replace",
+      "headword": "Thanksgiving",
+      "reason": "xx1-6 中 American/Thanksgiving/Christmas 和 xx2-7 的 special/meal 节日语境指感恩节；原bank.raw 已为感恩节，恢复被bank.s截成感恩而丢掉的节字。",
+      "context_books": [
+        "xx1-6",
+        "xx2-7"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "人教PEP版五年级下（三年级起点）（xx1-6）",
+          "quote": "plant / contest / national / american / thanksgiving / christmas / game / riddle / act",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "外研版六年级上（三年级起点）（xx2-7）",
+          "quote": "stamp / hobby / doll / bicycle / thanksgiving / flag / fly / special / meal",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：thanksgiving",
+          "quote": "s: n.感恩\nraw: n.感恩节",
+          "note": "bank.raw 为 n.感恩节；bank.s n.感恩 丢失节日身份，采用raw的完整正确义。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Thanksgiving",
+          "note": "中文节名直接依据bank.raw并由节日邻段支持，不添加通用感恩抽象义。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "they're",
+      "old_meaning": "abbr.他们是",
+      "meaning": "abbr.他们（她们、它们）是",
+      "category": "contraction",
+      "action": "replace",
+      "headword": "they're",
+      "reason": "xx2-2 和 xx3-2 两份本地gloss均为 = they are，且邻段 monkey/zoo/pig/cow 有动物；原仅他们是偏窄，补齐同一复数代词义的她们/它们，仍是一组缩约义。",
+      "context_books": [
+        "xx2-2",
+        "xx3-2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "外研版三年级下（三年级起点）（xx2-2）",
+          "quote": "tv / favourite / colour / they / they're / monkey / baby / all / zoo",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_gloss",
+          "title": "外研版三年级下（三年级起点） 原gloss：they're",
+          "quote": "= they are",
+          "note": "仅为原gloss字段原文；英文等式不冒称新增中文的字面来源。"
+        },
+        {
+          "kind": "local_context",
+          "title": "译林版三年级下（三年级起点）（xx3-2）",
+          "quote": "these / here's / farm / they / they're / pig / those / cow / apple",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_gloss",
+          "title": "译林版三年级下（三年级起点） 原gloss：they're",
+          "quote": "= they are",
+          "note": "仅为原gloss字段原文；英文等式不冒称新增中文的字面来源。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：they're",
+          "quote": "s: abbr.they are 他们是\nraw: abbr. they are 他们是",
+          "note": "bank.raw 有 they are 他们是，支持缩约展开；她们/它们为语境中同一代词义的补全。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：they're",
+          "note": "本地gloss只给英文等式；他们/她们/它们是的新中文是基础语法及动物语境校订，不冒称本地中文原文。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "tom",
+      "old_meaning": "n.雄性动物",
+      "meaning": "n.汤姆（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Tom",
+      "reason": "xx-yle1/2 的 Sam/Sue/Tom 人名尾段应为 Tom 人名，而非雄性动物或雄猫。",
+      "context_books": [
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "nick / pat / sam / sue / tom",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "nick / pat / sam / sue / tom / charlie / clare / daisy / fred",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：tom",
+          "quote": "s: n.雄性动物，雄猫\nraw: n. 雄性动物, 雄猫",
+          "note": "原bank雄性动物/雄猫是普通词义，不能当作汤姆译写字面来源。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Tom",
+          "note": "汤姆为常用人名译写的编辑校订；原bank没有该名字中文，无完整角色教材文本，不从普通雄猫义借身份。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "vicky",
+      "old_meaning": "n.维姬",
+      "meaning": "n.维姬（女名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Vicky",
+      "reason": "xx-yle2 的 Sally/Vicky/Zoe 人名尾段与原bank.raw 女子名一致；沿用维姬并补回女名说明。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "mary / paul / peter / sally / vicky / zoe",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：vicky",
+          "quote": "s: n.维姬\nraw: n. 维姬（女子名）",
+          "note": "bank.raw 为 n. 维姬（女子名）。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：Vicky",
+          "note": "中文沿用bank.raw，不无必要改为其他音译。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "word",
+      "old_meaning": "n.字",
+      "meaning": "n.单词，词",
+      "category": "common_word",
+      "action": "replace",
+      "headword": "word",
+      "reason": "xx1-7 的 dictionary/comic/word 读写购书语境和 xx-yle1/2 的 teacher/tell/understand/word/write 学习语境指单词、词；原仅字易误解为字母字符，恢复原bank.raw已有的词/单词。",
+      "context_books": [
+        "xx1-7",
+        "xx2-6",
+        "xx-dg",
+        "xx-dg2011",
+        "xx-yle1",
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "人教PEP版六年级上（三年级起点）（xx1-7）",
+          "quote": "tonight / tomorrow / dictionary / comic / word / postcard / lesson / space / travel",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "外研版五年级下（三年级起点）（xx2-6）",
+          "quote": "worry / paper / chinese / so / word / drew / draw / cut / piece",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "小学英语大纲词汇（xx-dg）",
+          "quote": "with / woman / women / wonderful / word / work / worker / world / worry",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "2011 小学英语大纲词汇（xx-dg2011）",
+          "quote": "with / woman / women / wonderful / word / work / worker / worry / write",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语一级（xx-yle1）",
+          "quote": "teacher / tell / tick / understand / word / write / badminton / ball / baseball",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "teacher / tell / tick / understand / word / write / break / homework / mistake",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：word",
+          "quote": "s: n.字，词；vt.措辞，用词\nraw: n.词单词话消息语言诺言vt.用词语表达",
+          "note": "bank.s 有字，词，bank.raw开头为词单词；新义词/单词来自原bank已有中文。"
+        },
+        {
+          "kind": "contextual_review",
+          "title": "小学逐词校订：word",
+          "note": "选择正常小学语言单位名词，不取计算机机器字或措辞动词，也不改稳定词项为word book。"
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "w": "zoe",
+      "old_meaning": "n.生命",
+      "meaning": "n.佐伊（人名）",
+      "category": "personal_name",
+      "action": "replace",
+      "headword": "Zoe",
+      "reason": "xx-yle2 的 Paul/Peter/Sally/Vicky/Zoe 人名尾段表明 Zoe 名字；原生命是词源或别义，不能作为这里的人名释义。",
+      "context_books": [
+        "xx-yle2"
+      ],
+      "references": [
+        {
+          "kind": "local_context",
+          "title": "剑桥少儿英语二级（xx-yle2）",
+          "quote": "paul / peter / sally / vicky / zoe",
+          "note": "原民间词书中已冻结的邻近词序；不是课文全文或官方词表成员认证。"
+        },
+        {
+          "kind": "local_bank",
+          "title": "原通用bank字段：zoe",
+          "quote": "s: n.生命\nraw: n. 生命",
+          "note": "原bank只有 n.生命，不支持佐伊人名译写字面。"
+        },
+        {
+          "kind": "editorial_transliteration",
+          "title": "小学逐词校订：Zoe",
+          "note": "佐伊是常用人名译写的编辑校订，原bank及本地gloss没有此人名中文；只据连续人名段判名，未声称核验具体角色课文。"
+        }
+      ],
+      "status": "reviewed"
+    }
+  ]
+}

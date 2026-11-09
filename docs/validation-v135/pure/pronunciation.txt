@@ -1,0 +1,25 @@
+FT_New_Face failed with index 0 : 2
+test_backslash_and_escape_damage_are_not_guessed_or_deleted_into_fake_ipa (__main__.PronunciationTests) ... ok
+test_empty_and_wrapper_only_fields_never_display_a_bare_slash (__main__.PronunciationTests) ... ok
+test_existing_valid_raw_fallback_is_used_but_never_invented (__main__.PronunciationTests) ... ok
+test_real_bank_has_no_backslash_or_only_wrapper_display_and_no_changed_valid_ipa (__main__.PronunciationTests) ... ALL_BANK_READONLY 34963 DISPLAYED 32135 HIDDEN 2828 DAMAGED_IPA 82 BANK_SHA_UNCHANGED True
+ok
+test_real_encephalomyeloradiculitis_is_missing_not_guessed (__main__.PronunciationTests) ... ok
+test_valid_unicode_and_ipa_precedence_are_preserved_exactly (__main__.PronunciationTests) ... ok
+test_damaged_real_word_ipa_is_hidden_in_brush_and_choice (__main__.PronunciationUITests) ... UI_PHONETICS anchorperson brush '' VISIBLE False PROTECTED_PATHS 12 UNCHANGED True
+UI_PHONETICS anchorperson choice '' VISIBLE False PROTECTED_PATHS 12 UNCHANGED True
+ok
+test_missing_real_word_ipa_is_hidden_in_brush_and_choice (__main__.PronunciationUITests) ... UI_PHONETICS encephalomyeloradiculitis brush '' VISIBLE False PROTECTED_PATHS 12 UNCHANGED True
+UI_PHONETICS encephalomyeloradiculitis choice '' VISIBLE False PROTECTED_PATHS 12 UNCHANGED True
+ok
+test_valid_real_ipa_is_visible_despite_damaged_raw (__main__.PronunciationUITests) ... UI_PHONETICS bert brush '/bɜːt/' VISIBLE True PROTECTED_PATHS 12 UNCHANGED True
+UI_PHONETICS bert choice '/bɜːt/' VISIBLE True PROTECTED_PATHS 12 UNCHANGED True
+ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 6.564s
+
+OK
+
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\pronunciation-out-_0_1p5l6\test_pronunciation.txt
+PRONUNCIATION_TESTS 9 FAILS 0 ERRORS 0

@@ -1,0 +1,380 @@
+PLATFORM native
+Protected legacy/stable paths: 12
+
+=== hint-lv0-wrong ===
+OK   hint-lv0-wrong | 真实选择题窗口已显示
+OK   hint-lv0-wrong | 回答后锁定题目并展示下一题
+OK   hint-lv0-wrong | 答错/不认识提示清空且隐藏，无等级/重现规则占位
+OK   hint-lv0-wrong | 学习状态HUD继续隐藏
+OK   hint-lv0-wrong | 移除提示不改变记忆等级
+OK   hint-lv0-wrong | 下一题可操作、不认识按钮不残留
+OK   hint-lv0-wrong | 正确释义仍有选项反馈
+OK   hint-lv0-wrong | 错误选项仍有反馈
+OK   hint-lv0-wrong | 撤销返回原题仍无提示
+OK   hint-lv0-wrong | 撤销完整恢复作答前状态
+OK   hint-lv0-wrong | states/progress/engine 保持同一共享 dict
+OK   hint-lv0-wrong | record/progress/engine 保持同一共享 dict
+OK   hint-lv0-wrong | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== hint-lv0-unknown ===
+OK   hint-lv0-unknown | 真实选择题窗口已显示
+OK   hint-lv0-unknown | 回答后锁定题目并展示下一题
+OK   hint-lv0-unknown | 答错/不认识提示清空且隐藏，无等级/重现规则占位
+OK   hint-lv0-unknown | 学习状态HUD继续隐藏
+OK   hint-lv0-unknown | 移除提示不改变记忆等级
+OK   hint-lv0-unknown | 下一题可操作、不认识按钮不残留
+OK   hint-lv0-unknown | 正确释义仍有选项反馈
+OK   hint-lv0-unknown | 撤销返回原题仍无提示
+OK   hint-lv0-unknown | 撤销完整恢复作答前状态
+OK   hint-lv0-unknown | states/progress/engine 保持同一共享 dict
+OK   hint-lv0-unknown | record/progress/engine 保持同一共享 dict
+OK   hint-lv0-unknown | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== hint-lv4-wrong ===
+OK   hint-lv4-wrong | 真实选择题窗口已显示
+OK   hint-lv4-wrong | 回答后锁定题目并展示下一题
+OK   hint-lv4-wrong | 答错/不认识提示清空且隐藏，无等级/重现规则占位
+OK   hint-lv4-wrong | 学习状态HUD继续隐藏
+OK   hint-lv4-wrong | 移除提示不改变记忆等级
+OK   hint-lv4-wrong | 下一题可操作、不认识按钮不残留
+OK   hint-lv4-wrong | 正确释义仍有选项反馈
+OK   hint-lv4-wrong | 错误选项仍有反馈
+OK   hint-lv4-wrong | 撤销返回原题仍无提示
+OK   hint-lv4-wrong | 撤销完整恢复作答前状态
+OK   hint-lv4-wrong | states/progress/engine 保持同一共享 dict
+OK   hint-lv4-wrong | record/progress/engine 保持同一共享 dict
+OK   hint-lv4-wrong | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== hint-lv4-unknown ===
+OK   hint-lv4-unknown | 真实选择题窗口已显示
+OK   hint-lv4-unknown | 回答后锁定题目并展示下一题
+OK   hint-lv4-unknown | 答错/不认识提示清空且隐藏，无等级/重现规则占位
+OK   hint-lv4-unknown | 学习状态HUD继续隐藏
+OK   hint-lv4-unknown | 移除提示不改变记忆等级
+OK   hint-lv4-unknown | 下一题可操作、不认识按钮不残留
+OK   hint-lv4-unknown | 正确释义仍有选项反馈
+OK   hint-lv4-unknown | 撤销返回原题仍无提示
+OK   hint-lv4-unknown | 撤销完整恢复作答前状态
+OK   hint-lv4-unknown | states/progress/engine 保持同一共享 dict
+OK   hint-lv4-unknown | record/progress/engine 保持同一共享 dict
+OK   hint-lv4-unknown | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== ipa-brush ===
+OK   ipa-brush | 缺失/占位/损坏音标不渲染：''
+OK   ipa-brush | 空音标不保留斜线或可见标签
+OK   ipa-brush | 缺失/占位/损坏音标不渲染：'\\'
+OK   ipa-brush | 空音标不保留斜线或可见标签
+OK   ipa-brush | 缺失/占位/损坏音标不渲染：'\\\\'
+OK   ipa-brush | 空音标不保留斜线或可见标签
+OK   ipa-brush | 缺失/占位/损坏音标不渲染：'/'
+OK   ipa-brush | 空音标不保留斜线或可见标签
+OK   ipa-brush | 缺失/占位/损坏音标不渲染：' /\\/ '
+OK   ipa-brush | 空音标不保留斜线或可见标签
+OK   ipa-brush | 缺失/占位/损坏音标不渲染：'æ\\:s'
+OK   ipa-brush | 空音标不保留斜线或可见标签
+OK   ipa-brush | 合法音标在当前模式按原文显示一对斜线
+OK   ipa-brush | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== ipa-choice ===
+OK   ipa-choice | 缺失/占位/损坏音标不渲染：''
+OK   ipa-choice | 空音标不保留斜线或可见标签
+OK   ipa-choice | 缺失/占位/损坏音标不渲染：'\\'
+OK   ipa-choice | 空音标不保留斜线或可见标签
+OK   ipa-choice | 缺失/占位/损坏音标不渲染：'\\\\'
+OK   ipa-choice | 空音标不保留斜线或可见标签
+OK   ipa-choice | 缺失/占位/损坏音标不渲染：'/'
+OK   ipa-choice | 空音标不保留斜线或可见标签
+OK   ipa-choice | 缺失/占位/损坏音标不渲染：' /\\/ '
+OK   ipa-choice | 空音标不保留斜线或可见标签
+OK   ipa-choice | 缺失/占位/损坏音标不渲染：'æ\\:s'
+OK   ipa-choice | 空音标不保留斜线或可见标签
+OK   ipa-choice | 合法音标在当前模式按原文显示一对斜线
+OK   ipa-choice | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== app-icon ===
+OK   app-icon | 应用与窗口均有原创图标
+OK   app-icon | ICO包含16–256全部9种独立尺寸：[16, 20, 24, 32, 40, 48, 64, 128, 256]
+OK   app-icon | Windows ICO目录头与帧数有效
+OK   app-icon | PNG为512px透明图标资源
+OK   app-icon | 词卡书签保留暖金品牌色
+OK   app-icon | 图标四角透明
+OK   app-icon | 应用中文显示名保持不变
+OK   app-icon | 主题切换不换回默认图标
+OK   app-icon | 独立Windows任务栏身份可设置，不修改注册表
+OK   app-icon | Windows WM_GETICON大图标句柄存在
+OK   app-icon | Windows WM_GETICON小图标句柄存在
+OK   app-icon | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== header-no-focus ===
+OK   header-no-focus | 点击表头0不设置首行current焦点虚线
+OK   header-no-focus | 点击表头0仍无选中行
+OK   header-no-focus | 点击表头1不设置首行current焦点虚线
+OK   header-no-focus | 点击表头1仍无选中行
+OK   header-no-focus | 点击表头2不设置首行current焦点虚线
+OK   header-no-focus | 点击表头2仍无选中行
+OK   header-no-focus | 记忆等级表头仍打开说明
+OK   header-no-focus | 透明描边感叹号徽标仍打开说明
+OK   header-no-focus | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== order-confirm-and-restart ===
+OK   order-confirm-and-restart | 先乱序再点词书仍明确选中乱序
+OK   order-confirm-and-restart | 确认前浏览目录已按所选稳定乱序展示
+OK   order-confirm-and-restart | 未确认前不改原学习进度
+OK   order-confirm-and-restart | 真实确认按钮重建乱序学习队列
+OK   order-confirm-and-restart | 模式变更不沿用旧顺序的未答词或游标
+OK   order-confirm-and-restart | 确认保存词序，随机seed保持稳定
+OK   order-confirm-and-restart | 重启仍乱序并续上同一未答词
+OK   order-confirm-and-restart | 反向先顺序再点已存乱序的书也不覆盖
+OK   order-confirm-and-restart | 确认恢复原书顺序
+OK   order-confirm-and-restart | 乱序改顺序重新选取排序后的首个未学词
+OK   order-confirm-and-restart | 反向变更重启保持顺序与未答词
+OK   order-confirm-and-restart | 两次改序不伪造记忆状态、不重新洗牌
+OK   order-confirm-and-restart | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== four-theme-dock-animation ===
+POINTER light/left theme_equal=True cursor=(1899, 1009) frame=(0, 100, 520, 430)
+OK   four-theme-dock-animation | lightcontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | left启动缓动收起
+OK   four-theme-dock-animation | left中间帧仍在动画中
+OK   four-theme-dock-animation | left快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | left动画中不保存/不字体重排
+OK   four-theme-dock-animation | left收起完成并解除动画锁
+OK   four-theme-dock-animation | left10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | left收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | 保存隔离截图 v133-dock-light
+OK   four-theme-dock-animation | left展开动画快照实际可见
+OK   four-theme-dock-animation | left展开落定520×430
+OK   four-theme-dock-animation | left展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | left完整收/展逻辑状态保持一致
+POINTER light/right theme_equal=True cursor=(1899, 1009) frame=(1400, 100, 520, 430)
+OK   four-theme-dock-animation | lightcontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | right启动缓动收起
+OK   four-theme-dock-animation | right中间帧仍在动画中
+OK   four-theme-dock-animation | right快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | right动画中不保存/不字体重排
+OK   four-theme-dock-animation | right收起完成并解除动画锁
+OK   four-theme-dock-animation | right10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | right收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | right展开动画快照实际可见
+OK   four-theme-dock-animation | right展开落定520×430
+OK   four-theme-dock-animation | right展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | right完整收/展逻辑状态保持一致
+POINTER light/top theme_equal=True cursor=(1899, 1009) frame=(100, 0, 520, 430)
+OK   four-theme-dock-animation | lightcontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | top启动缓动收起
+OK   four-theme-dock-animation | top中间帧仍在动画中
+OK   four-theme-dock-animation | top快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | top动画中不保存/不字体重排
+OK   four-theme-dock-animation | top收起完成并解除动画锁
+OK   four-theme-dock-animation | top10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | top收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | top展开动画快照实际可见
+OK   four-theme-dock-animation | top展开落定520×430
+OK   four-theme-dock-animation | top展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | top完整收/展逻辑状态保持一致
+POINTER light/bottom theme_equal=True cursor=(1899, 1009) frame=(100, 600, 520, 430)
+OK   four-theme-dock-animation | lightcontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | bottom启动缓动收起
+OK   four-theme-dock-animation | bottom中间帧仍在动画中
+OK   four-theme-dock-animation | bottom快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | bottom动画中不保存/不字体重排
+OK   four-theme-dock-animation | bottom收起完成并解除动画锁
+OK   four-theme-dock-animation | bottom10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | bottom收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | bottom展开动画快照实际可见
+OK   four-theme-dock-animation | bottom展开落定520×430
+OK   four-theme-dock-animation | bottom展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | bottom完整收/展逻辑状态保持一致
+POINTER dark/left theme_equal=True cursor=(1899, 1009) frame=(0, 100, 520, 430)
+OK   four-theme-dock-animation | darkcontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | left启动缓动收起
+OK   four-theme-dock-animation | left中间帧仍在动画中
+OK   four-theme-dock-animation | left快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | left动画中不保存/不字体重排
+OK   four-theme-dock-animation | left收起完成并解除动画锁
+OK   four-theme-dock-animation | left10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | left收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | 保存隔离截图 v133-dock-dark
+OK   four-theme-dock-animation | left展开动画快照实际可见
+OK   four-theme-dock-animation | left展开落定520×430
+OK   four-theme-dock-animation | left展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | left完整收/展逻辑状态保持一致
+POINTER dark/right theme_equal=True cursor=(1899, 1009) frame=(1400, 100, 520, 430)
+OK   four-theme-dock-animation | darkcontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | right启动缓动收起
+OK   four-theme-dock-animation | right中间帧仍在动画中
+OK   four-theme-dock-animation | right快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | right动画中不保存/不字体重排
+OK   four-theme-dock-animation | right收起完成并解除动画锁
+OK   four-theme-dock-animation | right10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | right收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | right展开动画快照实际可见
+OK   four-theme-dock-animation | right展开落定520×430
+OK   four-theme-dock-animation | right展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | right完整收/展逻辑状态保持一致
+POINTER dark/top theme_equal=True cursor=(1899, 1009) frame=(100, 0, 520, 430)
+OK   four-theme-dock-animation | darkcontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | top启动缓动收起
+OK   four-theme-dock-animation | top中间帧仍在动画中
+OK   four-theme-dock-animation | top快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | top动画中不保存/不字体重排
+OK   four-theme-dock-animation | top收起完成并解除动画锁
+OK   four-theme-dock-animation | top10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | top收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | top展开动画快照实际可见
+OK   four-theme-dock-animation | top展开落定520×430
+OK   four-theme-dock-animation | top展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | top完整收/展逻辑状态保持一致
+POINTER dark/bottom theme_equal=True cursor=(1899, 1009) frame=(100, 600, 520, 430)
+OK   four-theme-dock-animation | darkcontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | bottom启动缓动收起
+OK   four-theme-dock-animation | bottom中间帧仍在动画中
+OK   four-theme-dock-animation | bottom快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | bottom动画中不保存/不字体重排
+OK   four-theme-dock-animation | bottom收起完成并解除动画锁
+OK   four-theme-dock-animation | bottom10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | bottom收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | bottom展开动画快照实际可见
+OK   four-theme-dock-animation | bottom展开落定520×430
+OK   four-theme-dock-animation | bottom展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | bottom完整收/展逻辑状态保持一致
+POINTER sepia/left theme_equal=True cursor=(1899, 1009) frame=(0, 100, 520, 430)
+OK   four-theme-dock-animation | sepiacontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | left启动缓动收起
+OK   four-theme-dock-animation | left中间帧仍在动画中
+OK   four-theme-dock-animation | left快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | left动画中不保存/不字体重排
+OK   four-theme-dock-animation | left收起完成并解除动画锁
+OK   four-theme-dock-animation | left10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | left收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | 保存隔离截图 v133-dock-sepia
+OK   four-theme-dock-animation | left展开动画快照实际可见
+OK   four-theme-dock-animation | left展开落定520×430
+OK   four-theme-dock-animation | left展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | left完整收/展逻辑状态保持一致
+POINTER sepia/right theme_equal=True cursor=(1899, 1009) frame=(1400, 100, 520, 430)
+OK   four-theme-dock-animation | sepiacontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | right启动缓动收起
+OK   four-theme-dock-animation | right中间帧仍在动画中
+OK   four-theme-dock-animation | right快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | right动画中不保存/不字体重排
+OK   four-theme-dock-animation | right收起完成并解除动画锁
+OK   four-theme-dock-animation | right10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | right收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | right展开动画快照实际可见
+OK   four-theme-dock-animation | right展开落定520×430
+OK   four-theme-dock-animation | right展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | right完整收/展逻辑状态保持一致
+POINTER sepia/top theme_equal=True cursor=(1899, 1009) frame=(100, 0, 520, 430)
+OK   four-theme-dock-animation | sepiacontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | top启动缓动收起
+OK   four-theme-dock-animation | top中间帧仍在动画中
+OK   four-theme-dock-animation | top快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | top动画中不保存/不字体重排
+OK   four-theme-dock-animation | top收起完成并解除动画锁
+OK   four-theme-dock-animation | top10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | top收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | top展开动画快照实际可见
+OK   four-theme-dock-animation | top展开落定520×430
+OK   four-theme-dock-animation | top展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | top完整收/展逻辑状态保持一致
+POINTER sepia/bottom theme_equal=True cursor=(1899, 1009) frame=(100, 600, 520, 430)
+OK   four-theme-dock-animation | sepiacontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | bottom启动缓动收起
+OK   four-theme-dock-animation | bottom中间帧仍在动画中
+OK   four-theme-dock-animation | bottom快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | bottom动画中不保存/不字体重排
+OK   four-theme-dock-animation | bottom收起完成并解除动画锁
+OK   four-theme-dock-animation | bottom10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | bottom收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | bottom展开动画快照实际可见
+OK   four-theme-dock-animation | bottom展开落定520×430
+OK   four-theme-dock-animation | bottom展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | bottom完整收/展逻辑状态保持一致
+POINTER green/left theme_equal=True cursor=(1899, 1009) frame=(0, 100, 520, 430)
+OK   four-theme-dock-animation | greencontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | left启动缓动收起
+OK   four-theme-dock-animation | left中间帧仍在动画中
+OK   four-theme-dock-animation | left快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | left动画中不保存/不字体重排
+OK   four-theme-dock-animation | left收起完成并解除动画锁
+OK   four-theme-dock-animation | left10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | left收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | 保存隔离截图 v133-dock-green
+OK   four-theme-dock-animation | left展开动画快照实际可见
+OK   four-theme-dock-animation | left展开落定520×430
+OK   four-theme-dock-animation | left展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | left完整收/展逻辑状态保持一致
+POINTER green/right theme_equal=True cursor=(1899, 1009) frame=(1400, 100, 520, 430)
+OK   four-theme-dock-animation | greencontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | right启动缓动收起
+OK   four-theme-dock-animation | right中间帧仍在动画中
+OK   four-theme-dock-animation | right快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | right动画中不保存/不字体重排
+OK   four-theme-dock-animation | right收起完成并解除动画锁
+OK   four-theme-dock-animation | right10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | right收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | right展开动画快照实际可见
+OK   four-theme-dock-animation | right展开落定520×430
+OK   four-theme-dock-animation | right展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | right完整收/展逻辑状态保持一致
+POINTER green/top theme_equal=True cursor=(1899, 1009) frame=(100, 0, 520, 430)
+OK   four-theme-dock-animation | greencontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | top启动缓动收起
+OK   four-theme-dock-animation | top中间帧仍在动画中
+OK   four-theme-dock-animation | top快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | top动画中不保存/不字体重排
+OK   four-theme-dock-animation | top收起完成并解除动画锁
+OK   four-theme-dock-animation | top10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | top收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | top展开动画快照实际可见
+OK   four-theme-dock-animation | top展开落定520×430
+OK   four-theme-dock-animation | top展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | top完整收/展逻辑状态保持一致
+POINTER green/bottom theme_equal=True cursor=(1899, 1009) frame=(100, 600, 520, 430)
+OK   four-theme-dock-animation | greencontroller主题一致且真实鼠标停在窗外
+OK   four-theme-dock-animation | bottom启动缓动收起
+OK   four-theme-dock-animation | bottom中间帧仍在动画中
+OK   four-theme-dock-animation | bottom快照overlay实际可见，而非被collapsed过滤器隐藏
+OK   four-theme-dock-animation | bottom动画中不保存/不字体重排
+OK   four-theme-dock-animation | bottom收起完成并解除动画锁
+OK   four-theme-dock-animation | bottom10×64短胶囊且学习内容隐藏
+OK   four-theme-dock-animation | bottom收起不改变逻辑尺寸/坐标/偏好
+OK   four-theme-dock-animation | bottom展开动画快照实际可见
+OK   four-theme-dock-animation | bottom展开落定520×430
+OK   four-theme-dock-animation | bottom展开后恢复真实控件且释放overlay
+OK   four-theme-dock-animation | bottom完整收/展逻辑状态保持一致
+OK   four-theme-dock-animation | 外部immediate reveal终止展开中动画
+OK   four-theme-dock-animation | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== illustrations ===
+OK   illustrations | light真实词库示意图与侧边调色一致
+OK   illustrations | 保存隔离截图 v133-choice-light
+OK   illustrations | 保存隔离截图 v133-settings-light
+OK   illustrations | dark真实词库示意图与侧边调色一致
+OK   illustrations | 保存隔离截图 v133-choice-dark
+OK   illustrations | 保存隔离截图 v133-settings-dark
+OK   illustrations | sepia真实词库示意图与侧边调色一致
+OK   illustrations | 保存隔离截图 v133-choice-sepia
+OK   illustrations | 保存隔离截图 v133-settings-sepia
+OK   illustrations | green真实词库示意图与侧边调色一致
+OK   illustrations | 保存隔离截图 v133-choice-green
+OK   illustrations | 保存隔离截图 v133-settings-green
+OK   illustrations | legacy/stable 与 bak/tmp 字节指纹不变
+OK   illustrations | 最终真实progress/window/bak/tmp全部字节不变
+
+CHECKS 324; FAILS 0
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-dock-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-dock-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-dock-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-dock-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-choice-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-settings-light.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-choice-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-settings-dark.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-choice-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-settings-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-choice-green.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v133-native-out-5x3rmr80\v133-settings-green.png
+
+全部通过 ✓

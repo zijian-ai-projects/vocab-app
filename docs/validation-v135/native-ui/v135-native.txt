@@ -1,0 +1,9 @@
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v135-native-out-o8i9f2h8\primary-alice-brush.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v135-native-out-o8i9f2h8\middleschool-alice-choice.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v135-native-out-o8i9f2h8\primary-bds-brush.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v135-native-out-o8i9f2h8\primary-bund-choice.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v135-native-out-o8i9f2h8\middleschool-ruby-brush.png
+WROTE 1222 LINES; FAILS 0
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v135-native-out-o8i9f2h8\test_v135_ui.txt
+V135 CHECKS 1198 FAILS 0
+can't open file for write !

@@ -1,0 +1,3 @@
+FT_New_Face failed with index 0 : 2
+WROTE 47 LINES; FAILS 0
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\sandbox-test-out-90dmss9u\test_ui_sandbox.txt

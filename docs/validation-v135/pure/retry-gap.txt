@@ -1,0 +1,15 @@
+test_existing_three_preserves_all_deadlines (__main__.RetryGapTests) ... ok
+test_main_load_progress_calls_pure_normalization (__main__.RetryGapTests) ... ok
+test_migrated_retry_waits_exactly_three_other_new_answers (__main__.RetryGapTests) ... ok
+test_missing_or_invalid_gap_does_not_shift_deadlines (__main__.RetryGapTests) ... ok
+test_no_optional_records_are_created (__main__.RetryGapTests) ... ok
+test_old_five_is_three_without_losing_state_or_queue (__main__.RetryGapTests) ... ok
+test_other_books_and_orphan_keys_are_migrated_and_retained (__main__.RetryGapTests) ... ok
+test_ready_retry_stays_ready (__main__.RetryGapTests) ... ok
+test_serialized_restart_does_not_apply_migration_twice (__main__.RetryGapTests) ... ok
+test_string_five_and_queue_count_conversion_are_compatible (__main__.RetryGapTests) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.007s
+
+OK

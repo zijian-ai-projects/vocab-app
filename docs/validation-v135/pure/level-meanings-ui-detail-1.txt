@@ -1,0 +1,308 @@
+
+=== loader ===
+OK   loader | 顶层 primary 字符串释义加载
+OK   loader | 顶层 middleschool 字符串释义加载
+OK   loader | main 分类 -> 学段映射
+OK   loader | legacy/stable 与 bak/tmp 字节指纹不变
+OK   loader | levels.primary/middleschool schema 兼容
+OK   loader | 缺失文件安全回退
+OK   loader | 损坏 JSON 安全回退
+
+=== entries ===
+OK   entries | meaning 优先 display_s
+OK   entries | meaning 回退 level_s
+OK   entries | 异常空覆盖回退 s/raw
+OK   entries | 非法类型覆盖回退 raw
+OK   entries | legacy/stable 与 bak/tmp 字节指纹不变
+OK   entries | OptionPool 签名包含覆盖字段
+OK   stage-detect | 真实形状词书 -> primary
+OK   stage-detect | 分组 union -> primary
+OK   stage-detect | 初中学段词书
+OK   stage-detect | 系列伪 ID -> 分组 main
+OK   stage-detect | 其他分类返回 None
+OK   no-mutate | bank_map 原始词条不被修改
+OK   no-mutate | _book_words 返回浅拷贝
+OK   no-mutate | _book_words 附加学段释义
+OK   no-mutate | 刷词卡释义显示同学段释义
+OK   no-mutate | catalog 释义列显示同学段释义
+OK   no-mutate | catalog 不污染通用 bank
+OK   no-mutate | 同 key 小学/初中显示不同、稳定 w 不变
+OK   no-mutate | 切换学段学习状态未被重写
+OK   no-mutate | 小学选择题 A-D 全部小学学段释义
+OK   no-mutate | 当前书池不足时仅回退同一小学主分类池
+OK   no-mutate | 初中选择题 A-D 全部初中学段释义
+OK   no-mutate | 切书池按学段独立，无跨学段选项
+OK   no-mutate | primary/middleschool 池对象隔离
+OK   no-mutate | 缺失默认学段文件安全回退通用释义：got='n.首字母' display=None expect='n.首字母'
+OK   no-mutate | 损坏默认学段文件安全回退
+OK   no-mutate | 真实 progress/window/bak/tmp 未变
+LEVEL_MEANINGS_CHECKS 34; FAILS 0
+
+=== real-school-books ===
+OK   real-school-books | primary 全学段池覆盖全部运行时成员，包括补入的词组
+OK   real-school-books | xx-text-all 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx-text-all 真实/并集/系列来源提示统一
+OK   real-school-books | xx-text-all 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx-text-all 目录与悬停提示采用同一短释义
+OK   real-school-books | xx1-1 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx1-1 真实/并集/系列来源提示统一
+OK   real-school-books | xx1-1 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx1-1 目录与悬停提示采用同一短释义
+OK   real-school-books | xx1-2 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx1-2 真实/并集/系列来源提示统一
+OK   real-school-books | xx1-2 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx1-2 目录与悬停提示采用同一短释义
+OK   real-school-books | xx1-3 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx1-3 真实/并集/系列来源提示统一
+OK   real-school-books | xx1-3 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx1-3 目录与悬停提示采用同一短释义
+OK   real-school-books | xx1-4 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx1-4 真实/并集/系列来源提示统一
+OK   real-school-books | xx1-4 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx1-4 目录与悬停提示采用同一短释义
+OK   real-school-books | xx1-5 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx1-5 真实/并集/系列来源提示统一
+OK   real-school-books | xx1-5 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx1-5 目录与悬停提示采用同一短释义
+OK   real-school-books | xx1-6 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx1-6 真实/并集/系列来源提示统一
+OK   real-school-books | xx1-6 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx1-6 目录与悬停提示采用同一短释义
+OK   real-school-books | xx1-7 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx1-7 真实/并集/系列来源提示统一
+OK   real-school-books | xx1-7 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx1-7 目录与悬停提示采用同一短释义
+OK   real-school-books | xx1-8 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx1-8 真实/并集/系列来源提示统一
+OK   real-school-books | xx1-8 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx1-8 目录与悬停提示采用同一短释义
+OK   real-school-books | xx2-1 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx2-1 真实/并集/系列来源提示统一
+OK   real-school-books | xx2-1 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx2-1 目录与悬停提示采用同一短释义
+OK   real-school-books | xx2-2 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx2-2 真实/并集/系列来源提示统一
+OK   real-school-books | xx2-2 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx2-2 目录与悬停提示采用同一短释义
+OK   real-school-books | xx2-3 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx2-3 真实/并集/系列来源提示统一
+OK   real-school-books | xx2-3 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx2-3 目录与悬停提示采用同一短释义
+OK   real-school-books | xx2-4 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx2-4 真实/并集/系列来源提示统一
+OK   real-school-books | xx2-4 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx2-4 目录与悬停提示采用同一短释义
+OK   real-school-books | xx2-5 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx2-5 真实/并集/系列来源提示统一
+OK   real-school-books | xx2-5 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx2-5 目录与悬停提示采用同一短释义
+OK   real-school-books | xx2-6 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx2-6 真实/并集/系列来源提示统一
+OK   real-school-books | xx2-6 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx2-6 目录与悬停提示采用同一短释义
+OK   real-school-books | xx2-7 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx2-7 真实/并集/系列来源提示统一
+OK   real-school-books | xx2-7 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx2-7 目录与悬停提示采用同一短释义
+OK   real-school-books | xx2-8 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx2-8 真实/并集/系列来源提示统一
+OK   real-school-books | xx2-8 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx2-8 目录与悬停提示采用同一短释义
+OK   real-school-books | xx3-1 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx3-1 真实/并集/系列来源提示统一
+OK   real-school-books | xx3-1 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx3-1 目录与悬停提示采用同一短释义
+OK   real-school-books | xx3-2 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx3-2 真实/并集/系列来源提示统一
+OK   real-school-books | xx3-2 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx3-2 目录与悬停提示采用同一短释义
+OK   real-school-books | xx3-3 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx3-3 真实/并集/系列来源提示统一
+OK   real-school-books | xx3-3 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx3-3 目录与悬停提示采用同一短释义
+OK   real-school-books | xx3-4 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx3-4 真实/并集/系列来源提示统一
+OK   real-school-books | xx3-4 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx3-4 目录与悬停提示采用同一短释义
+OK   real-school-books | xx3-5 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx3-5 真实/并集/系列来源提示统一
+OK   real-school-books | xx3-5 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx3-5 目录与悬停提示采用同一短释义
+OK   real-school-books | xx3-6 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx3-6 真实/并集/系列来源提示统一
+OK   real-school-books | xx3-6 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx3-6 目录与悬停提示采用同一短释义
+OK   real-school-books | xx3-7 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx3-7 真实/并集/系列来源提示统一
+OK   real-school-books | xx3-7 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx3-7 目录与悬停提示采用同一短释义
+OK   real-school-books | xx3-8 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx3-8 真实/并集/系列来源提示统一
+OK   real-school-books | xx3-8 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx3-8 目录与悬停提示采用同一短释义
+OK   real-school-books | xx-ci-all 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx-ci-all 真实/并集/系列来源提示统一
+OK   real-school-books | xx-ci-all 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx-ci-all 目录与悬停提示采用同一短释义
+OK   real-school-books | xx-dg 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx-dg 真实/并集/系列来源提示统一
+OK   real-school-books | xx-dg 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx-dg 目录与悬停提示采用同一短释义
+OK   real-school-books | xx-dg2011 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx-dg2011 真实/并集/系列来源提示统一
+OK   real-school-books | xx-dg2011 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx-dg2011 目录与悬停提示采用同一短释义
+OK   real-school-books | xx-yle1 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx-yle1 真实/并集/系列来源提示统一
+OK   real-school-books | xx-yle1 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx-yle1 目录与悬停提示采用同一短释义
+OK   real-school-books | xx-yle2 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | xx-yle2 真实/并集/系列来源提示统一
+OK   real-school-books | xx-yle2 正确项与三个干扰项全来自该学段
+OK   real-school-books | xx-yle2 目录与悬停提示采用同一短释义
+OK   real-school-books | series:xx-text:人教 PEP 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | series:xx-text:人教 PEP 真实/并集/系列来源提示统一
+OK   real-school-books | series:xx-text:人教 PEP 正确项与三个干扰项全来自该学段
+OK   real-school-books | series:xx-text:人教 PEP 目录与悬停提示采用同一短释义
+OK   real-school-books | series:xx-text:外研版 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | series:xx-text:外研版 真实/并集/系列来源提示统一
+OK   real-school-books | series:xx-text:外研版 正确项与三个干扰项全来自该学段
+OK   real-school-books | series:xx-text:外研版 目录与悬停提示采用同一短释义
+OK   real-school-books | series:xx-text:译林版 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | series:xx-text:译林版 真实/并集/系列来源提示统一
+OK   real-school-books | series:xx-text:译林版 正确项与三个干扰项全来自该学段
+OK   real-school-books | series:xx-text:译林版 目录与悬停提示采用同一短释义
+OK   real-school-books | middleschool 全学段池覆盖全部运行时成员，包括补入的词组
+OK   real-school-books | cz-text-all 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz-text-all 真实/并集/系列来源提示统一
+OK   real-school-books | cz-text-all 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz-text-all 目录与悬停提示采用同一短释义
+OK   real-school-books | cz1-1 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz1-1 真实/并集/系列来源提示统一
+OK   real-school-books | cz1-1 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz1-1 目录与悬停提示采用同一短释义
+OK   real-school-books | cz1-2 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz1-2 真实/并集/系列来源提示统一
+OK   real-school-books | cz1-2 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz1-2 目录与悬停提示采用同一短释义
+OK   real-school-books | cz1-3 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz1-3 真实/并集/系列来源提示统一
+OK   real-school-books | cz1-3 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz1-3 目录与悬停提示采用同一短释义
+OK   real-school-books | cz1-4 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz1-4 真实/并集/系列来源提示统一
+OK   real-school-books | cz1-4 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz1-4 目录与悬停提示采用同一短释义
+OK   real-school-books | cz1-5 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz1-5 真实/并集/系列来源提示统一
+OK   real-school-books | cz1-5 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz1-5 目录与悬停提示采用同一短释义
+OK   real-school-books | cz2-1 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz2-1 真实/并集/系列来源提示统一
+OK   real-school-books | cz2-1 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz2-1 目录与悬停提示采用同一短释义
+OK   real-school-books | cz2-2 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz2-2 真实/并集/系列来源提示统一
+OK   real-school-books | cz2-2 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz2-2 目录与悬停提示采用同一短释义
+OK   real-school-books | cz2-3 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz2-3 真实/并集/系列来源提示统一
+OK   real-school-books | cz2-3 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz2-3 目录与悬停提示采用同一短释义
+OK   real-school-books | cz2-4 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz2-4 真实/并集/系列来源提示统一
+OK   real-school-books | cz2-4 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz2-4 目录与悬停提示采用同一短释义
+OK   real-school-books | cz2-5 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz2-5 真实/并集/系列来源提示统一
+OK   real-school-books | cz2-5 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz2-5 目录与悬停提示采用同一短释义
+OK   real-school-books | cz2-6 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz2-6 真实/并集/系列来源提示统一
+OK   real-school-books | cz2-6 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz2-6 目录与悬停提示采用同一短释义
+OK   real-school-books | cz3-1 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz3-1 真实/并集/系列来源提示统一
+OK   real-school-books | cz3-1 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz3-1 目录与悬停提示采用同一短释义
+OK   real-school-books | cz3-2 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz3-2 真实/并集/系列来源提示统一
+OK   real-school-books | cz3-2 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz3-2 目录与悬停提示采用同一短释义
+OK   real-school-books | cz3-3 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz3-3 真实/并集/系列来源提示统一
+OK   real-school-books | cz3-3 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz3-3 目录与悬停提示采用同一短释义
+OK   real-school-books | cz3-4 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz3-4 真实/并集/系列来源提示统一
+OK   real-school-books | cz3-4 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz3-4 目录与悬停提示采用同一短释义
+OK   real-school-books | cz3-5 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz3-5 真实/并集/系列来源提示统一
+OK   real-school-books | cz3-5 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz3-5 目录与悬停提示采用同一短释义
+OK   real-school-books | cz3-6 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | cz3-6 真实/并集/系列来源提示统一
+OK   real-school-books | cz3-6 正确项与三个干扰项全来自该学段
+OK   real-school-books | cz3-6 目录与悬停提示采用同一短释义
+OK   real-school-books | zhongkao-all 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | zhongkao-all 真实/并集/系列来源提示统一
+OK   real-school-books | zhongkao-all 正确项与三个干扰项全来自该学段
+OK   real-school-books | zhongkao-all 目录与悬停提示采用同一短释义
+OK   real-school-books | zk-dg 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | zk-dg 真实/并集/系列来源提示统一
+OK   real-school-books | zk-dg 正确项与三个干扰项全来自该学段
+OK   real-school-books | zk-dg 目录与悬停提示采用同一短释义
+OK   real-school-books | zk-sg 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | zk-sg 真实/并集/系列来源提示统一
+OK   real-school-books | zk-sg 正确项与三个干扰项全来自该学段
+OK   real-school-books | zk-sg 目录与悬停提示采用同一短释义
+OK   real-school-books | zk-xh16 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | zk-xh16 真实/并集/系列来源提示统一
+OK   real-school-books | zk-xh16 正确项与三个干扰项全来自该学段
+OK   real-school-books | zk-xh16 目录与悬停提示采用同一短释义
+OK   real-school-books | zk-xh-tj 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | zk-xh-tj 真实/并集/系列来源提示统一
+OK   real-school-books | zk-xh-tj 正确项与三个干扰项全来自该学段
+OK   real-school-books | zk-xh-tj 目录与悬停提示采用同一短释义
+OK   real-school-books | zk-phrases 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | zk-phrases 真实/并集/系列来源提示统一
+OK   real-school-books | zk-phrases 正确项与三个干扰项全来自该学段
+OK   real-school-books | zk-phrases 目录与悬停提示采用同一短释义
+OK   real-school-books | series:cz-text:人教版 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | series:cz-text:人教版 真实/并集/系列来源提示统一
+OK   real-school-books | series:cz-text:人教版 正确项与三个干扰项全来自该学段
+OK   real-school-books | series:cz-text:人教版 目录与悬停提示采用同一短释义
+OK   real-school-books | series:cz-text:外研版 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | series:cz-text:外研版 真实/并集/系列来源提示统一
+OK   real-school-books | series:cz-text:外研版 正确项与三个干扰项全来自该学段
+OK   real-school-books | series:cz-text:外研版 目录与悬停提示采用同一短释义
+OK   real-school-books | series:cz-text:译林版 学段/原成员顺序/浅拷贝/每条释义一致
+OK   real-school-books | series:cz-text:译林版 真实/并集/系列来源提示统一
+OK   real-school-books | series:cz-text:译林版 正确项与三个干扰项全来自该学段
+OK   real-school-books | series:cz-text:译林版 目录与悬停提示采用同一短释义
+OK   real-school-books | 773词中考词组书属于初中覆盖而非通用高级释义
+OK   real-school-books | xx1-1 实际选书后的卡片/四选项缓存不串学段
+OK   real-school-books | xx1-1 高中只用通用义，小学初中自动短义
+OK   real-school-books | cz1-1 实际选书后的卡片/四选项缓存不串学段
+OK   real-school-books | cz1-1 高中只用通用义，小学初中自动短义
+OK   real-school-books | zk-phrases 实际选书后的卡片/四选项缓存不串学段
+OK   real-school-books | zk-phrases 高中只用通用义，小学初中自动短义
+OK   real-school-books | cz-text-all 实际选书后的卡片/四选项缓存不串学段
+OK   real-school-books | cz-text-all 高中只用通用义，小学初中自动短义
+OK   real-school-books | series:xx-text:人教 PEP 实际选书后的卡片/四选项缓存不串学段
+OK   real-school-books | series:xx-text:人教 PEP 高中只用通用义，小学初中自动短义
+OK   real-school-books | series:cz-text:人教版 实际选书后的卡片/四选项缓存不串学段
+OK   real-school-books | series:cz-text:人教版 高中只用通用义，小学初中自动短义
+OK   real-school-books | gz1-1 实际选书后的卡片/四选项缓存不串学段
+OK   real-school-books | gz1-1 高中只用通用义，小学初中自动短义
+OK   real-school-books | xx1-1 实际选书后的卡片/四选项缓存不串学段
+OK   real-school-books | xx1-1 高中只用通用义，小学初中自动短义
+OK   real-school-books | 真实小学/初中/高中切换不改记忆states与历史
+OK   real-school-books | 全量bank/phrases逐字段未被显示层与池缓存修改
+OK   real-school-books | 回到真实小学刷词正面短义同步
+OK   real-school-books | 翻面短义与选择题/目录一致
+OK   real-school-books | legacy/stable 与 bak/tmp 字节指纹不变
+OK   real-school-books | 全量真实学段回归后个人资料未变
+
+全部通过 ✓

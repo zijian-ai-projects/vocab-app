@@ -1,0 +1,337 @@
+  OK   NORMAL_MIN == (520,430)
+  OK   COMPACT_SIZE == (356,196)
+  OK   MAX_SCALE == 1.6
+  OK   WindowController 是 QObject
+  OK   normal_size 是 QSize(520,430)：PyQt5.QtCore.QSize(520, 430)
+  OK   初始 compact/preferred_compact = False
+  OK   初始 edge_collapse_enabled=True
+  OK   初始 collapsed=False / dock_edge=None
+  OK   state 带 version=1
+  OK   state 保存 edge_collapse=True
+  OK   state 包含键 normal_w
+  OK   state 包含键 normal_h
+  OK   state 包含键 normal_x
+  OK   state 包含键 normal_y
+  OK   state 包含键 compact_x
+  OK   state 包含键 compact_y
+  OK   state 包含键 x
+  OK   state 包含键 y
+  OK   state 包含键 w
+  OK   state 包含键 h
+  OK   state 包含键 compact
+  OK   state 包含键 dock_edge
+  OK   初始 state w/h=520×430、compact=False
+  OK   state 可 JSON 序列化
+  OK   公开 set_edge_collapse_enabled
+  OK   关闭后 state edge_collapse=False
+  OK   restore edge_collapse=False 保持关闭
+  OK   旧记录缺失 edge_collapse 默认 True
+  OK   非法 edge_collapse 类型 'false' 保守恢复 True
+  OK   非法 edge_collapse 类型 0 保守恢复 True
+  OK   非法 edge_collapse 类型 1 保守恢复 True
+  OK   非法 edge_collapse 类型 None 保守恢复 True
+  OK   非法 edge_collapse 类型 [] 保守恢复 True
+  OK   非法 edge_collapse 类型 {} 保守恢复 True
+  OK   restore 不修改传入 unknown window 字段
+  OK   state edge_collapse=False 持久化后可恢复
+  OK   eventFilter(QObject) 安全返回 False，不调用 isAncestorOf
+  OK   eventFilter(QTimer) 安全返回 False
+  OK   eventFilter(QLayout) 安全返回 False
+  OK   安装为 application 级 event filter 后非 widget 事件不崩
+  OK   set_normal_size 低于最小 -> 520×430：PyQt5.QtCore.QSize(520, 430)
+  OK   窗口实际也钳到 520×430：PyQt5.QtCore.QSize(520, 430)
+  OK   超大尺寸按工作区 clamp（不是 1.6×）：PyQt5.QtCore.QSize(800, 600)（期望 (800, 600)）
+  OK   实际窗口尺寸 = normal_size
+  OK   正常窗完整在工作区内：PyQt5.QtCore.QRect(0, 0, 800, 600) / PyQt5.QtCore.QRect(0, 0, 800, 600)
+  OK   外部缩到 100×100 被钳回 520×430：PyQt5.QtCore.QSize(520, 430)
+  OK   外部 resize 后实际尺寸 520×430
+  OK   大屏正常窗可 1400×900（不再被 832×688 限制）：PyQt5.QtCore.QSize(1400, 900)
+  OK   大屏实际窗口 1400×900
+  OK   大窗字体/控件 scale 仍 cap 1.6：1.600
+  OK   大窗 state 保存 1400×900
+  OK   大窗 state w/h 逻辑尺寸
+  OK   拖拽 resize 可超过 832×688：PyQt5.QtCore.QSize(1201, 801)
+  OK   拖拽 resize 不超过工作区
+  OK   超过 832×688 后 scale_factor 仍 1.6
+  OK   restore 1200×820 保留：PyQt5.QtCore.QSize(1200, 820)
+  OK   restore 大尺寸实际尺寸
+  OK   restore 大尺寸 scale=1.6
+  OK   左上角按下进入 resize
+  OK   左上角识别 left+top
+  OK   左上拖拽改宽高：PyQt5.QtCore.QSize(520, 430) -> PyQt5.QtCore.QSize(580, 480)
+  OK   左上拖拽同时移动左上角：PyQt5.QtCore.QPoint(40, 50)
+  OK   释放结束 resize
+  OK   resize 后 normal_size 同步：PyQt5.QtCore.QSize(580, 480)
+  OK   右下缩到最小仍 >=520×430：PyQt5.QtCore.QSize(520, 430)
+  OK   normal_size 最小限制
+  OK   Move 到屏幕外被自动夹回工作区：PyQt5.QtCore.QRect(280, 170, 520, 430)
+  OK   clamp_position 右下极值 = 当前合法位置
+  OK   clamp_position 左上极值 = 工作区左上：PyQt5.QtCore.QPoint()
+  OK   clamp 后窗口完整可见
+  OK   背景中部按下进入拖拽
+  OK   背景中部按下不进入 resize
+  OK   背景拖拽移动窗口：PyQt5.QtCore.QPoint(100, 100) -> PyQt5.QtCore.QPoint(160, 130)
+  OK   释放结束背景拖拽
+  OK   拖拽后 state 正常位置同步
+  OK   set_compact(True) 改实际+偏好
+  OK   小窗实际 356×196：PyQt5.QtCore.QSize(356, 196)
+  OK   小窗 state w/h=356×196
+  OK   小窗外 resize 被改回 356×196
+  OK   remember=False 关小窗不改偏好
+  OK   关小窗恢复正常尺寸
+  OK   remember=False 开小窗不改偏好
+  OK   remember=True 关小窗更新偏好
+  OK   正常位置 (0,0) 在收小窗后仍保存为 (0,0)：(0, 0)
+  OK   left：restore 后 compact/dock_edge 正确（'left'）
+  OK   left：展开小窗 356×196
+  OK   left：贴左边缘 x=0
+  OK   left：鼠标离开 -> 收条
+  OK   left：竖胶囊 10×64，实际 PyQt5.QtCore.QSize(10, 64)
+  OK   left：收条隐藏直接子控件
+  OK   left：state 保存逻辑尺寸/位置，不存 8px：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 150, 'normal_y': 150, 'compact_x': 0, 'compact_y': 150, 'x': 0, 'y': 150, 'w': 356, 'h': 196, 'compact': True, 'dock_edge': 'left'}
+  OK   left：state x 是展开小窗逻辑 x
+  OK   left：reveal 展开回 356×196
+  OK   left：reveal 恢复直接子控件
+  OK   left：再次收条
+  OK   left：hover enter 展开
+  OK   right：restore 后 compact/dock_edge 正确（'right'）
+  OK   right：展开小窗 356×196
+  OK   right：贴右边缘
+  OK   right：鼠标离开 -> 收条
+  OK   right：竖胶囊 10×64，实际 PyQt5.QtCore.QSize(10, 64)
+  OK   right：收条隐藏直接子控件
+  OK   right：state 保存逻辑尺寸/位置，不存 8px：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 150, 'normal_y': 150, 'compact_x': 444, 'compact_y': 150, 'x': 444, 'y': 150, 'w': 356, 'h': 196, 'compact': True, 'dock_edge': 'right'}
+  OK   right：state x 是展开小窗逻辑 x
+  OK   right：reveal 展开回 356×196
+  OK   right：reveal 恢复直接子控件
+  OK   right：再次收条
+  OK   right：hover enter 展开
+  OK   top：restore 后 compact/dock_edge 正确（'top'）
+  OK   top：展开小窗 356×196
+  OK   top：贴上边缘
+  OK   top：鼠标离开 -> 收条
+  OK   top：横胶囊 64×10，实际 PyQt5.QtCore.QSize(64, 10)
+  OK   top：收条隐藏直接子控件
+  OK   top：state 保存逻辑尺寸/位置，不存 8px：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 150, 'normal_y': 150, 'compact_x': 150, 'compact_y': 0, 'x': 150, 'y': 0, 'w': 356, 'h': 196, 'compact': True, 'dock_edge': 'top'}
+  OK   top：state x 是展开小窗逻辑 x
+  OK   top：reveal 展开回 356×196
+  OK   top：reveal 恢复直接子控件
+  OK   top：再次收条
+  OK   top：hover enter 展开
+  OK   bottom：restore 后 compact/dock_edge 正确（'bottom'）
+  OK   bottom：展开小窗 356×196
+  OK   bottom：贴下边缘
+  OK   bottom：鼠标离开 -> 收条
+  OK   bottom：横胶囊 64×10，实际 PyQt5.QtCore.QSize(64, 10)
+  OK   bottom：收条隐藏直接子控件
+  OK   bottom：state 保存逻辑尺寸/位置，不存 8px：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 150, 'normal_y': 150, 'compact_x': 150, 'compact_y': 404, 'x': 150, 'y': 404, 'w': 356, 'h': 196, 'compact': True, 'dock_edge': 'bottom'}
+  OK   bottom：state x 是展开小窗逻辑 x
+  OK   bottom：reveal 展开回 356×196
+  OK   bottom：reveal 恢复直接子控件
+  OK   bottom：再次收条
+  OK   bottom：hover enter 展开
+  OK   有 QDialog 时仍能收条
+  OK   QDialog isWindow()=True
+  OK   收条不隐藏 isWindow() 的 QDialog
+  OK   收条期间页面 show 被压住（小条内不露出页面）
+  OK   展开后页面恢复可见
+  OK   展开后 QDialog 仍可见
+  OK   640×520 正常窗贴边不 collapsed
+  OK   640×520 正常窗 _collapse_if_docked 无动作
+  OK   640×520 正常窗 hover leave 也不收条
+  OK   760×620 正常窗贴边不 collapsed
+  OK   760×620 正常窗 _collapse_if_docked 无动作
+  OK   760×620 正常窗 hover leave 也不收条
+  OK   left：520×430 仍是正常窗
+  OK   left：520×430 restore 后可贴边收起（edge='left'）
+  OK   left：520×430 展开尺寸不变
+  OK   left：520×430 贴左
+  OK   left：520×430 进入收条
+  OK   left：520×430 收成短圆角胶囊（PyQt5.QtCore.QSize(10, 64)）
+  OK   left：520×430 收条隐藏直接子控件
+  OK   left：520×430 收条不写入 8px 逻辑尺寸：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 0, 'normal_y': 100, 'compact_x': 100, 'compact_y': 100, 'x': 0, 'y': 100, 'w': 520, 'h': 430, 'compact': False, 'dock_edge': 'left'}
+  OK   left：520×430 state 位置来自展开逻辑 rect
+  OK   left：520×430 hover/reveal 展开回 520×430
+  OK   left：520×430 reveal 恢复子控件
+  OK   left：520×430 hover enter 展开
+  OK   right：520×430 仍是正常窗
+  OK   right：520×430 restore 后可贴边收起（edge='right'）
+  OK   right：520×430 展开尺寸不变
+  OK   right：520×430 贴右
+  OK   right：520×430 进入收条
+  OK   right：520×430 收成短圆角胶囊（PyQt5.QtCore.QSize(10, 64)）
+  OK   right：520×430 收条隐藏直接子控件
+  OK   right：520×430 收条不写入 8px 逻辑尺寸：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 280, 'normal_y': 100, 'compact_x': 100, 'compact_y': 100, 'x': 280, 'y': 100, 'w': 520, 'h': 430, 'compact': False, 'dock_edge': 'right'}
+  OK   right：520×430 state 位置来自展开逻辑 rect
+  OK   right：520×430 hover/reveal 展开回 520×430
+  OK   right：520×430 reveal 恢复子控件
+  OK   right：520×430 hover enter 展开
+  OK   top：520×430 仍是正常窗
+  OK   top：520×430 restore 后可贴边收起（edge='top'）
+  OK   top：520×430 展开尺寸不变
+  OK   top：520×430 贴上
+  OK   top：520×430 进入收条
+  OK   top：520×430 收成短圆角胶囊（PyQt5.QtCore.QSize(64, 10)）
+  OK   top：520×430 收条隐藏直接子控件
+  OK   top：520×430 收条不写入 8px 逻辑尺寸：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 100, 'normal_y': 0, 'compact_x': 100, 'compact_y': 100, 'x': 100, 'y': 0, 'w': 520, 'h': 430, 'compact': False, 'dock_edge': 'top'}
+  OK   top：520×430 state 位置来自展开逻辑 rect
+  OK   top：520×430 hover/reveal 展开回 520×430
+  OK   top：520×430 reveal 恢复子控件
+  OK   top：520×430 hover enter 展开
+  OK   bottom：520×430 仍是正常窗
+  OK   bottom：520×430 restore 后可贴边收起（edge='bottom'）
+  OK   bottom：520×430 展开尺寸不变
+  OK   bottom：520×430 贴下
+  OK   bottom：520×430 进入收条
+  OK   bottom：520×430 收成短圆角胶囊（PyQt5.QtCore.QSize(64, 10)）
+  OK   bottom：520×430 收条隐藏直接子控件
+  OK   bottom：520×430 收条不写入 8px 逻辑尺寸：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 100, 'normal_y': 170, 'compact_x': 100, 'compact_y': 100, 'x': 100, 'y': 170, 'w': 520, 'h': 430, 'compact': False, 'dock_edge': 'bottom'}
+  OK   bottom：520×430 state 位置来自展开逻辑 rect
+  OK   bottom：520×430 hover/reveal 展开回 520×430
+  OK   bottom：520×430 reveal 恢复子控件
+  OK   bottom：520×430 hover enter 展开
+  OK   520×430 直接 move 到左边 8px 阈值 -> 自动贴边
+  OK   520×430 拖到边缘后鼠标离开可收条
+  OK   520×430 拖到边缘后 hover 展开仍是 520×430
+  OK   520×430 hover leave 延迟后自动收成短胶囊
+  OK   520×430 hover enter 从 8px 展开回 520×430
+  OK   520×430 贴边状态保存 normal 尺寸 + dock_edge：{'version': 1, 'edge_collapse': True, 'normal_w': 520, 'normal_h': 430, 'normal_x': 0, 'normal_y': 120, 'compact_x': 0, 'compact_y': 120, 'x': 0, 'y': 120, 'w': 520, 'h': 430, 'compact': False, 'dock_edge': 'left'}
+  OK   520×430 贴边状态 restart 恢复逻辑尺寸/贴边
+  OK   520×430 restart 展开尺寸 520×430
+  OK   normal520/left 开启后可自动收起
+  OK   normal520/left 开启 force 收条成功
+  OK   normal520/left 收条后 collapsed
+  OK   normal520/left 收条后立即展开
+  OK   normal520/left 关闭后不再自动收起
+  OK   normal520/left 关闭后 force 入口被阻止
+  OK   normal520/left 关闭后 hover leave 不收起
+  OK   normal520/left state edge_collapse=False
+  OK   normal520/left 重新开启恢复自动
+  OK   normal520/left 重新开启可收条
+  OK   normal520/right 开启后可自动收起
+  OK   normal520/right 开启 force 收条成功
+  OK   normal520/right 收条后 collapsed
+  OK   normal520/right 收条后立即展开
+  OK   normal520/right 关闭后不再自动收起
+  OK   normal520/right 关闭后 force 入口被阻止
+  OK   normal520/right 关闭后 hover leave 不收起
+  OK   normal520/right state edge_collapse=False
+  OK   normal520/right 重新开启恢复自动
+  OK   normal520/right 重新开启可收条
+  OK   normal520/top 开启后可自动收起
+  OK   normal520/top 开启 force 收条成功
+  OK   normal520/top 收条后 collapsed
+  OK   normal520/top 收条后立即展开
+  OK   normal520/top 关闭后不再自动收起
+  OK   normal520/top 关闭后 force 入口被阻止
+  OK   normal520/top 关闭后 hover leave 不收起
+  OK   normal520/top state edge_collapse=False
+  OK   normal520/top 重新开启恢复自动
+  OK   normal520/top 重新开启可收条
+  OK   normal520/bottom 开启后可自动收起
+  OK   normal520/bottom 开启 force 收条成功
+  OK   normal520/bottom 收条后 collapsed
+  OK   normal520/bottom 收条后立即展开
+  OK   normal520/bottom 关闭后不再自动收起
+  OK   normal520/bottom 关闭后 force 入口被阻止
+  OK   normal520/bottom 关闭后 hover leave 不收起
+  OK   normal520/bottom state edge_collapse=False
+  OK   normal520/bottom 重新开启恢复自动
+  OK   normal520/bottom 重新开启可收条
+  OK   compact356/left 开启后可自动收起
+  OK   compact356/left 开启 force 收条成功
+  OK   compact356/left 收条后 collapsed
+  OK   compact356/left 收条后立即展开
+  OK   compact356/left 关闭后不再自动收起
+  OK   compact356/left 关闭后 force 入口被阻止
+  OK   compact356/left 关闭后 hover leave 不收起
+  OK   compact356/left state edge_collapse=False
+  OK   compact356/left 重新开启恢复自动
+  OK   compact356/left 重新开启可收条
+  OK   compact356/right 开启后可自动收起
+  OK   compact356/right 开启 force 收条成功
+  OK   compact356/right 收条后 collapsed
+  OK   compact356/right 收条后立即展开
+  OK   compact356/right 关闭后不再自动收起
+  OK   compact356/right 关闭后 force 入口被阻止
+  OK   compact356/right 关闭后 hover leave 不收起
+  OK   compact356/right state edge_collapse=False
+  OK   compact356/right 重新开启恢复自动
+  OK   compact356/right 重新开启可收条
+  OK   compact356/top 开启后可自动收起
+  OK   compact356/top 开启 force 收条成功
+  OK   compact356/top 收条后 collapsed
+  OK   compact356/top 收条后立即展开
+  OK   compact356/top 关闭后不再自动收起
+  OK   compact356/top 关闭后 force 入口被阻止
+  OK   compact356/top 关闭后 hover leave 不收起
+  OK   compact356/top state edge_collapse=False
+  OK   compact356/top 重新开启恢复自动
+  OK   compact356/top 重新开启可收条
+  OK   compact356/bottom 开启后可自动收起
+  OK   compact356/bottom 开启 force 收条成功
+  OK   compact356/bottom 收条后 collapsed
+  OK   compact356/bottom 收条后立即展开
+  OK   compact356/bottom 关闭后不再自动收起
+  OK   compact356/bottom 关闭后 force 入口被阻止
+  OK   compact356/bottom 关闭后 hover leave 不收起
+  OK   compact356/bottom state edge_collapse=False
+  OK   compact356/bottom 重新开启恢复自动
+  OK   compact356/bottom 重新开启可收条
+  OK   hover leave + 延迟后自动收条
+  OK   hover enter 自动展开
+  OK   hide 后 timer 不把窗口收条
+  OK   hide/show 后直接子控件仍可见（无残留 hidden）
+  OK   state 正常尺寸 600×500
+  OK   state 正常位置夹紧后 (150, 100)
+  OK   state 正常窗 w/h=正常尺寸
+  OK   restore normal_size 600×500
+  OK   restore 正常位置 PyQt5.QtCore.QPoint(150, 100)：PyQt5.QtCore.QPoint(150, 100)
+  OK   restore 正常偏好
+  OK   小窗 state 保存偏好/edge
+  OK   小窗 state w/h=356×196
+  OK   restore 小窗偏好
+  OK   restore 小窗尺寸 356×196
+  OK   restore 小窗 dock_edge=left
+  OK   restore 后 state 仍逻辑尺寸
+  OK   allow_compact=False 实际保持正常窗
+  OK   allow_compact=False 仍恢复用户偏好
+  OK   allow_compact=False 使用 normal_size 640×520
+  OK   restore 屏幕外坐标被夹回当前工作区：(200, 100)
+  OK   旧 save 的 w/h 作为正常尺寸兜底
+  OK   旧 save 的 x/y 恢复：PyQt5.QtCore.QPoint(80, 70)
+  OK   负坐标多屏：restore 后窗口在假屏幕工作区内：(-1000, 100)
+  OK   负坐标被保留（不强行挪到 0）：-1000
+  OK   负坐标 clamp_position 不越界：PyQt5.QtCore.QPoint(-1920, 100)
+  OK   负坐标 clamp_position 允许负 x：-1920
+  OK   屏幕掉线后 state 夹回真实可见屏幕：(0, 100)
+  OK   legacy 356×196 无 compact 字段 -> preferred_compact=True
+  OK   allow_compact=False 时实际仍正常窗
+  OK   legacy 小窗偏好进入 state.compact
+  OK   legacy 偏好随后 set_compact(True, remember=False) 能恢复小窗
+  OK   legacy 小窗位置沿用 x/y：PyQt5.QtCore.QPoint(120, 90)
+  OK   legacy 小窗偏好 allow_compact=True 直接进小窗
+  OK   legacy 直接小窗尺寸 356×196
+  OK   前置：小窗贴左边
+  OK   temporary normal：实际 normal、偏好仍 small
+  OK   temporary normal state.compact 仍 True
+  OK   temporary normal state.dock_edge 仍 left
+  OK   temporary normal state 保留小窗逻辑位置：(0, 120)
+  OK   temporary normal 保存后重启恢复小窗偏好
+  OK   重启后 dock_edge 仍 left
+  OK   重启后小窗尺寸 356×196
+  OK   重启后小窗位置保持：(0, 120)
+  OK   520×430 -> scale_factor 1.0
+  OK   scale_factor = min(w/520,h/430,1.6)：1.250
+  OK   changed 回调内再改布局不递归（calls=1）
+  OK   preferred_compact setter 可写且发 changed
+  OK   preferred_compact setter 可设回 False
+  OK   set_normal_size 触发 changed
+  OK   set_compact 触发 changed
+  OK   收条触发 changed
+  OK   reveal 触发 changed
+  OK   update_palette 记录 theme
+  OK   收条后 state 逻辑尺寸仍为 356×196（不是 8px）
+  OK   收条后 state 使用展开小窗逻辑位置
+
+全部通过 ✓

@@ -1,0 +1,17 @@
+test_773_phrases_remain_outside_word_review (__main__.SchoolReviewTests) ... ok
+test_all_5302_outside_rows_are_identical_to_legacy (__main__.SchoolReviewTests) ... ok
+test_common_words_abbreviations_and_holidays_are_not_guessed (__main__.SchoolReviewTests) ... ok
+test_display_aliases_are_school_only_and_preserve_all_original_fields (__main__.SchoolReviewTests) ... ok
+test_every_correction_has_honest_review_provenance (__main__.SchoolReviewTests) ... ok
+test_every_old_meaning_matches_unchanged_legacy_algorithm (__main__.SchoolReviewTests) ... ok
+test_exact_158_183_scope_and_truthful_actions (__main__.SchoolReviewTests) ... ok
+test_four_original_inputs_have_exact_normalized_audit_hashes (__main__.SchoolReviewTests) ... ok
+test_loader_requires_valid_meaning_before_accepting_caption (__main__.SchoolReviewTests) ... ok
+test_named_collisions_are_real_names_not_technical_or_slang (__main__.SchoolReviewTests) ... ok
+test_shared_names_have_consistent_chinese_spellings (__main__.SchoolReviewTests) ... ok
+test_tampered_missing_duplicate_or_unsuitable_review_records_are_rejected (__main__.SchoolReviewTests) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 7.556s
+
+OK

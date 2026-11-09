@@ -1,0 +1,4 @@
+QWindowsWindow::setGeometry: Unable to set geometry 356x196+700+300 (frame: 356x196+700+300) on QWidgetWindow/"CardClassWindow" on "\\.\DISPLAY1". Resulting geometry: 356x234+700+300 (frame: 356x234+700+300) margins: 0, 0, 0, 0 minimum size: 356x196 maximum size: 356x196 MINMAXINFO maxSize=0,0 maxpos=0,0 mintrack=356,196 maxtrack=356,196)
+WROTE 52 LINES; FAILS 0
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\compact-out-cu_el4s_\_layout.txt
+can't open file for write !

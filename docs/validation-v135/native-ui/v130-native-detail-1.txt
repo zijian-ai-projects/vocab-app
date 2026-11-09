@@ -1,0 +1,759 @@
+OK   startup | VOCABAPP_DATA_DIR与Sandbox globals双隔离，禁用真实迁移候选
+PLATFORM native
+Protected legacy/stable paths: 12
+
+=== gap3 ===
+OK   gap3 | 读入gap3归一固定3且引擎共享一致
+OK   gap3 | 持久retry_gap恒3且不再提供重现间隔控件
+OK   gap3 | 默认刷词，无选择题/学习状态HUD
+OK   gap3 | 首词按源顺序
+OK   gap3 | 刷词提交后仅翻面
+OK   gap3 | 不认识仍 lv0，无时间 due
+OK   gap3 | pending 以其它首次新词计数
+OK   gap3 | 重现前第1个其它新词
+OK   gap3 | 刷词提交后仅翻面
+OK   gap3 | 重现前第2个其它新词
+OK   gap3 | 刷词提交后仅翻面
+OK   gap3 | 重现前第3个其它新词
+OK   gap3 | 刷词提交后仅翻面
+OK   gap3 | 恰好隔3个其它新词重现
+OK   gap3 | 重现不额外计首次新词
+OK   gap3 | states/progress/engine 保持同一共享 dict
+OK   gap3 | record/progress/engine 保持同一共享 dict
+OK   gap3 | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== fixed-gap3-legacy5 ===
+OK   fixed-gap3-legacy5 | 读入gap5归一固定3且引擎共享一致
+OK   fixed-gap3-legacy5 | 持久retry_gap恒3且不再提供重现间隔控件
+OK   fixed-gap3-legacy5 | 默认刷词，无选择题/学习状态HUD
+OK   fixed-gap3-legacy5 | 首词按源顺序
+OK   fixed-gap3-legacy5 | 刷词提交后仅翻面
+OK   fixed-gap3-legacy5 | 不认识仍 lv0，无时间 due
+OK   fixed-gap3-legacy5 | pending 以其它首次新词计数
+OK   fixed-gap3-legacy5 | 重现前第1个其它新词
+OK   fixed-gap3-legacy5 | 刷词提交后仅翻面
+OK   fixed-gap3-legacy5 | 重现前第2个其它新词
+OK   fixed-gap3-legacy5 | 刷词提交后仅翻面
+OK   fixed-gap3-legacy5 | 重现前第3个其它新词
+OK   fixed-gap3-legacy5 | 刷词提交后仅翻面
+OK   fixed-gap3-legacy5 | 恰好隔3个其它新词重现
+OK   fixed-gap3-legacy5 | 重现不额外计首次新词
+OK   fixed-gap3-legacy5 | states/progress/engine 保持同一共享 dict
+OK   fixed-gap3-legacy5 | record/progress/engine 保持同一共享 dict
+OK   fixed-gap3-legacy5 | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== stored-gap5-pending ===
+OK   stored-gap5-pending | 旧gap5/3/缺省的真实Card载入都设meta3
+OK   stored-gap5-pending | 所有书绝对pending仅旧5减2下限0，计数/游标/current/held/last_retry/未知字段完整保留
+OK   stored-gap5-pending | 载入迁移保留原未答current，不被更早ready抢答或跳过
+OK   stored-gap5-pending | 已ready目标保持ready，不延后或丢弃
+OK   stored-gap5-pending | gap载入不改共享states/history/root未知字段/书游标/词序
+OK   stored-gap5-pending | 真实首次载入原子保存meta3和所有书目标，保留其它内容
+OK   stored-gap5-pending | 真实重启meta3幂等，不第二次减2
+OK   stored-gap5-pending | 重启仍同一未答current且不额外计数/答题
+OK   stored-gap5-pending | states/progress/engine 保持同一共享 dict
+OK   stored-gap5-pending | record/progress/engine 保持同一共享 dict
+OK   stored-gap5-pending | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== stored-gap3-pending ===
+OK   stored-gap3-pending | 旧gap5/3/缺省的真实Card载入都设meta3
+OK   stored-gap3-pending | 所有书绝对pending仅旧5减2下限0，计数/游标/current/held/last_retry/未知字段完整保留
+OK   stored-gap3-pending | 载入迁移保留原未答current，不被更早ready抢答或跳过
+OK   stored-gap3-pending | 已ready目标保持ready，不延后或丢弃
+OK   stored-gap3-pending | gap载入不改共享states/history/root未知字段/书游标/词序
+OK   stored-gap3-pending | 真实首次载入原子保存meta3和所有书目标，保留其它内容
+OK   stored-gap3-pending | 真实重启meta3幂等，不第二次减2
+OK   stored-gap3-pending | 重启仍同一未答current且不额外计数/答题
+OK   stored-gap3-pending | states/progress/engine 保持同一共享 dict
+OK   stored-gap3-pending | record/progress/engine 保持同一共享 dict
+OK   stored-gap3-pending | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== stored-gapdefault-pending ===
+OK   stored-gapdefault-pending | 旧gap5/3/缺省的真实Card载入都设meta3
+OK   stored-gapdefault-pending | 所有书绝对pending仅旧5减2下限0，计数/游标/current/held/last_retry/未知字段完整保留
+OK   stored-gapdefault-pending | 载入迁移保留原未答current，不被更早ready抢答或跳过
+OK   stored-gapdefault-pending | 已ready目标保持ready，不延后或丢弃
+OK   stored-gapdefault-pending | gap载入不改共享states/history/root未知字段/书游标/词序
+OK   stored-gapdefault-pending | 真实首次载入原子保存meta3和所有书目标，保留其它内容
+OK   stored-gapdefault-pending | 真实重启meta3幂等，不第二次减2
+OK   stored-gapdefault-pending | 重启仍同一未答current且不额外计数/答题
+OK   stored-gapdefault-pending | states/progress/engine 保持同一共享 dict
+OK   stored-gapdefault-pending | record/progress/engine 保持同一共享 dict
+OK   stored-gapdefault-pending | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== fixed-gap3-fair-fallback ===
+OK   fixed-gap3-fair-fallback | 刷词提交后仅翻面
+OK   fixed-gap3-fair-fallback | 先保留另一首次新词
+OK   fixed-gap3-fair-fallback | 刷词提交后仅翻面
+OK   fixed-gap3-fair-fallback | 两个首次新词各计一次，固定3绝对目标分别4/5
+OK   fixed-gap3-fair-fallback | 书末无其它首次新词公平提前重现alpha
+OK   fixed-gap3-fair-fallback | 刷词提交后仅翻面
+OK   fixed-gap3-fair-fallback | fallback retry不增加首次new计数且记录轮转alpha
+OK   fixed-gap3-fair-fallback | 书末无其它首次新词公平提前重现bravo
+OK   fixed-gap3-fair-fallback | 刷词提交后仅翻面
+OK   fixed-gap3-fair-fallback | fallback retry不增加首次new计数且记录轮转bravo
+OK   fixed-gap3-fair-fallback | 书末无其它首次新词公平提前重现alpha
+OK   fixed-gap3-fair-fallback | 刷词提交后仅翻面
+OK   fixed-gap3-fair-fallback | fallback retry不增加首次new计数且记录轮转alpha
+OK   fixed-gap3-fair-fallback | states/progress/engine 保持同一共享 dict
+OK   fixed-gap3-fair-fallback | record/progress/engine 保持同一共享 dict
+OK   fixed-gap3-fair-fallback | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== first-recognition ===
+OK   first-recognition | 刷词front学习状态HUD隐藏
+OK   first-recognition | 刷词提交后仅翻面
+OK   first-recognition | 刷词back答题反馈不显示左上状态HUD
+OK   first-recognition | 首认直接 lv1
+OK   first-recognition | 精确 5min due，seen1
+OK   first-recognition | 提交原子持久化
+OK   first-recognition | 翻面期间重复刷词提交被忽略
+OK   first-recognition | states/progress/engine 保持同一共享 dict
+OK   first-recognition | record/progress/engine 保持同一共享 dict
+OK   first-recognition | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level1-remember ===
+OK   level1-remember | 过期旧词先出现
+OK   level1-remember | 刷词提交后仅翻面
+OK   level1-remember | 记得升级/忘记留级 lv2
+OK   level1-remember | 按新/当前等级精确重算 due
+OK   level1-remember | 只计一次回答
+OK   level1-remember | 复习不占其它新词计数
+OK   level1-remember | states/progress/engine 保持同一共享 dict
+OK   level1-remember | record/progress/engine 保持同一共享 dict
+OK   level1-remember | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level1-forget ===
+OK   level1-forget | 过期旧词先出现
+OK   level1-forget | 刷词提交后仅翻面
+OK   level1-forget | 记得升级/忘记留级 lv1
+OK   level1-forget | 按新/当前等级精确重算 due
+OK   level1-forget | 只计一次回答
+OK   level1-forget | 复习不占其它新词计数
+OK   level1-forget | states/progress/engine 保持同一共享 dict
+OK   level1-forget | record/progress/engine 保持同一共享 dict
+OK   level1-forget | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level2-remember ===
+OK   level2-remember | 过期旧词先出现
+OK   level2-remember | 刷词提交后仅翻面
+OK   level2-remember | 记得升级/忘记留级 lv3
+OK   level2-remember | 按新/当前等级精确重算 due
+OK   level2-remember | 只计一次回答
+OK   level2-remember | 复习不占其它新词计数
+OK   level2-remember | states/progress/engine 保持同一共享 dict
+OK   level2-remember | record/progress/engine 保持同一共享 dict
+OK   level2-remember | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level2-forget ===
+OK   level2-forget | 过期旧词先出现
+OK   level2-forget | 刷词提交后仅翻面
+OK   level2-forget | 记得升级/忘记留级 lv2
+OK   level2-forget | 按新/当前等级精确重算 due
+OK   level2-forget | 只计一次回答
+OK   level2-forget | 复习不占其它新词计数
+OK   level2-forget | states/progress/engine 保持同一共享 dict
+OK   level2-forget | record/progress/engine 保持同一共享 dict
+OK   level2-forget | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level3-remember ===
+OK   level3-remember | 过期旧词先出现
+OK   level3-remember | 刷词提交后仅翻面
+OK   level3-remember | 记得升级/忘记留级 lv4
+OK   level3-remember | 按新/当前等级精确重算 due
+OK   level3-remember | 只计一次回答
+OK   level3-remember | 复习不占其它新词计数
+OK   level3-remember | states/progress/engine 保持同一共享 dict
+OK   level3-remember | record/progress/engine 保持同一共享 dict
+OK   level3-remember | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level3-forget ===
+OK   level3-forget | 过期旧词先出现
+OK   level3-forget | 刷词提交后仅翻面
+OK   level3-forget | 记得升级/忘记留级 lv3
+OK   level3-forget | 按新/当前等级精确重算 due
+OK   level3-forget | 只计一次回答
+OK   level3-forget | 复习不占其它新词计数
+OK   level3-forget | states/progress/engine 保持同一共享 dict
+OK   level3-forget | record/progress/engine 保持同一共享 dict
+OK   level3-forget | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level4-remember ===
+OK   level4-remember | 过期旧词先出现
+OK   level4-remember | 刷词提交后仅翻面
+OK   level4-remember | 记得升级/忘记留级 lv5
+OK   level4-remember | 按新/当前等级精确重算 due
+OK   level4-remember | 只计一次回答
+OK   level4-remember | 复习不占其它新词计数
+OK   level4-remember | states/progress/engine 保持同一共享 dict
+OK   level4-remember | record/progress/engine 保持同一共享 dict
+OK   level4-remember | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level4-forget ===
+OK   level4-forget | 过期旧词先出现
+OK   level4-forget | 刷词提交后仅翻面
+OK   level4-forget | 记得升级/忘记留级 lv4
+OK   level4-forget | 按新/当前等级精确重算 due
+OK   level4-forget | 只计一次回答
+OK   level4-forget | 复习不占其它新词计数
+OK   level4-forget | states/progress/engine 保持同一共享 dict
+OK   level4-forget | record/progress/engine 保持同一共享 dict
+OK   level4-forget | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level5-remember ===
+OK   level5-remember | 过期旧词先出现
+OK   level5-remember | 刷词提交后仅翻面
+OK   level5-remember | 记得升级/忘记留级 lv6
+OK   level5-remember | 按新/当前等级精确重算 due
+OK   level5-remember | 只计一次回答
+OK   level5-remember | 复习不占其它新词计数
+OK   level5-remember | states/progress/engine 保持同一共享 dict
+OK   level5-remember | record/progress/engine 保持同一共享 dict
+OK   level5-remember | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level5-forget ===
+OK   level5-forget | 过期旧词先出现
+OK   level5-forget | 刷词提交后仅翻面
+OK   level5-forget | 记得升级/忘记留级 lv5
+OK   level5-forget | 按新/当前等级精确重算 due
+OK   level5-forget | 只计一次回答
+OK   level5-forget | 复习不占其它新词计数
+OK   level5-forget | states/progress/engine 保持同一共享 dict
+OK   level5-forget | record/progress/engine 保持同一共享 dict
+OK   level5-forget | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level6-remember ===
+OK   level6-remember | 过期旧词先出现
+OK   level6-remember | 刷词提交后仅翻面
+OK   level6-remember | 记得升级/忘记留级 lv7
+OK   level6-remember | 按新/当前等级精确重算 due
+OK   level6-remember | 只计一次回答
+OK   level6-remember | 复习不占其它新词计数
+OK   level6-remember | states/progress/engine 保持同一共享 dict
+OK   level6-remember | record/progress/engine 保持同一共享 dict
+OK   level6-remember | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level6-forget ===
+OK   level6-forget | 过期旧词先出现
+OK   level6-forget | 刷词提交后仅翻面
+OK   level6-forget | 记得升级/忘记留级 lv6
+OK   level6-forget | 按新/当前等级精确重算 due
+OK   level6-forget | 只计一次回答
+OK   level6-forget | 复习不占其它新词计数
+OK   level6-forget | states/progress/engine 保持同一共享 dict
+OK   level6-forget | record/progress/engine 保持同一共享 dict
+OK   level6-forget | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level7-remember ===
+OK   level7-remember | 过期旧词先出现
+OK   level7-remember | 刷词提交后仅翻面
+OK   level7-remember | 记得升级/忘记留级 lv8
+OK   level7-remember | 按新/当前等级精确重算 due
+OK   level7-remember | 只计一次回答
+OK   level7-remember | 复习不占其它新词计数
+OK   level7-remember | states/progress/engine 保持同一共享 dict
+OK   level7-remember | record/progress/engine 保持同一共享 dict
+OK   level7-remember | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level7-forget ===
+OK   level7-forget | 过期旧词先出现
+OK   level7-forget | 刷词提交后仅翻面
+OK   level7-forget | 记得升级/忘记留级 lv7
+OK   level7-forget | 按新/当前等级精确重算 due
+OK   level7-forget | 只计一次回答
+OK   level7-forget | 复习不占其它新词计数
+OK   level7-forget | states/progress/engine 保持同一共享 dict
+OK   level7-forget | record/progress/engine 保持同一共享 dict
+OK   level7-forget | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level8-remember ===
+OK   level8-remember | 过期旧词先出现
+OK   level8-remember | 刷词提交后仅翻面
+OK   level8-remember | 记得升级/忘记留级 lv9
+OK   level8-remember | 按新/当前等级精确重算 due
+OK   level8-remember | 只计一次回答
+OK   level8-remember | 复习不占其它新词计数
+OK   level8-remember | states/progress/engine 保持同一共享 dict
+OK   level8-remember | record/progress/engine 保持同一共享 dict
+OK   level8-remember | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level8-forget ===
+OK   level8-forget | 过期旧词先出现
+OK   level8-forget | 刷词提交后仅翻面
+OK   level8-forget | 记得升级/忘记留级 lv8
+OK   level8-forget | 按新/当前等级精确重算 due
+OK   level8-forget | 只计一次回答
+OK   level8-forget | 复习不占其它新词计数
+OK   level8-forget | states/progress/engine 保持同一共享 dict
+OK   level8-forget | record/progress/engine 保持同一共享 dict
+OK   level8-forget | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level9-remember ===
+OK   level9-remember | 过期旧词先出现
+OK   level9-remember | 刷词提交后仅翻面
+OK   level9-remember | 记得升级/忘记留级 lv10
+OK   level9-remember | 按新/当前等级精确重算 due
+OK   level9-remember | 只计一次回答
+OK   level9-remember | 复习不占其它新词计数
+OK   level9-remember | lv10 退休不再出现
+OK   level9-remember | 未来时钟也不唤醒 lv10
+OK   level9-remember | 退休前回答可撤销
+OK   level9-remember | states/progress/engine 保持同一共享 dict
+OK   level9-remember | record/progress/engine 保持同一共享 dict
+OK   level9-remember | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== level9-forget ===
+OK   level9-forget | 过期旧词先出现
+OK   level9-forget | 刷词提交后仅翻面
+OK   level9-forget | 记得升级/忘记留级 lv9
+OK   level9-forget | 按新/当前等级精确重算 due
+OK   level9-forget | 只计一次回答
+OK   level9-forget | 复习不占其它新词计数
+OK   level9-forget | states/progress/engine 保持同一共享 dict
+OK   level9-forget | record/progress/engine 保持同一共享 dict
+OK   level9-forget | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== due-seq ===
+OK   due-seq | 顺序模式源词序为 alpha/charlie
+OK   due-seq | 到期优先，使用seq源词序而非最早due
+OK   due-seq | 刷词提交后仅翻面
+OK   due-seq | 第二过期词按seq源顺序
+OK   due-seq | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== due-shuffle ===
+OK   due-shuffle | 到期优先，使用shuffle源词序而非最早due
+OK   due-shuffle | 刷词提交后仅翻面
+OK   due-shuffle | 第二过期词按shuffle源顺序
+OK   due-shuffle | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== realtime-due ===
+OK   realtime-due | 未来到期空卡有活动定时器，无学习状态HUD
+OK   realtime-due | 空卡标题复用当前词书名
+OK   realtime-due | 模拟一次真实 timer tick 即显示到期词
+OK   realtime-due | 实时出现的是复习而非新词
+OK   realtime-due | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== persistent-current-pending ===
+OK   persistent-current-pending | 刷词提交后仅翻面
+OK   persistent-current-pending | 持久记录同时含未答 current 与 pending
+OK   persistent-current-pending | 关闭/重启不跳未答词也不丢 pending
+OK   persistent-current-pending | 重启不额外提交/重排 due
+OK   persistent-current-pending | states/progress/engine 保持同一共享 dict
+OK   persistent-current-pending | record/progress/engine 保持同一共享 dict
+OK   persistent-current-pending | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== correct-undo ===
+OK   correct-undo | 刷词提交后仅翻面
+OK   correct-undo | 纠正+推进只提交一次原子进度写
+OK   correct-undo | 纠正保持其它词书游标与共享cursors别名
+OK   correct-undo | 纠正先回滚统计再一次不认识
+OK   correct-undo | 纠正后排重现并前进
+OK   correct-undo | states/progress/engine 保持同一共享 dict
+OK   correct-undo | record/progress/engine 保持同一共享 dict
+OK   correct-undo | 撤销恢复首词未答，无双统计
+OK   correct-undo | 撤销恢复共享 current/计数
+OK   correct-undo | states/progress/engine 保持同一共享 dict
+OK   correct-undo | record/progress/engine 保持同一共享 dict
+OK   correct-undo | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== choice-keyboard ===
+OK   choice-keyboard | choice 正常窗四释义按钮
+OK   choice-keyboard | 选择题初始无左上状态HUD/1-4选义hint
+OK   choice-keyboard | 选择题四按钮统一WrappedOptionButton/透明QLabel真实换行文字
+OK   choice-keyboard | 四真实释义且恰好一个已知答案
+OK   choice-keyboard | 第五项独立不认识，无测试陷阱
+OK   choice-keyboard | 四选项全部源自词库
+OK   choice-keyboard | 选择题单词/音标字号与刷词模式一致（38/18）
+OK   choice-keyboard | 选择题词块整体下移（上留白 14）
+OK   choice-keyboard | 选择题 Space 不冒充答案
+OK   choice-keyboard | 1-4键提交正确项
+OK   choice-keyboard | 答对后不显示“答对 · 记忆等级x”提示，学习HUD仍隐藏
+OK   choice-keyboard | 一次提交后锁四按钮
+OK   choice-keyboard | 重复键盘/直接提交不双答
+OK   choice-keyboard | Ctrl+Z 恢复同一未答选择题
+OK   choice-keyboard | 撤销回未答时反馈重新清空隐藏
+OK   choice-keyboard | 5键不认识仍新词
+OK   choice-keyboard | 不认识后不显示等级/隔3新词提示
+OK   choice-keyboard | Right 下一题
+OK   choice-keyboard | 下一题无遗留反馈或状态HUD
+OK   choice-keyboard | 真实第五按钮提交不认识
+OK   choice-keyboard | Return 下一题/0键不认识
+OK   choice-keyboard | states/progress/engine 保持同一共享 dict
+OK   choice-keyboard | record/progress/engine 保持同一共享 dict
+OK   choice-keyboard | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== wrapped-long-options ===
+OK   wrapped-long-options | 选择题四选项同一WrappedOptionButton/QLabel真文字/纯文本换行
+OK   wrapped-long-options | 选择题长释义按实际content宽度自动增高，完整显示未截断
+OK   wrapped-long-options | 选择题长释义按实际content宽度自动增高，完整显示未截断
+OK   wrapped-long-options | 选择题长释义按实际content宽度自动增高，完整显示未截断
+OK   wrapped-long-options | 选择题长释义按实际content宽度自动增高，完整显示未截断
+WRAPPED 选择题 samples(button_w,h,content_w,h,needed)=[(470, 150, 444, 140, 140), (470, 150, 444, 140, 140), (470, 150, 444, 140, 140), (470, 150, 444, 140, 140)]
+OK   wrapped-long-options | 选择题长四选项总高超视口仍可垂直滚动，不依赖普通QWidget布局
+OK   wrapped-long-options | status仅词汇量测试显示题号/严谨度
+OK   wrapped-long-options | 词汇量测试四选项同一WrappedOptionButton/QLabel真文字/纯文本换行
+OK   wrapped-long-options | 词汇量测试长释义按实际content宽度自动增高，完整显示未截断
+OK   wrapped-long-options | 词汇量测试长释义按实际content宽度自动增高，完整显示未截断
+OK   wrapped-long-options | 词汇量测试长释义按实际content宽度自动增高，完整显示未截断
+OK   wrapped-long-options | 词汇量测试长释义按实际content宽度自动增高，完整显示未截断
+WRAPPED 词汇量测试 samples(button_w,h,content_w,h,needed)=[(470, 150, 444, 140, 140), (470, 150, 444, 140, 140), (470, 150, 444, 140, 140), (470, 150, 444, 140, 140)]
+OK   wrapped-long-options | 词汇量测试长四选项总高超视口仍可垂直滚动，不依赖普通QWidget布局
+OK   wrapped-long-options | 学习选择题和词汇量测试所有长项字号一致
+OK   wrapped-long-options | 词汇量测试长项可滚动隔离截图保存
+OK   wrapped-long-options | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== scroll-four-themes ===
+OK   scroll-four-themes | 四个真正主题key为light/dark/sepia/green
+THEME light 设置 expected=#f3f6fa viewport-corners=['#f3f6fa', '#f3f6fa', '#f3f6fa', '#f3f6fa', '#f3f6fa', '#f3f6fa'] button-covered=[(2, 377, '2033-05-18\u3000\u3000≈ 100 词\u3000›', '#f3f6fa'), (467, 377, '2033-05-18\u3000\u3000≈ 100 词\u3000›', '#f3f6fa')]
+OK   scroll-four-themes | light 设置实际grab空白视口背景匹配真主题，不回退light
+THEME light 选择题 expected=#f3f6fa viewport-corners=['#f3f6fa', '#f3f6fa', '#f3f6fa', '#f3f6fa', '#eaf0f7', '#eaf0f7'] button-covered=[(2, 190, 'B  n.广播频道', '#eaf0f7'), (473, 190, 'B  n.广播频道', '#eaf0f7')]
+OK   scroll-four-themes | light 选择题实际grab空白视口背景匹配真主题，不回退light
+OK   scroll-four-themes | light学习仍无状态HUD或初始hint
+THEME dark 设置 expected=#353d49 viewport-corners=['#353d49', '#353d49', '#353d49', '#353d49', '#353d49', '#353d49'] button-covered=[(2, 377, '2033-05-18\u3000\u3000≈ 100 词\u3000›', '#353d49'), (467, 377, '2033-05-18\u3000\u3000≈ 100 词\u3000›', '#353d49')]
+OK   scroll-four-themes | dark 设置实际grab空白视口背景匹配真主题，不回退light
+THEME dark 选择题 expected=#353d49 viewport-corners=['#353d49', '#353d49', '#353d49', '#353d49', '#3c4655', '#3c4655'] button-covered=[(2, 190, 'B  n.广播频道', '#3c4655'), (473, 190, 'B  n.广播频道', '#3c4655')]
+OK   scroll-four-themes | dark 选择题实际grab空白视口背景匹配真主题，不回退light
+OK   scroll-four-themes | dark学习仍无状态HUD或初始hint
+THEME sepia 设置 expected=#f3ecdf viewport-corners=['#f3ecdf', '#f3ecdf', '#f3ecdf', '#f3ecdf', '#f3ecdf', '#f3ecdf'] button-covered=[(2, 377, '2033-05-18\u3000\u3000≈ 100 词\u3000›', '#f3ecdf'), (467, 377, '2033-05-18\u3000\u3000≈ 100 词\u3000›', '#f3ecdf')]
+OK   scroll-four-themes | sepia 设置实际grab空白视口背景匹配真主题，不回退light
+OK   scroll-four-themes | 真实sepia设置隔离截图保存
+THEME sepia 选择题 expected=#f3ecdf viewport-corners=['#f3ecdf', '#f3ecdf', '#f3ecdf', '#f3ecdf', '#eee4d3', '#eee4d3'] button-covered=[(2, 190, 'B  n.广播频道', '#eee4d3'), (473, 190, 'B  n.广播频道', '#eee4d3')]
+OK   scroll-four-themes | sepia 选择题实际grab空白视口背景匹配真主题，不回退light
+OK   scroll-four-themes | sepia学习仍无状态HUD或初始hint
+THEME green 设置 expected=#eaf0e8 viewport-corners=['#eaf0e8', '#eaf0e8', '#eaf0e8', '#eaf0e8', '#eaf0e8', '#eaf0e8'] button-covered=[(2, 377, '2033-05-18\u3000\u3000≈ 100 词\u3000›', '#eaf0e8'), (467, 377, '2033-05-18\u3000\u3000≈ 100 词\u3000›', '#eaf0e8')]
+OK   scroll-four-themes | green 设置实际grab空白视口背景匹配真主题，不回退light
+THEME green 选择题 expected=#eaf0e8 viewport-corners=['#eaf0e8', '#eaf0e8', '#eaf0e8', '#eaf0e8', '#f0f4ed', '#f0f4ed'] button-covered=[(2, 190, 'B  n.广播频道', '#f0f4ed'), (473, 190, 'B  n.广播频道', '#f0f4ed')]
+OK   scroll-four-themes | green 选择题实际grab空白视口背景匹配真主题，不回退light
+OK   scroll-four-themes | green学习仍无状态HUD或初始hint
+OK   scroll-four-themes | 真实主题chip切换只改设置，不改学习/历史/未知字段
+OK   scroll-four-themes | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== simplified-books-order ===
+OK   simplified-books-order | 旧shuffle记录仍显示乱序且不破坏原词序/未知字段
+OK   simplified-books-order | 选书页旧乱序显示乱序，无状态HUD/逆序chip
+OK   simplified-books-order | 选书页只有顺序/乱序与浏览词条入口
+OK   simplified-books-order | 真实乱序chip选择乱序
+OK   simplified-books-order | _set_order逆序被忽略，不改变当前选择
+OK   simplified-books-order | 选书页真实浏览词条按钮打开目录
+OK   simplified-books-order | 浏览返回原词书级导航
+OK   simplified-books-order | 只选词序/浏览不保存或重排现有学习记录
+OK   simplified-books-order | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== switch-unanswered ===
+OK   switch-unanswered | 已答切模式前进/未答保留 current
+OK   switch-unanswered | 切模式不双提交
+OK   switch-unanswered | 新模式当前词只计一次
+OK   switch-unanswered | choice_back 切刷词不重答已提交卡
+OK   switch-unanswered | 反向模式切换也无双答
+OK   switch-unanswered | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== switch-answered ===
+OK   switch-answered | 刷词提交后仅翻面
+OK   switch-answered | 已答切模式前进/未答保留 current
+OK   switch-answered | 切模式不双提交
+OK   switch-answered | 新模式当前词只计一次
+OK   switch-answered | choice_back 切刷词不重答已提交卡
+OK   switch-answered | 反向模式切换也无双答
+OK   switch-answered | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== catalog ===
+OK   catalog | task22 实际new/lv0/seen1优先测试known，不把答错新词估计为认识
+OK   catalog | 待学习分类取代未学习，统计chip用同一文案
+OK   catalog | 真实目录0/待重现/10退休标签精确一致，1-9保留Lv认识
+OK   catalog | 测试估计和旧版已会仍无真实等级，不误标0待学习
+OK   catalog | 目录四分类统计含测试估计
+OK   catalog | 目录用共享 states 和模型虚拟行
+OK   catalog | mastered 分类按钮过滤
+OK   catalog | known 分类按钮过滤
+OK   catalog | unlearned 分类按钮过滤
+OK   catalog | all 分类按钮过滤
+OK   catalog | 查询不区分词大小写
+OK   catalog | 中文释义可查询
+OK   catalog | 记忆等级表头无ⓘ且等级tooltip无失效点击提示
+OK   catalog | 目录不再有底部提示note或独立等级说明chip
+OK   catalog | 目录取消行选中设计（NoSelection/无选区）
+OK   catalog | 点击表格第0列不打开等级说明也不留下选中
+OK   catalog | 点击表格第1列不打开等级说明也不留下选中
+OK   catalog | 点击表格第2列不打开等级说明也不留下选中
+OK   catalog | 记忆等级与单词列不加分类颜色（统一普通文字色）
+OK   catalog | 点击记忆等级表头打开主题化说明
+OK   catalog | 记忆等级表头右上角真实绘制描边感叹号圆圈（像素 16）
+OK   catalog | 等级常量严格11行，QLabel为标题+11组等级/间隔，无额外规则解释
+OK   catalog | 说明11行原样，等级2-9不带后复习
+OK   catalog | 独立说明窗口有主题背景和记忆等级标题
+OK   catalog | 说明有明确关闭按钮
+OK   catalog | 真实说明关闭按钮有效
+OK   catalog | 目录 Esc 返回设置
+OK   catalog | 浏览/等级说明不改学习记录
+OK   catalog | 长行DisplayRole缓存与set_book输入长释义完全一致
+CATALOG long-row samples(height,meaning_width,vscroll,timer_active,calls)=[(601, 232, True, True, 2), (658, 232, True, False, 3), (658, 232, True, False, 3)]
+OK   catalog | 长词组目录完整换行而非省略
+OK   catalog | 极长释义目录行高自动超过48
+OK   catalog | 单超高行可视测量最终收敛，不反复复位48
+OK   catalog | 目录缩放也封顶1.6
+OK   catalog | 目录缩放不低于1
+OK   catalog | 长行浏览/缩放返回后学习记录完全不变
+OK   catalog | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== normal-geometry ===
+OK   normal-geometry | 正常窗最小520x430
+OK   normal-geometry | Card 真实 resize 事件交给控制器
+OK   normal-geometry | 正常窗可大于1.6倍最小尺寸
+OK   normal-geometry | 字体控件 scale 封顶1.6
+OK   normal-geometry | Card 词字体也不超过1.6倍
+OK   normal-geometry | 窗口尺寸保存逻辑1200x820
+OK   normal-geometry | 正常窗 使用可任务栏恢复的Window类型
+OK   normal-geometry | 正常窗 原生最小化状态成立
+OK   normal-geometry | 正常窗 最小化保存不丢逻辑尺寸/位置/偏好
+OK   normal-geometry | 正常窗 showNormal恢复原窗口状态/geometry
+OK   normal-geometry | 正常窗 恢复后持久几何完整不变
+OK   normal-geometry | 小窗 使用可任务栏恢复的Window类型
+OK   normal-geometry | 小窗 原生最小化状态成立
+OK   normal-geometry | 小窗 最小化保存不丢逻辑尺寸/位置/偏好
+OK   normal-geometry | 小窗 showNormal恢复原窗口状态/geometry
+OK   normal-geometry | 小窗 恢复后持久几何完整不变
+OK   normal-geometry | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== compact-four-edges ===
+OK   compact-four-edges | left 小窗固定与贴边
+OK   compact-four-edges | left 收成10×64短胶囊
+OK   compact-four-edges | left 收条隐藏学习内容
+OK   compact-four-edges | left 保存展开逻辑尺寸而非条尺寸
+OK   compact-four-edges | left hover恢复可见控件
+OK   compact-four-edges | right 小窗固定与贴边
+OK   compact-four-edges | right 收成10×64短胶囊
+OK   compact-four-edges | right 收条隐藏学习内容
+OK   compact-four-edges | right 保存展开逻辑尺寸而非条尺寸
+OK   compact-four-edges | right hover恢复可见控件
+OK   compact-four-edges | top 小窗固定与贴边
+OK   compact-four-edges | top 收成10×64短胶囊
+OK   compact-four-edges | top 收条隐藏学习内容
+OK   compact-four-edges | top 保存展开逻辑尺寸而非条尺寸
+OK   compact-four-edges | top hover恢复可见控件
+OK   compact-four-edges | bottom 小窗固定与贴边
+OK   compact-four-edges | bottom 收成10×64短胶囊
+OK   compact-four-edges | bottom 收条隐藏学习内容
+OK   compact-four-edges | bottom 保存展开逻辑尺寸而非条尺寸
+OK   compact-four-edges | bottom hover恢复可见控件
+OK   compact-four-edges | 正常窗永不收条
+OK   compact-four-edges | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== temporary-normal-restart ===
+OK   temporary-normal-restart | legacy仅356x196恢复小窗偏好
+OK   temporary-normal-restart | 设置临时normal，不改偏好
+OK   temporary-normal-restart | 临时normal保存正常逻辑尺寸及原小窗位置/贴边
+OK   temporary-normal-restart | 窗口未知字段保留
+OK   temporary-normal-restart | 在设置关闭并重启恢复原小窗位置
+OK   temporary-normal-restart | 返回学习恢复小窗而不跳位置
+OK   temporary-normal-restart | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== settings-defaults ===
+OK   settings-defaults | 设置只有三种常用窗口尺寸chip
+OK   settings-defaults | 设置不再暴露尺寸数字/模式/重现间隔控件
+OK   settings-defaults | 删除旧重现间隔说明和应用尺寸按钮
+OK   settings-defaults | 设置词书块只显示已学计数与更换，不含浏览词条
+OK   settings-defaults | 设置底部只显示版本号，不显示记录位置或路径提示
+OK   settings-defaults | 设置页已删除记录位置/尺寸限制/学习模式小字提示
+OK   settings-defaults | 学习模式小字提示控件已移除
+OK   settings-defaults | 三个窗口chip只显示名称，不显示尺寸数字
+OK   settings-defaults | 背景标题简化且恢复默认控件彻底移除
+OK   settings-defaults | 窗口名称chip与贴边收起开关在同一行：[106]
+OK   settings-defaults | 词书路径/已学计数/更换在同一行：[238]
+OK   settings-defaults | 真实尺寸chip应用520×430
+OK   settings-defaults | 真实尺寸chip应用640×520
+OK   settings-defaults | 真实尺寸chip应用760×620
+OK   settings-defaults | 尺寸入口仍交控制器限制可用工作区
+OK   settings-defaults | 真实贴边收起按钮关闭并同步状态
+OK   settings-defaults | 开启贴边收起不恢复尺寸、学习模式或其它默认值
+OK   settings-defaults | 窗口预设/贴边开关不清学习、历史或未知字段
+OK   settings-defaults | 保存的学习/历史不清空且retry_gap恒3
+OK   settings-defaults | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-answer ===
+OK   atomic-answer | answer失败完整回滚当前状态/队列
+OK   atomic-answer | answer原子失败主文件字节不变
+OK   atomic-answer | answer失败后仍可操作
+OK   atomic-answer | states/progress/engine 保持同一共享 dict
+OK   atomic-answer | record/progress/engine 保持同一共享 dict
+OK   atomic-answer | 重试仅统计一次
+OK   atomic-answer | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-choice_answer ===
+OK   atomic-choice_answer | choice_answer失败完整回滚当前状态/队列
+OK   atomic-choice_answer | choice_answer原子失败主文件字节不变
+OK   atomic-choice_answer | choice_answer失败后仍可操作
+OK   atomic-choice_answer | states/progress/engine 保持同一共享 dict
+OK   atomic-choice_answer | record/progress/engine 保持同一共享 dict
+OK   atomic-choice_answer | 选择提交失败不锁按钮
+OK   atomic-choice_answer | 重试仅统计一次
+OK   atomic-choice_answer | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-next ===
+OK   atomic-next | 刷词提交后仅翻面
+OK   atomic-next | next失败完整回滚当前状态/队列
+OK   atomic-next | next原子失败主文件字节不变
+OK   atomic-next | next失败后仍可操作
+OK   atomic-next | states/progress/engine 保持同一共享 dict
+OK   atomic-next | record/progress/engine 保持同一共享 dict
+OK   atomic-next | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-correct ===
+OK   atomic-correct | 刷词提交后仅翻面
+OK   atomic-correct | correct失败完整回滚当前状态/队列
+OK   atomic-correct | correct原子失败主文件字节不变
+OK   atomic-correct | correct失败后仍可操作
+OK   atomic-correct | states/progress/engine 保持同一共享 dict
+OK   atomic-correct | record/progress/engine 保持同一共享 dict
+OK   atomic-correct | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-undo ===
+OK   atomic-undo | 刷词提交后仅翻面
+OK   atomic-undo | undo失败完整回滚当前状态/队列
+OK   atomic-undo | undo原子失败主文件字节不变
+OK   atomic-undo | undo失败后仍可操作
+OK   atomic-undo | states/progress/engine 保持同一共享 dict
+OK   atomic-undo | record/progress/engine 保持同一共享 dict
+OK   atomic-undo | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-empty-next ===
+OK   atomic-empty-next | 刷词提交后仅翻面
+OK   atomic-empty-next | 空卡仍保留上一回答的撤销快照
+OK   atomic-empty-next | 空卡到期推进失败仍完整保留当前记录
+OK   atomic-empty-next | 空卡保存失败保留撤销快照
+OK   atomic-empty-next | 空卡保存失败不截断记录
+OK   atomic-empty-next | states/progress/engine 保持同一共享 dict
+OK   atomic-empty-next | record/progress/engine 保持同一共享 dict
+OK   atomic-empty-next | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-due-timer ===
+OK   atomic-due-timer | 刷词提交后仅翻面
+OK   atomic-due-timer | 空卡仍保留上一回答的撤销快照
+OK   atomic-due-timer | 空卡到期推进失败仍完整保留当前记录
+OK   atomic-due-timer | 空卡保存失败保留撤销快照
+OK   atomic-due-timer | 空卡保存失败不截断记录
+OK   atomic-due-timer | states/progress/engine 保持同一共享 dict
+OK   atomic-due-timer | record/progress/engine 保持同一共享 dict
+OK   atomic-due-timer | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-quiz-answer ===
+OK   atomic-quiz-answer | 合法已存测试与theta0恢复
+OK   atomic-quiz-answer | quiz answer失败 history/theta/session/答题模型全部回滚
+OK   atomic-quiz-answer | quiz answer失败 progress/session/state/items/resp/history嵌套原容器身份不变
+OK   atomic-quiz-answer | quiz answer失败 已提交文件字节未变
+OK   atomic-quiz-answer | answer失败恢复enabled且没有resp/计分
+OK   atomic-quiz-answer | answer失败后真实按钮重试仅提交/计分一次
+OK   atomic-quiz-answer | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-quiz-next ===
+OK   atomic-quiz-next | quiz next失败 history/theta/session/答题模型全部回滚
+OK   atomic-quiz-next | quiz next失败 progress/session/state/items/resp/history嵌套原容器身份不变
+OK   atomic-quiz-next | quiz next失败 已提交文件字节未变
+OK   atomic-quiz-next | next失败保留已答locked界面，不能重答
+OK   atomic-quiz-next | next失败既有skip变明确保存重试入口
+OK   atomic-quiz-next | next重试按钮只推进一次至未答题
+OK   atomic-quiz-next | 手动next后迟到timeout不跳未答题
+OK   atomic-quiz-next | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== quiz-resume-answered ===
+OK   quiz-resume-answered | 已答current的持久session恢复直接推进而不重答
+OK   quiz-resume-answered | 已答恢复不重复step/严谨度且未知字段保留
+OK   quiz-resume-answered | 再重启未答下一题仍无重复resp/计分
+OK   quiz-resume-answered | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-quiz-finish ===
+OK   atomic-quiz-finish | quiz finish失败 history/theta/session/答题模型全部回滚
+OK   atomic-quiz-finish | quiz finish失败 progress/session/state/items/resp/history嵌套原容器身份不变
+OK   atomic-quiz-finish | quiz finish失败 已提交文件字节未变
+OK   atomic-quiz-finish | 末题finish失败不增加i，保留locked与结果重试
+OK   atomic-quiz-finish | finish真实重试成功仅添加一条history并清session
+OK   atomic-quiz-finish | 已有基准的合法theta0在非baseline测试后仍保留
+OK   atomic-quiz-finish | 成功finish后迟到timeout不二次历史/结果
+OK   atomic-quiz-finish | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-quiz-settings-entry ===
+OK   atomic-quiz-settings-entry | 测试入口实际页面=settings
+OK   atomic-quiz-settings-entry | 真实测试入口clicked恰好一次=settings
+OK   atomic-quiz-settings-entry | quiz settings入口失败 history/theta/session/答题模型全部回滚
+OK   atomic-quiz-settings-entry | quiz settings入口失败 progress/session/state/items/resp/history嵌套原容器身份不变
+OK   atomic-quiz-settings-entry | quiz settings入口失败 已提交文件字节未变
+OK   atomic-quiz-settings-entry | 真实入口首save失败flags/UI/history/theta/session不变且可重试
+OK   atomic-quiz-settings-entry | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-quiz-welcome-entry ===
+OK   atomic-quiz-welcome-entry | 测试入口实际页面=welcome
+OK   atomic-quiz-welcome-entry | 真实测试入口clicked恰好一次=welcome
+OK   atomic-quiz-welcome-entry | quiz welcome入口失败 history/theta/session/答题模型全部回滚
+OK   atomic-quiz-welcome-entry | quiz welcome入口失败 progress/session/state/items/resp/history嵌套原容器身份不变
+OK   atomic-quiz-welcome-entry | quiz welcome入口失败 已提交文件字节未变
+OK   atomic-quiz-welcome-entry | 真实入口首save失败flags/UI/history/theta/session不变且可重试
+OK   atomic-quiz-welcome-entry | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-quiz-skip ===
+OK   atomic-quiz-skip | quiz skip失败 history/theta/session/答题模型全部回滚
+OK   atomic-quiz-skip | quiz skip失败 progress/session/state/items/resp/history嵌套原容器身份不变
+OK   atomic-quiz-skip | quiz skip失败 已提交文件字节未变
+OK   atomic-quiz-skip | skip失败保留原会话并显示明确重试
+OK   atomic-quiz-skip | 明确skip重试成功才清session且history/theta0不变
+OK   atomic-quiz-skip | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-close-progress ===
+OK   atomic-close-progress | 恢复合法持久测试夹具
+OK   atomic-close-progress | 关闭失败忽略close并恢复可操作窗口
+OK   atomic-close-progress | 关闭失败恢复quiz_timer与全部先前活动timer
+OK   atomic-close-progress | 关闭原子失败记录未截断
+OK   atomic-close-progress | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== atomic-close-window ===
+OK   atomic-close-window | 恢复合法持久测试夹具
+OK   atomic-close-window | 关闭失败忽略close并恢复可操作窗口
+OK   atomic-close-window | 关闭失败恢复quiz_timer与全部先前活动timer
+OK   atomic-close-window | 关闭原子失败记录未截断
+OK   atomic-close-window | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== migration-backup-invalid ===
+OK   migration-backup-invalid | UI加载一次迁移旧零基等级
+OK   migration-backup-invalid | 迁移保留due/统计/未知字段
+OK   migration-backup-invalid | 重启现代schema不再重复升级
+OK   migration-backup-invalid | UI从有效备份恢复并展示通知来源
+OK   migration-backup-invalid | 拒绝非法结构，不当新用户清空：list
+OK   migration-backup-invalid | 拒绝非法结构，不当新用户清空：dict
+OK   migration-backup-invalid | 拒绝非法结构，不当新用户清空：dict
+OK   migration-backup-invalid | 显式稳定迁移复制完整记录，旧夹具保留
+OK   migration-backup-invalid | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== real-phrases-books ===
+OK   real-phrases-books | 真实只读4818词组/8词组词书
+OK   real-phrases-books | 8本词组书数量/词条映射完整
+OK   real-phrases-books | 词组不伪造IPA
+OK   real-phrases-books | 真实三级导航可选词组书
+OK   real-phrases-books | 词组书进入共享学习流程
+OK   real-phrases-books | 真实词组卡没有音标
+PERF largest-catalog entries=16331 seconds=0.326 book=cgcf-all visible_rows=9 measure_calls=1
+OK   real-phrases-books | 最大真实词书完整目录行数不缺失
+OK   real-phrases-books | 最大目录只合并测量首屏及buffer，非全书
+OK   real-phrases-books | legacy/stable 与 bak/tmp 字节指纹不变
+
+=== illustrations ===
+OK   illustrations | 真实词库选择题按保存游标展示示意词
+OK   illustrations | 选择题隔离截图保存
+OK   illustrations | 真实词组按保存游标展示指定条目
+OK   illustrations | 词组小窗356x196、无IPA
+OK   illustrations | 无pos源词组不编造词性
+OK   illustrations | 词组/释义自动换行高度足够
+OK   illustrations | 词组小窗隔离截图保存
+OK   illustrations | 真实目录模型数量完整
+OK   illustrations | 词条浏览隔离截图保存
+OK   illustrations | legacy/stable 与 bak/tmp 字节指纹不变
+OK   closed-late-callbacks | Sandbox 退出恢复globals
+OK   closed-late-callbacks | 关闭后quiz模式的迟到回调也不递增题号
+OK   closed-late-callbacks | 关闭后empty模式的迟到到期回调不推进队列
+OK   closed-late-callbacks | 关闭后所有迟到回调均不写默认真实路径
+OK   closed-late-callbacks | 最终legacy/stable及恢复文件字节全部不变
+
+CHECKS 616; FAILS 0
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-quiz-wrapped.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-settings-sepia.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-choice.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-phrase-compact.png
+SCREENSHOT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v130-native-out-tgostqjj\v130-catalog.png
+
+全部通过 ✓

@@ -1,0 +1,4 @@
+FT_New_Face failed with index 0 : 2
+WROTE 1212 LINES; FAILS 0
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\v135-offscreen-out-npq2hq8_\test_v135_ui.txt
+V135 CHECKS 1193 FAILS 0

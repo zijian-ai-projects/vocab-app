@@ -1,0 +1,678 @@
+PYTHON 3.8.3 QT 5.12.9 PYQT 5.12.3 PLATFORM offscreen
+MODE card-integrated
+FAKE_RESOURCES bank/books/phrases=D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\theme-v134-card-sandbox-62b5km25\fake-data entries=8 book=theme-fixture-book
+OPTION_CLASS WrappedOptionButton
+  OK   四主题 required keys 齐全：[]
+  OK   四主题名称/顺序 API 保持完整
+  OK   默认亮色与未知主题 fallback API 不变
+  OK   options() 保持主题名称 API
+  OK   required keys 无重复
+  OK   dock_* / chip_fg 纳入 required keys，不只是可选临时色
+  OK   DK normal/hover/pressed 四套 required keys 齐全
+  OK   三处只共用既有 #dontknow；pressed 一条规则，不新造 #dk CSS
+  OK   去除新增 DK pressed 规则后原 QSS 与 V133 完全相同（字号/留白/反馈/其他控件）
+  OK   light key 集合与 KEYS 一致
+  OK   light 全部实色合法，避免父背景透明叠色影响对比度
+  OK   light V133 非DK配色（含picked反馈）摘要完全不变
+  OK   light DK normal/hover/pressed 三态填充各自可辨
+  OK   light DK 正常填充:bg 明显增强 1.164 -> 1.573
+  OK   light dk_bg:bg 1.573 >= 1.5 视觉分离目标
+  OK   light dk_hover:bg 1.743 >= 1.5 视觉分离目标
+  OK   light dk_pressed:bg 1.930 >= 1.5 视觉分离目标
+  OK   light DK 全部新色通道跨度<=55，低饱和
+DK_PALETTE light fg=#2e425d normal=#b7c8dd hover=#adbed6 pressed=#a2b5ce old_fill=1.164 new_fill=1.573 text_min=4.888 fill_min=1.573
+  OK   light fg_word/bg 11.433:1 >= 4.5
+  OK   light fg_ipa/bg 5.025:1 >= 4.5
+  OK   light fg_mean/bg 9.122:1 >= 4.5
+  OK   light fg_empty/bg 6.615:1 >= 4.5
+  OK   light fg_sub/bg 5.025:1 >= 4.5
+  OK   light muted/bg 5.163:1 >= 4.5
+  OK   light bar/bg 5.025:1 >= 4.5
+  OK   light bar_hover/bar_hover_bg 9.949:1 >= 4.5
+  OK   light bar_hover/bg 11.433:1 >= 4.5
+  OK   light btn_fg/btn_bg 6.509:1 >= 4.5
+  OK   light btn_fg/btn_hover 5.964:1 >= 4.5
+  OK   light btn_fg/btn_pressed 5.452:1 >= 4.5
+  OK   light rem_fg/rem_bg 5.674:1 >= 4.5
+  OK   light rem_fg/rem_hover 5.117:1 >= 4.5
+  OK   light fgt_fg/fgt_bg 5.189:1 >= 4.5
+  OK   light fgt_fg/fgt_hover 4.641:1 >= 4.5
+  OK   light wrong_fg/bg 5.025:1 >= 4.5
+  OK   light fg_mean/btn_bg 7.937:1 >= 4.5
+  OK   light link/bg 5.025:1 >= 4.5
+  OK   light close/bg 5.163:1 >= 4.5
+  OK   light close_hover/bg 7.480:1 >= 4.5
+  OK   light opt_fg/opt_bg 8.619:1 >= 4.5
+  OK   light opt_fg/opt_hover 7.831:1 >= 4.5
+  OK   light opt_ok_fg/opt_ok_bg 5.667:1 >= 4.5
+  OK   light opt_bad_fg/opt_bad_bg 4.810:1 >= 4.5
+  OK   light dk_fg/dk_bg 5.999:1 >= 4.5
+  OK   light dk_fg/dk_hover 5.412:1 >= 4.5
+  OK   light dk_fg/dk_pressed 4.888:1 >= 4.5
+  OK   light dk_pick_fg/dk_pick 4.943:1 >= 4.5
+  OK   light chip_fg/chip_bg 5.624:1 >= 4.5
+  OK   light fg_word/chip_bg 10.321:1 >= 4.5
+  OK   light fg_word/chip_hover 9.274:1 >= 4.5
+  OK   light chip_sel_fg/chip_sel 5.682:1 >= 4.5
+  OK   light fg_mean/chip_bg 8.234:1 >= 4.5
+  OK   light fg_mean/opt_bg 8.619:1 >= 4.5
+  OK   light chart_text/chart_bg 4.984:1 >= 4.5
+  OK   light chart_date/chart_bg 5.215:1 >= 4.5
+  OK   light chart_line/chart_bg 5.182:1 >= 4.5
+  OK   light ok/bg 6.615:1 >= 4.5
+  OK   light accent/bg 4.999:1 >= 4.5
+  OK   light dock_fg/dock_bg 5.654:1 >= 4.5
+  OK   light dock_fg/dock_hover 5.024:1 >= 4.5
+SUMMARY light body=9.122 button_worst=5.452 dock_worst=5.024 min=4.641 (fgt_fg/fgt_hover) pairs=42
+  OK   light 主面板/控件 RGB 通道跨度 <=56，保持柔和灰调
+  OK   light 正确/错误状态保持协调但可区分
+  OK   light/scale1.0 QSS 完整且 chip 使用独立 chip_fg
+  OK   light/scale1.0 输入框/下拉选中颜色主题化
+  OK   WIDGET light/scale1.0 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   WIDGET light/scale1.0 三处按钮文字同为不认识
+  OK   WIDGET light/scale1.0 三处 normal 前景同为 dk_fg
+  OK   WIDGET light/scale1.0 normal 三处填充同为 dk_bg：['#b7c8dd', '#b7c8dd', '#b7c8dd']
+  OK   WIDGET light/scale1.0 normal 三处归一化实际绘制逐像素相同
+  OK   WIDGET light/scale1.0 hover 三处填充同为 dk_hover：['#adbed6', '#adbed6', '#adbed6']
+  OK   WIDGET light/scale1.0 hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET light/scale1.0 pressed 三处填充同为 dk_pressed：['#a2b5ce', '#a2b5ce', '#a2b5ce']
+  OK   WIDGET light/scale1.0 pressed 三处归一化实际绘制逐像素相同
+  OK   WIDGET light/scale1.0 pressed+hover 三处填充同为 dk_pressed：['#a2b5ce', '#a2b5ce', '#a2b5ce']
+  OK   WIDGET light/scale1.0 pressed+hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET light/scale1.0 picked 优先于 normal，保留原反馈填充
+  OK   WIDGET light/scale1.0 picked 优先于 hover，保留原反馈填充
+  OK   WIDGET light/scale1.0 picked 优先于 pressed，保留原反馈填充
+  OK   WIDGET light/scale1.0 picked 优先于 pressed+hover，保留原反馈填充
+  OK   WIDGET light/scale1.0 disabled picked 前景仍为原 dk_pick_fg
+  OK   WIDGET light/scale1.0 disabled picked 填充仍为原 dk_pick
+  OK   light/scale1.0 DK 原字号/scaling 不变
+  OK   light/scale1.6 QSS 完整且 chip 使用独立 chip_fg
+  OK   light/scale1.6 输入框/下拉选中颜色主题化
+  OK   WIDGET light/scale1.6 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   WIDGET light/scale1.6 三处按钮文字同为不认识
+  OK   WIDGET light/scale1.6 三处 normal 前景同为 dk_fg
+  OK   WIDGET light/scale1.6 normal 三处填充同为 dk_bg：['#b7c8dd', '#b7c8dd', '#b7c8dd']
+  OK   WIDGET light/scale1.6 normal 三处归一化实际绘制逐像素相同
+  OK   WIDGET light/scale1.6 hover 三处填充同为 dk_hover：['#adbed6', '#adbed6', '#adbed6']
+  OK   WIDGET light/scale1.6 hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET light/scale1.6 pressed 三处填充同为 dk_pressed：['#a2b5ce', '#a2b5ce', '#a2b5ce']
+  OK   WIDGET light/scale1.6 pressed 三处归一化实际绘制逐像素相同
+  OK   WIDGET light/scale1.6 pressed+hover 三处填充同为 dk_pressed：['#a2b5ce', '#a2b5ce', '#a2b5ce']
+  OK   WIDGET light/scale1.6 pressed+hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET light/scale1.6 picked 优先于 normal，保留原反馈填充
+  OK   WIDGET light/scale1.6 picked 优先于 hover，保留原反馈填充
+  OK   WIDGET light/scale1.6 picked 优先于 pressed，保留原反馈填充
+  OK   WIDGET light/scale1.6 picked 优先于 pressed+hover，保留原反馈填充
+  OK   WIDGET light/scale1.6 disabled picked 前景仍为原 dk_pick_fg
+  OK   WIDGET light/scale1.6 disabled picked 填充仍为原 dk_pick
+  OK   light/scale1.6 DK 原字号/scaling 不变
+  OK   light scale 仍限于 1.0-1.6
+  OK   dark key 集合与 KEYS 一致
+  OK   dark 全部实色合法，避免父背景透明叠色影响对比度
+  OK   dark V133 非DK配色（含picked反馈）摘要完全不变
+  OK   dark DK normal/hover/pressed 三态填充各自可辨
+  OK   dark DK 正常填充:bg 明显增强 1.368 -> 1.971
+  OK   dark dk_bg:bg 1.971 >= 1.5 视觉分离目标
+  OK   dark dk_hover:bg 2.184 >= 1.5 视觉分离目标
+  OK   dark dk_pressed:bg 1.694 >= 1.5 视觉分离目标
+  OK   dark DK 全部新色通道跨度<=55，低饱和
+DK_PALETTE dark fg=#f6f8fb normal=#566a81 hover=#5d7188 pressed=#4b6078 old_fill=1.368 new_fill=1.971 text_min=4.719 fill_min=1.694
+  OK   dark fg_word/bg 9.679:1 >= 4.5
+  OK   dark fg_ipa/bg 6.486:1 >= 4.5
+  OK   dark fg_mean/bg 8.647:1 >= 4.5
+  OK   dark fg_empty/bg 7.330:1 >= 4.5
+  OK   dark fg_sub/bg 6.420:1 >= 4.5
+  OK   dark muted/bg 5.822:1 >= 4.5
+  OK   dark bar/bg 6.420:1 >= 4.5
+  OK   dark bar_hover/bar_hover_bg 6.785:1 >= 4.5
+  OK   dark bar_hover/bg 9.859:1 >= 4.5
+  OK   dark btn_fg/btn_bg 6.684:1 >= 4.5
+  OK   dark btn_fg/btn_hover 5.543:1 >= 4.5
+  OK   dark btn_fg/btn_pressed 7.665:1 >= 4.5
+  OK   dark rem_fg/rem_bg 6.116:1 >= 4.5
+  OK   dark rem_fg/rem_hover 5.177:1 >= 4.5
+  OK   dark fgt_fg/fgt_bg 6.289:1 >= 4.5
+  OK   dark fgt_fg/fgt_hover 5.415:1 >= 4.5
+  OK   dark wrong_fg/bg 6.420:1 >= 4.5
+  OK   dark fg_mean/btn_bg 6.565:1 >= 4.5
+  OK   dark link/bg 6.420:1 >= 4.5
+  OK   dark close/bg 5.822:1 >= 4.5
+  OK   dark close_hover/bg 8.803:1 >= 4.5
+  OK   dark opt_fg/opt_bg 7.529:1 >= 4.5
+  OK   dark opt_fg/opt_hover 6.166:1 >= 4.5
+  OK   dark opt_ok_fg/opt_ok_bg 5.868:1 >= 4.5
+  OK   dark opt_bad_fg/opt_bad_bg 5.913:1 >= 4.5
+  OK   dark dk_fg/dk_bg 5.230:1 >= 4.5
+  OK   dark dk_fg/dk_hover 4.719:1 >= 4.5
+  OK   dark dk_fg/dk_pressed 6.086:1 >= 4.5
+  OK   dark dk_pick_fg/dk_pick 5.272:1 >= 4.5
+  OK   dark chip_fg/chip_bg 6.207:1 >= 4.5
+  OK   dark fg_word/chip_bg 7.583:1 >= 4.5
+  OK   dark fg_word/chip_hover 6.376:1 >= 4.5
+  OK   dark chip_sel_fg/chip_sel 5.509:1 >= 4.5
+  OK   dark fg_mean/chip_bg 6.775:1 >= 4.5
+  OK   dark fg_mean/opt_bg 7.529:1 >= 4.5
+  OK   dark chart_text/chart_bg 6.066:1 >= 4.5
+  OK   dark chart_date/chart_bg 7.039:1 >= 4.5
+  OK   dark chart_line/chart_bg 6.485:1 >= 4.5
+  OK   dark ok/bg 7.330:1 >= 4.5
+  OK   dark accent/bg 6.358:1 >= 4.5
+  OK   dark dock_fg/dock_bg 6.842:1 >= 4.5
+  OK   dark dock_fg/dock_hover 5.424:1 >= 4.5
+SUMMARY dark body=8.647 button_worst=5.543 dock_worst=5.424 min=4.719 (dk_fg/dk_hover) pairs=42
+  OK   dark 主面板/控件 RGB 通道跨度 <=56，保持柔和灰调
+  OK   dark 正确/错误状态保持协调但可区分
+  OK   dark/scale1.0 QSS 完整且 chip 使用独立 chip_fg
+  OK   dark/scale1.0 输入框/下拉选中颜色主题化
+  OK   WIDGET dark/scale1.0 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   WIDGET dark/scale1.0 三处按钮文字同为不认识
+  OK   WIDGET dark/scale1.0 三处 normal 前景同为 dk_fg
+  OK   WIDGET dark/scale1.0 normal 三处填充同为 dk_bg：['#566a81', '#566a81', '#566a81']
+  OK   WIDGET dark/scale1.0 normal 三处归一化实际绘制逐像素相同
+  OK   WIDGET dark/scale1.0 hover 三处填充同为 dk_hover：['#5d7188', '#5d7188', '#5d7188']
+  OK   WIDGET dark/scale1.0 hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET dark/scale1.0 pressed 三处填充同为 dk_pressed：['#4b6078', '#4b6078', '#4b6078']
+  OK   WIDGET dark/scale1.0 pressed 三处归一化实际绘制逐像素相同
+  OK   WIDGET dark/scale1.0 pressed+hover 三处填充同为 dk_pressed：['#4b6078', '#4b6078', '#4b6078']
+  OK   WIDGET dark/scale1.0 pressed+hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET dark/scale1.0 picked 优先于 normal，保留原反馈填充
+  OK   WIDGET dark/scale1.0 picked 优先于 hover，保留原反馈填充
+  OK   WIDGET dark/scale1.0 picked 优先于 pressed，保留原反馈填充
+  OK   WIDGET dark/scale1.0 picked 优先于 pressed+hover，保留原反馈填充
+  OK   WIDGET dark/scale1.0 disabled picked 前景仍为原 dk_pick_fg
+  OK   WIDGET dark/scale1.0 disabled picked 填充仍为原 dk_pick
+  OK   dark/scale1.0 DK 原字号/scaling 不变
+  OK   dark/scale1.6 QSS 完整且 chip 使用独立 chip_fg
+  OK   dark/scale1.6 输入框/下拉选中颜色主题化
+  OK   WIDGET dark/scale1.6 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   WIDGET dark/scale1.6 三处按钮文字同为不认识
+  OK   WIDGET dark/scale1.6 三处 normal 前景同为 dk_fg
+  OK   WIDGET dark/scale1.6 normal 三处填充同为 dk_bg：['#566a81', '#566a81', '#566a81']
+  OK   WIDGET dark/scale1.6 normal 三处归一化实际绘制逐像素相同
+  OK   WIDGET dark/scale1.6 hover 三处填充同为 dk_hover：['#5d7188', '#5d7188', '#5d7188']
+  OK   WIDGET dark/scale1.6 hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET dark/scale1.6 pressed 三处填充同为 dk_pressed：['#4b6078', '#4b6078', '#4b6078']
+  OK   WIDGET dark/scale1.6 pressed 三处归一化实际绘制逐像素相同
+  OK   WIDGET dark/scale1.6 pressed+hover 三处填充同为 dk_pressed：['#4b6078', '#4b6078', '#4b6078']
+  OK   WIDGET dark/scale1.6 pressed+hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET dark/scale1.6 picked 优先于 normal，保留原反馈填充
+  OK   WIDGET dark/scale1.6 picked 优先于 hover，保留原反馈填充
+  OK   WIDGET dark/scale1.6 picked 优先于 pressed，保留原反馈填充
+  OK   WIDGET dark/scale1.6 picked 优先于 pressed+hover，保留原反馈填充
+  OK   WIDGET dark/scale1.6 disabled picked 前景仍为原 dk_pick_fg
+  OK   WIDGET dark/scale1.6 disabled picked 填充仍为原 dk_pick
+  OK   dark/scale1.6 DK 原字号/scaling 不变
+  OK   dark scale 仍限于 1.0-1.6
+  OK   sepia key 集合与 KEYS 一致
+  OK   sepia 全部实色合法，避免父背景透明叠色影响对比度
+  OK   sepia V133 非DK配色（含picked反馈）摘要完全不变
+  OK   sepia DK normal/hover/pressed 三态填充各自可辨
+  OK   sepia DK 正常填充:bg 明显增强 1.177 -> 1.600
+  OK   sepia dk_bg:bg 1.600 >= 1.5 视觉分离目标
+  OK   sepia dk_hover:bg 1.902 >= 1.5 视觉分离目标
+  OK   sepia dk_pressed:bg 2.207 >= 1.5 视觉分离目标
+  OK   sepia DK 全部新色通道跨度<=55，低饱和
+DK_PALETTE sepia fg=#45301a normal=#cbbba2 hover=#beab8d pressed=#b39e7c old_fill=1.177 new_fill=1.600 text_min=4.790 fill_min=1.600
+  OK   sepia fg_word/bg 9.643:1 >= 4.5
+  OK   sepia fg_ipa/bg 4.709:1 >= 4.5
+  OK   sepia fg_mean/bg 7.906:1 >= 4.5
+  OK   sepia fg_empty/bg 5.618:1 >= 4.5
+  OK   sepia fg_sub/bg 4.709:1 >= 4.5
+  OK   sepia muted/bg 5.037:1 >= 4.5
+  OK   sepia bar/bg 4.761:1 >= 4.5
+  OK   sepia bar_hover/bar_hover_bg 8.511:1 >= 4.5
+  OK   sepia bar_hover/bg 9.643:1 >= 4.5
+  OK   sepia btn_fg/btn_bg 6.375:1 >= 4.5
+  OK   sepia btn_fg/btn_hover 5.594:1 >= 4.5
+  OK   sepia btn_fg/btn_pressed 5.015:1 >= 4.5
+  OK   sepia rem_fg/rem_bg 5.959:1 >= 4.5
+  OK   sepia rem_fg/rem_hover 5.285:1 >= 4.5
+  OK   sepia fgt_fg/fgt_bg 5.676:1 >= 4.5
+  OK   sepia fgt_fg/fgt_hover 4.834:1 >= 4.5
+  OK   sepia wrong_fg/bg 5.046:1 >= 4.5
+  OK   sepia fg_mean/btn_bg 6.978:1 >= 4.5
+  OK   sepia link/bg 5.583:1 >= 4.5
+  OK   sepia close/bg 4.761:1 >= 4.5
+  OK   sepia close_hover/bg 9.643:1 >= 4.5
+  OK   sepia opt_fg/opt_bg 6.474:1 >= 4.5
+  OK   sepia opt_fg/opt_hover 5.804:1 >= 4.5
+  OK   sepia opt_ok_fg/opt_ok_bg 5.539:1 >= 4.5
+  OK   sepia opt_bad_fg/opt_bad_bg 5.121:1 >= 4.5
+  OK   sepia dk_fg/dk_bg 6.606:1 >= 4.5
+  OK   sepia dk_fg/dk_hover 5.559:1 >= 4.5
+  OK   sepia dk_fg/dk_pressed 4.790:1 >= 4.5
+  OK   sepia dk_pick_fg/dk_pick 4.859:1 >= 4.5
+  OK   sepia chip_fg/chip_bg 5.164:1 >= 4.5
+  OK   sepia fg_word/chip_bg 8.584:1 >= 4.5
+  OK   sepia fg_word/chip_hover 7.618:1 >= 4.5
+  OK   sepia chip_sel_fg/chip_sel 5.016:1 >= 4.5
+  OK   sepia fg_mean/chip_bg 7.037:1 >= 4.5
+  OK   sepia fg_mean/opt_bg 7.375:1 >= 4.5
+  OK   sepia chart_text/chart_bg 5.048:1 >= 4.5
+  OK   sepia chart_date/chart_bg 5.048:1 >= 4.5
+  OK   sepia chart_line/chart_bg 5.039:1 >= 4.5
+  OK   sepia ok/bg 5.618:1 >= 4.5
+  OK   sepia accent/bg 4.696:1 >= 4.5
+  OK   sepia dock_fg/dock_bg 5.448:1 >= 4.5
+  OK   sepia dock_fg/dock_hover 4.657:1 >= 4.5
+SUMMARY sepia body=7.906 button_worst=5.015 dock_worst=4.657 min=4.657 (dock_fg/dock_hover) pairs=42
+  OK   sepia 主面板/控件 RGB 通道跨度 <=56，保持柔和灰调
+  OK   sepia 正确/错误状态保持协调但可区分
+  OK   sepia/scale1.0 QSS 完整且 chip 使用独立 chip_fg
+  OK   sepia/scale1.0 输入框/下拉选中颜色主题化
+  OK   WIDGET sepia/scale1.0 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   WIDGET sepia/scale1.0 三处按钮文字同为不认识
+  OK   WIDGET sepia/scale1.0 三处 normal 前景同为 dk_fg
+  OK   WIDGET sepia/scale1.0 normal 三处填充同为 dk_bg：['#cbbba2', '#cbbba2', '#cbbba2']
+  OK   WIDGET sepia/scale1.0 normal 三处归一化实际绘制逐像素相同
+  OK   WIDGET sepia/scale1.0 hover 三处填充同为 dk_hover：['#beab8d', '#beab8d', '#beab8d']
+  OK   WIDGET sepia/scale1.0 hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET sepia/scale1.0 pressed 三处填充同为 dk_pressed：['#b39e7c', '#b39e7c', '#b39e7c']
+  OK   WIDGET sepia/scale1.0 pressed 三处归一化实际绘制逐像素相同
+  OK   WIDGET sepia/scale1.0 pressed+hover 三处填充同为 dk_pressed：['#b39e7c', '#b39e7c', '#b39e7c']
+  OK   WIDGET sepia/scale1.0 pressed+hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET sepia/scale1.0 picked 优先于 normal，保留原反馈填充
+  OK   WIDGET sepia/scale1.0 picked 优先于 hover，保留原反馈填充
+  OK   WIDGET sepia/scale1.0 picked 优先于 pressed，保留原反馈填充
+  OK   WIDGET sepia/scale1.0 picked 优先于 pressed+hover，保留原反馈填充
+  OK   WIDGET sepia/scale1.0 disabled picked 前景仍为原 dk_pick_fg
+  OK   WIDGET sepia/scale1.0 disabled picked 填充仍为原 dk_pick
+  OK   sepia/scale1.0 DK 原字号/scaling 不变
+  OK   sepia/scale1.6 QSS 完整且 chip 使用独立 chip_fg
+  OK   sepia/scale1.6 输入框/下拉选中颜色主题化
+  OK   WIDGET sepia/scale1.6 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   WIDGET sepia/scale1.6 三处按钮文字同为不认识
+  OK   WIDGET sepia/scale1.6 三处 normal 前景同为 dk_fg
+  OK   WIDGET sepia/scale1.6 normal 三处填充同为 dk_bg：['#cbbba2', '#cbbba2', '#cbbba2']
+  OK   WIDGET sepia/scale1.6 normal 三处归一化实际绘制逐像素相同
+  OK   WIDGET sepia/scale1.6 hover 三处填充同为 dk_hover：['#beab8d', '#beab8d', '#beab8d']
+  OK   WIDGET sepia/scale1.6 hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET sepia/scale1.6 pressed 三处填充同为 dk_pressed：['#b39e7c', '#b39e7c', '#b39e7c']
+  OK   WIDGET sepia/scale1.6 pressed 三处归一化实际绘制逐像素相同
+  OK   WIDGET sepia/scale1.6 pressed+hover 三处填充同为 dk_pressed：['#b39e7c', '#b39e7c', '#b39e7c']
+  OK   WIDGET sepia/scale1.6 pressed+hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET sepia/scale1.6 picked 优先于 normal，保留原反馈填充
+  OK   WIDGET sepia/scale1.6 picked 优先于 hover，保留原反馈填充
+  OK   WIDGET sepia/scale1.6 picked 优先于 pressed，保留原反馈填充
+  OK   WIDGET sepia/scale1.6 picked 优先于 pressed+hover，保留原反馈填充
+  OK   WIDGET sepia/scale1.6 disabled picked 前景仍为原 dk_pick_fg
+  OK   WIDGET sepia/scale1.6 disabled picked 填充仍为原 dk_pick
+  OK   sepia/scale1.6 DK 原字号/scaling 不变
+  OK   sepia scale 仍限于 1.0-1.6
+  OK   green key 集合与 KEYS 一致
+  OK   green 全部实色合法，避免父背景透明叠色影响对比度
+  OK   green V133 非DK配色（含picked反馈）摘要完全不变
+  OK   green DK normal/hover/pressed 三态填充各自可辨
+  OK   green DK 正常填充:bg 明显增强 1.125 -> 1.561
+  OK   green dk_bg:bg 1.561 >= 1.5 视觉分离目标
+  OK   green dk_hover:bg 1.725 >= 1.5 视觉分离目标
+  OK   green dk_pressed:bg 1.935 >= 1.5 视觉分离目标
+  OK   green DK 全部新色通道跨度<=55，低饱和
+DK_PALETTE green fg=#2b422e normal=#b3c6af hover=#a9bda5 pressed=#9eb39a old_fill=1.125 new_fill=1.561 text_min=4.876 fill_min=1.561
+  OK   green fg_word/bg 9.335:1 >= 4.5
+  OK   green fg_ipa/bg 4.725:1 >= 4.5
+  OK   green fg_mean/bg 7.477:1 >= 4.5
+  OK   green fg_empty/bg 6.547:1 >= 4.5
+  OK   green fg_sub/bg 4.795:1 >= 4.5
+  OK   green muted/bg 4.923:1 >= 4.5
+  OK   green bar/bg 4.795:1 >= 4.5
+  OK   green bar_hover/bar_hover_bg 8.438:1 >= 4.5
+  OK   green bar_hover/bg 9.335:1 >= 4.5
+  OK   green btn_fg/btn_bg 5.807:1 >= 4.5
+  OK   green btn_fg/btn_hover 5.276:1 >= 4.5
+  OK   green btn_fg/btn_pressed 4.755:1 >= 4.5
+  OK   green rem_fg/rem_bg 5.706:1 >= 4.5
+  OK   green rem_fg/rem_hover 5.071:1 >= 4.5
+  OK   green fgt_fg/fgt_bg 5.711:1 >= 4.5
+  OK   green fgt_fg/fgt_hover 4.903:1 >= 4.5
+  OK   green wrong_fg/bg 5.196:1 >= 4.5
+  OK   green fg_mean/btn_bg 6.758:1 >= 4.5
+  OK   green link/bg 4.957:1 >= 4.5
+  OK   green close/bg 4.725:1 >= 4.5
+  OK   green close_hover/bg 6.425:1 >= 4.5
+  OK   green opt_fg/opt_bg 7.782:1 >= 4.5
+  OK   green opt_fg/opt_hover 7.018:1 >= 4.5
+  OK   green opt_ok_fg/opt_ok_bg 5.464:1 >= 4.5
+  OK   green opt_bad_fg/opt_bad_bg 5.043:1 >= 4.5
+  OK   green dk_fg/dk_bg 6.044:1 >= 4.5
+  OK   green dk_fg/dk_hover 5.469:1 >= 4.5
+  OK   green dk_fg/dk_pressed 4.876:1 >= 4.5
+  OK   green dk_pick_fg/dk_pick 4.907:1 >= 4.5
+  OK   green chip_fg/chip_bg 5.135:1 >= 4.5
+  OK   green fg_word/chip_bg 8.607:1 >= 4.5
+  OK   green fg_word/chip_hover 7.826:1 >= 4.5
+  OK   green chip_sel_fg/chip_sel 5.507:1 >= 4.5
+  OK   green fg_mean/chip_bg 6.894:1 >= 4.5
+  OK   green fg_mean/opt_bg 7.782:1 >= 4.5
+  OK   green chart_text/chart_bg 4.921:1 >= 4.5
+  OK   green chart_date/chart_bg 5.103:1 >= 4.5
+  OK   green chart_line/chart_bg 5.209:1 >= 4.5
+  OK   green ok/bg 6.547:1 >= 4.5
+  OK   green accent/bg 4.822:1 >= 4.5
+  OK   green dock_fg/dock_bg 5.824:1 >= 4.5
+  OK   green dock_fg/dock_hover 5.227:1 >= 4.5
+SUMMARY green body=7.477 button_worst=4.755 dock_worst=5.227 min=4.725 (close/bg) pairs=42
+  OK   green 主面板/控件 RGB 通道跨度 <=56，保持柔和灰调
+  OK   green 正确/错误状态保持协调但可区分
+  OK   green/scale1.0 QSS 完整且 chip 使用独立 chip_fg
+  OK   green/scale1.0 输入框/下拉选中颜色主题化
+  OK   WIDGET green/scale1.0 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   WIDGET green/scale1.0 三处按钮文字同为不认识
+  OK   WIDGET green/scale1.0 三处 normal 前景同为 dk_fg
+  OK   WIDGET green/scale1.0 normal 三处填充同为 dk_bg：['#b3c6af', '#b3c6af', '#b3c6af']
+  OK   WIDGET green/scale1.0 normal 三处归一化实际绘制逐像素相同
+  OK   WIDGET green/scale1.0 hover 三处填充同为 dk_hover：['#a9bda5', '#a9bda5', '#a9bda5']
+  OK   WIDGET green/scale1.0 hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET green/scale1.0 pressed 三处填充同为 dk_pressed：['#9eb39a', '#9eb39a', '#9eb39a']
+  OK   WIDGET green/scale1.0 pressed 三处归一化实际绘制逐像素相同
+  OK   WIDGET green/scale1.0 pressed+hover 三处填充同为 dk_pressed：['#9eb39a', '#9eb39a', '#9eb39a']
+  OK   WIDGET green/scale1.0 pressed+hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET green/scale1.0 picked 优先于 normal，保留原反馈填充
+  OK   WIDGET green/scale1.0 picked 优先于 hover，保留原反馈填充
+  OK   WIDGET green/scale1.0 picked 优先于 pressed，保留原反馈填充
+  OK   WIDGET green/scale1.0 picked 优先于 pressed+hover，保留原反馈填充
+  OK   WIDGET green/scale1.0 disabled picked 前景仍为原 dk_pick_fg
+  OK   WIDGET green/scale1.0 disabled picked 填充仍为原 dk_pick
+  OK   green/scale1.0 DK 原字号/scaling 不变
+  OK   green/scale1.6 QSS 完整且 chip 使用独立 chip_fg
+  OK   green/scale1.6 输入框/下拉选中颜色主题化
+  OK   WIDGET green/scale1.6 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   WIDGET green/scale1.6 三处按钮文字同为不认识
+  OK   WIDGET green/scale1.6 三处 normal 前景同为 dk_fg
+  OK   WIDGET green/scale1.6 normal 三处填充同为 dk_bg：['#b3c6af', '#b3c6af', '#b3c6af']
+  OK   WIDGET green/scale1.6 normal 三处归一化实际绘制逐像素相同
+  OK   WIDGET green/scale1.6 hover 三处填充同为 dk_hover：['#a9bda5', '#a9bda5', '#a9bda5']
+  OK   WIDGET green/scale1.6 hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET green/scale1.6 pressed 三处填充同为 dk_pressed：['#9eb39a', '#9eb39a', '#9eb39a']
+  OK   WIDGET green/scale1.6 pressed 三处归一化实际绘制逐像素相同
+  OK   WIDGET green/scale1.6 pressed+hover 三处填充同为 dk_pressed：['#9eb39a', '#9eb39a', '#9eb39a']
+  OK   WIDGET green/scale1.6 pressed+hover 三处归一化实际绘制逐像素相同
+  OK   WIDGET green/scale1.6 picked 优先于 normal，保留原反馈填充
+  OK   WIDGET green/scale1.6 picked 优先于 hover，保留原反馈填充
+  OK   WIDGET green/scale1.6 picked 优先于 pressed，保留原反馈填充
+  OK   WIDGET green/scale1.6 picked 优先于 pressed+hover，保留原反馈填充
+  OK   WIDGET green/scale1.6 disabled picked 前景仍为原 dk_pick_fg
+  OK   WIDGET green/scale1.6 disabled picked 填充仍为原 dk_pick
+  OK   green/scale1.6 DK 原字号/scaling 不变
+  OK   green scale 仍限于 1.0-1.6
+  OK   米黄所有控件/文字/selected/正确/chart 都是暖褐琥珀，不含绿色
+  OK   btn_fg 四主题文字颜色互不复用
+  OK   btn_fg 亮色/暗色控件是独立柔和灰蓝
+  OK   btn_fg 护眼绿控件为鼠尾草灰绿
+  OK   chip_fg 四主题文字颜色互不复用
+  OK   chip_fg 亮色/暗色控件是独立柔和灰蓝
+  OK   chip_fg 护眼绿控件为鼠尾草灰绿
+  OK   chip_sel_fg 四主题文字颜色互不复用
+  OK   chip_sel_fg 亮色/暗色控件是独立柔和灰蓝
+  OK   chip_sel_fg 护眼绿控件为鼠尾草灰绿
+  OK   dock_fg 四主题文字颜色互不复用
+  OK   dock_fg 亮色/暗色控件是独立柔和灰蓝
+  OK   dock_fg 护眼绿控件为鼠尾草灰绿
+  OK   dk_fg 四主题文字颜色互不复用
+  OK   dk_fg 亮色/暗色控件是独立柔和灰蓝
+  OK   dk_fg 护眼绿控件为鼠尾草灰绿
+  OK   暗色明显提亮但仍为中深灰蓝：L 0.00851 -> 0.04575 (5.37x)
+  OK   护眼绿保持浅纸面/正文 >=7:1
+  OK   light 实际 Qt QLabel palette role0 -> fg_word (#293547)
+  OK   light 实际 Qt QLabel palette role0 -> fg_word (#293547)
+  OK   light 实际 Qt QLabel palette role0 -> fg_ipa (#596b83)
+  OK   light 实际 Qt QLabel palette role0 -> fg_mean (#34445b)
+  OK   light 实际 Qt QLabel palette role0 -> muted (#586981)
+  OK   light 实际 Qt QPushButton palette role8 -> btn_fg (#3c516d)
+  OK   light 实际 Qt QPushButton palette role8 -> rem_fg (#355e62)
+  OK   light 实际 Qt QPushButton palette role8 -> fgt_fg (#814d60)
+  OK   light 实际 Qt QPushButton palette role8 -> dk_fg (#2e425d)
+  OK   light 实际 Qt QPushButton palette role8 -> chip_fg (#475d79)
+  OK   light 实际 Qt QPushButton palette role8 -> chip_sel_fg (#355173)
+  OK   light 实际 Qt WrappedOptionButton palette role8 -> opt_ok_fg (#355c5a)
+  OK   light 实际 Qt QLabel palette role0 -> opt_ok_fg (#355c5a)
+  OK   light 实际 Qt WrappedOptionButton palette role8 -> opt_bad_fg (#814d60)
+  OK   light 实际 Qt QLabel palette role0 -> opt_bad_fg (#814d60)
+  OK   light 实际 Qt QPushButton palette role8 -> dk_pick_fg (#694d2c)
+  OK   light 实际 Qt QLineEdit palette role6 -> fg_mean (#34445b)
+  OK   light 实际 Qt QComboBox palette role6 -> fg_mean (#34445b)
+  OK   light 实际 Qt QSpinBox palette role6 -> fg_mean (#34445b)
+  OK   light 实际 Qt QLineEdit palette role12 -> chip_sel (#cad9eb)
+  OK   light 实际 Qt QLineEdit palette role13 -> chip_sel_fg (#355173)
+  OK   light 实际 Qt QListView palette role6 -> fg_mean (#34445b)
+  OK   light 实际 Qt QListView palette role12 -> chip_sel (#cad9eb)
+  OK   light 实际 Qt QListView palette role13 -> chip_sel_fg (#355173)
+  OK   light 实际 QStyle default state0 背景 -> btn_bg (#e0e7f0)
+  OK   light 实际 QStyle default state8192 背景 -> btn_hover (#d4deeb)
+  OK   light 实际 QStyle default state4 背景 -> btn_pressed (#c9d5e4)
+  OK   light 实际 QStyle remember state0 背景 -> rem_bg (#dbe7e9)
+  OK   light 实际 QStyle remember state8192 背景 -> rem_hover (#ccdde0)
+  OK   light 实际 QStyle forget state0 背景 -> fgt_bg (#eee0e4)
+  OK   light 实际 QStyle forget state8192 背景 -> fgt_hover (#e6d3d9)
+  OK   light 实际 QStyle dontknow state0 背景 -> dk_bg (#b7c8dd)
+  OK   light 实际 QStyle dontknow state8192 背景 -> dk_hover (#adbed6)
+  OK   light 实际 QStyle dontknow state4 背景 -> dk_pressed (#a2b5ce)
+  OK   light 实际 QStyle dontknow state8196 背景 -> dk_pressed (#a2b5ce)
+  OK   light 实际 QStyle chip state8192 背景 -> chip_hover (#d5e0ed)
+  OK   light 实际 QStyle chip state8192 背景 -> chip_sel (#cad9eb)
+  OK   light 实际 QStyle opt state8192 背景 -> opt_ok_bg (#d5e4e3)
+  OK   light 实际 QStyle opt state8192 背景 -> opt_bad_bg (#e8d7df)
+  OK   light 实际 QStyle dontknow state8192 背景 -> dk_pick (#dcccb4)
+  OK   dark 实际 Qt QLabel palette role0 -> fg_word (#eef1f5)
+  OK   dark 实际 Qt QLabel palette role0 -> fg_word (#eef1f5)
+  OK   dark 实际 Qt QLabel palette role0 -> fg_ipa (#bec8d6)
+  OK   dark 实际 Qt QLabel palette role0 -> fg_mean (#dee5ef)
+  OK   dark 实际 Qt QLabel palette role0 -> muted (#b2bece)
+  OK   dark 实际 Qt QPushButton palette role8 -> btn_fg (#e0e7f0)
+  OK   dark 实际 Qt QPushButton palette role8 -> rem_fg (#d5e7dc)
+  OK   dark 实际 Qt QPushButton palette role8 -> fgt_fg (#f0dae1)
+  OK   dark 实际 Qt QPushButton palette role8 -> dk_fg (#f6f8fb)
+  OK   dark 实际 Qt QPushButton palette role8 -> chip_fg (#d3dce8)
+  OK   dark 实际 Qt QPushButton palette role8 -> chip_sel_fg (#edf2f8)
+  OK   dark 实际 Qt WrappedOptionButton palette role8 -> opt_ok_fg (#d5e7dc)
+  OK   dark 实际 Qt QLabel palette role0 -> opt_ok_fg (#d5e7dc)
+  OK   dark 实际 Qt WrappedOptionButton palette role8 -> opt_bad_fg (#f0dae1)
+  OK   dark 实际 Qt QLabel palette role0 -> opt_bad_fg (#f0dae1)
+  OK   dark 实际 Qt QPushButton palette role8 -> dk_pick_fg (#f8edd7)
+  OK   dark 实际 Qt QLineEdit palette role6 -> fg_mean (#dee5ef)
+  OK   dark 实际 Qt QComboBox palette role6 -> fg_mean (#dee5ef)
+  OK   dark 实际 Qt QSpinBox palette role6 -> fg_mean (#dee5ef)
+  OK   dark 实际 Qt QLineEdit palette role12 -> chip_sel (#52627a)
+  OK   dark 实际 Qt QLineEdit palette role13 -> chip_sel_fg (#edf2f8)
+  OK   dark 实际 Qt QListView palette role6 -> fg_mean (#dee5ef)
+  OK   dark 实际 Qt QListView palette role12 -> chip_sel (#52627a)
+  OK   dark 实际 Qt QListView palette role13 -> chip_sel_fg (#edf2f8)
+  OK   dark 实际 QStyle default state0 背景 -> btn_bg (#434f5f)
+  OK   dark 实际 QStyle default state8192 背景 -> btn_hover (#4e5b6d)
+  OK   dark 实际 QStyle default state4 背景 -> btn_pressed (#3c4655)
+  OK   dark 实际 QStyle remember state0 背景 -> rem_bg (#3e5654)
+  OK   dark 实际 QStyle remember state8192 背景 -> rem_hover (#48615e)
+  OK   dark 实际 QStyle forget state0 背景 -> fgt_bg (#5a4954)
+  OK   dark 实际 QStyle forget state8192 背景 -> fgt_hover (#65525e)
+  OK   dark 实际 QStyle dontknow state0 背景 -> dk_bg (#566a81)
+  OK   dark 实际 QStyle dontknow state8192 背景 -> dk_hover (#5d7188)
+  OK   dark 实际 QStyle dontknow state4 背景 -> dk_pressed (#4b6078)
+  OK   dark 实际 QStyle dontknow state8196 背景 -> dk_pressed (#4b6078)
+  OK   dark 实际 QStyle chip state8192 背景 -> chip_hover (#4b586b)
+  OK   dark 实际 QStyle chip state8192 背景 -> chip_sel (#52627a)
+  OK   dark 实际 QStyle opt state8192 背景 -> opt_ok_bg (#425950)
+  OK   dark 实际 QStyle opt state8192 背景 -> opt_bad_bg (#604c59)
+  OK   dark 实际 QStyle dontknow state8192 背景 -> dk_pick (#6d604d)
+  OK   sepia 实际 Qt QLabel palette role0 -> fg_word (#45382b)
+  OK   sepia 实际 Qt QLabel palette role0 -> fg_word (#45382b)
+  OK   sepia 实际 Qt QLabel palette role0 -> fg_ipa (#7a654d)
+  OK   sepia 实际 Qt QLabel palette role0 -> fg_mean (#554433)
+  OK   sepia 实际 Qt QLabel palette role0 -> muted (#746149)
+  OK   sepia 实际 Qt QPushButton palette role8 -> btn_fg (#61482e)
+  OK   sepia 实际 Qt QPushButton palette role8 -> rem_fg (#684b22)
+  OK   sepia 实际 Qt QPushButton palette role8 -> fgt_fg (#7c4333)
+  OK   sepia 实际 Qt QPushButton palette role8 -> dk_fg (#45301a)
+  OK   sepia 实际 Qt QPushButton palette role8 -> chip_fg (#70563a)
+  OK   sepia 实际 Qt QPushButton palette role8 -> chip_sel_fg (#65471f)
+  OK   sepia 实际 Qt WrappedOptionButton palette role8 -> opt_ok_fg (#684b22)
+  OK   sepia 实际 Qt QLabel palette role0 -> opt_ok_fg (#684b22)
+  OK   sepia 实际 Qt WrappedOptionButton palette role8 -> opt_bad_fg (#7c4333)
+  OK   sepia 实际 Qt QLabel palette role0 -> opt_bad_fg (#7c4333)
+  OK   sepia 实际 Qt QPushButton palette role8 -> dk_pick_fg (#644523)
+  OK   sepia 实际 Qt QLineEdit palette role6 -> fg_mean (#554433)
+  OK   sepia 实际 Qt QComboBox palette role6 -> fg_mean (#554433)
+  OK   sepia 实际 Qt QSpinBox palette role6 -> fg_mean (#554433)
+  OK   sepia 实际 Qt QLineEdit palette role12 -> chip_sel (#dcc49b)
+  OK   sepia 实际 Qt QLineEdit palette role13 -> chip_sel_fg (#65471f)
+  OK   sepia 实际 Qt QListView palette role6 -> fg_mean (#554433)
+  OK   sepia 实际 Qt QListView palette role12 -> chip_sel (#dcc49b)
+  OK   sepia 实际 Qt QListView palette role13 -> chip_sel_fg (#65471f)
+  OK   sepia 实际 QStyle default state0 背景 -> btn_bg (#e9decb)
+  OK   sepia 实际 QStyle default state8192 背景 -> btn_hover (#dfd0b7)
+  OK   sepia 实际 QStyle default state4 背景 -> btn_pressed (#d6c5a8)
+  OK   sepia 实际 QStyle remember state0 背景 -> rem_bg (#eaddc0)
+  OK   sepia 实际 QStyle remember state8192 背景 -> rem_hover (#e2d0aa)
+  OK   sepia 实际 QStyle forget state0 背景 -> fgt_bg (#ebd9d0)
+  OK   sepia 实际 QStyle forget state8192 背景 -> fgt_hover (#e1c7bb)
+  OK   sepia 实际 QStyle dontknow state0 背景 -> dk_bg (#cbbba2)
+  OK   sepia 实际 QStyle dontknow state8192 背景 -> dk_hover (#beab8d)
+  OK   sepia 实际 QStyle dontknow state4 背景 -> dk_pressed (#b39e7c)
+  OK   sepia 实际 QStyle dontknow state8196 背景 -> dk_pressed (#b39e7c)
+  OK   sepia 实际 QStyle chip state8192 背景 -> chip_hover (#e1d2b9)
+  OK   sepia 实际 QStyle chip state8192 背景 -> chip_sel (#dcc49b)
+  OK   sepia 实际 QStyle opt state8192 背景 -> opt_ok_bg (#e6d5af)
+  OK   sepia 实际 QStyle opt state8192 背景 -> opt_bad_bg (#e6cdc1)
+  OK   sepia 实际 QStyle dontknow state8192 背景 -> dk_pick (#d4bf9e)
+  OK   green 实际 Qt QLabel palette role0 -> fg_word (#314137)
+  OK   green 实际 Qt QLabel palette role0 -> fg_word (#314137)
+  OK   green 实际 Qt QLabel palette role0 -> fg_ipa (#5b6e5e)
+  OK   green 实际 Qt QLabel palette role0 -> fg_mean (#3d5042)
+  OK   green 实际 Qt QLabel palette role0 -> muted (#596b5c)
+  OK   green 实际 Qt QPushButton palette role8 -> btn_fg (#425b48)
+  OK   green 实际 Qt QPushButton palette role8 -> rem_fg (#365c43)
+  OK   green 实际 Qt QPushButton palette role8 -> fgt_fg (#754936)
+  OK   green 实际 Qt QPushButton palette role8 -> dk_fg (#2b422e)
+  OK   green 实际 Qt QPushButton palette role8 -> chip_fg (#49654e)
+  OK   green 实际 Qt QPushButton palette role8 -> chip_sel_fg (#35563f)
+  OK   green 实际 Qt WrappedOptionButton palette role8 -> opt_ok_fg (#365c43)
+  OK   green 实际 Qt QLabel palette role0 -> opt_ok_fg (#365c43)
+  OK   green 实际 Qt WrappedOptionButton palette role8 -> opt_bad_fg (#754936)
+  OK   green 实际 Qt QLabel palette role0 -> opt_bad_fg (#754936)
+  OK   green 实际 Qt QPushButton palette role8 -> dk_pick_fg (#5e4d2c)
+  OK   green 实际 Qt QLineEdit palette role6 -> fg_mean (#3d5042)
+  OK   green 实际 Qt QComboBox palette role6 -> fg_mean (#3d5042)
+  OK   green 实际 Qt QSpinBox palette role6 -> fg_mean (#3d5042)
+  OK   green 实际 Qt QLineEdit palette role12 -> chip_sel (#c7d8c6)
+  OK   green 实际 Qt QLineEdit palette role13 -> chip_sel_fg (#35563f)
+  OK   green 实际 Qt QListView palette role6 -> fg_mean (#3d5042)
+  OK   green 实际 Qt QListView palette role12 -> chip_sel (#c7d8c6)
+  OK   green 实际 Qt QListView palette role13 -> chip_sel_fg (#35563f)
+  OK   green 实际 QStyle default state0 背景 -> btn_bg (#dce6db)
+  OK   green 实际 QStyle default state8192 背景 -> btn_hover (#cfddce)
+  OK   green 实际 QStyle default state4 背景 -> btn_pressed (#c3d3c2)
+  OK   green 实际 QStyle remember state0 背景 -> rem_bg (#d5e3d7)
+  OK   green 实际 QStyle remember state8192 背景 -> rem_hover (#c5d8c9)
+  OK   green 实际 QStyle forget state0 背景 -> fgt_bg (#e9ddd6)
+  OK   green 实际 QStyle forget state8192 背景 -> fgt_hover (#dfccc1)
+  OK   green 实际 QStyle dontknow state0 背景 -> dk_bg (#b3c6af)
+  OK   green 实际 QStyle dontknow state8192 背景 -> dk_hover (#a9bda5)
+  OK   green 实际 QStyle dontknow state4 背景 -> dk_pressed (#9eb39a)
+  OK   green 实际 QStyle dontknow state8196 背景 -> dk_pressed (#9eb39a)
+  OK   green 实际 QStyle chip state8192 背景 -> chip_hover (#d2dfcf)
+  OK   green 实际 QStyle chip state8192 背景 -> chip_sel (#c7d8c6)
+  OK   green 实际 QStyle opt state8192 背景 -> opt_ok_bg (#cfdfd1)
+  OK   green 实际 QStyle opt state8192 背景 -> opt_bad_bg (#e1cfc5)
+  OK   green 实际 QStyle dontknow state8192 背景 -> dk_pick (#d1c9a8)
+  OK   原生 Qt 四主题预览保存到隔离输出目录
+PREVIEW D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\theme-v134-card-out-ycq4ugy8\theme_four_palette.png
+  OK   DK 四主题旧新版/hover/pressed/picked 对比图保存
+DK_COMPARISON D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\theme-v134-card-out-ycq4ugy8\dk_v133_v134_comparison.png
+  OK   light 实际 Card 消费主题，不是另一套 demo 配色
+  OK   light Card -> WindowController dock_* API 完整传递
+  OK   light 实际 Card 正常/认识按钮原配色保持
+  OK   light 全 Card 的不认识入口恰为已确认三处，无漏用其他颜色入口
+  OK   CARD light 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   CARD light 三处按钮文字同为不认识
+  OK   CARD light 三处 normal 前景同为 dk_fg
+  OK   CARD light normal 三处填充同为 dk_bg：['#b7c8dd', '#b7c8dd', '#b7c8dd']
+  OK   CARD light normal 三处归一化实际绘制逐像素相同
+  OK   CARD light hover 三处填充同为 dk_hover：['#adbed6', '#adbed6', '#adbed6']
+  OK   CARD light hover 三处归一化实际绘制逐像素相同
+  OK   CARD light pressed 三处填充同为 dk_pressed：['#a2b5ce', '#a2b5ce', '#a2b5ce']
+  OK   CARD light pressed 三处归一化实际绘制逐像素相同
+  OK   CARD light pressed+hover 三处填充同为 dk_pressed：['#a2b5ce', '#a2b5ce', '#a2b5ce']
+  OK   CARD light pressed+hover 三处归一化实际绘制逐像素相同
+  OK   CARD light picked 优先于 normal，保留原反馈填充
+  OK   CARD light picked 优先于 hover，保留原反馈填充
+  OK   CARD light picked 优先于 pressed，保留原反馈填充
+  OK   CARD light picked 优先于 pressed+hover，保留原反馈填充
+  OK   CARD light disabled picked 前景仍为原 dk_pick_fg
+  OK   CARD light disabled picked 填充仍为原 dk_pick
+  OK   light Card -> catalog 主题 API 保持同步
+  OK   light Card 进度/窗口保存始终隔离在 Sandbox
+  OK   dark 实际 Card 消费主题，不是另一套 demo 配色
+  OK   dark Card -> WindowController dock_* API 完整传递
+  OK   dark 实际 Card 正常/认识按钮原配色保持
+  OK   dark 全 Card 的不认识入口恰为已确认三处，无漏用其他颜色入口
+  OK   CARD dark 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   CARD dark 三处按钮文字同为不认识
+  OK   CARD dark 三处 normal 前景同为 dk_fg
+  OK   CARD dark normal 三处填充同为 dk_bg：['#566a81', '#566a81', '#566a81']
+  OK   CARD dark normal 三处归一化实际绘制逐像素相同
+  OK   CARD dark hover 三处填充同为 dk_hover：['#5d7188', '#5d7188', '#5d7188']
+  OK   CARD dark hover 三处归一化实际绘制逐像素相同
+  OK   CARD dark pressed 三处填充同为 dk_pressed：['#4b6078', '#4b6078', '#4b6078']
+  OK   CARD dark pressed 三处归一化实际绘制逐像素相同
+  OK   CARD dark pressed+hover 三处填充同为 dk_pressed：['#4b6078', '#4b6078', '#4b6078']
+  OK   CARD dark pressed+hover 三处归一化实际绘制逐像素相同
+  OK   CARD dark picked 优先于 normal，保留原反馈填充
+  OK   CARD dark picked 优先于 hover，保留原反馈填充
+  OK   CARD dark picked 优先于 pressed，保留原反馈填充
+  OK   CARD dark picked 优先于 pressed+hover，保留原反馈填充
+  OK   CARD dark disabled picked 前景仍为原 dk_pick_fg
+  OK   CARD dark disabled picked 填充仍为原 dk_pick
+  OK   dark Card -> catalog 主题 API 保持同步
+  OK   dark Card 进度/窗口保存始终隔离在 Sandbox
+  OK   sepia 实际 Card 消费主题，不是另一套 demo 配色
+  OK   sepia Card -> WindowController dock_* API 完整传递
+  OK   sepia 实际 Card 正常/认识按钮原配色保持
+  OK   sepia 全 Card 的不认识入口恰为已确认三处，无漏用其他颜色入口
+  OK   CARD sepia 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   CARD sepia 三处按钮文字同为不认识
+  OK   CARD sepia 三处 normal 前景同为 dk_fg
+  OK   CARD sepia normal 三处填充同为 dk_bg：['#cbbba2', '#cbbba2', '#cbbba2']
+  OK   CARD sepia normal 三处归一化实际绘制逐像素相同
+  OK   CARD sepia hover 三处填充同为 dk_hover：['#beab8d', '#beab8d', '#beab8d']
+  OK   CARD sepia hover 三处归一化实际绘制逐像素相同
+  OK   CARD sepia pressed 三处填充同为 dk_pressed：['#b39e7c', '#b39e7c', '#b39e7c']
+  OK   CARD sepia pressed 三处归一化实际绘制逐像素相同
+  OK   CARD sepia pressed+hover 三处填充同为 dk_pressed：['#b39e7c', '#b39e7c', '#b39e7c']
+  OK   CARD sepia pressed+hover 三处归一化实际绘制逐像素相同
+  OK   CARD sepia picked 优先于 normal，保留原反馈填充
+  OK   CARD sepia picked 优先于 hover，保留原反馈填充
+  OK   CARD sepia picked 优先于 pressed，保留原反馈填充
+  OK   CARD sepia picked 优先于 pressed+hover，保留原反馈填充
+  OK   CARD sepia disabled picked 前景仍为原 dk_pick_fg
+  OK   CARD sepia disabled picked 填充仍为原 dk_pick
+  OK   sepia Card -> catalog 主题 API 保持同步
+  OK   sepia Card 进度/窗口保存始终隔离在 Sandbox
+  OK   green 实际 Card 消费主题，不是另一套 demo 配色
+  OK   green Card -> WindowController dock_* API 完整传递
+  OK   green 实际 Card 正常/认识按钮原配色保持
+  OK   green 全 Card 的不认识入口恰为已确认三处，无漏用其他颜色入口
+  OK   CARD green 三处 objectName 同为 dontknow：[('刷词', 'dontknow'), ('学习选择题', 'dontknow'), ('词汇量测试', 'dontknow')]
+  OK   CARD green 三处按钮文字同为不认识
+  OK   CARD green 三处 normal 前景同为 dk_fg
+  OK   CARD green normal 三处填充同为 dk_bg：['#b3c6af', '#b3c6af', '#b3c6af']
+  OK   CARD green normal 三处归一化实际绘制逐像素相同
+  OK   CARD green hover 三处填充同为 dk_hover：['#a9bda5', '#a9bda5', '#a9bda5']
+  OK   CARD green hover 三处归一化实际绘制逐像素相同
+  OK   CARD green pressed 三处填充同为 dk_pressed：['#9eb39a', '#9eb39a', '#9eb39a']
+  OK   CARD green pressed 三处归一化实际绘制逐像素相同
+  OK   CARD green pressed+hover 三处填充同为 dk_pressed：['#9eb39a', '#9eb39a', '#9eb39a']
+  OK   CARD green pressed+hover 三处归一化实际绘制逐像素相同
+  OK   CARD green picked 优先于 normal，保留原反馈填充
+  OK   CARD green picked 优先于 hover，保留原反馈填充
+  OK   CARD green picked 优先于 pressed，保留原反馈填充
+  OK   CARD green picked 优先于 pressed+hover，保留原反馈填充
+  OK   CARD green disabled picked 前景仍为原 dk_pick_fg
+  OK   CARD green disabled picked 填充仍为原 dk_pick
+  OK   green Card -> catalog 主题 API 保持同步
+  OK   green Card 进度/窗口保存始终隔离在 Sandbox
+  OK   实际 Card 三处不认识四主题图保存
+DK_ACTUAL_CARD D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\theme-v134-card-out-ycq4ugy8\dk_actual_card_buttons.png
+SOURCE theme=D:\user\Documents\deepseek-harness\default-workspace\vocab-app\app\theme.py main=D:\user\Documents\deepseek-harness\default-workspace\vocab-app\app\main.py catalog=D:\user\Documents\deepseek-harness\default-workspace\vocab-app\app\catalog.py
+  OK   Sandbox 真实记录/备份指纹未变：[]
+FINGERPRINT protected=12 unchanged=True
+
+全部通过 ✓

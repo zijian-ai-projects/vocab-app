@@ -1,0 +1,47 @@
+  OK   指纹包含 legacy progress.bak
+  OK   指纹包含唯一 temp 恢复文件
+  OK   指纹包含 stable DEFAULT_PROGRESS_PATH/DEFAULT_WIN_PATH
+  OK   指纹包含有序列表的全部旧资料来源
+  OK   初始真实指纹无变化
+  OK   真实文件变化能被发现
+  OK   变化进入 errors
+  OK   mutated self.dir 越界时 _safe_rmtree 拒绝删除
+  OK   越界删除进入 errors
+  OK   Sandbox 不恢复/不覆盖真实文件
+  OK   退出时仍保留错误
+  OK   真 app 指纹包含 DEFAULT_PROGRESS_PATH
+  OK   真 app 指纹包含 DEFAULT_WIN_PATH
+  OK   真 app 指纹包含 legacy data/progress.json
+  OK   进入沙箱后真实指纹不变
+  OK   write_progress 清掉夹具自己的 progress 恢复文件
+  OK   write_win 清掉夹具自己的 win 恢复文件
+  OK   clear_fixture_sidecars 保留 base 文件
+  OK   clear_fixture_sidecars 清掉 sidecar
+  OK   reset(None,None) 删除 base + 恢复文件（不是只清 sidecar）
+  OK   mutated progress_path 越界被 SandboxError 拒绝
+  OK   _clear_sidecars 越界被 SandboxError 拒绝
+  OK   路径越界拒绝后真实记录仍未变
+  OK   Sandbox 内 Card 构造成功
+  OK   Card 的 1s 到期 timer 运行中
+  OK   Card 持有 window_ctl
+  OK   Card.close() 后 _closed=True
+  OK   关闭后 _due_timer 已停
+  OK   关闭后 window_ctl hover timer 已停
+  OK   关闭后迟到 save/_quiz_next/_check_due/_save_window 未写真实记录
+  OK   测试期间 main.PROGRESS_PATH 仍指向沙箱
+  OK   测试期间 main.WIN_PATH 仍指向沙箱
+  OK   Sandbox 退出强制 Card 终态 closed/closing
+  OK   Sandbox 退出后 Card 内 QTimer 全停（0）
+  OK   Sandbox 退出后 Card 已隐藏
+  OK   Sandbox 退出后 main.PROGRESS_PATH 已恢复
+  OK   Sandbox 退出后 main.WIN_PATH 已恢复
+  OK   Sandbox 退出未发现真实记录变化：[]
+  OK   注入 StorageError 后 close 被 event.ignore（_closed 仍 False）
+  OK   close 被忽略时窗口仍 visible（模拟真实风险）
+  OK   Sandbox 退出强制 _closed=True（即使 close 被 ignore）
+  OK   Sandbox 退出强制 _closing=False
+  OK   Sandbox 退出强制 hide 窗口（terminal visible=False）
+  OK   Sandbox 退出后 Card 的 QTimer 全部停止（0 个仍活）
+  OK   ignored-close 场景真实指纹未变：[]
+
+全部通过 ✓

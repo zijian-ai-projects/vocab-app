@@ -40,7 +40,7 @@ LEGACY_PROGRESS_PATHS = tuple(os.path.join(directory, "progress.json")
                               for directory in storage.legacy_dirs(ROOT))
 LEGACY_WIN_PATHS = tuple(os.path.join(directory, "_win.json")
                          for directory in storage.legacy_dirs(ROOT))
-VERSION = "1.3.4"
+VERSION = "1.3.5"
 
 COMPACT_QSS = """
 QPushButton { font-size: 15px; padding: 4px 12px; border-radius: 12px; }
@@ -2470,7 +2470,8 @@ class Card(QWidget):
         if not w.get("display_w"):
             # 显示拼写可能来自当前词书的浅拷贝（通用 bank 仍保留稳定 w）。
             for candidate in (getattr(self, "book_words", ()) or ()):
-                if candidate.get("w") == w.get("w") and candidate.get("display_w"):
+                if (candidate.get("w") == w.get("w") and candidate.get("display_w")
+                        and not candidate.get("_school_caption")):
                     w = candidate
                     break
         self.quiz_word.setText(word_caption(w))

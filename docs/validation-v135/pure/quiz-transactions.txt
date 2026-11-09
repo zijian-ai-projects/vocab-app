@@ -1,0 +1,39 @@
+test_answer_failure_good_wrong_and_dontknow (__main__.QuizTransactionTests) ... ok
+test_answer_success_saves_before_feedback_and_counts_once (__main__.QuizTransactionTests) ... ok
+test_close_force_save_after_answer_failure_cannot_replay_answer (__main__.QuizTransactionTests) ... ok
+test_closed_and_closing_callbacks_mutate_nothing (__main__.QuizTransactionTests) ... ok
+test_failed_skip_does_not_prevent_unanswered_question_answer (__main__.QuizTransactionTests) ... ok
+test_finish_failure_restores_full_history_baseline_and_keys (__main__.QuizTransactionTests) ... ok
+test_finish_failure_restores_original_absent_keys (__main__.QuizTransactionTests) ... ok
+test_finish_rejects_incomplete_nonquiz_and_already_committed_sessions (__main__.QuizTransactionTests) ... ok
+test_finish_retry_commits_one_history_row_and_is_idempotent (__main__.QuizTransactionTests) ... ok
+test_invalid_resume_does_not_silently_drop_old_session (__main__.QuizTransactionTests) ... ok
+test_isolated_auto_helper_advances_pending_answer_before_loop (__main__.QuizTransactionTests) ... ok
+test_isolated_auto_helper_stops_after_start_answer_or_next_failure (__main__.QuizTransactionTests) ... ok
+test_manual_next_stops_old_timer_and_callback_is_noop (__main__.QuizTransactionTests) ... ok
+test_next_failure_keeps_answered_feedback_and_provides_retry (__main__.QuizTransactionTests) ... ok
+test_next_retry_advances_once_without_answering_or_skipping (__main__.QuizTransactionTests) ... ok
+test_normal_close_during_feedback_resumes_next_not_same_question (__main__.QuizTransactionTests) ... ok
+test_plain_ast_subject_has_no_widget_constructor (__main__.QuizTransactionTests) ... ok
+test_quiz_caption_is_optional_and_never_changes_identity (__main__.QuizTransactionTests) ... ok
+test_repeated_finish_failures_do_not_grow_history (__main__.QuizTransactionTests) ... ok
+test_repeated_next_failures_do_not_grow_items_or_responses (__main__.QuizTransactionTests) ... ok
+test_resume_answered_current_advances_instead_of_answering_twice (__main__.QuizTransactionTests) ... ok
+test_resume_answered_failure_restores_pre_start_attrs_and_retries_start (__main__.QuizTransactionTests) ... ok
+test_resume_last_answer_finishes_once_at_49 (__main__.QuizTransactionTests) ... ok
+test_resume_last_failure_preserves_old_graph_and_finish_retry_once (__main__.QuizTransactionTests) ... ok
+test_resume_unanswered_save_failure_preserves_old_session_refs (__main__.QuizTransactionTests) ... ok
+test_school_caption_never_leaks_into_general_measurement (__main__.QuizTransactionTests) ... ok
+test_session_success_keeps_dict_and_unknown_graph_identity (__main__.QuizTransactionTests) ... ok
+test_skip_failure_preserves_session_and_successful_retry_alone_discards_it (__main__.QuizTransactionTests) ... ok
+test_skip_retry_returns_confirmed_book_to_study (__main__.QuizTransactionTests) ... ok
+test_snapshot_roundtrip_keeps_nested_original_refs_and_aliases (__main__.QuizTransactionTests) ... ok
+test_start_failure_keeps_empty_original_attrs_and_missing_session (__main__.QuizTransactionTests) ... ok
+test_ui_start_wrappers_commit_flags_and_session_in_one_save (__main__.QuizTransactionTests) ... ok
+test_ui_start_wrappers_restore_flags_on_the_first_save_failure (__main__.QuizTransactionTests) ... ok
+test_zero_theta_is_not_replaced_by_nonbaseline_result (__main__.QuizTransactionTests) ... ok
+
+----------------------------------------------------------------------
+Ran 34 tests in 2.020s
+
+OK

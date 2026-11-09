@@ -1,0 +1,21 @@
+test_batch_entry_fixture_only_explicit_yes (__main__.ResetTests) ... ok
+test_cleared_old_backups_cannot_resurrect_on_next_load (__main__.ResetTests) ... ok
+test_clears_primary_backup_unique_stages_and_legacy_only (__main__.ResetTests) ... ok
+test_cli_cancel_never_deletes (__main__.ResetTests) ... ok
+test_cli_clear_explicit_confirmation (__main__.ResetTests) ... ok
+test_cli_dry_run_never_deletes (__main__.ResetTests) ... ok
+test_confirmation_is_mandatory (__main__.ResetTests) ... ok
+test_empty_profile_and_repeated_reset (__main__.ResetTests) ... ok
+test_file_link_is_refused_not_followed (__main__.ResetTests) ... skipped "当前Windows不允许创建测试链接：[WinError 1314] 客户端没有所需的特权。: 'D:\\\\user\\\\Documents\\\\deepseek-harness\\\\default-workspace\\\\.vocab-ui-tests\\\\reset-6imm732h\\\\protected.json' -> 'D:\\\\user\\\\Documents\\\\deepseek-harness\\\\default-workspace\\\\.vocab-ui-tests\\\\reset-6imm732h\\\\local\\\\VocabApp\\\\progress.json'"
+test_invalid_install_never_deletes (__main__.ResetTests) ... ok
+test_override_clears_only_selected_profile_not_default_or_legacy (__main__.ResetTests) ... ok
+test_plugin_directory_first_and_readonly_fallbacks_are_fixture_local (__main__.ResetTests) ... ok
+test_record_named_directory_is_not_deleted (__main__.ResetTests) ... ok
+test_running_application_lock_refuses_all_deletion (__main__.ResetTests) ... ok
+test_running_plugin_directory_lock_refuses_all_deletion (__main__.ResetTests) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 2.369s
+
+OK (skipped=1)
+REAL_RECORD_FINGERPRINT_UNCHANGED True

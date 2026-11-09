@@ -1,0 +1,40 @@
+test_35000_entry_pool_parses_once_then_1000_questions_are_fast (__main__.StudyOptionsTests) ... ok
+test_all_duplicate_or_empty_distractors_are_rejected (__main__.StudyOptionsTests) ... ok
+test_constructor_and_len_do_not_parse_the_pool (__main__.StudyOptionsTests) ... ok
+test_current_entry_changes_refresh_only_that_real_answer (__main__.StudyOptionsTests) ... ok
+test_default_and_falsey_rng_are_supported (__main__.StudyOptionsTests) ... ok
+test_duplicate_other_senses_keep_one_real_representation (__main__.StudyOptionsTests) ... ok
+test_empty_distractors_are_ignored (__main__.StudyOptionsTests) ... ok
+test_empty_or_pos_only_target_is_rejected (__main__.StudyOptionsTests) ... ok
+test_engine_performs_no_file_access (__main__.StudyOptionsTests) ... ok
+test_exact_and_pos_spacing_duplicate_of_correct_are_excluded (__main__.StudyOptionsTests) ... ok
+test_external_target_can_use_three_real_pool_distractors (__main__.StudyOptionsTests) ... ok
+test_external_target_normalized_alias_is_not_another_correct_option (__main__.StudyOptionsTests) ... ok
+test_function_buttons_and_no_answer_are_not_distractors (__main__.StudyOptionsTests) ... ok
+test_input_entries_and_list_are_not_mutated (__main__.StudyOptionsTests) ... ok
+test_insufficient_non_overlapping_distractors_raise_without_fabrication (__main__.StudyOptionsTests) ... ok
+test_legacy_shuffle_only_rng_is_compatible (__main__.StudyOptionsTests) ... ok
+test_less_than_four_entries_including_target_cannot_make_four_choices (__main__.StudyOptionsTests) ... ok
+test_list_api_four_real_unique_meanings_with_known_answer (__main__.StudyOptionsTests) ... ok
+test_multisense_target_excludes_each_correct_sense (__main__.StudyOptionsTests) ... ok
+test_normalization_handles_pos_case_punctuation_and_escaped_newline (__main__.StudyOptionsTests) ... ok
+test_phrase_entries_have_one_known_correct_meaning (__main__.StudyOptionsTests) ... ok
+test_prepare_is_idempotent_and_questions_reuse_parsed_target (__main__.StudyOptionsTests) ... ok
+test_random_module_is_supported_without_affecting_global_test_state (__main__.StudyOptionsTests) ... ok
+test_raw_fallback_and_pos_string_or_list_are_real_display_text (__main__.StudyOptionsTests) ... ok
+test_reserved_target_does_not_create_a_function_or_trap_answer (__main__.StudyOptionsTests) ... ok
+test_same_word_alternate_meaning_is_not_a_distractor (__main__.StudyOptionsTests) ... ok
+test_sample_miss_falls_back_to_cached_meanings_without_regex (__main__.StudyOptionsTests) ... ok
+test_sampling_is_bounded_and_only_four_options_are_shuffled (__main__.StudyOptionsTests) ... ok
+test_seeded_rng_is_deterministic_across_list_and_reused_pool (__main__.StudyOptionsTests) ... ok
+test_shared_target_sense_is_excluded_instead_of_a_second_correct_answer (__main__.StudyOptionsTests) ... ok
+test_source_key_union_excludes_alias_of_alternate_target_meaning (__main__.StudyOptionsTests) ... ok
+test_target_is_always_present_and_never_a_trap (__main__.StudyOptionsTests) ... ok
+test_tuple_and_generator_compatibility (__main__.StudyOptionsTests) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.634s
+
+OK
+PERF bank entries=34963 prepare=0.689s questions=1000 skipped=0 total=0.037s avg=0.037ms
+PERF synthetic entries=35000 prepare=0.492s questions=1000 total=0.030s avg=0.030ms

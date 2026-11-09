@@ -1,0 +1,20 @@
+        隔离目录：D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\launcher-check-bad-record-18niae4w
+  OK   启动前没有残留的背单词实例/窗口
+  OK   启动脚本存在
+  OK   启动脚本为 Unicode（中文提示不乱码）
+  OK   隔离资料已准备
+  OK   损坏记录弹出可见的「无法安全启动」
+        对话框：无法安全启动 - 背单词 / [606, 334, 930, 466]
+  OK   VBS 随后提示启动失败
+        对话框：背单词启动失败 / [529, 314, 1023, 573]
+  OK   错误提示关闭后进程退出
+  OK   退出码非 0（1）
+  OK   退出后没有遗留实例锁
+  OK   损坏的隔离记录字节未被改写（拒绝启动而非清空）
+  OK   失败退出码写入 startup.log
+        2026-11-09 18:34:52 exit code=1 seconds=1.27
+  OK   验收场景执行完整
+  OK   退出后没有留下不可见的背单词实例
+  OK   真实学习记录与实例锁字节未变（10 个文件）
+
+全部通过 ✓

@@ -1,0 +1,4 @@
+FT_New_Face failed with index 0 : 2
+WROTE 305 LINES; FAILS 0
+REPORT D:\user\Documents\deepseek-harness\default-workspace\.vocab-ui-tests\level-meanings-out-s8dczr1x\test_level_meanings_ui.txt
+LEVEL MEANINGS CHECKS 299 FAILS 0

@@ -291,7 +291,7 @@ def measure_normal(checks, mode, root, profile, proc, before):
     checks.ok(wait_for(lambda: os.path.isfile(log), timeout=5) is not None,
               "startup.log 已创建（隔离目录）")
     text = read_log(log)
-    checks.ok("start version=1.3.4" in text, "日志记录了版本 1.3.4")
+    checks.ok("start version=1.3.5" in text, "日志记录了版本 1.3.5")
     checks.ok("qt_dll=" in text, "日志记录了 Qt DLL 引导结果")
     if text.strip():
         checks.note(text.strip().splitlines()[0])

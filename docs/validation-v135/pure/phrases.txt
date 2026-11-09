@@ -1,0 +1,12 @@
+test_eight_books_attached_counts_memberships_union_and_source_order (__main__.PhraseTests) ... ok
+test_library_real_meanings_unique_sorted_no_fake_phonetics (__main__.PhraseTests) ... ok
+test_memory_categories_are_real_not_estimated_mastery (__main__.PhraseTests) ... ok
+test_normalization_and_missing_pos_pronunciation (__main__.PhraseTests) ... ok
+test_original_union_prefixes_preserve_old_cursor_positions (__main__.PhraseTests) ... ok
+test_real_phrase_options_unique_correct_no_quiz_trap (__main__.PhraseTests) ... ok
+test_real_word_pos_prefixes_never_duplicate (__main__.PhraseTests) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.864s
+
+OK
