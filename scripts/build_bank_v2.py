@@ -35,6 +35,7 @@ BANDS = 15
 # 手工修订：个别词的释义以这里为准（覆盖 ECDICT / 词书来源，重建后仍生效）
 OVERRIDES = {
     "encephalomyeloradiculitis": "脑脊髓神经根炎",
+    "intercourse": "n.交往，交流",
 }
 CJK = re.compile(r"[\u4e00-\u9fff]")
 ALIAS = re.compile(r"^.*?=\s*([a-z][a-z'\-]*)\s*$", re.I)
@@ -155,6 +156,21 @@ def build_entries(needed, rows, old, gloss, raw):
             stat["short"] += 1
             continue
         o = old.get(w)
+        if w in OVERRIDES:
+            s = OVERRIDES[w]
+            if o:
+                entry = dict(o)
+                entry["s"] = s
+            else:
+                entry = {"w": w, "ipa": "", "pos": ["n."], "s": s,
+                         "tags": [], "frq": 0, "collins": "", "raw": "",
+                         "ph_raw": ""}
+            if w == "intercourse":
+                entry["pos"] = ["n."]
+                entry["raw"] = o.get("raw", "") if o else ""
+            entries.append(entry)
+            stat["reuse"] += 1
+            continue
         if o and o.get("s"):
             entries.append({
                 "w": w,
@@ -260,10 +276,6 @@ def main():
 
     entries, stat = build_entries(needed, rows, old, gloss, raw)
     for x in entries:
-        if x["w"] in OVERRIDES:
-            x["s"] = OVERRIDES[x["w"]]
-            x["pos"] = []
-            x["raw"] = OVERRIDES[x["w"]]
         x["s"] = fit_two_lines(x["s"])
     missing = bb.assign_difficulty(entries, rows)
     entries.sort(key=lambda x: x["w"])
