@@ -7,12 +7,14 @@
 """
 import sys, os, io, json, time, copy, math, random, warnings, traceback
 
-from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QRectF, QPointF, QRect, QLockFile
-from PyQt5.QtGui import (QPainter, QColor, QPainterPath, QPen, QFont, QFontMetrics)
+from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QRectF, QPointF, QRect, QLockFile, QEvent
+from PyQt5.QtGui import (QPainter, QColor, QPainterPath, QPen, QFont, QFontMetrics, QKeySequence)
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QPushButton,
                              QHBoxLayout, QVBoxLayout, QGraphicsOpacityEffect,
                              QScrollArea, QSizePolicy, QLayout,
-                             QMessageBox, QStyle, QStyleOptionButton)
+                             QMessageBox, QStyle, QStyleOptionButton,
+                             QKeySequenceEdit, QLineEdit, QAbstractSpinBox,
+                             QTextEdit, QPlainTextEdit, QDialog)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -24,6 +26,8 @@ import theme as th
 import books as bk
 import storage
 from study_queue import StudyQueue, _count as _queue_count
+import learning_policy as learn
+import keybindings as keys
 from windowing import WindowController
 from catalog import BookCatalog
 from entries import is_phrase, meaning as entry_meaning, pronunciation, memory_info, word_caption
@@ -40,7 +44,10 @@ LEGACY_PROGRESS_PATHS = tuple(os.path.join(directory, "progress.json")
                               for directory in storage.legacy_dirs(ROOT))
 LEGACY_WIN_PATHS = tuple(os.path.join(directory, "_win.json")
                          for directory in storage.legacy_dirs(ROOT))
-VERSION = "1.3.5"
+VERSION = "1.3.6"
+DEFAULTS_JOURNAL = "_v136_defaults_pending"
+RESET_PREF_KEYS = ("theme", "study_mode", "retry_gap", "learning_policy",
+                   "keybindings")
 
 COMPACT_QSS = """
 QPushButton { font-size: 15px; padding: 4px 12px; border-radius: 12px; }
@@ -50,7 +57,7 @@ QPushButton#wrong { font-size: 14px; }
 
 CARD_W, CARD_H = 520, 430
 # 设置只显示常用窗口名称；内部几何尺寸仍受当前屏幕工作区限制。
-WINDOW_PRESETS = ((520, 430, "小巧"), (640, 520, "标准"), (760, 620, "大窗"))
+WINDOW_PRESETS = ((520, 430, "小窗"), (640, 520, "标准"), (760, 620, "大窗"))
 QUIZ_W, QUIZ_H = 520, 430
 COMPACT_W, COMPACT_H = 356, 196
 # 字号 / 留白：(大窗, 小窗)
@@ -390,6 +397,15 @@ class Card(QWidget):
         self.study_record = None
         self.study_engine = None
         self.study_mode = self.progress.get("study_mode", "brush")
+        self.learning_settings = learn.normalize_settings(self.progress.get("learning_policy"))
+        self.learning_settings["mode"] = learn.REVIEW_FIRST
+        self.progress["learning_policy"] = self.learning_settings
+        self.daily_new_ledger = self.progress["daily_new_ledger"]
+        self.learning_policy = learn.LearningPolicy(self.learning_settings, self.daily_new_ledger)
+        self.key_bindings = dict(keys.DEFAULT_BINDINGS)
+        self.progress["keybindings"] = dict(self.key_bindings)
+        self._last_answer_time = None
+        self._policy_changed_in_settings = False
         self.retry_gap = 3            # 固定隔 3 个其它新词重现，不再提供设置
         self.settings_study_mode_start = self.study_mode
         self.catalog_src = "books"
@@ -487,6 +503,21 @@ class Card(QWidget):
             warnings.simplefilter("always", storage.StorageWarning)
             p = storage.load_json(PROGRESS_PATH, {}, legacy_path=legacy)
         self.storage_notices.extend(str(notice.message) for notice in notices)
+        if DEFAULTS_JOURNAL in p:
+            self._recover_defaults_journal(p)
+        p["learning_policy"] = learn.normalize_settings(p.get("learning_policy"))
+        p.setdefault("daily_new_ledger", {})
+        try:
+            learn.validate_ledger(p["daily_new_ledger"])
+        except ValueError as error:
+            raise storage.StorageError("每日新词账本异常；原文件未清空。" + str(error))
+        p.pop("input_mode", None)
+        p.pop("catalog_sort", None)
+        try:
+            p["keybindings"] = keys.normalize(p.get("keybindings"))
+        except ValueError as error:
+            p["keybindings"] = dict(keys.DEFAULT_BINDINGS)
+            self.storage_notices.append("键位配置异常，已安全使用默认键位：" + str(error))
         p.setdefault("states", {})
         for field in ("states", "cursors", "orders", "study_records"):
             if field in p and not isinstance(p[field], dict):
@@ -716,8 +747,10 @@ class Card(QWidget):
     def _make_engine(self):
         self.study_record = self.study_records.setdefault(
             self.book_id, {"cursor": self.cursors.get(self.book_id, 0)})
+        self.learning_policy = learn.LearningPolicy(self.learning_settings, self.daily_new_ledger)
         self.study_engine = StudyQueue(self.queue_words, self.states, self.study_record,
-                                      retry_gap=self.retry_gap, known=self.known)
+                                      retry_gap=self.retry_gap, known=self.known,
+                                      policy=self.learning_policy)
         self.cursor = self.study_engine.cursor
 
     def _new_session(self):
@@ -749,14 +782,21 @@ class Card(QWidget):
         return item is not None
 
     def _check_due(self):
-        if not self._can_act() or self.mode != "empty" or not self.study_engine:
+        if not self._can_act():
+            return
+        now = time.time()
+        self._refresh_learning_status(now)
+        if self.mode != "empty" or not self.study_engine:
             return
         if self.window_ctl.collapsed:
             return
-        waiting = getattr(self, "waiting_due", None)
-        if waiting is None or time.time() < waiting:
-            if waiting is not None:
-                self._empty_note()
+        waiting = self.study_engine.next_due_time(now)
+        old_waiting = getattr(self, "waiting_due", None)
+        # A quota midnight becomes eligible immediately, even after changing the clock/day.
+        ready = old_waiting is not None and now >= old_waiting
+        self.waiting_due = waiting
+        if not ready and (waiting is None or now < waiting):
+            self._empty_note()
             return
         before = self._capture_study()
         try:
@@ -855,8 +895,9 @@ class Card(QWidget):
                 button.setMinimumHeight(round(BTN_H[i] * scale))
             for button in (self.btn_min, self.btn_gear, self.btn_back):
                 button.setFixedSize(round(22 * scale), round(20 * scale))
+                button.raise_()
             self.back_slot.setFixedSize(round(22 * scale), round(20 * scale))
-            self.btn_close.setFixedSize(round(20 * scale), round(20 * scale))
+            self.btn_close.setFixedSize(round(24 * scale), round(24 * scale))
             self.btn_min.set_kind("max" if self.compact else "min")
             self.gap_ipa.setFixedHeight(round(GAP_IPA[i] * scale))
             self.meaning.setFixedHeight(mean_h(i, scale))
@@ -960,6 +1001,7 @@ class Card(QWidget):
         self.back_slot = QWidget()
         self.back_slot.setFixedSize(22, 20)
         self.btn_back = MiniButton("back", "返回", self.back_slot)
+        self.btn_back.setGeometry(self.back_slot.rect())
         self.btn_back.clicked.connect(self._page_back)
         top.addWidget(self.back_slot)
         self.btn_min = MiniButton("min", "缩小 / 展开")
@@ -974,6 +1016,10 @@ class Card(QWidget):
         self.status = QLabel("")
         self.status.setTextFormat(Qt.RichText)
         top.addWidget(self.status)
+        self.study_status = QLabel("")
+        self.study_status.setTextFormat(Qt.PlainText)
+        self.study_status.setToolTip("新词：首次学习；复习：到期词。")
+        top.addWidget(self.study_status)
         top.addStretch(1)
         self.btn_skip = QPushButton("跳过本次测试")
         self.btn_skip.setObjectName("link")
@@ -983,13 +1029,16 @@ class Card(QWidget):
         self.btn_skip.hide()
         self.btn_close = QPushButton("✕")
         self.btn_close.setObjectName("close")
-        self.btn_close.setFixedSize(20, 20)
+        self.btn_close.setToolTip("关闭")
+        self.btn_close.setCursor(Qt.PointingHandCursor)
+        self.btn_close.setFixedSize(24, 24)
         self.btn_close.clicked.connect(self.close)
         top.addWidget(self.btn_close)
         self.root.addLayout(top)
 
         self.reg(self.page_title, "title", 15)
         self.reg(self.status, "note", 12)
+        self.reg(self.study_status, "note", 11)
 
         self._build_study()
         self._build_choice()
@@ -1001,6 +1050,13 @@ class Card(QWidget):
         self.catalog = BookCatalog(self)
         self.root.addWidget(self.catalog, 1)
         self.catalog.hide()
+        self._learning_buttons = ([self.btn_forget, self.btn_remember, self.btn_wrong, self.btn_next,
+                                  self.btn_study_dk, self.btn_study_next, self.btn_dontknow, self.btn_skip]
+                                 + self.study_btns + self.opt_btns)
+        for button in self._learning_buttons:
+            button.setFocusPolicy(Qt.NoFocus)
+            button.installEventFilter(self)
+        self.setFocusPolicy(Qt.StrongFocus)
 
         self.btn_back.hide()
         self.page_title.hide()
@@ -1076,7 +1132,7 @@ class Card(QWidget):
         self.btn_wrong.setCursor(Qt.PointingHandCursor)
         self.btn_wrong.setMinimumHeight(46)
         self.btn_wrong.clicked.connect(self.correct)
-        self.btn_next = QPushButton("下一个  →")
+        self.btn_next = QPushButton("下一个")
         self.btn_next.setCursor(Qt.PointingHandCursor)
         self.btn_next.setMinimumHeight(46)
         self.btn_next.clicked.connect(self._next)
@@ -1123,7 +1179,7 @@ class Card(QWidget):
         self.btn_study_dk.setObjectName("dontknow")
         self.btn_study_dk.setMinimumHeight(34)
         self.btn_study_dk.clicked.connect(lambda: self._study_answer(-1))
-        self.btn_study_next = QPushButton("下一个  →")
+        self.btn_study_next = QPushButton("下一个")
         self.btn_study_next.setObjectName("remember")
         self.btn_study_next.setMinimumHeight(34)
         self.btn_study_next.clicked.connect(self._next)
@@ -1512,14 +1568,14 @@ class Card(QWidget):
             sizes.addWidget(button)
             self.size_chips[(width, height)] = button
         sizes.addSpacing(10)
-        self.btn_edge_collapse = QPushButton("贴边收起：开")
+        self.btn_edge_collapse = QPushButton("小窗贴边收起：开")
         self.btn_edge_collapse.setObjectName("chip")
         self.btn_edge_collapse.setCheckable(True)
         self.btn_edge_collapse.setChecked(True)
         self.btn_edge_collapse.setCursor(Qt.PointingHandCursor)
         self.btn_edge_collapse.setMinimumHeight(30)
         self.btn_edge_collapse.setToolTip(
-            "开启后，小巧窗口和刷词小窗靠边并移开鼠标时收起，悬停展开；关闭后不自动收起。")
+            "开启后，小窗和刷词小窗靠边并移开鼠标时收起，悬停展开；关闭后不自动收起。")
         self.btn_edge_collapse.clicked.connect(self._set_edge_collapse)
         sizes.addWidget(self.btn_edge_collapse)
         sizes.addStretch(1)
@@ -1539,6 +1595,23 @@ class Card(QWidget):
         modes.addStretch(1)
         layout.addLayout(modes)
         layout.addSpacing(6)
+
+        self.key_edits = {}
+        self.btn_apply_keys = None
+        self.key_dialog = None
+        for _title, actions in (("刷词答案", (("remember", "认识"), ("forget", "不认识"))),
+                                ("选择题答案", (("choice1", "选项 A"), ("choice2", "选项 B"),
+                                                ("choice3", "选项 C"), ("choice4", "选项 D"),
+                                                ("unknown", "不认识"))),
+                                ("翻到下一张", (("next", "下一个"),))):
+            for action, text in actions:
+                editor = QKeySequenceEdit(QKeySequence(self.key_bindings[action]), self)
+                editor.hide()
+                editor.setProperty("action_label", text)
+                editor.keySequenceChanged.connect(self._check_key_draft)
+                self.key_edits[action] = editor
+        self.lab_key_error = QLabel("", self)
+        self.lab_key_error.hide()
 
         layout.addWidget(self.reg(QLabel("词书"), "note", 12))
         book_row = QHBoxLayout()
@@ -1598,7 +1671,7 @@ class Card(QWidget):
             chip.style().polish(chip)
         enabled = self.window_ctl.edge_collapse_enabled
         self.btn_edge_collapse.setChecked(enabled)
-        self.btn_edge_collapse.setText("贴边收起：开" if enabled else "贴边收起：关")
+        self.btn_edge_collapse.setText("小窗贴边收起：开" if enabled else "小窗贴边收起：关")
         self.btn_edge_collapse.setProperty("on", "1" if enabled else "0")
         self.btn_edge_collapse.style().unpolish(self.btn_edge_collapse)
         self.btn_edge_collapse.style().polish(self.btn_edge_collapse)
@@ -1616,40 +1689,312 @@ class Card(QWidget):
         self._flush_window()
         self._refresh_settings()
 
-    def set_study_mode(self, mode):
-        if mode not in ("brush", "choice"):
-            return
-        self.study_mode = mode
-        self.save()
-        self._refresh_settings()
+    def _pref_snapshot(self, progress=None, names=RESET_PREF_KEYS):
+        progress = self.progress if progress is None else progress
+        return {name: {"present": name in progress,
+                       "value": copy.deepcopy(progress.get(name))} for name in names}
 
-    def restore_defaults(self):
-        self.study_mode = "brush"
+    @staticmethod
+    def _restore_pref_fields(progress, snapshot):
+        for name, saved in snapshot.items():
+            if saved["present"]:
+                progress[name] = copy.deepcopy(saved["value"])
+            else:
+                progress.pop(name, None)
+
+    def _recover_defaults_journal(self, progress):
+        """A crash journal contains preferences only, never old learning records."""
+        journal = progress.get(DEFAULTS_JOURNAL)
+        if (not isinstance(journal, dict) or journal.get("schema") != 1
+                or not isinstance(journal.get("window"), dict)
+                or not isinstance(journal.get("preferences"), dict)):
+            raise storage.StorageError("未完成的设置重置日志格式异常；学习记录未清空。")
+        prefs = journal["preferences"]
+        if any(name not in RESET_PREF_KEYS or not isinstance(value, dict)
+               or not isinstance(value.get("present"), bool)
+               or (value.get("present") and "value" not in value) for name, value in prefs.items()):
+            raise storage.StorageError("设置重置日志的偏好格式异常；学习记录未清空。")
+        storage.atomic_save(WIN_PATH, journal["window"])
+        self._restore_pref_fields(progress, prefs)
+        progress.pop(DEFAULTS_JOURNAL, None)
+        try:
+            storage.atomic_save(PROGRESS_PATH, progress)
+        except storage.StorageError:
+            progress[DEFAULTS_JOURNAL] = journal
+            raise
+        self.storage_notices.append("已恢复上次未完成的设置重置；学习与测试记录未回退。")
+
+    def _sync_preference_attrs(self):
+        self.study_mode = self.progress.get("study_mode", "brush")
         self.retry_gap = 3
-        if self.study_engine is not None:
-            self.study_engine.retry_gap = 3
-        self.window_ctl.restore({}, allow_compact=False)
-        self.set_theme(th.DEFAULT)
-        self._flush_window()
-        self._refresh_settings()
-
-    # ---------- 主题 ----------
-    def set_theme(self, key):
-        self.theme_key = key if key in th.THEMES else th.DEFAULT
+        self.learning_settings = learn.normalize_settings(self.progress.get("learning_policy"))
+        self.learning_settings["mode"] = learn.REVIEW_FIRST
+        self.progress["learning_policy"] = self.learning_settings
+        self.learning_policy = learn.LearningPolicy(self.learning_settings, self.daily_new_ledger)
+        self.key_bindings = keys.load_bindings(self.progress.get("keybindings"))
+        self.progress["keybindings"] = dict(self.key_bindings)
+        self.theme_key = self.progress.get("theme") if self.progress.get("theme") in th.THEMES else th.DEFAULT
         self.t = th.get(self.theme_key)
-        self.progress["theme"] = self.theme_key
-        self.save()
+        if self.study_engine is not None:
+            self.study_engine.policy = self.learning_policy
+            self.study_engine.retry_gap = 3
+
+    def _apply_preference_ui(self):
         self._apply_scaling(force=True)
         self.catalog.set_palette(self.t)
         self.window_ctl.update_palette(self.t)
+        self._refresh_key_hints()
+        self._refresh_learning_status()
         self._refresh_settings()
         self.update()
 
+    def _commit_preferences(self, changes):
+        if not self._can_act():
+            return False
+        if DEFAULTS_JOURNAL in self.progress:
+            try:
+                self._recover_defaults_journal(self.progress)
+            except storage.StorageError as error:
+                QMessageBox.critical(self, "设置暂未保存", str(error))
+                return False
+        before = self._pref_snapshot(names=tuple(changes))
+        for name, value in changes.items():
+            self.progress[name] = copy.deepcopy(value)
+        if "study_mode" in changes:
+            self.study_mode = changes["study_mode"]
+        try:
+            self.save()
+        except storage.StorageError as error:
+            self._restore_pref_fields(self.progress, before)
+            self._sync_preference_attrs()
+            self._apply_preference_ui()
+            QMessageBox.critical(self, "设置保存失败", "设置未改变，学习记录未清空。\n" + str(error))
+            return False
+        self._sync_preference_attrs()
+        self._apply_preference_ui()
+        return True
+
+    def set_study_mode(self, mode):
+        if mode not in ("brush", "choice"):
+            return False
+        return self._commit_preferences({"study_mode": mode})
+
+    def set_learning_plan(self, mode=None, daily_new=None):
+        candidate = dict(self.learning_settings)
+        candidate["mode"] = learn.REVIEW_FIRST
+        if mode == learn.DAILY_NEW_FIRST or daily_new is not None:
+            candidate["daily_new"] = learn.DEFAULTS["daily_new"]
+        if candidate == self.learning_settings:
+            return True
+        if self._commit_preferences({"learning_policy": candidate}):
+            self._policy_changed_in_settings = True
+            return True
+        return False
+
+    def apply_key_bindings(self, raw):
+        try:
+            normalized = keys.normalize(raw)
+        except ValueError as error:
+            self.lab_key_error.setText(str(error))
+            return False
+        if not self._commit_preferences({"keybindings": normalized}):
+            self.lab_key_error.setText("键位未保存，原配置仍有效；可重试。")
+            return False
+        self._reset_key_draft()
+        return True
+
+    def open_key_settings(self):
+        if self.key_dialog is not None and self.key_dialog.isVisible():
+            self.key_dialog.raise_()
+            self.key_dialog.activateWindow()
+            return
+        self._reset_key_draft()
+        dialog = QDialog(self)
+        dialog.setWindowTitle("键盘按键设置")
+        dialog.setModal(True)
+        dialog.setMinimumWidth(440)
+        outer = QVBoxLayout(dialog)
+        outer.setContentsMargins(22, 18, 22, 18)
+        outer.setSpacing(8)
+        self._key_dialog_labels = []
+        sections = (("刷词", (("remember", "认识"), ("forget", "不认识"))),
+                    ("选择题", (("choice1", "选项 A"), ("choice2", "选项 B"),
+                                  ("choice3", "选项 C"), ("choice4", "选项 D"),
+                                  ("unknown", "不认识"))),
+                    ("翻页", (("next", "下一张"),)))
+        for title, actions in sections:
+            heading = self.reg(QLabel(title), "note", 12)
+            outer.addWidget(heading)
+            for action, text in actions:
+                row = QHBoxLayout()
+                label = self.reg(QLabel(text), "note", 12)
+                label.setMinimumWidth(100)
+                row.addWidget(label)
+                editor = self.key_edits[action]
+                editor.setMinimumWidth(180)
+                row.addWidget(editor, 1)
+                outer.addLayout(row)
+        note = self.reg(QLabel("点按输入框后按下新键位。同屏答案键不能重复；下一张可复用答案键。\n"
+                               "Z 改判、Ctrl+Z 撤销、Esc / Tab 与窗口和编辑命令保留。"), "note", 11)
+        note.setWordWrap(True)
+        outer.addWidget(note)
+        self.lab_key_error.setStyleSheet(th.label_qss(self.t, "note", 11))
+        self.lab_key_error.setParent(dialog)
+        self.lab_key_error.show()
+        outer.addWidget(self.lab_key_error)
+        buttons = QHBoxLayout()
+        self.btn_restore_key_defaults = QPushButton("恢复默认键位")
+        self.btn_restore_key_defaults.setObjectName("chip")
+        self.btn_restore_key_defaults.setMinimumHeight(32)
+        self.btn_restore_key_defaults.clicked.connect(self._restore_key_defaults)
+        buttons.addWidget(self.btn_restore_key_defaults)
+        buttons.addStretch(1)
+        self.btn_cancel_keys = QPushButton("取消")
+        self.btn_cancel_keys.setObjectName("chip")
+        self.btn_cancel_keys.setMinimumHeight(32)
+        self.btn_cancel_keys.clicked.connect(self._reset_key_draft)
+        self.btn_cancel_keys.clicked.connect(dialog.reject)
+        buttons.addWidget(self.btn_cancel_keys)
+        self.btn_apply_keys = QPushButton("保存键位")
+        self.btn_apply_keys.setObjectName("remember")
+        self.btn_apply_keys.setMinimumHeight(32)
+        self.btn_apply_keys.clicked.connect(self._apply_key_bindings)
+        buttons.addWidget(self.btn_apply_keys)
+        outer.addLayout(buttons)
+        dialog.setStyleSheet(th.qss(self.t, getattr(self, "scale_factor", 1.0)))
+        dialog.finished.connect(self._key_dialog_finished)
+        self.key_dialog = dialog
+        self._check_key_draft()
+        for edit in self.key_edits.values():
+            edit.setParent(dialog)
+            edit.show()
+        dialog.exec_()
+        for edit in self.key_edits.values():
+            edit.setParent(self)
+            edit.hide()
+        self.lab_key_error.setParent(self)
+        self.lab_key_error.hide()
+
+    def _key_dialog_finished(self, _result):
+        self._reset_key_draft()
+        self.btn_apply_keys = None
+        self.key_dialog = None
+
+    def _restore_key_defaults(self):
+        for name, edit in self.key_edits.items():
+            edit.blockSignals(True)
+            edit.setKeySequence(QKeySequence(keys.DEFAULT_BINDINGS[name]))
+            edit.blockSignals(False)
+        self._check_key_draft()
+
+    def _apply_key_bindings(self):
+        ok = self.apply_key_bindings({name: edit.keySequence().toString(QKeySequence.PortableText)
+                                      for name, edit in self.key_edits.items()})
+        if ok and self.key_dialog is not None:
+            self.key_dialog.accept()
+        return ok
+
+    def _check_key_draft(self, *_):
+        draft = {name: edit.keySequence().toString(QKeySequence.PortableText)
+                 for name, edit in self.key_edits.items()}
+        try:
+            keys.normalize(draft)
+        except ValueError as error:
+            self.lab_key_error.setText(str(error))
+            if self.btn_apply_keys is not None:
+                self.btn_apply_keys.setEnabled(False)
+            return False
+        self.lab_key_error.clear()
+        if self.btn_apply_keys is not None:
+            self.btn_apply_keys.setEnabled(True)
+        return True
+
+    def _reset_key_draft(self):
+        for name, edit in self.key_edits.items():
+            edit.blockSignals(True)
+            edit.setKeySequence(QKeySequence(self.key_bindings[name]))
+            edit.blockSignals(False)
+        self._check_key_draft()
+
+    def _confirm_restore_defaults(self):
+        answer = QMessageBox.question(
+            self, "恢复全部默认设置",
+            "恢复背景、窗口、学习模式/安排及键位。\n"
+            "不改变所选词书、学习状态/队列/词序游标/今日计数、词汇量测试记录。\n继续吗？",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if answer == QMessageBox.Yes:
+            self.restore_defaults()
+
+    def restore_defaults(self):
+        if not self._can_act():
+            return False
+        if DEFAULTS_JOURNAL in self.progress:
+            try:
+                self._recover_defaults_journal(self.progress)
+            except storage.StorageError as error:
+                QMessageBox.critical(self, "恢复默认未完成", str(error))
+                return False
+        before = self._pref_snapshot()
+        old_window = copy.deepcopy(self.window_record)
+        old_state = self.window_ctl.state()
+        old_window.update(old_state)
+        old_compact = self.window_ctl.compact
+        journal = {"schema": 1, "preferences": before, "window": old_window}
+        defaults = {"theme": th.DEFAULT, "study_mode": "brush", "retry_gap": 3,
+                    "learning_policy": dict(learn.DEFAULTS),
+                    "keybindings": dict(keys.DEFAULT_BINDINGS)}
+        self._window_save_timer.stop()
+        self.progress[DEFAULTS_JOURNAL] = journal
+        window_written = False
+        try:
+            self.save()                       # durable old-preference journal first
+            self.window_ctl.restore({}, allow_compact=False)
+            self._window_save_timer.stop()
+            self._save_window()               # then the separate window file
+            window_written = True
+            self.progress.update(copy.deepcopy(defaults))
+            self.progress.pop(DEFAULTS_JOURNAL, None)
+            self._sync_preference_attrs()
+            self.save()                       # committing new prefs clears journal atomically
+        except storage.StorageError as error:
+            self._restore_pref_fields(self.progress, before)
+            self._sync_preference_attrs()
+            self.window_ctl.restore(old_state, allow_compact=old_compact)
+            self._window_save_timer.stop()
+            self.window_record = old_window
+            rollback_errors = []
+            if window_written:
+                try:
+                    storage.atomic_save(WIN_PATH, old_window)
+                except storage.StorageError as rollback:
+                    rollback_errors.append(str(rollback))
+            if rollback_errors:
+                self.progress[DEFAULTS_JOURNAL] = journal
+            else:
+                self.progress.pop(DEFAULTS_JOURNAL, None)
+            try:
+                self.save()
+            except storage.StorageError as rollback:
+                self.progress[DEFAULTS_JOURNAL] = journal
+                rollback_errors.append(str(rollback))
+            self._apply_preference_ui()
+            message = "恢复默认未完成，学习与测试记录未改变。\n" + str(error)
+            if rollback_errors:
+                message += "\n偏好回退尚待完成，下次启动会恢复；记录不会回退。\n" + "\n".join(rollback_errors)
+            QMessageBox.critical(self, "恢复默认未完成", message)
+            return False
+        self._window_save_timer.stop()
+        self._policy_changed_in_settings = True
+        self._apply_preference_ui()
+        self._reset_key_draft()
+        return True
+
+    # ---------- 主题 ----------
+    def set_theme(self, key):
+        return self._commit_preferences({"theme": key if key in th.THEMES else th.DEFAULT})
+
     def _gear_clicked(self):
-        if self.mode == "settings":
-            self.close_settings()
-        else:
-            self.open_settings()
+        self.open_settings()
 
     def _refresh_back_control(self):
         self.back_slot.setVisible(self.mode in ("settings", "books", "catalog"))
@@ -1677,7 +2022,8 @@ class Card(QWidget):
         mode = self.sel_order if src == "books" else stored_order(self.orders, book_id)
         words = self._order_words(self._book_words(book_id), mode, self._seed(book_id))
         self.catalog.set_palette(self.t)
-        self.catalog.set_book(book_id, self._book_path(book_id), words, self.states, self.known)
+        self.catalog.set_book(book_id, self._book_path(book_id), words, self.states,
+                              self.known, preserve_order=(mode == "shuffle"))
         self._set_mode("catalog")
 
     def open_settings(self):
@@ -1686,23 +2032,42 @@ class Card(QWidget):
         if self.mode in ("front", "back", "empty", "choice", "choice_back"):
             self.pre_settings_mode = self.mode
             self.settings_study_mode_start = self.study_mode
+            self._policy_changed_in_settings = False
         self._refresh_settings()
         self._set_mode("settings")
 
     def close_settings(self):
         if not self._can_act():
             return
+
+        self._reset_key_draft()
         if not self.progress.get("book_confirmed"):
             self.open_books("welcome")
             return
         mode = self.pre_settings_mode
         changed = self.study_mode != self.settings_study_mode_start
-        if changed and mode in ("back", "choice_back"):
+        if self._policy_changed_in_settings and mode in ("front", "choice", "empty"):
+            before = self._capture_study()
+            try:
+                self._make_engine()
+                found = self._pull_new(persist=False)
+                self.save()
+            except storage.StorageError as error:
+                self._study_save_error(error, before)
+                return
+            self._policy_changed_in_settings = False
+            if found:
+                self.qi = len(self.queue) - 1
+                self._show_current()
+            else:
+                self._show_empty(persist=False)
+        elif changed and mode in ("back", "choice_back"):
             self._next0()               # 这张卡已经提交，不能在另一模式再答一次
         elif changed and mode in ("front", "choice"):
-            self._show_current()       # 未回答时仍是同一个 current
+            self._show_current()
         else:
             self._set_mode(mode if mode in ("front", "back", "empty", "choice", "choice_back") else "front")
+        self._policy_changed_in_settings = False
 
     def _test_from_settings(self):
         return self.start_quiz()
@@ -1974,7 +2339,8 @@ class Card(QWidget):
             self.window_ctl.set_compact(small, remember=False)
             self.compact = self.window_ctl.compact
         self.btn_min.setVisible(brush and self.study_mode == "brush")
-        self.btn_gear.setVisible(study and not self.compact)
+        self.btn_gear.setVisible(mode not in ("settings", "books", "catalog", "quiz", "result", "welcome")
+                                  and not self.compact)
         self._refresh_back_control()
         # 学习页面（刷词/选择题）不显示左上角的状态文字；测试页保留进度与严谨度。
         self.status.setVisible(mode == "quiz" and not self.compact)
@@ -1998,6 +2364,8 @@ class Card(QWidget):
         if mode == "front":
             self.fade.stop()
             self.answer_effect.setOpacity(0.0)
+        self._refresh_learning_status()
+        self._refresh_key_hints()
         self._apply_scaling(force=True)
 
     def _show_current(self):
@@ -2010,7 +2378,7 @@ class Card(QWidget):
         self.ipa.setText(pronunciation(word))
         self.meaning.setText(entry_meaning(word))
         self.meaning.setTextFormat(Qt.PlainText)
-        self.btn_next.setText("下一个  →")
+        self.btn_next.setText("下一个")
         self.corrected = False
         if self.study_mode == "choice":
             stage = self._book_level(self.book_id)
@@ -2041,11 +2409,14 @@ class Card(QWidget):
             self.choice_ipa.setText(pronunciation(word))
             self.choice_ipa.setVisible(bool(self.choice_ipa.text()))
             for index, button in enumerate(self.study_btns):
-                button.setText("%s  %s" % ("ABCD"[index], self.choice_question["options"][index]))
+                caption = "%s  %s" % ("ABCD"[index], self.choice_question["options"][index])
+                button.setProperty("_study_caption", caption)
+                button.setText(caption)
                 button.setProperty("state", "")
                 button.setEnabled(True)
                 button.style().unpolish(button)
                 button.style().polish(button)
+            self._refresh_key_hints()
             self.choice_hint.clear()
             self.choice_hint.hide()
             self.btn_study_dk.show()
@@ -2068,8 +2439,9 @@ class Card(QWidget):
 
     def _empty_note(self):
         due = getattr(self, "waiting_due", None)
+        now = time.time()
         if due is not None:
-            minutes = max(1, math.ceil((due - time.time()) / 60))
+            minutes = max(1, math.ceil((due - now) / 60))
             text = "下次复习约 %d 分钟后\n到期会自动出现" % minutes
         else:
             text = "当前没有新词和到期词\n可在设置中查看或更换词书"
@@ -2090,7 +2462,7 @@ class Card(QWidget):
         self._empty_note()
         self.answer_effect.setOpacity(1.0)
         self.btn_wrong.hide()
-        self.btn_next.setText("检查复习")
+        self.btn_next.setText(self._key_caption("检查复习", "next"))
 
     # ---------- 学习流程 ----------
     def _capture_study(self):
@@ -2099,7 +2471,9 @@ class Card(QWidget):
                 "cursor": self.cursor, "cursors": copy.deepcopy(self.cursors),
                 "qi": self.qi, "book": self.book_id,
                 "queue": list(self.queue), "last_action": self.last_action,
-                "corrected": self.corrected}
+                "corrected": self.corrected,
+                "daily_new_ledger": copy.deepcopy(self.daily_new_ledger),
+                "last_answer_time": self._last_answer_time}
 
     def _snapshot(self):
         self.snapshot = self._capture_study()
@@ -2112,6 +2486,10 @@ class Card(QWidget):
         self.states.update(copy.deepcopy(snapshot["states"]))
         self.study_record.clear()
         self.study_record.update(copy.deepcopy(snapshot["record"]))
+        if "daily_new_ledger" in snapshot:
+            self.daily_new_ledger.clear()
+            self.daily_new_ledger.update(copy.deepcopy(snapshot["daily_new_ledger"]))
+        self._last_answer_time = snapshot.get("last_answer_time")
         self.cursor, self.qi = snapshot["cursor"], snapshot["qi"]
         if "cursors" in snapshot:
             self.cursors.clear()
@@ -2137,12 +2515,14 @@ class Card(QWidget):
         item = self.queue[self.qi]
         self.corrected = False
         try:
-            self.study_engine.answer(item, remember, time.time())
+            answered_at = time.time()
+            self.study_engine.answer(item, remember, answered_at)
+            self._last_answer_time = answered_at
             self.cursor = self.study_engine.cursor
             self.cursors[self.book_id] = self.cursor
             self.last_action = (item["kind"], item["w"]["w"], remember)
             self.save()
-        except storage.StorageError as error:
+        except (storage.StorageError, ValueError) as error:
             self._study_save_error(error, self.snapshot)
             self.snapshot = previous_snapshot
             return False
@@ -2186,11 +2566,13 @@ class Card(QWidget):
                 or self.corrected or self.mode not in ("back", "choice_back") or not self.snapshot):
             return
         before = self._capture_study()
+        introduced_at = self._last_answer_time
         if not self._restore_snapshot():
             return
         item = self.queue[self.qi]
         try:
-            self.study_engine.answer(item, False, time.time())
+            self.study_engine.answer(item, False, time.time(), introduced_at=introduced_at)
+            self._last_answer_time = introduced_at
             self.cursor = self.study_engine.cursor
             self.cursors[self.book_id] = self.cursor
             self.corrected = True
@@ -2477,7 +2859,9 @@ class Card(QWidget):
         self.quiz_word.setText(word_caption(w))
         self._quiz_status()
         for i, b in enumerate(self.opt_btns):
-            b.setText("%s  %s" % (LETTERS[i], item["opts"][i]))
+            caption = "%s  %s" % (LETTERS[i], item["opts"][i])
+            b.setProperty("_quiz_caption", caption)
+            b.setText(caption)
             b.setEnabled(True)
             b.setProperty("state", "")
             b.style().unpolish(b)
@@ -2487,6 +2871,7 @@ class Card(QWidget):
         self.btn_dontknow.style().unpolish(self.btn_dontknow)
         self.btn_dontknow.style().polish(self.btn_dontknow)
         self.quiz_locked = False
+        self._refresh_key_hints()
         self._fit_choice_options(self._ui_scale())
         self.quiz_page.verticalScrollBar().setValue(0)
 
@@ -2688,36 +3073,98 @@ class Card(QWidget):
         self._new_session()
 
     # ---------- 键盘 ----------
+    def _refresh_learning_status(self, now=None):
+        if not hasattr(self, "study_status"):
+            return
+        parts = []
+        study = self.mode in ("front", "back", "empty", "choice", "choice_back")
+        if study and self.mode != "empty" and self.queue and 0 <= self.qi < len(self.queue):
+            kind = self.queue[self.qi]["kind"]
+            parts.append("新词" if kind == "new" else "复习")
+        self.study_status.setText(" · ".join(parts))
+        if not hasattr(self, "window_ctl") or not (self.window_ctl.collapsed or self.window_ctl.animating):
+            self.study_status.setVisible(study and bool(parts))
+
+    def _key_caption(self, text, action):
+        return text + "  [%s]" % keys.caption(self.key_bindings[action])
+
+    def _refresh_key_hints(self):
+        if not hasattr(self, "btn_remember"):
+            return
+        self.btn_remember.setText(self._key_caption("认识", "remember"))
+        self.btn_forget.setText(self._key_caption("不认识", "forget"))
+        self.btn_wrong.setText(self._key_caption("选错了", "forget"))
+        self.btn_next.setText(self._key_caption("再看看" if self.mode == "empty" else "下一个", "next"))
+        self.btn_study_next.setText(self._key_caption("下一个", "next"))
+        self.btn_study_dk.setText(self._key_caption("不认识", "unknown"))
+        self.btn_dontknow.setText(self._key_caption("不认识", "unknown"))
+        for group, prop in ((self.study_btns, "_study_caption"), (self.opt_btns, "_quiz_caption")):
+            for index, button in enumerate(group):
+                base = button.property(prop)
+                if isinstance(base, str):
+                    button.setText(self._key_caption(base, "choice%d" % (index + 1)))
+                button.setShortcut(QKeySequence())
+
+    @staticmethod
+    def _editor_has_focus():
+        widget = QApplication.focusWidget()
+        while widget is not None:
+            if isinstance(widget, (QLineEdit, QAbstractSpinBox, QKeySequenceEdit, QTextEdit, QPlainTextEdit)):
+                return True
+            widget = widget.parentWidget()
+        return False
+
+    def _dispatch_study_key(self, ev):
+        if not self._can_act() or ev.isAutoRepeat() or self._editor_has_focus():
+            return
+        k, mods = ev.key(), ev.modifiers()
+        if k == Qt.Key_Escape and mods == Qt.NoModifier:
+            self.close()
+            return
+        if k == Qt.Key_Z and mods == Qt.ControlModifier and self.mode != "quiz":
+            self.undo()
+            return
+        if k == Qt.Key_Z and mods == Qt.NoModifier:
+            self.correct()
+            return
+        phase = ("brush" if self.mode == "front" else "choice" if self.mode in ("choice", "quiz")
+                 else "back" if self.mode in ("back", "empty", "choice_back") else None)
+        action = keys.event_action(ev, self.key_bindings, phase)
+        if action in ("remember", "forget"):
+            self.act(action)
+        elif action == "next":
+            self._next()
+        elif action == "unknown" or (action and action.startswith("choice")):
+            selected = -1 if action == "unknown" else int(action[-1]) - 1
+            if self.mode == "quiz":
+                self._quiz_answer(selected)
+            else:
+                self._study_answer(selected)
+
+    def eventFilter(self, watched, event):
+        if (watched in getattr(self, "_learning_buttons", ())
+                and self.mode in ("front", "back", "empty", "choice", "choice_back", "quiz")
+                and not self._editor_has_focus()):
+            if event.type() == QEvent.KeyPress:
+                self._dispatch_study_key(event)
+                event.accept()
+                return True
+        return super().eventFilter(watched, event)
+
     def keyPressEvent(self, ev):
         if not self._can_act():
             return
+        if self.mode in ("front", "back", "empty", "choice", "choice_back", "quiz"):
+            self._dispatch_study_key(ev)
+            ev.accept()
+            return
         k = ev.key()
-        if self.mode in ("choice", "choice_back"):
-            if k == Qt.Key_Z and ev.modifiers() & Qt.ControlModifier:
-                self.undo()
-            elif k == Qt.Key_Escape:
-                self.close()
-            elif self.mode == "choice":
-                if Qt.Key_1 <= k <= Qt.Key_4:
-                    self._study_answer(k - Qt.Key_1)
-                elif k in (Qt.Key_0, Qt.Key_5):
-                    self._study_answer(-1)
-            elif k in (Qt.Key_Space, Qt.Key_Return, Qt.Key_Right):
-                self._next()
-            elif k == Qt.Key_Z:
-                self.correct()
+        if self._editor_has_focus():
+            super().keyPressEvent(ev)
             return
         if self.mode == "catalog":
             if k == Qt.Key_Escape:
                 self._page_back()
-            return
-        if self.mode == "quiz":
-            if Qt.Key_1 <= k <= Qt.Key_4:
-                self._quiz_answer(k - Qt.Key_1)
-            elif k in (Qt.Key_0, Qt.Key_Space):
-                self._quiz_answer(-1)
-            elif k == Qt.Key_Escape:
-                self.close()          # 直接退出，进度留着
             return
         if self.mode == "result":
             if k in (Qt.Key_Space, Qt.Key_Return):
@@ -2737,22 +3184,7 @@ class Card(QWidget):
             if k == Qt.Key_Escape:
                 self.close()
             return
-        if k in (Qt.Key_Space, Qt.Key_Return, Qt.Key_Right):
-            if self.mode in ("back", "empty"):
-                self._next()
-            else:
-                self.act("remember")
-        elif k in (Qt.Key_Left, Qt.Key_1):
-            self.act("forget")
-
-        elif k == Qt.Key_Z and not (ev.modifiers() & Qt.ControlModifier) and self.mode == "back":
-            self.correct()
-        elif k == Qt.Key_Z and ev.modifiers() & Qt.ControlModifier:
-            self.undo()
-        elif k == Qt.Key_Escape:
-            self.close()
-        else:
-            super().keyPressEvent(ev)
+        super().keyPressEvent(ev)
 
 
 def main():

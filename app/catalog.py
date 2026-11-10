@@ -18,8 +18,8 @@ from PyQt5.QtCore import (QEvent, QModelIndex, QRect, QSize, Qt, QTimer,
 from PyQt5.QtGui import QColor, QFont, QFontMetrics, QPainter, QPen
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
                              QPushButton, QTableView, QHeaderView, QDialog,
-                             QAbstractItemView, QStyledItemDelegate, QStyle,
-                             QStyleOptionViewItem)
+                             QAbstractItemView, QStyledItemDelegate,
+                             QStyle, QStyleOptionViewItem)
 import theme as th
 from entries import CATEGORIES, meaning, memory_info, word_caption
 
@@ -200,6 +200,7 @@ class WordTableModel(QAbstractTableModel):
         self.entries, self.rows = [], []
         self.states, self.known = {}, set()
         self.category, self.query = "all", ""
+        self.order_index = None
         self.palette = th.get(th.DEFAULT)
         self.scale = 1.0
         self._font = QFont("Microsoft YaHei UI")
@@ -207,6 +208,7 @@ class WordTableModel(QAbstractTableModel):
         self._meanings = []          # 与 entries 对齐的 meaning，只 format 一次
         self._search = []            # (word_casefold, meaning_casefold)
         self._meta = []              # [(category, label)]，与 entries 对齐
+        self._levels = []            # 与 entries 对齐的真实记忆等级/None
         self._pos_by_id = {}         # id(entry) -> entries 索引，避免 O(n) 查找
         self._counts = {key: 0 for key, _ in CATEGORIES}
         self._counts["all"] = 0
@@ -214,7 +216,10 @@ class WordTableModel(QAbstractTableModel):
         self._row_meta_dirty = True
 
     # ---------- 数据缓存 ----------
-    def set_entries(self, entries, states, known=None):
+    def set_entries(self, entries, states, known=None, preserve_order=False):
+        self.order_index = ({entry.get("w", ""): index
+                             for index, entry in enumerate(entries)}
+                            if preserve_order else None)
         self.entries = list(entries)
         self.states = states
         self.known = known or set()
@@ -223,13 +228,33 @@ class WordTableModel(QAbstractTableModel):
         self._search = [(entry["w"].casefold(), text.casefold())
                         for entry, text in zip(self.entries, self._meanings)]
         self._meta = []
+        self._levels = []
         self._counts = {key: 0 for key, _ in CATEGORIES}
         self._counts["all"] = len(self.entries)
         for entry, text in zip(self.entries, self._meanings):
-            category, _, label = memory_info(entry["w"], self.states, self.known)
+            category, level, label = memory_info(entry["w"], self.states, self.known)
             self._meta.append((category, label))
+            self._levels.append(level)
             self._counts[category] = self._counts.get(category, 0) + 1
         self._row_meta_dirty = True
+        self.refilter()
+
+    def _entry_level(self, entry):
+        pos = self._pos_by_id.get(id(entry))
+        if pos is None or pos >= len(self._levels):
+            return None
+        return self._levels[pos]
+
+    def _sort_rows(self, rows):
+        if self.order_index is not None:
+            return sorted(rows, key=lambda entry: self.order_index.get(
+                entry.get("w", ""), len(self.order_index)))
+        return sorted(rows, key=lambda entry: word_caption(entry).casefold())
+
+    def set_order(self, entries, preserve_order=False):
+        self.order_index = ({entry.get("w", ""): index
+                             for index, entry in enumerate(entries)}
+                            if preserve_order else None)
         self.refilter()
 
     def set_scale(self, scale):
@@ -301,6 +326,7 @@ class WordTableModel(QAbstractTableModel):
                     continue
                 rows.append(entry)
             self.rows = rows
+        self.rows = self._sort_rows(self.rows)
         self._row_meta_dirty = True
         self.endResetModel()
 
@@ -561,12 +587,12 @@ class BookCatalog(QWidget):
             self.level_header.refresh_badge()
 
     # ------------------------------------------------------------------
-    def set_book(self, book_id, path, entries, states, known=None):
+    def set_book(self, book_id, path, entries, states, known=None, preserve_order=False):
         self.book_id = book_id
         self.path_label.setText(path)
         self.search.clear()
         self.model.category = "all"
-        self.model.set_entries(entries, states, known)
+        self.model.set_entries(entries, states, known, preserve_order=preserve_order)
         self.set_filter("all")
         self.table.scrollToTop()
         self._invalidate_rows()

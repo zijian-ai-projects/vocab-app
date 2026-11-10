@@ -41,13 +41,13 @@ class V134Suite(base.Suite):
         w.open_settings()
         self.check(w.btn_edge_collapse.isCheckable() and not w.btn_edge_collapse.isChecked(),
                    key + "保存的关闭偏好与可勾选设置立即同步")
-        self.check(w.btn_edge_collapse.text() == "贴边收起：关", "开关明确显示关闭状态")
+        self.check(w.btn_edge_collapse.text() == "小窗贴边收起：关", "开关明确显示关闭状态")
         labels = [x.text() for x in w.settings_body.findChildren(QLabel)]
         buttons = [x.text() for x in w.settings_body.findChildren(QPushButton)]
         self.check("背景" in labels and "背景风格" not in labels, "标题为背景")
         self.check("恢复默认" not in buttons and not hasattr(w, "btn_defaults"),
                    "恢复默认控件不存在而非仅隐藏")
-        self.check([x.text() for x in w.size_chips.values()] == ["小巧", "标准", "大窗"],
+        self.check([x.text() for x in w.size_chips.values()] == ["小窗", "标准", "大窗"],
                    "窗口预设只显示名称")
         self.check(not any(re.search(r"\d+\s*[×x]\s*\d+", x.text() + x.toolTip())
                            for x in list(w.size_chips.values()) + [w.btn_edge_collapse]),
@@ -225,7 +225,7 @@ class V134Suite(base.Suite):
         with patch.object(base.storage, "atomic_save", side_effect=failing_window):
             w._set_edge_collapse(False)
             self.check(not w.window_ctl.edge_collapse_enabled and not w.btn_edge_collapse.isChecked()
-                       and w.btn_edge_collapse.text() == "贴边收起：关"
+                       and w.btn_edge_collapse.text() == "小窗贴边收起：关"
                        and w.btn_edge_collapse.property("on") == "0",
                        "窗口保存失败不抛Qt槽异常，偏好与按钮仍同步当前关闭状态")
             self.check("窗口设置暂未保存" in w.lab_storage.text()

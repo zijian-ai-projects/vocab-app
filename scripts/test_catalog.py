@@ -103,20 +103,20 @@ def main():
         entries = [bank_map[word] for word in words if word in bank_map]
         check(len(entries) == 16331, "真实最大词书 cgcf-all = %d 词" % len(entries))
 
-        # entries 文案：待学习 / 0 · 待学习 / 10 · 已掌握 / 1-9 保留 Lv n · 认识
+        # entries 文案：待学习 / Lv1 · 认识 / Lv10 · 已掌握；0 不显示 Lv/分隔点
         check(dict(entry_mod.CATEGORIES).get("unlearned") == "待学习",
               "CATEGORIES unlearned 显示「待学习」")
-        check(entry_mod.memory_info("x", {}, set()) == ("unlearned", 0, "0 · 待学习"),
-              "未学习 -> 0 · 待学习")
+        check(entry_mod.memory_info("x", {}, set()) == ("unlearned", 0, "待学习"),
+              "未学习 -> 待学习")
         check(entry_mod.memory_info("x", {"x": {"st": "learning", "lv": 0, "seen": 2}},
-                                    set())[2] == "0 · 待学习",
-              "待重现 -> 0 · 待学习")
+                                    set())[2] == "待学习",
+              "待重现 -> 待学习")
         check(entry_mod.memory_info("x", {"x": {"st": "learning", "lv": 3}},
-                                    set()) == ("known", 3, "Lv 3 · 认识"),
-              "等级1-9 -> Lv n · 认识")
+                                    set()) == ("known", 3, "Lv3 · 认识"),
+              "等级1-9 -> LvN · 认识")
         check(entry_mod.memory_info("x", {"x": {"st": "mastered", "lv": 10}},
-                                    set()) == ("mastered", 10, "10 · 已掌握"),
-              "等级10 -> 10 · 已掌握")
+                                    set()) == ("mastered", 10, "Lv10 · 已掌握"),
+              "等级10 -> Lv10 · 已掌握")
         check(entry_mod.memory_info("x", {}, {"x"}) == ("known", None, "认识 · 测试估计"),
               "测试估计仍是认识、不是真实等级")
 
@@ -131,17 +131,17 @@ def main():
         known_before = {"seen1", "lapse1", "seen0", "bad", "estimate"}
         known_copy = set(known_before)
         check(entry_mod.memory_info("seen1", evidence_states, known_copy)
-              == ("unlearned", 0, "0 · 待学习"),
-              "seen1 新词 + 测试估计 -> 0 · 待学习（估计不覆盖实际作答）")
+              == ("unlearned", 0, "待学习"),
+              "seen1 新词 + 测试估计 -> 待学习（估计不覆盖实际作答）")
         check(entry_mod.memory_info("lapse1", evidence_states, known_copy)
-              == ("unlearned", 0, "0 · 待学习"),
-              "lapse1 新词 + 测试估计 -> 0 · 待学习")
+              == ("unlearned", 0, "待学习"),
+              "lapse1 新词 + 测试估计 -> 待学习")
         check(entry_mod.memory_info("seen0", evidence_states, known_copy)
               == ("known", None, "认识 · 测试估计"),
               "seen0 未作答 + 测试估计 -> known,None（不伪造等级）")
         check(entry_mod.memory_info("seen0", evidence_states, set())
-              == ("unlearned", 0, "0 · 待学习"),
-              "seen0 未作答且无估计 -> 0 · 待学习")
+              == ("unlearned", 0, "待学习"),
+              "seen0 未作答且无估计 -> 待学习")
         check(entry_mod.memory_info("bad", evidence_states, known_copy)
               == ("known", None, "认识 · 测试估计"),
               "seen/lapse 非法计数安全按 0 处理，不崩")
@@ -443,7 +443,15 @@ def main():
         bar = catalog_widget.table.verticalScrollBar()
         bar.setValue(bar.maximum())
         pump(0.10)
-        long_row = catalog_widget.model.rowCount() - 1
+        # 默认词频排序后长行不再保证在末尾；按稳定 entry key 找实际 model 行。
+        long_matches = [i for i, item in enumerate(catalog_widget.model.rows)
+                        if item.get("w") == long_word]
+        check(bool(long_matches), "长行 entry 仍在 model 中")
+        long_row = long_matches[0] if long_matches else 0
+        catalog_widget.table.scrollTo(
+            catalog_widget.model.index(long_row, 0),
+            QAbstractItemView.PositionAtCenter)
+        pump(0.12)
         row_h = catalog_widget.table.rowHeight(long_row)
         width = catalog_widget._text_width(1)
         fm = QFontMetrics(catalog_widget._font())

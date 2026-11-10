@@ -134,7 +134,12 @@ class V133Suite(base.Suite):
         self.check(w.sel_order == "shuffle" and w.chip_shuffle.property("on") == "1", "先乱序再点词书仍明确选中乱序")
         QTest.mouseClick(w.btn_catalog_books, Qt.LeftButton)
         base.pump()
-        self.check([row["w"] for row in w.catalog.model.rows] == expected, "确认前浏览目录已按所选稳定乱序展示")
+        ranks = {row["w"]: row.get("frq", 0) for row in base.WORDS}
+        catalog_expected = sorted(expected, key=lambda key: ranks[key])
+        self.check([row["w"] for row in w.catalog.model.rows] == catalog_expected,
+                   "确认前浏览目录按词频默认排序展示")
+        self.check([row["w"] for row in w.catalog.model.rows] != expected,
+                   "目录排序与学习乱序分离，不再误用学习顺序")
         self.check(Path(self.sb.progress_path).read_bytes() == before, "未确认前不改原学习进度")
         QTest.keyClick(w, Qt.Key_Escape)
         QTest.mouseClick(w.btn_learn, Qt.LeftButton)

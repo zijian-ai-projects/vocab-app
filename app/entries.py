@@ -74,15 +74,15 @@ def memory_info(key, states, known=None):
     except (TypeError, ValueError):
         level = 0
     if status in ("mastered", "retired") or level >= 10:
-        return "mastered", 10, "10 · 已掌握"
+        return "mastered", 10, "Lv10 · 已掌握"
     if status == "known":
         return "known", None, "认识 · 旧版已会"
     if level > 0 and status != "new":
-        return "known", level, "Lv %d · 认识" % level
+        return "known", level, "Lv%d · 认识" % level
     # 与 StudyQueue._has_answer 一致的实际作答证据：seen/lapse 合法计数 >0。
     # 用户实际答错/等待重现的新词不能被测试估计覆盖成「认识」。
     if state and (_count(state.get("seen")) or _count(state.get("lapse"))):
-        return "unlearned", 0, "0 · 待学习"
+        return "unlearned", 0, "待学习"
     if key in (known or ()):
         return "known", None, "认识 · 测试估计"
-    return "unlearned", 0, "0 · 待学习"
+    return "unlearned", 0, "待学习"

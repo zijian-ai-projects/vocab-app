@@ -308,8 +308,9 @@ check(w.queue_words[0]["w"] == bk.words("cet6-all")[0],
       "顺序书从数据第一个词开始：%s" % w.queue_words[0]["w"])
 
 # ---- 10. 学习：认识 / 释义 / 选错了跳下一个 ----
-check(w.btn_remember.text() == "认识" and w.btn_forget.text() == "不认识",
-      "学习按钮是「认识 / 不认识」：%s / %s" % (w.btn_remember.text(), w.btn_forget.text()))
+check(w.btn_remember.text() == w._key_caption("认识", "remember")
+      and w.btn_forget.text() == w._key_caption("不认识", "forget"),
+      "学习按钮是「认识 / 不认识」并附键位提示：%s / %s" % (w.btn_remember.text(), w.btn_forget.text()))
 first = w.queue[w.qi]["w"]["w"]
 qi0 = w.qi
 w.act("remember")

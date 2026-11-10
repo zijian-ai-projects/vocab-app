@@ -179,6 +179,7 @@ def make_subject(session=True, answered=False, index=0, count=1, history_count=1
     # 新的 _quiz_show 布局 hook 不属于事务：纯夹具仅提供无副作用 UI 接口。
     subject._ui_scale = lambda: 1.0
     subject._fit_choice_options = lambda scale: None
+    subject._refresh_key_hints = lambda: None  # 视觉键位提示由 test_v136_ui 覆盖
     subject.quiz_page = types.SimpleNamespace(
         verticalScrollBar=lambda: types.SimpleNamespace(setValue=lambda value: None))
     subject.btn_skip.text = "跳过本次测试"

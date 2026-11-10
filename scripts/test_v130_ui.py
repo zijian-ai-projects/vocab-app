@@ -433,7 +433,12 @@ class Suite:
         self.aliases(w)
 
     def choices_and_keyboard(self):
-        w = self.card(progress(study_mode="choice"))
+        w = self.card(progress(study_mode="choice", input_mode="keyboard"))
+        self.check(w.apply_key_bindings({"unknown": "5", "next": "Right"}) is True,
+                   "旧5未知/Right下一题通过自定义键位保持Legacy语义")
+        self.check(w.input_mode == "keyboard" and w.key_bindings["unknown"] == "5"
+                   and w.key_bindings["next"] == "Right",
+                   "choice键盘fixture显式应用Legacy自定义键")
         q = w.choice_question
         self.check(w.mode == "choice" and not w.compact and len(w.study_btns) == 4, "choice 正常窗四释义按钮")
         self.check(w.status.isHidden() and w.choice_hint.isHidden() and w.choice_hint.text() == "",
@@ -474,9 +479,11 @@ class Suite:
         self.check(w.choice_hint.isHidden() and w.status.isHidden(), "下一题无遗留反馈或状态HUD")
         QTest.mouseClick(w.btn_study_dk, Qt.LeftButton)
         self.check(w.states["bravo"]["lv"] == 0 and w.choice_locked, "真实第五按钮提交不认识")
-        QTest.keyClick(w, Qt.Key_Return)
-        QTest.keyClick(w, Qt.Key_0)
-        self.check(key_of(w) == "charlie" and w.states["charlie"]["lv"] == 0, "Return 下一题/0键不认识")
+        QTest.keyClick(w, Qt.Key_Right)
+        QTest.keyClick(w, Qt.Key_5)
+        self.check(key_of(w) == "charlie" and w.states["charlie"]["lv"] == 0, "Right 下一题/5键不认识")
+        self.check(w.btn_study_dk.text().startswith("不认识  [5]"),
+                   "自定义5未知键同步到按钮提示")
         self.aliases(w)
 
     def mode_switch(self, answered):
@@ -634,7 +641,7 @@ class Suite:
         states["charlie"]["seen"] = 1
         w = self.card(progress(states=states))
         w.known.update(("charlie", "delta"))
-        self.check(memory_info("charlie", w.states, w.known) == ("unlearned", 0, "0 · 待学习"),
+        self.check(memory_info("charlie", w.states, w.known) == ("unlearned", 0, "待学习"),
                    "task22 实际new/lv0/seen1优先测试known，不把答错新词估计为认识")
         w.open_settings()
         w.open_catalog(BOOK)
@@ -642,9 +649,9 @@ class Suite:
         self.check(dict(CATEGORIES)["unlearned"] == "待学习" and c.filter_chips["unlearned"].text().startswith("待学习 "),
                    "待学习分类取代未学习，统计chip用同一文案")
         texts = {row["w"]: c.model.data(c.model.index(i, 2), Qt.DisplayRole) for i, row in enumerate(c.model.rows)}
-        self.check(texts["alpha"] == texts["foxtrot"] == "10 · 已掌握"
-                   and texts["charlie"] == texts["echo"] == "0 · 待学习" and texts["bravo"] == "Lv 2 · 认识",
-                   "真实目录0/待重现/10退休标签精确一致，1-9保留Lv认识")
+        self.check(texts["alpha"] == texts["foxtrot"] == "Lv10 · 已掌握"
+                   and texts["charlie"] == texts["echo"] == "待学习" and texts["bravo"] == "Lv2 · 认识",
+                   "真实目录Lv10/待学习文案标签精确一致，1-9保留Lv认识")
         self.check(memory_info("delta", w.states, w.known) == ("known", None, "认识 · 测试估计")
                    and memory_info("golf", w.states, w.known) == ("known", None, "认识 · 旧版已会"),
                    "测试估计和旧版已会仍无真实等级，不误标0待学习")
@@ -868,8 +875,8 @@ class Suite:
                    "设置页已删除记录位置/尺寸限制/学习模式小字提示")
         self.check(not hasattr(w, "mode_note") or not w.mode_note.isVisibleTo(w),
                    "学习模式小字提示控件已移除")
-        self.check({button.text() for button in w.size_chips.values()} == {"小巧", "标准", "大窗"},
-                   "三个窗口chip只显示名称，不显示尺寸数字")
+        self.check({button.text() for button in w.size_chips.values()} == {"小窗", "标准", "大窗"},
+                   "三个窗口chip只显示小窗/标准/大窗，不显示尺寸数字")
         self.check("背景" in labels and "背景风格" not in labels
                    and "恢复默认" not in buttons and not hasattr(w, "btn_defaults"),
                    "背景标题简化且恢复默认控件彻底移除")
@@ -897,7 +904,7 @@ class Suite:
             pump()
             QTest.mouseClick(w.btn_edge_collapse, Qt.LeftButton)
             self.check(not w.window_ctl.edge_collapse_enabled and not w.btn_edge_collapse.isChecked()
-                       and w.btn_edge_collapse.text() == "贴边收起：关",
+                       and w.btn_edge_collapse.text() == "小窗贴边收起：关",
                        "真实贴边收起按钮关闭并同步状态")
             QTest.mouseClick(w.btn_edge_collapse, Qt.LeftButton)
             self.check(w.window_ctl.edge_collapse_enabled and w.btn_edge_collapse.isChecked()

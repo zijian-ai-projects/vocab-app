@@ -180,8 +180,9 @@ QPushButton#bar { color: %(bar)s; background: transparent; padding: 0; font-size
 QPushButton#bar:hover { background: %(bar_hover_bg)s; color: %(bar_hover)s; }
 QPushButton#link { color: %(link)s; background: transparent; padding: 0 8px; font-size: 13px; }
 QPushButton#link:hover { color: %(bar_hover)s; }
-QPushButton#close { color: %(close)s; background: transparent; padding: 0; font-size: 16px; }
-QPushButton#close:hover { color: %(close_hover)s; }
+QPushButton#close { color: %(close)s; background: transparent; padding: 0; font-size: 16px; border: 1px solid transparent; border-radius: 5px; }
+QPushButton#close:hover { color: %(close_hover)s; background: %(bar_hover_bg)s; border-color: %(border)s; }
+QPushButton#close:pressed { color: %(fg_word)s; background: %(btn_pressed)s; border-color: %(border)s; }
 QPushButton#opt {
     background: %(opt_bg)s; color: %(opt_fg)s; border-radius: 12px;
     text-align: left; padding-left: 16px; font-size: 15px;

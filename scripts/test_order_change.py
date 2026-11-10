@@ -297,6 +297,7 @@ class OrderChangeTests(unittest.TestCase):
 
     def test_catalog_order_and_refilter_are_stable_without_committing_selection(self):
         w = self.card(fixture())
+        queue_before = [x["w"] for x in w.queue_words]
         self.books_page(w)
         self.row(w, A)
         self.click(w.chip_shuffle)
@@ -304,10 +305,15 @@ class OrderChangeTests(unittest.TestCase):
         self.click(w.btn_catalog_books)
         expected = shuffled(KEYS, 42)
         self.assertEqual([x["w"] for x in w.catalog.model.entries], expected)
+        ranks = {row["w"]: row.get("frq", 0) for row in WORDS}
+        catalog_expected = sorted(expected, key=lambda key: ranks[key])
         w.catalog.model.refilter(category="unlearned", query="")
-        self.assertEqual([x["w"] for x in w.catalog.model.rows], expected)
+        self.assertEqual([x["w"] for x in w.catalog.model.rows], catalog_expected)
         w.catalog.model.refilter(category="all", query="a")
-        self.assertEqual([x["w"] for x in w.catalog.model.rows], [k for k in expected if "a" in k])
+        self.assertEqual([x["w"] for x in w.catalog.model.rows],
+                         [k for k in catalog_expected if "a" in k])
+        self.assertEqual([x["w"] for x in w.queue_words], queue_before,
+                         "目录频率排序/筛选不能改未确认前的学习队列")
         self.assertEqual(self.sb.read_progress(), before)
 
     def test_cursor_tail_then_prefix_scan_never_loses_or_repeats_new_words(self):
