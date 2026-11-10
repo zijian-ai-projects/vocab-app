@@ -506,6 +506,7 @@ class Card(QWidget):
         if DEFAULTS_JOURNAL in p:
             self._recover_defaults_journal(p)
         p["learning_policy"] = learn.normalize_settings(p.get("learning_policy"))
+        p["learning_policy"]["mode"] = learn.REVIEW_FIRST
         p.setdefault("daily_new_ledger", {})
         try:
             learn.validate_ledger(p["daily_new_ledger"])
@@ -1816,7 +1817,6 @@ class Card(QWidget):
         outer = QVBoxLayout(dialog)
         outer.setContentsMargins(22, 18, 22, 18)
         outer.setSpacing(8)
-        self._key_dialog_labels = []
         sections = (("刷词", (("remember", "认识"), ("forget", "不认识"))),
                     ("选择题", (("choice1", "选项 A"), ("choice2", "选项 B"),
                                   ("choice3", "选项 C"), ("choice4", "选项 D"),

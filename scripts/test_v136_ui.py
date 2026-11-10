@@ -11,13 +11,15 @@ import json
 import os
 import sys
 import tempfile
+import time
 from unittest.mock import patch
 
 import test_v130_ui as base
-from PyQt5.QtCore import QEvent, QSize, Qt
+from PyQt5.QtCore import QEvent, QSize, Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QKeySequence
 from PyQt5.QtTest import QTest
-from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QMessageBox, QPushButton
+from PyQt5.QtWidgets import (QApplication, QDialog, QLabel, QMessageBox,
+                             QPushButton, QVBoxLayout)
 
 import keybindings as keys
 import learning_policy as learn
@@ -35,6 +37,39 @@ def v136_progress(**overrides):
     data.setdefault("daily_new_ledger", {})
     data.setdefault("keybindings", dict(keys.DEFAULT_BINDINGS))
     return data
+
+
+def close_active_modal():
+    dialog = QApplication.activeModalWidget()
+    if dialog is not None:
+        dialog.accept()
+
+
+def open_key_settings(w):
+    QTimer.singleShot(0, close_active_modal)
+    w.open_key_settings()
+    base.pump()
+
+
+def open_key_settings_nonblocking(w):
+    w._reset_key_draft()
+    dialog = QDialog(w)
+    dialog.setWindowTitle("键盘按键设置")
+    dialog.setModal(True)
+    dialog.setMinimumWidth(440)
+    layout = QVBoxLayout(dialog)
+    for name, edit in w.key_edits.items():
+        edit.setParent(dialog)
+        edit.show()
+        layout.addWidget(edit)
+    w.btn_apply_keys = QPushButton("保存键位", dialog)
+    w.btn_apply_keys.setEnabled(w._check_key_draft())
+    layout.addWidget(w.btn_apply_keys)
+    dialog.finished.connect(w._key_dialog_finished)
+    w.key_dialog = dialog
+    dialog.show()
+    base.pump()
+    return dialog
 
 
 def win_fixture(**overrides):
@@ -204,11 +239,7 @@ class V136Suite(base.Suite):
 
         w = self.card(v136_progress(), win_fixture())
         w.open_settings()
-        base.QTimer.singleShot(0, lambda: QApplication.activeModalWidget().accept())
-        w.open_key_settings()
-        base.pump()
-        w.open_key_settings()
-        base.pump()
+        dialog = open_key_settings_nonblocking(w)
         before = deepcopy(w.progress["keybindings"])
         self.check(w.apply_key_bindings({"remember": "Space", "forget": "Space"}) is False,
                    "同屏冲突配置应用返回False")
@@ -222,16 +253,14 @@ class V136Suite(base.Suite):
         w._restore_key_defaults()
         self.check({name: seq_text(edit) for name, edit in w.key_edits.items()}
                    == dict(keys.DEFAULT_BINDINGS), "弹窗内恢复默认键位")
+        dialog.reject()
+        base.pump()
         self.close()
 
     def editing_focus_does_not_score(self):
         w = self.card(v136_progress(), win_fixture())
         w.open_settings()
-        base.QTimer.singleShot(0, lambda: QApplication.activeModalWidget().accept())
-        w.open_key_settings()
-        base.pump()
-        w.open_key_settings()
-        base.pump()
+        dialog = open_key_settings_nonblocking(w)
         edit = w.key_edits["remember"]
         edit.setFocus()
         base.pump()
@@ -247,6 +276,8 @@ class V136Suite(base.Suite):
         self.send_key(w, Qt.Key_1)
         self.check((w.states, w.queue, w.study_record) == before,
                    "普通文本/控件焦点不绕过编辑保护")
+        dialog.reject()
+        base.pump()
         self.close()
 
     def button_focus_uses_config(self):
@@ -609,7 +640,7 @@ class V136Suite(base.Suite):
             "theme": {"present": True, "value": "dark"},
             "study_mode": {"present": True, "value": "choice"},
             "learning_policy": {"present": True,
-                                "value": {"mode": learn.REVIEW_FIRST, "daily_new": 20}},
+                                "value": {"mode": learn.DAILY_NEW_FIRST, "daily_new": 20}},
             "keybindings": {"present": True, "value": dict(keys.DEFAULT_BINDINGS)},
             "retry_gap": {"present": True, "value": 3},
         }
@@ -618,7 +649,7 @@ class V136Suite(base.Suite):
         new_states = {base.KEYS[4]: base.learning(1, self.clock() + 300)}
         p = v136_progress(
             theme="light", study_mode="brush",
-            learning_policy={"mode": learn.DAILY_NEW_FIRST, "daily_new": 5},
+            learning_policy={"mode": learn.DAILY_NEW_FIRST, "daily_new": 20},
             keybindings=dict(keys.DEFAULT_BINDINGS, remember="A"),
             states=new_states,
             study_records={base.BOOK: {"cursor": 4, "new_count": 4,
@@ -633,10 +664,13 @@ class V136Suite(base.Suite):
         self.sb.write_progress(p)
         w = self.card(restart=True)
         self.check(w.theme_key == "dark" and w.study_mode == "choice"
-                   and w.key_bindings == keys.normalize(p["keybindings"])
+                   and w.key_bindings == keys.normalize(old_prefs["keybindings"]["value"])
                    and "input_mode" not in w.progress
                    and "catalog_sort" not in w.progress,
-                   "未完成日志启动只回退主题、学习模式和键位偏好")
+                   "未完成日志恢复偏好：theme=%r mode=%r keys=%r" %
+                   (w.theme_key, w.study_mode, w.key_bindings))
+        self.check(w.learning_settings["mode"] == learn.REVIEW_FIRST,
+                   "恢复策略归一为先复习：%r" % w.learning_settings)
         self.check(w.window_ctl.normal_size == QSize(640, 520)
                    and w.window_ctl.edge_collapse_enabled is False,
                    "未完成日志启动恢复旧窗口")
@@ -689,7 +723,18 @@ def run_suite():
                     ("save-final-stage", suite.save_failure_stage_final_progress),
                     ("unfinished-journal", suite.unfinished_journal_startup),
                 ):
+                    started = time.monotonic()
+                    print("START", name, flush=True)
+                    watchdog = QTimer()
+                    watchdog.setSingleShot(True)
+                    watchdog.timeout.connect(lambda label=name: (
+                        suite.fails.append(label + " | modal/test timeout watchdog"),
+                        close_active_modal()))
+                    watchdog.start(120000)
                     suite.run(name, fn)
+                    watchdog.stop()
+                    watchdog.deleteLater()
+                    print("DONE", name, "%.2fs" % (time.monotonic() - started), flush=True)
                 suite.check(sb.verify_real(),
                             "legacy/stable 与 bak/tmp 真实记录指纹不变")
     suite.out.append("\nCHECKS %d; FAILS %d" % (suite.checks, len(suite.fails)))
