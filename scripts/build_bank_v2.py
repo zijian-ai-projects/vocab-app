@@ -35,7 +35,29 @@ BANDS = 15
 # 手工修订：个别词的释义以这里为准（覆盖 ECDICT / 词书来源，重建后仍生效）
 OVERRIDES = {
     "encephalomyeloradiculitis": "脑脊髓神经根炎",
+    "adultery": "n.通奸，婚外性关系[法律]",
+    "climax": "n.高潮，顶点；v.达到顶点",
+    "coitus": "n.性交[医学]",
+    "dyspareunia": "n.性交疼痛[医学]",
+    "erotic": "adj.性爱的，情色的",
+    "extramarital": "adj.婚外的",
+    "genitalia": "n.生殖器[医学]",
     "intercourse": "n.交往，交流",
+    "orgasm": "n.性高潮[医学]；极度兴奋",
+    "penis": "n.阴茎[医学]",
+    "pornography": "n.色情作品，色情材料",
+    "prostitute": "n.卖淫者[法律]；vt.滥用，糟蹋",
+    "prostitution": "n.卖淫[法律]；滥用，糟蹋",
+    "rape": "n.强奸，强奸案[法律]；vt.强奸[法律]",
+    "rapist": "n.强奸犯[法律]",
+    "sex": "n.性别；性；性行为；vt.辨别…的性别",
+    "sexual": "adj.性的；性别的",
+    "vagina": "n.阴道[医学]",
+    "venereal": "adj.性病的[医学]",
+    "gay": "adj.同性恋的",
+    "homosexual": "adj.同性恋的；n.同性恋者",
+    "homosexuality": "n.同性恋",
+    "lesbian": "adj.女同性恋的；n.女同性恋者",
 }
 CJK = re.compile(r"[\u4e00-\u9fff]")
 ALIAS = re.compile(r"^.*?=\s*([a-z][a-z'\-]*)\s*$", re.I)
@@ -165,9 +187,6 @@ def build_entries(needed, rows, old, gloss, raw):
                 entry = {"w": w, "ipa": "", "pos": ["n."], "s": s,
                          "tags": [], "frq": 0, "collins": "", "raw": "",
                          "ph_raw": ""}
-            if w == "intercourse":
-                entry["pos"] = ["n."]
-                entry["raw"] = o.get("raw", "") if o else ""
             entries.append(entry)
             stat["reuse"] += 1
             continue
