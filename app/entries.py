@@ -3,6 +3,7 @@
 import re
 
 CATEGORIES = (("all", "全部"), ("mastered", "已掌握"),
+              ("predicted", "预测掌握"), ("learned", "已学习"),
               ("known", "认识"), ("unlearned", "待学习"))
 POS_RE = re.compile(r"^(?:n|v|vt|vi|adj|adv|prep|conj|pron|det|art|num|aux|int|interj|abbr)\.")
 
@@ -65,8 +66,8 @@ def _count(value, default=0):
         return default
 
 
-def memory_info(key, states, known=None):
-    """返回 (分类, 真实记忆等级或None, 显示文字)。测试估计不是记忆等级。"""
+def memory_info(key, states, known=None, predicted=None):
+    """返回 (分类, 真实等级或None, 标签)；预测永不伪造真实等级。"""
     state = states.get(key) or {}
     status = state.get("st")
     try:
@@ -79,10 +80,13 @@ def memory_info(key, states, known=None):
         return "known", None, "认识 · 旧版已会"
     if level > 0 and status != "new":
         return "known", level, "Lv%d · 认识" % level
-    # 与 StudyQueue._has_answer 一致的实际作答证据：seen/lapse 合法计数 >0。
-    # 用户实际答错/等待重现的新词不能被测试估计覆盖成「认识」。
+    # Actual answer evidence and explicit states outrank all estimates.
     if state and (_count(state.get("seen")) or _count(state.get("lapse"))):
+        return "unlearned", 0, "待学习"
+    if state:
         return "unlearned", 0, "待学习"
     if key in (known or ()):
         return "known", None, "认识 · 测试估计"
+    if key in (predicted or ()):
+        return "predicted", None, "预测 · 已掌握"
     return "unlearned", 0, "待学习"

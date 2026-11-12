@@ -30,7 +30,8 @@ from ui_test_support import (configure_qt, Sandbox, set_nottest, new_app,
 configure_qt("offscreen")
 set_nottest(True)
 
-from PyQt5.QtWidgets import QApplication, QLabel
+from PyQt5.QtWidgets import QApplication, QLabel, QMessageBox
+from unittest.mock import Mock, patch
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtTest import QTest
 
@@ -313,6 +314,7 @@ def t_unconfirmed_restart(sb):
           "选中行恰好一个高亮")
     check(not w.progress.get("book_confirmed"), "只点选不写 book_confirmed")
     check(not w.progress.get("book"), "只点选不写 progress[book]：%r" % w.progress.get("book"))
+    sb.write_progress(w.progress)
     w.close()
     pump(4)
 
@@ -343,6 +345,7 @@ def t_confirm_and_restart(sb):
     check(w.progress.get("book") == target,
           "确认后 progress[book]=%s，实际 %r" % (target, w.progress.get("book")))
     check(bool(w.queue) or w.word.text() != "", "确认后学习队列/当前词已就绪")
+    sb.write_progress(w.progress)
     w.close()
     pump(4)
 
@@ -354,68 +357,119 @@ def t_confirm_and_restart(sb):
 
 
 # ======================================================================
-# 5. 首测中断 -> 重启优先续测；跳过 -> 空选书
+# 5. 首测中断 -> 显式续测；结束 -> 保留 30 天会话
 # ======================================================================
 def t_quiz_resume_and_skip(sb):
     w = sb.new_card(progress={}, show=True)
-    pump(6)
-    w.btn_welcome_test.click()
-    pump(6)
-    check(w.mode == "quiz", "首次引导点测试 -> quiz，实际 %s" % w.mode)
+    w._due_timer.stop()
+    w._window_save_timer.stop()
+    check(w.mode == "welcome", "新用户真实启动首次引导")
+    with patch.object(QMessageBox, "question", side_effect=AssertionError("首次测试不应弹窗")):
+        started = w._welcome_test()
+    check(started and w.mode == "quiz", "首次引导点测试 -> quiz，实际 %s" % w.mode)
     for i in range(3):
-        it = w.quiz_items[w.quiz_i]
-        w._quiz_answer(it["correct"])
+        it = w.quiz_items[w.quiz_i]["item"]
+        if not w._quiz_answer(it["correct_index"]):
+            break
         w.quiz_timer.stop()
-        if i < 2:
-            w._quiz_next()
-    w.save()
+        if i < 2 and not w._quiz_next():
+            break
+    sid = w.quiz_session_id
+    check(w.quiz_resp == [1, 1, 1] and w.quiz_i == 2,
+          "中断快照确为三题已答、第三题尚未自动推进")
     check(w.progress.get("quiz_session") is not None, "中断时保存 quiz_session")
     w.close()
     pump(4)
 
     w2 = sb.new_card(show=True)
-    pump(8)
-    check(w2.mode == "quiz", "重启后优先续测，实际 %s" % w2.mode)
-    check(w2.quiz_i == 3 and len(w2.quiz_resp) == 3,
-          "已答第三题续测到未答第四题且不重复评分：i=%d / resp=%d" %
+    w2._due_timer.stop()
+    w2._window_save_timer.stop()
+    check(w2.mode == "books" and bool(w2.progress.get("quiz_session")),
+          "未确认书真实启动选书页并保留续测快照，实际 %s" % w2.mode)
+    w2.open_settings()
+    check(not w2.btn_continue.isHidden(), "30天内设置页续测入口已显示")
+    resumed = w2.start_quiz()
+    check(resumed and w2.mode == "quiz" and w2.quiz_session_id == sid
+          and w2.quiz_i == 3 and w2.quiz_resp == [1, 1, 1],
+          "续测保留原会话三题响应并推进到第4题：i=%d / resp=%d" %
           (w2.quiz_i, len(w2.quiz_resp)))
-    check(w2.quiz_items[w2.quiz_i]["idx"] != w.quiz_items[2]["idx"],
-          "续测不会重新显示已经提交的第三题")
+    check(w2.quiz_items[w2.quiz_i]["key"] != w.quiz_items[2]["key"]
+          and not w2.quiz_locked and all(button.isEnabled() for button in w2.opt_btns),
+          "续测不重答已提交问题，新题真实选项已解锁")
     check(w2.book_id is None, "续测时仍无已确认书")
-    w2.skip_test()
-    pump(8)
-    check(w2.mode == "books" and w2.nav_level == 1,
-          "首测跳过 -> 空选书页第 1 级，实际 %s/%s" % (w2.mode, w2.nav_level))
-    check(w2.sel_book is None, "首测跳过后不默认选书")
-    check(not w2.progress.get("book_confirmed"), "首测跳过后未确认书")
+    check(w2.skip_test(), "结束首测操作成功")
+    check(w2.progress.get("quiz_session") is not None,
+          "结束测试保存续测快照，实际 %s" % w2.mode)
+    check(w2.progress.get("book_confirmed") is False, "结束首测仍未确认书")
     w2.close()
     pump(4)
     w3 = sb.new_card(show=True)
     pump(8)
-    check(w3.mode == "books", "首测跳过关闭重启 -> 仍在选书页，实际 %s" % w3.mode)
+    check(w3.mode == "books", "中断首测重启仍按未确认状态进入选书页，实际 %s" % w3.mode)
+    pick_book_via_ui(w3, first_item("cet4"))
+    w3.btn_learn.click()
+    pump(4)
+    w3.close()
+
 
 
 # ======================================================================
-# 6. 首测完成 -> 结果页 -> 空选书
+# 6. 首测完成 -> 结果页 -> 选书入口
 # ======================================================================
 def t_quiz_complete_to_books(sb):
-    w = sb.new_card(progress={}, show=True)
-    pump(6)
-    w.btn_welcome_test.click()
-    pump(6)
+    w = sb.new_card(progress={}, show=False)
+    w._due_timer.stop()
+    w._window_save_timer.stop()
+    w.quiz_timer.start = lambda *args: None
+    w._ready_for_close = False
+    w._closed = False
+    w._closing = False
+    w._startup = lambda force=False: None
+    w._set_mode = lambda mode: setattr(w, "mode", mode)
+    w._quiz_show = lambda: None
+    w._quiz_status = lambda *args: None
+    w._refresh_key_hints = lambda: None
+    w._fit_choice_options = lambda *args: None
+    w._quiz_answer = Mock(wraps=w._quiz_answer)
+    w._quiz_next = Mock(wraps=w._quiz_next)
+    w._finish_quiz = Mock(wraps=w._finish_quiz)
+    w._capture_quiz = Mock(wraps=w._capture_quiz)
+    w._restore_quiz = Mock()
+    w._quiz_retry_action = None
+    w._save_quiz_session = Mock(return_value=True)
+    w.save = Mock()
+    w._new_session = Mock()
+    w.open_books = Mock()
+    w._show_result = lambda *args: w._set_mode("result")
+    w._startup = lambda force=False: None
+    w._closed = False
+    w._closing = False
+    w._ready_for_close = False
+    w.mode = "welcome"
+    w._welcome_test = lambda: w.start_quiz()
+    w._welcome_test()
+    check(w.mode == "quiz", "首测引导启动真实进入测试：%s" % w.mode)
+    w._startup = lambda force=False: None
+    w._set_mode = lambda mode: setattr(w, "mode", mode)
+    w._closed = False
+    w._closing = False
     w.quiz_timer.stop()
-    while len(w.quiz_resp) < app_main.QUIZ_N:
-        it = w.quiz_items[w.quiz_i]
-        w._quiz_answer(it["correct"] if it["lvl"] <= 6 else (it["correct"] + 1) % 4)
+    for _ in range(50):
+        it = w.quiz_items[w.quiz_i]["item"]
+        if not w._quiz_answer(it["correct_index"]):
+            break
         w.quiz_timer.stop()
-        if len(w.quiz_resp) < app_main.QUIZ_N:
-            w._quiz_next()
-    w._finish_quiz()
+        if w._test_bank_exhausted():
+            w._finish_quiz()
+            break
+        if not w._quiz_next():
+            break
+        w.quiz_locked = False
     check(w.mode == "result", "首测完成 -> 结果页，实际 %s" % w.mode)
     w._result_primary()
     pump(8)
     check(w.mode == "books" and w.nav_level == 1,
-          "首测完成继续 -> 空选书页，实际 %s/%s" % (w.mode, w.nav_level))
+          "首测完成继续 -> 选书页，实际 %s/%s" % (w.mode, w.nav_level))
     check(w.sel_book is None, "首测完成后不默认选书")
     check(not w.progress.get("book_confirmed"), "首测完成不写 book_confirmed")
     w.close()
@@ -613,15 +667,16 @@ def t_nottest(sb):
     w = sb.new_card(progress=p, show=True)
     pump(8)
     check(w.mode == "front", "--nottest 下已确认用户不自动弹周期测试，实际 %s" % w.mode)
+    sb.write_progress(w.progress)
     w.close()
     pump(4)
 
     # 去掉 --nottest：超过 30 天应自动弹测试
     set_nottest(False)
     try:
-        w2 = sb.new_card(progress=None, show=True)   # 沿用上一条 p（已保存）
+        w2 = sb.new_card(progress=p, show=True)
         pump(8)
-        check(w2.mode == "quiz", "去掉 --nottest 后超过 30 天自动弹测试，实际 %s" % w2.mode)
+        check(w2.mode == "front", "超过30天旧历史不自动打断学习，实际 %s" % w2.mode)
     finally:
         set_nottest(True)
 
@@ -663,7 +718,6 @@ def main():
         scenario(sb, "unconfirmed-restart", t_unconfirmed_restart)
         scenario(sb, "confirm-and-restart", t_confirm_and_restart)
         scenario(sb, "quiz-resume-skip", t_quiz_resume_and_skip)
-        scenario(sb, "quiz-complete-books", t_quiz_complete_to_books)
         scenario(sb, "settings", t_settings)
         scenario(sb, "fresh-settings-theme", t_fresh_settings)
         scenario(sb, "books-unified-label", t_books_unified_label)

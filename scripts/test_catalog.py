@@ -28,12 +28,13 @@ if os.name == "nt" and os.path.isdir(_font_dir):
     os.environ.setdefault("QT_QPA_FONTDIR", _font_dir)
 set_nottest(True)
 
-from PyQt5.QtCore import Qt, QPoint, QTimer
+from PyQt5.QtCore import Qt, QPoint, QRect, QTimer
 from PyQt5.QtGui import QFontMetrics, QColor, QImage, QPainter, QRegion, QPalette
 from PyQt5.QtTest import QTest, QSignalSpy
 from PyQt5.QtWidgets import (QApplication, QDialog, QHeaderView, QLabel,
                              QPushButton, QAbstractItemView, QWidget,
-                             QStyle, QStyleOptionViewItem)
+                             QStyle, QStyleOptionViewItem, QStyleOptionButton,
+                             QStyleOptionFrame)
 
 app = new_app(sys.argv)
 out = []
@@ -83,6 +84,184 @@ def render_cell(table, index, focused=False):
     finally:
         painter.end()
     return image
+
+
+def button_fill(button, extra_state=QStyle.State_None):
+    """Render the actual control's QSS, retaining focus/hover and semantic state."""
+    option = QStyleOptionButton()
+    option.initFrom(button)
+    option.rect = button.rect()
+    option.text = ""
+    option.state |= extra_state
+    if button.isChecked():
+        option.state |= QStyle.State_On
+    if button.isDown():
+        option.state |= QStyle.State_Sunken
+    image = QImage(button.size(), QImage.Format_ARGB32)
+    image.fill(Qt.transparent)
+    painter = QPainter(image)
+    try:
+        button.style().drawControl(QStyle.CE_PushButton, option, painter, button)
+    finally:
+        painter.end()
+    return image.pixelColor(image.width() // 2, image.height() // 2)
+
+
+def control_geometry(c, label):
+    """Toolbar rects are always visible; a table header is reachable by real scrolling."""
+    bar = c.table.horizontalScrollBar()
+    previous_scroll = bar.value()
+    badge = c.level_header.badge
+    needs_scroll = not c.level_header.viewport().rect().contains(badge.geometry())
+    if needs_scroll and bar.maximum() > 0:
+        # Large fonts may legitimately make table columns wider than the viewport.
+        # Exercise the real scrollbar rather than shrinking/hiding the level control.
+        QTest.keyClick(bar, Qt.Key_End)
+        pump(0.01)
+        check(bar.value() == bar.maximum(), label + " 真实水平滚动可访问等级表头")
+    widgets = list(c.filter_chips.values()) + [
+        c.path_label, c.search, c.select_mode_button, c.table, badge]
+    if c.model.selection_mode:
+        widgets += [c.select_filtered_button, c.bulk_learn_button, c.selection_hint]
+    rect_errors, text_errors = [], []
+    for widget in widgets:
+        name = widget.text() if hasattr(widget, "text") else type(widget).__name__
+        if not widget.isVisible() or widget.width() <= 0 or widget.height() <= 0:
+            rect_errors.append((name, "hidden/empty"))
+        ancestor = widget.parentWidget()
+        while ancestor is not None:
+            rect = QRect(widget.mapTo(ancestor, QPoint()), widget.size())
+            if not ancestor.rect().contains(rect):
+                rect_errors.append((name, type(ancestor).__name__, repr(rect)))
+            ancestor = ancestor.parentWidget()
+        fm = QFontMetrics(widget.font())
+        if isinstance(widget, QPushButton):
+            option = QStyleOptionButton()
+            option.initFrom(widget)
+            option.rect = widget.rect()
+            content = widget.style().subElementRect(
+                QStyle.SE_PushButtonContents, option, widget)
+            needed = fm.size(Qt.TextSingleLine, widget.text())
+            if needed.width() > content.width() or needed.height() > content.height():
+                text_errors.append((name, repr(content), repr(needed)))
+        elif isinstance(widget, QLabel):
+            content = widget.contentsRect()
+            needed = fm.boundingRect(content, Qt.TextWordWrap | Qt.AlignLeft,
+                                     widget.text())
+            if needed.width() > content.width() or needed.height() > content.height():
+                text_errors.append((name, repr(content), repr(needed)))
+        elif widget is c.search:
+            option = QStyleOptionFrame()
+            widget.initStyleOption(option)
+            content = widget.style().subElementRect(QStyle.SE_LineEditContents,
+                                                    option, widget)
+            if fm.horizontalAdvance(widget.placeholderText()) > content.width():
+                text_errors.append(("search placeholder", repr(content)))
+    buttons = [widget for widget in widgets if isinstance(widget, QPushButton)]
+    for i, left in enumerate(buttons):
+        left_rect = QRect(left.mapTo(c, QPoint()), left.size())
+        for right in buttons[i + 1:]:
+            if left_rect.intersects(QRect(right.mapTo(c, QPoint()), right.size())):
+                rect_errors.append((left.text(), right.text(), "overlap"))
+    check(not rect_errors, label + " 全部控件矩形完整可见且无重叠：%r" % rect_errors)
+    check(not text_errors, label + " 完整中文标签/路径/搜索/操作说明无裁切：%r" % text_errors)
+    check(c.table.viewport().width() > 0 and c.table.viewport().height() >= 40,
+          label + " 模型表格仍保留可用视口")
+    if bar.value() != previous_scroll:
+        bar.setValue(previous_scroll)
+        pump(0.01)
+
+
+def click_controls(c, label):
+    """Real clicks must preserve legitimate cross-group activation and selected keys."""
+    c.search.clear()
+    c.set_filter("all")
+    c.set_selection_mode(False)
+    c.model.selected_keys.clear()
+    pump(0.02)
+    check(len(c.filter_controls.findChildren(QPushButton)) == len(c.filter_chips)
+          == len(c._category_labels)
+          and len({key for key, _ in c._category_labels}) == len(c._category_labels),
+          label + " 过滤 key/按钮一一对应，无旧按钮被字典覆盖")
+    control_geometry(c, label + "/浏览")
+    QTest.mouseClick(c.select_mode_button, Qt.LeftButton)
+    pump(0.02)
+    check(c.model.selection_mode and c.select_mode_button.isChecked()
+          and c.select_mode_button.property("on") == "1"
+          and c.filter_chips["all"].isChecked(),
+          label + " 选择与过滤为独立功能组，可合法同时启用")
+    control_geometry(c, label + "/选择")
+    # A real checkbox click still works despite the no-current/focus delegate.
+    index = c.model.index(0, 0)
+    option = QStyleOptionViewItem()
+    option.initFrom(c.table)
+    option.rect = c.table.visualRect(index)
+    c.table.itemDelegate().initStyleOption(option, index)
+    indicator = c.table.style().subElementRect(QStyle.SE_ItemViewItemCheckIndicator,
+                                              option, c.table)
+    QTest.mouseClick(c.table.viewport(), Qt.LeftButton, Qt.NoModifier, indicator.center())
+    pump(0.01)
+    check(c.model.rows[0]["w"] in c.model.selected_keys,
+          label + " 真实鼠标点击词条复选框可选词")
+    keys_before = set(c.model.selected_keys)
+    errors = []
+    for key, button in c.filter_chips.items():
+        QTest.mouseClick(button, Qt.LeftButton)
+        pump(0.01)
+        # Move/click outside: native focus/hover is not a second persistent selection.
+        QTest.mouseMove(c.search, c.search.rect().center())
+        QTest.mouseClick(c.search, Qt.LeftButton)
+        pump(0.01)
+        selected = [k for k, b in c.filter_chips.items() if b.isChecked()]
+        styled = [k for k, b in c.filter_chips.items() if b.property("on") == "1"]
+        if selected != [key] or styled != [key] or c.model.category != key:
+            errors.append((key, selected, styled, c.model.category))
+        for other_key, other in c.filter_chips.items():
+            expected = QColor(c.theme["chip_sel" if other_key == key else "chip_bg"])
+            if button_fill(other) != expected:
+                errors.append((key, other_key, "outside fill", button_fill(other).name()))
+            if other_key != key:
+                if button_fill(other, QStyle.State_HasFocus) != QColor(c.theme["chip_bg"]):
+                    errors.append((key, other_key, "focus resembles selection"))
+                if button_fill(other, QStyle.State_MouseOver) != QColor(c.theme["chip_hover"]):
+                    errors.append((key, other_key, "hover resembles selection"))
+        if (not c.model.selection_mode or not c.select_mode_button.isChecked()
+                or c.model.selected_keys != keys_before):
+            errors.append((key, "selection lost"))
+    check(not errors, label + " 各过滤真实点击/外部点击后唯一状态及绘制正确：%r" % errors)
+    QTest.mouseClick(c.filter_chips["known"], Qt.LeftButton)
+    pump(0.01)
+    filtered_keys = {entry["w"] for entry in c.model.rows}
+    QTest.mouseClick(c.select_filtered_button, Qt.LeftButton)
+    pump(0.01)
+    check(c.model.selected_keys == keys_before | filtered_keys,
+          label + " 批量选择只新增当前筛选，并保留其它筛选已选词")
+    spy = QSignalSpy(c.bulk_learn_requested)
+    QTest.mouseClick(c.bulk_learn_button, Qt.LeftButton)
+    QTest.mouseClick(c.search, Qt.LeftButton)
+    pump(0.01)
+    check(len(spy) == 1 and set(spy[0][0]) == c.model.selected_keys,
+          label + " 加入学习真实点击仅发出所选 key")
+    check(not c.select_filtered_button.isCheckable()
+          and not c.bulk_learn_button.isCheckable()
+          and button_fill(c.select_filtered_button) == QColor(c.theme["chip_bg"])
+          and button_fill(c.bulk_learn_button) == QColor(c.theme["chip_bg"])
+          and button_fill(c.select_mode_button) == QColor(c.theme["chip_sel"]),
+          label + " 外部点击后动作不持续亮，有效选择模式仍亮")
+    QTest.mouseClick(c.select_mode_button, Qt.LeftButton)
+    pump(0.01)
+    check(not c.model.selection_mode and c.select_mode_button.property("on") == "0"
+          and c.model.selected_keys == keys_before | filtered_keys
+          and not c.select_filtered_button.isVisible() and not c.bulk_learn_button.isVisible(),
+          label + " 退出选择模式仅隐藏动作，不丢失已选词")
+    c.search.setFocus()
+    QTest.keyClicks(c.search, "beta")
+    pump(0.01)
+    check(c.model.query == "beta" and all(entry["w"] == "beta" for entry in c.model.rows)
+          and c.filter_chips["known"].isChecked(),
+          label + " 搜索与过滤独立、真实键入有效")
+    c.search.clear()
+    c.set_filter("all")
 
 
 def main():
@@ -137,14 +316,14 @@ def main():
               == ("unlearned", 0, "待学习"),
               "lapse1 新词 + 测试估计 -> 待学习")
         check(entry_mod.memory_info("seen0", evidence_states, known_copy)
-              == ("known", None, "认识 · 测试估计"),
-              "seen0 未作答 + 测试估计 -> known,None（不伪造等级）")
+              == ("unlearned", 0, "待学习"),
+              "任何显式 scheduler state 优先于预测掌握")
         check(entry_mod.memory_info("seen0", evidence_states, set())
               == ("unlearned", 0, "待学习"),
               "seen0 未作答且无估计 -> 待学习")
         check(entry_mod.memory_info("bad", evidence_states, known_copy)
-              == ("known", None, "认识 · 测试估计"),
-              "seen/lapse 非法计数安全按 0 处理，不崩")
+              == ("unlearned", 0, "待学习"),
+              "任何显式 scheduler state 优先于预测掌握")
         check(evidence_states == states_before and known_copy == known_before,
               "memory_info 纯只读，不修改 states/known")
         check(len(catalog.LEVEL_LINES) == 11 and catalog.level_lines() is catalog.LEVEL_LINES,
@@ -640,6 +819,31 @@ def main():
         catalog_widget.set_scale(1.6)
         pump(0.03)
 
+        # Toolbar regression: all presets plus narrower than the actual Card.
+        toolbar_entries = [{"w": key, "s": "完整中文释义 " + key}
+                           for key in ("alpha", "beta", "delta", "gamma")]
+        toolbar_states = {"beta": {"st": "learning", "lv": 1},
+                          "gamma": {"st": "mastered", "lv": 10}}
+        scenes = [(width, height, min(width / app_main.CARD_W,
+                                      height / app_main.CARD_H), name)
+                  for width, height, name in app_main.WINDOW_PRESETS]
+        scenes += [(320, 430, 1.0, "窄320"), (360, 430, 1.0, "窄360"),
+                   (360, 720, 1.6, "窄360/最大字号")]
+        for theme_key in catalog.th.ORDER:
+            for width, height, scale, name in scenes:
+                catalog_widget.set_palette(catalog.th.get(theme_key))
+                catalog_widget.set_scale(scale)
+                catalog_widget.resize(width, height)
+                catalog_widget.set_book("toolbar", "实用 · 词根词缀 · 英语词汇的奥秘",
+                                        toolbar_entries, copy.deepcopy(toolbar_states),
+                                        set(), predicted={"delta"})
+                pump(0.03)
+                check(catalog_widget.width() == width and catalog_widget.height() == height,
+                      "%s/%s 不靠拉大窗口掩盖裁切" % (theme_key, name))
+                click_controls(catalog_widget, "%s/%s" % (theme_key, name))
+        catalog_widget.set_scale(1.6)
+        catalog_widget.resize(900, 600)
+
         # 真实 Card 主题样式（不是独立 widget）：单条极长中文/英文 + search 仅一条
         # 复现 memory-engine 的 CatalogCard 场景，验证不再 48/long 自触发振荡。
         card = sb.new_card(progress={
@@ -683,6 +887,37 @@ def main():
             out.append("      CARD %s scale=%.1f height=%d viewport=%d calls=%d" %
                        (theme_key, scale, c.table.rowHeight(0),
                         c.table.viewport().height(), calls))
+        # Actual Card uses the real largest book, margins, title and theme cascade.
+        # No replacement window or fake standalone top bar hides integration clipping.
+        for theme_key in catalog.th.ORDER:
+            card.set_theme(theme_key)
+            card.open_catalog("cgcf-all")
+            pump(0.03)
+            for width, height, name in app_main.WINDOW_PRESETS:
+                # Real windowing intentionally clamps presets to the work area
+                # (offscreen may be only 800x600); toolbar layout must not enlarge it.
+                area = card.window_ctl._work_area_for(card.window_ctl._logical_pos())
+                expected = (min(width, area.width()), min(height, area.height()))
+                card._apply_window_size(width, height)
+                pump(0.03)
+                check((card.width(), card.height()) == expected,
+                      "Card %s/%s 预设/工作区尺寸保持 %dx%d（实际 %dx%d）" %
+                      (theme_key, name, expected[0], expected[1], card.width(), card.height()))
+                for selecting in (False, True):
+                    card.catalog.set_selection_mode(selecting)
+                    pump(0.02)
+                    control_geometry(card.catalog, "Card %s/%s/%s" %
+                                     (theme_key, name, "选择" if selecting else "浏览"))
+            card._apply_window_size(520, 430)
+            # Keep bulk business writes outside this UI contract test; real signal
+            # delivery is checked with QSignalSpy, records remain under Sandbox.
+            card.catalog.set_book("toolbar-card", "真实 Card · 词书内容",
+                                  toolbar_entries, copy.deepcopy(toolbar_states),
+                                  set(), predicted={"delta"})
+            pump(0.03)
+            if theme_key == catalog.th.ORDER[0]:
+                card.catalog.bulk_learn_requested.disconnect(card._bulk_learn_selected)
+            click_controls(card.catalog, "Card %s/小窗真实点击" % theme_key)
         card.close()
         card = None
         pump(0.05)

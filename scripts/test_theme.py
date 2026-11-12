@@ -64,7 +64,9 @@ V133_STABLE_HASHES = {
     "sepia": "8218c84f6bb83a82046721221ccb660ba8024b225af285ab36c69c41ef33687e",
     "green": "f2ccbdb09f8e42f03662bbdffd119d3ba9bc31401e480cf64fa005852b1fdedf",
 }
-V133_QSS_HASH = "5ccca39d4ac748b6b7c352fa21e4e4f6eae462b6b4c9a854707ef5f8d805a3f2"
+# QSS baseline from committed V1.3.6 (1967ecc); unlike the palette hashes,
+# the older V1.3.3 QSS digest predates the current close-button rules.
+V136_QSS_HASH = "cb5762c930089186167f7f75d0f9c40867583255ae5d757b4b2ac6d6cf0aa1a0"
 V133_DK = {
     "light": {"dk_bg": "#ece4d7", "dk_hover": "#e3d7c5", "dk_fg": "#705431",
               "dk_pick": "#dcccb4", "dk_pick_fg": "#694d2c"},
@@ -336,6 +338,10 @@ def import_fixture_main(sb):
     return app_main, (old_data, old_books_data)
 
 
+def is_unknown_caption(text):
+    return re.fullmatch(r"不认识(?:  \[[^\]\r\n]+\])?", text) is not None
+
+
 def check_dk_group(buttons, palette, label):
     """验证三个实际或独立控件的全部状态；不点击，不改变答题/进度。"""
     saved = [(button, button.property("state"), button.isEnabled()) for _, button in buttons]
@@ -347,8 +353,8 @@ def check_dk_group(buttons, palette, label):
         check(all(button.objectName() == "dontknow" for _, button in buttons),
               "%s 三处 objectName 同为 dontknow：%r" %
               (label, [(context, button.objectName()) for context, button in buttons]))
-        check(all(button.text() == "不认识" for _, button in buttons),
-              "%s 三处按钮文字同为不认识" % label)
+        check(all(is_unknown_caption(button.text()) for _, button in buttons),
+              "%s 三处基础文字同为不认识，热键提示格式合法" % label)
         check(all(button.palette().color(QPalette.Active, QPalette.ButtonText) == QColor(palette["dk_fg"])
                   for _, button in buttons), "%s 三处 normal 前景同为 dk_fg" % label)
         scale = max(1.0, min(1.6, buttons[0][1].font().pixelSize() / 15.0))
@@ -525,8 +531,8 @@ def main():
             check(th.QSS.count(DK_PRESSED_RULE) == 1 and "QPushButton#dk" not in th.QSS,
                   "三处只共用既有 #dontknow；pressed 一条规则，不新造 #dk CSS")
             base_qss = th.QSS.replace(DK_PRESSED_RULE, "")
-            check(hashlib.sha256(base_qss.encode("utf-8")).hexdigest() == V133_QSS_HASH,
-                  "去除新增 DK pressed 规则后原 QSS 与 V133 完全相同（字号/留白/反馈/其他控件）")
+            check(hashlib.sha256(base_qss.encode("utf-8")).hexdigest() == V136_QSS_HASH,
+                  "去除 DK pressed 规则后 QSS 与已提交 V136 基线完全相同（字号/留白/反馈/其他控件）")
 
             for theme_key in th.ORDER:
                 palette = th.get(theme_key)
@@ -662,9 +668,14 @@ def main():
                           and card.btn_next.palette().color(QPalette.ButtonText) == QColor(palette["btn_fg"]),
                           "%s 实际 Card 正常/认识按钮原配色保持" % theme_key)
                     buttons = tuple(zip(DK_CONTEXTS, (card.btn_forget, card.btn_study_dk, card.btn_dontknow)))
-                    found = [button for button in card.findChildren(QPushButton) if button.text() == "不认识"]
+                    found = [button for button in card.findChildren(QPushButton)
+                             if is_unknown_caption(button.text())]
                     check(set(found) == {button for _, button in buttons},
                           "%s 全 Card 的不认识入口恰为已确认三处，无漏用其他颜色入口" % theme_key)
+                    expected = ["不认识  [%s]" % app_main.keys.caption(card.key_bindings[action])
+                                for action in ("forget", "unknown", "unknown")]
+                    check([button.text() for _, button in buttons] == expected,
+                          "%s 三处热键提示精确对应实际配置" % theme_key)
                     samples.append((theme_key, check_dk_group(buttons, palette, "CARD " + theme_key)))
                     check(card.catalog.theme is palette and card.catalog.model.palette is palette,
                           "%s Card -> catalog 主题 API 保持同步" % theme_key)

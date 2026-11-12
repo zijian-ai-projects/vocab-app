@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
-"""词汇量测试：难度模型 + 阶梯自适应抽题 + 4 选 1 干扰项 + 能力估计 + 逐词掌握概率。
-
-词汇量测试（v1.1，阶梯自适应）：
-    大词库按难度分 15 档（每档约 1,015 词，lvl 存在 bank.json）
-    从档 0 开始；连对 2 题升 1 档、连错 2 题降 1 档、单个对/错留在同档换词
-    前 8 题"快速定位"：连对 2 题升 2 档；第一次答错后恢复正常 1 档
-    50 题后沿用 3PL（猜测率 1/4）网格极大似然估 θ，词汇量 = Σ σ(θ−b)
-"""
+"""V1.4 placement core: Bayesian ability estimation and deterministic sampling."""
+import hashlib
 import math
 import random
 import re
+from functools import lru_cache
+from heapq import nsmallest
 
 GUESS = 0.25
-SCALE = 0.9          # 词频分位 -> logit 的缩放
+SCALE = 0.9
 CLAMP = 3.2
-KNOWN_THRESHOLD = 0.55   # 掌握概率高于这个就当已会，不进学习队列
+KNOWN_THRESHOLD = 0.55
 BANDS = 15
 TOP_LEVEL = BANDS - 1
-FAST_N = 8               # 前 8 题快速定位
+FAST_N = 8
+NO_ANSWER = "没有正确答案"
+GRID_MIN = -6.0
+GRID_MAX = 6.0
+GRID_STEP = 0.02
+PRIOR_SD = 2.0
+TRAP_PROB = 0.25
 
 
 def sigmoid(x):
@@ -29,15 +31,14 @@ def sigmoid(x):
 
 
 def build_profile(words):
-    """给每个词算难度 b（旧接口，仍用于少量离线脚本）。"""
     n = len(words)
-    order = sorted(range(n), key=lambda i: (words[i].get("frq") or 10 ** 9, words[i]["w"]))
+    if not n:
+        return []
+    order = sorted(range(n), key=lambda i: (words[i].get("frq") or 10 ** 9, words[i].get("w", "")))
     bs = [0.0] * n
     for pos, idx in enumerate(order):
-        q = (pos + 0.5) / n
-        q = min(max(q, 0.01), 0.99)
-        b = math.log(q / (1 - q)) * SCALE
-        bs[idx] = max(-CLAMP, min(CLAMP, b))
+        q = min(max((pos + 0.5) / n, 0.01), 0.99)
+        bs[idx] = max(-CLAMP, min(CLAMP, math.log(q / (1 - q)) * SCALE))
     return bs
 
 
@@ -50,106 +51,139 @@ def p_know(theta, b):
 
 
 def sample_items(bs, k=50, seed=None):
-    """旧接口：按难度分位均匀抽题（v1.0 用；保留给离线模拟）。"""
     rng = random.Random(seed)
     n = len(bs)
+    if n == 0 or k <= 0:
+        return []
     order = sorted(range(n), key=lambda i: bs[i])
-    picked, seen = [], set()
-    for j in range(k):
-        q = 0.12 + (0.98 - 0.12) * j / max(1, k - 1)
-        idx = order[min(n - 1, int(n * q))]
-        if idx not in seen:
-            seen.add(idx)
-            picked.append(idx)
-    while len(picked) < k:
-        idx = rng.randrange(n)
-        if idx not in seen:
-            seen.add(idx)
-            picked.append(idx)
-    rng.shuffle(picked)
-    return picked
+    if k >= n:
+        result = list(order)
+        rng.shuffle(result)
+        return result
+    points = [min(n - 1, int(n * (0.12 + 0.86 * j / max(1, k - 1)))) for j in range(k)]
+    selected = list(dict.fromkeys(order[j] for j in points))
+    remaining = [i for i in order if i not in set(selected)]
+    rng.shuffle(remaining)
+    selected.extend(remaining[:k - len(selected)])
+    rng.shuffle(selected)
+    return selected
 
 
-NO_ANSWER = "没有正确答案"
+def _sense(word):
+    text = str(word.get("s") or word.get("raw") or "").strip()
+    return _sense_text(text)
 
 
-def make_options(words, idx, rng, bs=None, trap_prob=0.3):
-    """三个释义 + 一个「没有正确答案」。
+@lru_cache(maxsize=65536)
+def _sense_text(text):
+    # Cache by text, not by the mutable word record: editing a meaning naturally
+    # gets a new cache key. The bounded cache keeps repeated questions cheap.
+    text = re.sub(r"^[a-z]{1,6}\.\s*", "", text, flags=re.I)
+    # Keep concise senses and discard duplicate/empty fragments.
+    parts = re.split(r"[;；]|\s*/\s*|[。]", text)
+    unique = []
+    for part in parts:
+        part = part.strip(" ，,、")
+        if part and part not in unique:
+            unique.append(part)
+        if len(unique) == 2:
+            break
+    return "；".join(unique)
 
-    有 30% 的题是陷阱题：三个释义全是错的，正确选项就是「没有正确答案」。
-    返回 (选项列表, 正确项下标)。
-    """
-    def fmt(w):
-        s = (w.get("s") or w.get("raw") or "").strip()
-        pos = (w.get("pos") or [])
-        # 卡面释义已经带词性前缀了（"adj.有益的…"），别再拼一次
-        if pos and not re.match(r"^[a-z]{1,6}\.", s):
-            return "%s %s" % (pos[0], s)
-        return s
 
-    word = words[idx]
-    correct = fmt(word)
-    trap = rng.random() < trap_prob
-    need = 3 if trap else 2
-    pos0 = (word.get("pos") or [""])[0]
-    b0 = bs[idx] if bs else 0.0
+def _stable_id(word, idx):
+    identity = str(word.get("w") or word.get("id") or idx)
+    return hashlib.sha256(identity.encode("utf-8")).hexdigest()[:16]
 
-    pool, back = [], []
-    for j, w in enumerate(words):
+
+def make_item(words, idx, rng=None, bs=None, trap_prob=TRAP_PROB):
+    """Return stable keyed options A-D, or None if three plausible options cannot be built."""
+    if idx < 0 or idx >= len(words):
+        return None
+    rng = rng or random.Random(0)
+    target = words[idx]
+    correct_sense = _sense(target)
+    if not correct_sense:
+        return None
+    target_id = _stable_id(target, idx)
+    pos = target.get("pos") or []
+    pos0 = pos[0] if pos else ""
+    target_b = bs[idx] if bs is not None and idx < len(bs) else 0.0
+    senses = {}
+    for j, word in enumerate(words):
         if j == idx:
             continue
-        s = fmt(w)
-        if not s or s == correct or s == NO_ANSWER:
+        sense = _sense(word)
+        if not sense or sense == correct_sense or sense == NO_ANSWER:
             continue
-        same_pos = pos0 and pos0 in (w.get("pos") or [])
-        near = abs((bs[j] if bs else 0.0) - b0) <= 0.8
-        (pool if (same_pos and near) else back).append(s)
-
-    rng.shuffle(pool)
-    rng.shuffle(back)
-    distract = []
-    for s in pool + back:
-        if s == correct or s in distract:
-            continue
-        if distract and s[0] == correct[0] and len(distract) < need:
-            continue
-        distract.append(s)
-        if len(distract) == need:
-            break
-
+        sid = _stable_id(word, j)
+        senses.setdefault(sense, (sid, word, j))
+    candidates = nsmallest(24, senses.values(), key=lambda row: (
+        0 if pos0 and pos0 in (row[1].get("pos") or []) else 1,
+        abs((bs[row[2]] if bs is not None and row[2] < len(bs) else 0.0) - target_b), row[0]))
+    if len(candidates) < 2:
+        return None
+    # Avoid semantic duplicates and ambiguous senses that collide after normalization.
+    candidates = candidates[:max(2, min(len(candidates), 24))]
+    trap = rng.random() < trap_prob
+    distractor_count = 3 if trap else 2
+    if len(candidates) < distractor_count:
+        return None
+    distractors = candidates[:]
+    rng.shuffle(distractors)
+    chosen = distractors[:distractor_count]
     if trap:
-        opts = distract + [NO_ANSWER]
-        correct_idx = len(opts) - 1
+        payloads = [(_sense(row[1]), row[0]) for row in chosen]
     else:
-        opts = distract + [correct, NO_ANSWER]
-        correct_idx = len(opts) - 2
+        payloads = [(correct_sense, target_id)] + [(_sense(row[1]), row[0]) for row in chosen]
+    # Three answer positions are A-C; D always means no correct answer.
+    rng.shuffle(payloads)
+    option_records = []
+    correct_index = -1
+    for slot, (text, item_id) in zip("ABC", payloads):
+        option_records.append({"key": slot, "text": text, "item_id": item_id})
+        if not trap and item_id == target_id:
+            correct_index = len(option_records) - 1
+    option_records.append({"key": "D", "text": NO_ANSWER, "item_id": "none"})
+    if trap:
+        correct_index = 3
+    return {"item_id": target_id, "word": str(target.get("w") or ""),
+            "options": option_records, "correct_key": "ABCD"[correct_index],
+            "correct_index": correct_index, "trap": trap}
 
-    order = list(range(len(opts)))
-    rng.shuffle(order)
-    shuffled = [opts[i] for i in order]
-    return shuffled, order.index(correct_idx)
+
+def make_options(words, idx, rng, bs=None, trap_prob=TRAP_PROB):
+    """Compatibility API returning four option strings and correct numeric index."""
+    item = make_item(words, idx, rng, bs, trap_prob)
+    if item is None:
+        return None, None
+    return [option["text"] for option in item["options"]], item["correct_index"]
 
 
-# ---------- 阶梯自适应 ----------
 def new_session(seed=None):
-    """一次测试的阶梯状态。"""
-    return {"level": 0, "up": 0, "down": 0, "fast": True,
+    return {"level": 0, "up": 0, "down": 0, "wrong_streak": 0, "fast": True,
             "asked": [], "resp": [], "seed": seed if seed is not None else 0}
 
 
-def step(sess, correct, answered):
-    """按阶梯规则更新状态；answered = 含这道题在内已答题数。返回新的 level。"""
+def step(sess, correct, answered, response=None):
+    """Update level and rigor-like streak state; unknown pauses rather than clears streak."""
+    if response is None:
+        response = 1 if correct else 0
+    if response < 0:
+        return sess["level"]
     if correct:
-        sess["up"] += 1
+        sess["up"] = min(105, sess.get("up", 0) + 1)
         sess["down"] = 0
+        sess["wrong_streak"] = 0
         if sess["up"] >= 2:
-            up_step = 2 if (sess["fast"] and answered <= FAST_N) else 1
-            sess["level"] = min(TOP_LEVEL, sess["level"] + up_step)
+            inc = 2 if sess.get("fast", False) and answered <= FAST_N else 1
+            sess["level"] = min(TOP_LEVEL, sess["level"] + inc)
             sess["up"] = 0
-            if sess["fast"] and answered >= FAST_N:
+            if answered >= FAST_N:
                 sess["fast"] = False
     else:
-        sess["down"] += 1
+        sess["wrong_streak"] = min(12, sess.get("wrong_streak", 0) + 1)
+        sess["down"] = sess["wrong_streak"]
         sess["up"] = 0
         sess["fast"] = False
         if sess["down"] >= 2:
@@ -158,47 +192,75 @@ def step(sess, correct, answered):
     return sess["level"]
 
 
-def pick_idx(lvls, level, asked, rng):
-    """在当前难度档里随机挑一个没做过的词；档抽空了就往相邻档扩。"""
-    asked = set(asked)
-    for d in range(BANDS):
-        for lv in (level + d, level - d):
-            if 0 <= lv < BANDS:
-                cand = [i for i, x in enumerate(lvls) if x == lv and i not in asked]
-                if cand:
-                    return cand[rng.randrange(len(cand))]
-    return rng.randrange(len(lvls))
+def update_rigor(rigor, response):
+    """Apply bounded V1.4 rigor updates; unknown answers do not alter rigor."""
+    if response < 0:
+        return float(rigor)
+    if response:
+        delta = max(1.0, 1.5 / (1.0 + max(0.0, float(rigor) - 50.0) / 20.0))
+    else:
+        delta = -min(12.0, 3.0 + max(0, min(11, int(rigor // 10))))
+    return max(0.0, min(105.0, float(rigor) + delta))
+
+
+def pick_idx(lvls, level, asked, rng, bs=None, theta=0.0):
+    """Choose a unique item by nearest band, then Fisher information; exhaustion is None."""
+    seen = set(asked)
+    candidates = [i for i, band in enumerate(lvls) if i not in seen]
+    if not candidates:
+        return None
+    band_distance = min(abs(lvls[i] - level) for i in candidates)
+    candidates = [i for i in candidates if abs(lvls[i] - level) == band_distance]
+    if bs is not None:
+        candidates.sort(key=lambda i: (-(p_correct(theta, bs[i]) * (1 - p_correct(theta, bs[i]))), i))
+        best_info = p_correct(theta, bs[candidates[0]]) * (1 - p_correct(theta, bs[candidates[0]]))
+        candidates = [i for i in candidates if abs(p_correct(theta, bs[i]) * (1 - p_correct(theta, bs[i])) - best_info) < 1e-12]
+    candidates.sort()
+    # Deterministic for an RNG seed/state and independent of bank traversal order.
+    return candidates[rng.randrange(len(candidates))]
+
+
+def posterior(bs, responses, prior_sd=PRIOR_SD, grid_min=GRID_MIN, grid_max=GRID_MAX, grid_step=GRID_STEP):
+    """Fixed-grid posterior for correct=1, wrong=0, unknown=-1 (unknown contributes no likelihood)."""
+    if len(bs) != len(responses):
+        raise ValueError("bs and responses must have equal length")
+    if prior_sd <= 0 or grid_step <= 0 or grid_max < grid_min:
+        raise ValueError("invalid grid or prior")
+    grid = []
+    t = grid_min
+    while t <= grid_max + grid_step * 1e-9:
+        grid.append(round(t, 10))
+        t += grid_step
+    logw = []
+    for theta in grid:
+        ll = -(theta * theta) / (2 * prior_sd * prior_sd)
+        for b, response in zip(bs, responses):
+            if response < 0:
+                continue
+            p = min(max(p_correct(theta, b), 1e-12), 1 - 1e-12)
+            ll += math.log(p if response else 1 - p)
+        logw.append(ll)
+    top = max(logw)
+    weights = [math.exp(value - top) for value in logw]
+    total = sum(weights)
+    return grid, [weight / total for weight in weights]
+
+
+def _quantile(grid, weights, q):
+    target = q * sum(weights)
+    accumulated = 0.0
+    for value, weight in zip(grid, weights):
+        accumulated += weight
+        if accumulated >= target:
+            return value
+    return grid[-1]
 
 
 def estimate_theta(bs, responses):
-    """网格极大似然，返回 (theta, 标准误近似)。
-
-    responses: 1 = 答对；0 = 四选一答错（可能是蒙的）；-1 = 点了「不知道」
-    """
-    best, best_ll = 0.0, -1e18
-    lo, hi, step = -4.0, 4.0, 0.02
-    t = lo
-    while t <= hi + 1e-9:
-        ll = 0.0
-        for b, y in zip(bs, responses):
-            if y < 0:                      # 不知道：直接用「不会」的概率
-                q = min(max(1 - p_know(t, b), 1e-6), 1 - 1e-6)
-                ll += math.log(q)
-            else:
-                p = p_correct(t, b)
-                p = min(max(p, 1e-6), 1 - 1e-6)
-                ll += math.log(p) if y else math.log(1 - p)
-        if ll > best_ll:
-            best_ll, best = ll, t
-        t += step
-    # 信息量 -> 标准误
-    info = 0.0
-    for b in bs:
-        p = p_correct(best, b)
-        dp = (1 - GUESS) * p_know(best, b) * (1 - p_know(best, b))
-        info += (dp * dp) / max(p * (1 - p), 1e-9)
-    se = 1.0 / math.sqrt(info) if info > 0 else 9.9
-    return best, se
+    grid, weights = posterior(bs, responses)
+    mean = sum(t * p for t, p in zip(grid, weights))
+    variance = sum(p * (t - mean) ** 2 for t, p in zip(grid, weights))
+    return mean, math.sqrt(variance)
 
 
 def knowledge(bs, theta):
@@ -213,8 +275,26 @@ def vocab_at(bs, theta):
     return sum(p_know(theta, b) for b in bs)
 
 
+def vocab_posterior(bs, responses, bank_total=None):
+    """Posterior expected vocabulary and equal-tail 95% vocabulary interval.
+
+    `bank_total` may supply a precomputed plausible universe; when larger than the
+    sampled difficulty bank, its unseen mass is conservatively assigned b=CLAMP.
+    """
+    total = len(bs) if bank_total is None else max(len(bs), int(bank_total))
+    unseen = total - len(bs)
+    grid, weights = posterior(bs[:len(responses)], responses)
+    # All unseen terms use the same difficulty. Sum their mass once instead
+    # of evaluating the identical sigmoid for every word at every grid point.
+    # This preserves the existing posterior model while making UI work depend
+    # on the answered sample size, not on the size of the entire word bank.
+    vocab = [vocab_at(bs, theta) + unseen * p_know(theta, CLAMP) for theta in grid]
+    mean = sum(value * weight for value, weight in zip(vocab, weights))
+    return mean, _quantile(vocab, weights, 0.025), _quantile(vocab, weights, 0.975)
+
+
 def error_band(bs, theta, se):
-    """θ 的 ±1SE 对应的词数区间。"""
+    # Retain legacy API: a normal approximation around theta.
     return vocab_at(bs, theta - se), vocab_at(bs, theta + se)
 
 

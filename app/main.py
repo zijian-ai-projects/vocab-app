@@ -10,7 +10,7 @@ import sys, os, io, json, time, copy, math, random, warnings, traceback
 from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QRectF, QPointF, QRect, QLockFile, QEvent
 from PyQt5.QtGui import (QPainter, QColor, QPainterPath, QPen, QFont, QFontMetrics, QKeySequence)
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QPushButton,
-                             QHBoxLayout, QVBoxLayout, QGraphicsOpacityEffect,
+                             QHBoxLayout, QVBoxLayout, QButtonGroup, QGraphicsOpacityEffect,
                              QScrollArea, QSizePolicy, QLayout,
                              QMessageBox, QStyle, QStyleOptionButton,
                              QKeySequenceEdit, QLineEdit, QAbstractSpinBox,
@@ -22,6 +22,7 @@ DATA = os.path.join(ROOT, "data")
 sys.path.insert(0, HERE)
 import scheduler as sch
 import placement as pl
+import prediction as pred
 import theme as th
 import books as bk
 import storage
@@ -44,7 +45,7 @@ LEGACY_PROGRESS_PATHS = tuple(os.path.join(directory, "progress.json")
                               for directory in storage.legacy_dirs(ROOT))
 LEGACY_WIN_PATHS = tuple(os.path.join(directory, "_win.json")
                          for directory in storage.legacy_dirs(ROOT))
-VERSION = "1.3.6"
+VERSION = "1.4.0"
 DEFAULTS_JOURNAL = "_v136_defaults_pending"
 RESET_PREF_KEYS = ("theme", "study_mode", "retry_gap", "learning_policy",
                    "keybindings")
@@ -82,10 +83,10 @@ def mean_h(i, scale=1.0):
     f = QFont("Microsoft YaHei UI")
     f.setPixelSize(round(F_MEAN[i] * scale))
     return QFontMetrics(f).lineSpacing() * MEAN_LINES
-QUIZ_N = 50
-THRESHOLD = pl.KNOWN_THRESHOLD
-TEST_INTERVAL = 30 * 86400        # 每满 30 天再测一次
-SKIP_SNOOZE = 86400               # 跳过本次：明天再问
+ONBOARDING_PROMPT_N = 50
+PREDICTION_MIN_N = 50
+PREDICTION_MIN_RIGOR = 60
+RESUME_TTL = 30 * 86400
 LETTERS = "ABCD"
 
 # 教材「某个版本全选」是 UI 层现算的并集，books.py 里没有对应 id，
@@ -442,8 +443,17 @@ class Card(QWidget):
         self.level_meanings = level_meanings.load()
         self.bs = [x["b"] for x in self.bank]
         self.lvls = [x["lvl"] for x in self.bank]
+        self.bank_fingerprint = __import__("hashlib").sha256(
+            "\n".join(word["w"] for word in self.bank).encode("utf-8")).hexdigest()
         self.theta = self.progress.get("theta")
-        self.known = set()
+        self.prediction_data = self.progress.get("prediction_state")
+        if self.prediction_data is None:
+            self.prediction_data = pred.new_prediction_data()
+            self.progress["prediction_state"] = self.prediction_data
+        try:
+            pred.validate_prediction_data(self.prediction_data)
+        except ValueError as error:
+            raise storage.StorageError("预测掌握记录格式异常；原文件未清空。" + str(error))
         self._refresh_known()
         self.book_words = self._book_words(self.book_id)
         self.cursor = self.cursors.get(self.book_id, 0)
@@ -465,6 +475,17 @@ class Card(QWidget):
         self.quiz_locked = False
         self._quiz_retry_action = None
         self.rigor = 100.0
+        self.quiz_started_at = None
+        self.quiz_last_answer_at = None
+        self.quiz_session_id = None
+        self.quiz_prompt_shown = False
+        self.quiz_result = None
+        self.quiz_vocab_grid = None
+        self.quiz_bank_fingerprint = None
+        self.quiz_origin_welcome = False
+        self.quiz_return_to_settings = False
+        self.quiz_status_values = None
+        self.quiz_item_indices = {entry.get("w"): index for index, entry in enumerate(self.bank)}
         self.last_test = None
         self.quiz_timer = QTimer(self)
         self.quiz_timer.setSingleShot(True)
@@ -536,6 +557,11 @@ class Card(QWidget):
         if any(not isinstance(item, dict) or not isinstance(item.get("ts"), (int, float))
                or not isinstance(item.get("vocab"), (int, float)) for item in p.get("history", [])):
             raise storage.StorageError("词汇量测试历史条目异常；原文件未清空。")
+        if "prediction_state" in p:
+            try:
+                pred.validate_prediction_data(p["prediction_state"])
+            except ValueError as error:
+                raise storage.StorageError("预测掌握记录格式异常；原文件未清空。" + str(error))
         p["states"] = sch.migrate_states(p["states"], legacy=p.get("memory_schema") != 2)
         p["memory_schema"] = 2
         p["app_version"] = VERSION
@@ -585,6 +611,7 @@ class Card(QWidget):
         self.progress["app_version"] = VERSION
         self.progress["study_mode"] = self.study_mode
         self.progress["retry_gap"] = 3
+        self.progress["prediction_state"] = self.prediction_data
         storage.atomic_save(PROGRESS_PATH, self.progress)
 
     # ---------- 大词库 / 词书 ----------
@@ -721,28 +748,28 @@ class Card(QWidget):
         return out
 
     def _refresh_known(self):
-        """用最近一次测试的 θ 算「测试判定已会」的词（跨书共享）。"""
-        theta = self.progress.get("theta")
-        self.theta = theta
-        if theta is None:
-            self.known = set()
-            return
-        self.known = {w["w"] for w, b in zip(self.bank, self.bs)
-                      if pl.p_know(theta, b) >= pl.KNOWN_THRESHOLD}
+        """仅使用用户明确接受的预测词；历史 theta 不自动改变学习队列。"""
+        self.theta = self.progress.get("theta")
+        data = self.progress.get("prediction_state")
+        keys = data.get("selected", []) if isinstance(data, dict) else []
+        self.known = {key for key in keys if isinstance(key, str)} if isinstance(keys, list) else set()
 
     def _book_stats(self, book_id):
-        learned = mastered = known = 0
+        learned = mastered = known = predicted = 0
         words = self._book_word_strs(book_id)
         for key in words:
-            category, _, _ = memory_info(key, self.states, self.known)
+            category, _, _ = memory_info(key, self.states, None, self.known)
             if category == "mastered":
                 learned += 1
                 mastered += 1
+            elif category == "predicted":
+                known += 1
+                predicted += 1
             elif category == "known":
                 known += 1
                 if key in self.states:
                     learned += 1
-        return learned, known, mastered, len(words)
+        return learned, known, mastered, len(words), predicted
 
     # ---------- 当前词书实时队列；记忆状态在不同词书间共享 ----------
     def _make_engine(self):
@@ -1022,7 +1049,7 @@ class Card(QWidget):
         self.study_status.setToolTip("新词：首次学习；复习：到期词。")
         top.addWidget(self.study_status)
         top.addStretch(1)
-        self.btn_skip = QPushButton("跳过本次测试")
+        self.btn_skip = QPushButton("结束本次测试")
         self.btn_skip.setObjectName("link")
         self.btn_skip.setCursor(Qt.PointingHandCursor)
         self.btn_skip.clicked.connect(self.retry_or_skip)
@@ -1049,8 +1076,23 @@ class Card(QWidget):
         self._build_books()
         self._build_settings()
         self.catalog = BookCatalog(self)
+        self.catalog.bulk_learn_requested.connect(self._bulk_learn_selected)
         self.root.addWidget(self.catalog, 1)
         self.catalog.hide()
+        self.history_page = QWidget()
+        hv = QVBoxLayout(self.history_page)
+        hv.setContentsMargins(0, 0, 0, 0)
+        self.history_chart = ChartCanvas([])
+        hv.addWidget(self.history_chart)
+        self.history_scroll = QScrollArea()
+        self.history_scroll.setWidgetResizable(True)
+        self.history_rows = QWidget()
+        self.history_rows_layout = QVBoxLayout(self.history_rows)
+        self.history_rows_layout.addStretch(1)
+        self.history_scroll.setWidget(self.history_rows)
+        hv.addWidget(self.history_scroll, 1)
+        self.history_page.hide()
+        self.root.addWidget(self.history_page, 1)
         self._learning_buttons = ([self.btn_forget, self.btn_remember, self.btn_wrong, self.btn_next,
                                   self.btn_study_dk, self.btn_study_next, self.btn_dontknow, self.btn_skip]
                                  + self.study_btns + self.opt_btns)
@@ -1222,12 +1264,16 @@ class Card(QWidget):
             self.opt_btns.append(b)
 
         qv.addSpacing(2)
+        self.quiz_actions = QWidget()
+        actions = QHBoxLayout(self.quiz_actions)
+        actions.setContentsMargins(0, 0, 0, 0)
         self.btn_dontknow = QPushButton("不认识")
         self.btn_dontknow.setObjectName("dontknow")
-        self.btn_dontknow.setCursor(Qt.PointingHandCursor)
-        self.btn_dontknow.setMinimumHeight(38)
+        self.btn_dontknow.setMinimumHeight(self.btn_study_dk.minimumHeight())
+        self.btn_dontknow.setSizePolicy(self.btn_study_dk.sizePolicy())
         self.btn_dontknow.clicked.connect(lambda: self._quiz_answer(-1))
-        qv.addWidget(self.btn_dontknow)
+        actions.addWidget(self.btn_dontknow)
+        qv.addWidget(self.quiz_actions)
         qv.addStretch(1)
 
         self.quiz_page.setWidget(self.quiz_body)
@@ -1265,16 +1311,20 @@ class Card(QWidget):
         rv.addSpacing(4)
         links = QHBoxLayout()
         links.setSpacing(4)
-        self.btn_rebase = QPushButton("以这次结果重排学习队列")
+        self.btn_rebase = QPushButton("调整预测掌握")
         self.btn_rebase.setObjectName("link")
         self.btn_rebase.setCursor(Qt.PointingHandCursor)
-        self.btn_rebase.clicked.connect(self._rebase)
-        self.btn_retest = QPushButton("重新测试")
+        self.btn_rebase.clicked.connect(self._apply_prediction)
+        self.btn_retest = QPushButton("开始新的测试")
         self.btn_retest.setObjectName("link")
         self.btn_retest.setCursor(Qt.PointingHandCursor)
-        self.btn_retest.clicked.connect(self.start_quiz)
+        self.btn_retest.clicked.connect(self._confirm_new_quiz)
+        self.btn_continue_quiz = QPushButton("继续上次测试")
+        self.btn_continue_quiz.setObjectName("link")
+        self.btn_continue_quiz.clicked.connect(self.start_quiz)
         links.addStretch(1)
         links.addWidget(self.btn_rebase)
+        links.addWidget(self.btn_continue_quiz)
         links.addWidget(self.btn_retest)
         links.addStretch(1)
         rv.addLayout(links)
@@ -1635,22 +1685,20 @@ class Card(QWidget):
 
         layout.addWidget(self.reg(QLabel("词汇量测试"), "note", 12))
         test_row = QHBoxLayout()
-        self.lab_vocab = QLabel("")
-        test_row.addWidget(self.reg(self.lab_vocab, "mean", 14))
-        test_row.addStretch(1)
-        self.btn_test = QPushButton("开始测试")
-        self.btn_test.setObjectName("chip")
-        self.btn_test.setCursor(Qt.PointingHandCursor)
-        self.btn_test.setMinimumHeight(28)
+        self.btn_history = QPushButton("历史记录")
+        self.btn_history.clicked.connect(self._open_history_page)
+        test_row.addWidget(self.btn_history)
+        self.btn_continue = QPushButton("继续上次测试")
+        self.btn_continue.clicked.connect(self.start_quiz)
+        test_row.addWidget(self.btn_continue)
+        self.btn_test = QPushButton("开始新的测试")
         self.btn_test.clicked.connect(self._test_from_settings)
         test_row.addWidget(self.btn_test)
+        for button in (self.btn_history, self.btn_continue, self.btn_test):
+            button.setObjectName("chip")
+            button.setMinimumHeight(30)
+        test_row.addStretch(1)
         layout.addLayout(test_row)
-        layout.addWidget(self.reg(QLabel("历史记录（点一条看结果，完整历史保留）"), "note", 11))
-        self.hist_box = QWidget()
-        self.hist_layout = QVBoxLayout(self.hist_box)
-        self.hist_layout.setContentsMargins(0, 0, 0, 0)
-        self.hist_layout.setSpacing(2)
-        layout.addWidget(self.hist_box)
         layout.addSpacing(6)
         self.lab_storage = QLabel("")
         self.lab_storage.setWordWrap(True)
@@ -1746,6 +1794,7 @@ class Card(QWidget):
         self.window_ctl.update_palette(self.t)
         self._refresh_key_hints()
         self._refresh_learning_status()
+        self.catalog.set_metadata(self.states, known=None, predicted=self.known)
         self._refresh_settings()
         self.update()
 
@@ -1997,14 +2046,16 @@ class Card(QWidget):
         self.open_settings()
 
     def _refresh_back_control(self):
-        self.back_slot.setVisible(self.mode in ("settings", "books", "catalog"))
+        self.back_slot.setVisible(self.mode in ("settings", "books", "catalog", "history"))
         self.btn_back.setVisible(
-            self.mode in ("settings", "catalog") or
+            self.mode in ("settings", "catalog", "history") or
             (self.mode == "books" and (self.books_src == "settings" or self.nav_level > 1)))
 
     def _page_back(self):
         if self.mode == "settings":
             self.close_settings()
+        elif self.mode == "history":
+            self.open_settings()
         elif self.mode == "catalog":
             if self.catalog.level_dialog is not None:
                 self.catalog.level_dialog.close()
@@ -2021,9 +2072,11 @@ class Card(QWidget):
         self.catalog_src = src
         mode = self.sel_order if src == "books" else stored_order(self.orders, book_id)
         words = self._order_words(self._book_words(book_id), mode, self._seed(book_id))
+        self._refresh_known()
         self.catalog.set_palette(self.t)
         self.catalog.set_book(book_id, self._book_path(book_id), words, self.states,
-                              self.known, preserve_order=(mode == "shuffle"))
+                              None, preserve_order=(mode == "shuffle"),
+                              predicted=self.known)
         self._set_mode("catalog")
 
     def open_settings(self):
@@ -2070,7 +2123,17 @@ class Card(QWidget):
         self._policy_changed_in_settings = False
 
     def _test_from_settings(self):
-        return self.start_quiz()
+        return self.start_quiz(fresh=True)
+
+    def _confirm_new_quiz(self):
+        if not self._can_act():
+            return False
+        answer = QMessageBox.question(
+            self, "开始新的测试", "开始新测试会替换当前可续测会话，不会删除已保存历史。继续吗？",
+            QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+        if answer != QMessageBox.Yes:
+            return False
+        return self.start_quiz(fresh=True)
 
     # ---------- 词书 / 进度 ----------
     def _stats(self):
@@ -2161,9 +2224,12 @@ class Card(QWidget):
 
     # ---------- 首次引导 ----------
     def _startup(self, force=False):
-        """显示窗口前决定入口：续测 / 首次引导 / 待选书 / 到期测试 / 学习。"""
-        if self.progress.get("quiz_session"):
-            self.start_quiz()                     # 上次测到一半，直接接着来
+        """Show onboarding or study; resumable sessions are explicit in settings."""
+        session = self.progress.get("quiz_session")
+        # Expiry disables continuation; retain its answers for history migration
+        # or transactional archival when the user explicitly starts a new test.
+        if self._quiz_remaining_days(session):
+            self._new_session()
             return
         if not self.progress.get("welcome_done"):
             self.welcome()
@@ -2171,19 +2237,13 @@ class Card(QWidget):
         if not self.progress.get("book_confirmed"):
             self.open_books("welcome")            # 是否测试不等于已经确认词书
             return
-        allow_test = force or "--nottest" not in sys.argv
-        declined = self.progress.get("quiz_declined") and not self.progress.get("history")
-        snoozed = self.progress.get("snooze_until", 0) > time.time()
-        if allow_test and not declined and not snoozed and self._need_test():
-            self.start_quiz()
-            return
         self._new_session()
 
     def welcome(self):
         self._set_mode("welcome")
 
     def _welcome_test(self):
-        return self.start_quiz()        # 引导标记和题目必须在同一个事务里保存
+        return self.start_quiz()
 
     def _welcome_skip(self):
         self.progress["welcome_done"] = True
@@ -2202,7 +2262,7 @@ class Card(QWidget):
         if self.storage_notices:
             location += "\n" + "\n".join(self.storage_notices)
         self.lab_storage.setText(location)
-        learned, _, _, total = self._stats()
+        learned, _, _, total, predicted = self._stats()
         path = self._book_path(self.book_id)
         self.lab_book.setText(path or "未选择词书")
         meta = self._book_meta(self.book_id) if self.book_id else {}
@@ -2213,40 +2273,87 @@ class Card(QWidget):
         self.lab_book.setToolTip("\n".join(tooltip))
         self.lab_book_num.setText("已学 %s / %s" % (format(learned, ","), format(total, ","))
                                   if self.book_id else "")
-        hist = self.progress.get("history") or []
-        if hist:
-            last = hist[-1]
-            self.lab_vocab.setText("上次 ≈ %s 词（%s）" %
-                                   (format(last["vocab"], ","),
-                                    time.strftime("%Y-%m-%d", time.localtime(last["ts"]))))
-        else:
-            self.lab_vocab.setText("还没测过")
-        self.btn_test.setText("重新测试" if hist else "开始测试")
+        days = self._quiz_remaining_days()
+        self.btn_continue.setText("继续上次测试（剩余%d天）" % days if days else "继续上次测试")
+        self.btn_continue.setVisible(bool(days))
         for k, chip in self.theme_chips.items():
             chip.setProperty("on", "1" if k == self.theme_key else "0")
             chip.style().unpolish(chip)
             chip.style().polish(chip)
-
-        while self.hist_layout.count():
-            it = self.hist_layout.takeAt(0)
-            wgt = it.widget()
-            if wgt is not None:
-                wgt.deleteLater()
-        rows = list(enumerate(hist))[-5:][::-1]
-        if not rows:
-            lbl = QLabel("暂无记录")
-            lbl.setStyleSheet(th.label_qss(self.t, "note", 12))
-            self.hist_layout.addWidget(lbl)
-        for idx, h in rows:
-            b2 = QPushButton("%s　　≈ %s 词　›" %
-                             (time.strftime("%Y-%m-%d", time.localtime(h["ts"])),
-                              format(h["vocab"], ",")))
-            b2.setObjectName("row")
-            b2.setCursor(Qt.PointingHandCursor)
-            b2.setMinimumHeight(26)
-            b2.clicked.connect(lambda _=False, i=idx: self._open_history(i))
-            self.hist_layout.addWidget(b2)
         self._apply_scaling(force=True)
+
+    def _open_history_page(self):
+        if not self._can_act():
+            return False
+        session = self.progress.get("quiz_session")
+        if (isinstance(session, dict) and isinstance(session.get("resp"), list)
+                and session["resp"] and not session.get("history_deleted")):
+            existing = next((row for row in self.progress.get("history", [])
+                             if row.get("id") == session.get("id")), None)
+            if existing is None or existing.get("total") != len(session["resp"]):
+                before = self._capture_quiz()
+                try:
+                    if self._upsert_quiz_history(session=session) is not None:
+                        self.save()      # Migrate a legacy answered snapshot atomically.
+                except storage.StorageError as error:
+                    self._restore_quiz(before)
+                    QMessageBox.critical(self, "测试历史保存失败", str(error))
+                    return False
+        history = self.progress.get("history") or []
+        self.history_chart.points = [(row["ts"], row["vocab"]) for row in history]
+        self.history_chart.update()
+
+        def clear_rows(layout):
+            while layout.count():
+                item = layout.takeAt(0)
+                widget, child = item.widget(), item.layout()
+                if widget is not None:
+                    widget.hide()
+                    widget.deleteLater()
+                elif child is not None:
+                    clear_rows(child)
+                    child.deleteLater()
+
+        clear_rows(self.history_rows_layout)
+        for idx, row in reversed(list(enumerate(history))):
+            line = QHBoxLayout()
+            view = QPushButton("%s  ≈ %s 词 · %d/%d" % (
+                time.strftime("%Y-%m-%d", time.localtime(row["ts"])),
+                format(row["vocab"], ","), row.get("right", 0), row.get("total", 0)))
+            view.clicked.connect(lambda _=False, i=idx: self._open_history(i))
+            line.addWidget(view, 1)
+            delete = QPushButton("删除")
+            delete.clicked.connect(lambda _=False, i=idx: self._delete_history(i))
+            line.addWidget(delete)
+            self.history_rows_layout.addLayout(line)
+        self.history_rows_layout.addStretch(1)
+        self._set_mode("history")
+
+    def _delete_history(self, index):
+        if not self._can_act():
+            return
+        history = self.progress.get("history") or []
+        if not (0 <= index < len(history)):
+            return
+        before = self._capture_quiz()
+        removed = history.pop(index)
+        session = self.progress.get("quiz_session")
+        if isinstance(session, dict) and (session.get("id") == removed.get("id")
+                                         or session.get("history_id") == removed.get("id")):
+            session["history_id"] = None
+            if session.get("id") == removed.get("id"):
+                session["history_deleted"] = True
+                responses = session.get("resp", [])
+                session["history_response_count"] = len(responses) if isinstance(responses, list) else 0
+        try:
+            self.save()
+        except storage.StorageError as error:
+            self._restore_quiz(before)
+            QMessageBox.critical(self, "无法删除记录", str(error))
+            return
+        self.last_test = None
+        self._refresh_settings()
+        self._open_history_page()
 
     def _open_history(self, idx):
         hist = self.progress.get("history") or []
@@ -2339,13 +2446,13 @@ class Card(QWidget):
             self.window_ctl.set_compact(small, remember=False)
             self.compact = self.window_ctl.compact
         self.btn_min.setVisible(brush and self.study_mode == "brush")
-        self.btn_gear.setVisible(mode not in ("settings", "books", "catalog", "quiz", "result", "welcome")
+        self.btn_gear.setVisible(mode not in ("settings", "books", "catalog", "history", "quiz", "result", "welcome")
                                   and not self.compact)
         self._refresh_back_control()
         # 学习页面（刷词/选择题）不显示左上角的状态文字；测试页保留进度与严谨度。
         self.status.setVisible(mode == "quiz" and not self.compact)
-        self.page_title.setVisible(mode in ("settings", "books", "catalog"))
-        self.page_title.setText({"settings": "设置", "books": "选择词书", "catalog": "词书内容"}.get(mode, ""))
+        self.page_title.setVisible(mode in ("settings", "books", "catalog", "history"))
+        self.page_title.setText({"settings": "设置", "books": "选择词书", "catalog": "词书内容", "history": "历史记录"}.get(mode, ""))
         self.stage.setVisible(brush)
         self.front_bar.setVisible(mode == "front")
         self.back_bar.setVisible(mode in ("back", "empty"))
@@ -2356,6 +2463,7 @@ class Card(QWidget):
         self.books_page.setVisible(mode == "books")
         self.settings_page.setVisible(mode == "settings")
         self.catalog.setVisible(mode == "catalog")
+        self.history_page.setVisible(mode == "history")
         self.btn_skip.setVisible(mode == "quiz")
         if mode == "books":
             self._refresh_books()
@@ -2371,7 +2479,11 @@ class Card(QWidget):
     def _show_current(self):
         item = self.queue[self.qi]
         word = item["w"]
-        _, level, _ = memory_info(word["w"], self.states, self.known)
+        state = self.states.get(word["w"]) or {}
+        try:
+            level = int(state.get("lv", 0))
+        except (TypeError, ValueError):
+            level = 0
         caption = "复习 · 记忆等级 %d" % level if item["kind"] == "review" else "新词" + (" · 重现" if item["kind"] == "retry" else "")
         self.status.setText(caption)
         self.word.setText(word_caption(word))
@@ -2639,11 +2751,6 @@ class Card(QWidget):
         if self.progress.get("quiz_session"):
             return True
         hist = self.progress.get("history") or []
-        if not hist:
-            return True
-        last = max(h["ts"] for h in hist)
-        if time.time() - last >= TEST_INTERVAL:
-            return True
         return False
 
     def _maybe_start_test(self):
@@ -2654,7 +2761,9 @@ class Card(QWidget):
         """只复制测验可变图，保留原容器引用；不复制其它学习记录。"""
         names = ("quiz_state", "quiz_items", "quiz_resp", "quiz_i", "rigor",
                  "quiz_locked", "theta", "known", "last_test", "mode",
-                 "_quiz_retry_action")
+                 "_quiz_retry_action", "quiz_started_at", "quiz_last_answer_at", "quiz_session_id",
+                 "quiz_origin_welcome", "quiz_bank_fingerprint", "quiz_vocab_grid",
+                 "quiz_item_indices", "quiz_result", "quiz_return_to_settings", "quiz_status_values")
         attrs = {name: getattr(self, name) for name in names if hasattr(self, name)}
         progress_refs = dict(self.progress)
         keys = ("quiz_session", "history", "theta", "quiz_from_welcome",
@@ -2707,12 +2816,13 @@ class Card(QWidget):
 
     def _set_quiz_retry(self, action):
         self._quiz_retry_action = action
-        self.btn_skip.setText("重试保存并继续" if action else "跳过本次测试")
+        self.btn_skip.setText("重试保存并继续" if action else "结束本次测试")
         tips = {"next": "只重试保存下一题，不会重复计算已提交的答案。",
                 "finish": "只重试保存本次结果，不会重复添加测试历史。",
                 "start": "重试开始或恢复本次测试，原进度仍然保留。",
-                "skip": "重试跳过本次测试；保存成功前不会丢弃本次答案。"}
-        self.btn_skip.setToolTip(tips.get(action, "跳过本次测试，稍后再测。"))
+                "start_new": "重试开始新的测试；保存成功前保留原会话和历史。",
+                "skip": "重试保存并结束本次测试。"}
+        self.btn_skip.setToolTip(tips.get(action, "结束本次测试；未答题目不会计入结果。"))
         if action:
             self.btn_skip.setEnabled(True)
             self.btn_skip.show()
@@ -2732,6 +2842,8 @@ class Card(QWidget):
         action = getattr(self, "_quiz_retry_action", None)
         if action == "start":
             return self.start_quiz()
+        if action == "start_new":
+            return self.start_quiz(fresh=True)
         if action == "next":
             return self._quiz_next()
         if action == "finish":
@@ -2742,48 +2854,118 @@ class Card(QWidget):
             return self.skip_test()
         return False
 
-    def start_quiz(self):
+    def start_quiz(self, checked=False, *, fresh=False):
         if not self._can_act():
             return False
         before = self._capture_quiz()
         self.quiz_timer.stop()
+        retry_action = "start_new" if fresh else "start"
+        item_indices = {entry.get("w"): idx for idx, entry in enumerate(self.bank)}
+
+        def number(value):
+            try:
+                return (isinstance(value, (int, float)) and not isinstance(value, bool)
+                        and math.isfinite(value))
+            except (TypeError, ValueError, OverflowError):
+                return False
+
+        def valid_session(session, allow_expired=False):
+            if (not isinstance(session, dict) or session.get("algo") != "bayes-v140"
+                    or session.get("bank_id") != self.bank_fingerprint
+                    or not isinstance(session.get("id"), str) or not session["id"]
+                    or not number(session.get("started_at"))
+                    or (not allow_expired and not self._quiz_remaining_days(session))
+                    or not number(session.get("rigor")) or not 0 <= session["rigor"] <= 105):
+                return False
+            state, items, responses, index = (session.get(key) for key in ("state", "items", "resp", "i"))
+            if (not isinstance(state, dict) or not isinstance(items, list)
+                    or not isinstance(responses, list) or type(index) is not int
+                    or index < 0 or len(items) != index + 1
+                    or len(responses) not in (index, index + 1)):
+                return False
+            # Both snapshots are legal: the current question is unanswered, or
+            # its answer was committed before the 650ms advancement timer ran.
+            if (type(state.get("level")) is not int or not 0 <= state["level"] <= pl.TOP_LEVEL
+                    or type(state.get("seed")) is not int or not number(state.get("theta", 0.0))
+                    or any(type(state.get(key, 0)) is not int or not 0 <= state.get(key, 0) <= limit
+                           for key, limit in (("up", 105), ("down", 105), ("wrong_streak", 12)))
+                    or type(state.get("fast", False)) is not bool
+                    or not isinstance(state.get("asked"), list)
+                    or any(not isinstance(key, str) or key not in item_indices for key in state["asked"])
+                    or len(state["asked"]) != len(set(state["asked"]))
+                    or any(type(response) is not int or response not in (-1, 0, 1) for response in responses)):
+                return False
+            keys = set()
+            asked = set(state["asked"])
+            for record in items:
+                if not isinstance(record, dict):
+                    return False
+                key, item = record.get("key"), record.get("item")
+                if (not isinstance(key, str) or key not in item_indices or key not in asked
+                        or key in keys or not isinstance(item, dict)):
+                    return False
+                options, correct = item.get("options"), item.get("correct_index")
+                if (not isinstance(options, list) or len(options) != 4 or type(correct) is not int
+                        or not 0 <= correct < 4
+                        or any(not isinstance(option, dict) or not isinstance(option.get("text"), str)
+                               for option in options)):
+                    return False
+                keys.add(key)
+            return True
+
         try:
+            self.quiz_return_to_settings = (self.mode == "settings" or
+                                            (self.mode == "result" and getattr(self, "result_ctx", None) == "history"))
             self.progress.pop("quiz_declined", None)
             self.progress["welcome_done"] = True
             if self.mode == "welcome" or not self.progress.get("book_confirmed"):
                 self.progress["quiz_from_welcome"] = True
             sess = self.progress.get("quiz_session")
+            self.quiz_item_indices = item_indices
+            resumable = valid_session(sess)
+            if fresh or not resumable:
+                # Archive a valid answered legacy snapshot before replacing it.
+                # This is part of the same commit as the new first question.
+                if (valid_session(sess, allow_expired=True) and sess["resp"]
+                        and not sess.get("history_deleted")):
+                    old_row = next((row for row in self.progress.get("history", [])
+                                    if row.get("id") == sess["id"]), None)
+                    if old_row is None or old_row.get("total") != len(sess["resp"]):
+                        self._upsert_quiz_history(session=sess)
+                self.progress.pop("quiz_session", None)
+                sess = None
             if sess:
-                ok = (isinstance(sess, dict) and sess.get("algo") == "staircase-v1"
-                      and isinstance(sess.get("i"), int) and 0 <= sess["i"] < QUIZ_N
-                      and isinstance(sess.get("state"), dict)
-                      and isinstance(sess.get("items"), list)
-                      and isinstance(sess.get("resp"), list)
-                      and sess["i"] < len(sess["items"]) <= QUIZ_N
-                      and len(sess["resp"]) in (sess["i"], sess["i"] + 1))
-                if not ok:
-                    raise storage.StorageError("测试进度格式异常；请先备份检查，或明确跳过本次测试。")
                 self.quiz_state = sess["state"]
                 self.quiz_items = sess["items"]
                 self.quiz_resp = sess["resp"]
                 self.quiz_i = sess["i"]
-                self.rigor = sess.get("rigor", 100.0)
+                self.rigor = sess["rigor"]
+                self.quiz_started_at = sess["started_at"]
+                self.quiz_session_id = sess["id"]
+                self.quiz_bank_fingerprint = sess["bank_id"]
+                self.quiz_vocab_grid = pl.build_profile(self.bank)
+                self.quiz_origin_welcome = bool(sess.get("from_welcome"))
                 if len(self.quiz_resp) == self.quiz_i + 1:
-                    # 仅设置逻辑模式，不切换页面；推进/完成保存成功后才显示新 UI。
                     self.mode = "quiz"
                     self.quiz_locked = True
-                    return self._quiz_next(before=before, retry_action="start")
+                    return self._quiz_next(before=before, retry_action=retry_action)
             else:
                 self.quiz_state = pl.new_session(seed=random.randrange(1, 1 << 30))
+                self.quiz_state["theta"] = 0.0
                 self.quiz_items = []
                 self.quiz_resp = []
                 self.quiz_i = 0
                 self.rigor = 100.0
-            if not self.quiz_items:
-                self._gen_item()
+                self.quiz_started_at = int(time.time())
+                self.quiz_session_id = os.urandom(16).hex()
+                self.quiz_origin_welcome = self.mode == "welcome" or not self.progress.get("book_confirmed")
+                self.quiz_vocab_grid = pl.build_profile(self.bank)
+                self.quiz_bank_fingerprint = self.bank_fingerprint
+            if len(self.quiz_items) <= self.quiz_i and self._gen_item() is None:
+                raise storage.StorageError("词库无法生成无歧义选项，无法开始测试。")
             self._save_quiz_session()
         except storage.StorageError as error:
-            self._quiz_save_error(error, before, "start")
+            self._quiz_save_error(error, before, retry_action)
             return False
         self._set_quiz_retry(None)
         self._set_mode("quiz")
@@ -2791,14 +2973,126 @@ class Card(QWidget):
         return True
 
     def _gen_item(self):
-        """按当前档位随机抽一个没做过的词，生成 4 选 1。"""
-        rng = random.Random(self.quiz_state["seed"] * 1000003 + len(self.quiz_state["asked"]))
-        idx = pl.pick_idx(self.lvls, self.quiz_state["level"], self.quiz_state["asked"], rng)
-        opts, correct = pl.make_options(self.bank, idx, rng, self.bs)
-        item = {"idx": idx, "opts": opts, "correct": correct, "lvl": self.quiz_state["level"]}
-        self.quiz_items.append(item)
-        self.quiz_state["asked"].append(idx)
-        return item
+        """Select a unique stable-key item; skip entries lacking unambiguous options."""
+        asked = {self.quiz_item_indices[key] for key in self.quiz_state["asked"]
+                 if key in self.quiz_item_indices}
+        while True:
+            rng = random.Random(self.quiz_state["seed"] * 1000003 + len(asked))
+            idx = pl.pick_idx(self.lvls, self.quiz_state["level"], asked, rng, self.bs,
+                              self.quiz_state.get("theta", 0.0))
+            if idx is None:
+                return None
+            item = pl.make_item(self.bank, idx, rng, self.bs)
+            key = self.bank[idx]["w"]
+            asked.add(idx)
+            self.quiz_item_indices[key] = idx
+            if item is None:
+                self.quiz_state["asked"].append(key)
+                continue
+            record = {"key": key, "item": item, "lvl": self.quiz_state["level"]}
+            self.quiz_items.append(record)
+            self.quiz_state["asked"].append(key)
+            return record
+
+    def _quiz_remaining_days(self, session=None, now=None):
+        """Days left in this attempt; resuming never renews started_at."""
+        session = self.progress.get("quiz_session") if session is None else session
+        if not isinstance(session, dict):
+            return 0
+        started = session.get("started_at")
+        try:
+            if (not isinstance(started, (int, float)) or isinstance(started, bool)
+                    or not math.isfinite(started)):
+                return 0
+            now = time.time() if now is None else now
+            if not math.isfinite(now):
+                return 0
+            seconds = RESUME_TTL - (now - started)
+            return min(30, max(0, int(math.ceil(seconds / 86400))))
+        except (TypeError, ValueError, OverflowError):
+            return 0
+
+    def _quiz_history_record(self, completed=False, session=None):
+        """A measurement for every answered attempt, without adopting mastery."""
+        if session is not None:
+            # Older answered snapshots can be archived without entering quiz mode.
+            if (not isinstance(session, dict) or session.get("algo") != "bayes-v140"
+                    or session.get("bank_id") != self.bank_fingerprint
+                    or not isinstance(session.get("id"), str) or not session["id"]
+                    or not isinstance(session.get("resp"), list)
+                    or not isinstance(session.get("items"), list)
+                    or len(session["items"]) < len(session["resp"])
+                    or any(type(response) is not int or response not in (-1, 0, 1)
+                           for response in session["resp"])):
+                return None
+            try:
+                if any(not isinstance(session.get(key), (int, float)) or isinstance(session[key], bool)
+                       or not math.isfinite(session[key]) for key in ("started_at", "rigor")):
+                    return None
+                if not 0 <= session["rigor"] <= 105:
+                    return None
+            except (TypeError, ValueError, OverflowError):
+                return None
+            measured = session["items"][:len(session["resp"])]
+            if any(not isinstance(item, dict) or not isinstance(item.get("key"), str)
+                   or item["key"] not in self.quiz_item_indices for item in measured):
+                return None
+            if len({item["key"] for item in measured}) != len(measured):
+                return None
+        responses = self.quiz_resp if session is None else session["resp"]
+        if not responses:
+            return None
+        items = self.quiz_items if session is None else session["items"]
+        rigor = int(round(self.rigor if session is None else session["rigor"]))
+        session_id = self.quiz_session_id if session is None else session["id"]
+        started = self.quiz_started_at if session is None else session["started_at"]
+        bs = [self.bs[self.quiz_item_indices[item["key"]]] for item in items[:len(responses)]]
+        estimate, low, high = pl.vocab_posterior(bs, responses, bank_total=len(self.bank))
+        theta, se = pl.estimate_theta(bs, responses)
+        history = self.progress.get("history") or []
+        existing = next((row for row in history if row.get("id") == session_id), None)
+        baseline = bool(existing.get("baseline")) if existing else not any(row.get("baseline") for row in history)
+        timestamp = int(time.time())
+        if session is not None:
+            saved_time = session.get("updated_at", started)
+            try:
+                timestamp = int(saved_time) if isinstance(saved_time, (int, float)) and not isinstance(saved_time, bool) else int(started)
+            except (TypeError, ValueError, OverflowError):
+                timestamp = int(started)
+        if existing and existing.get("total") == len(responses) and not completed:
+            timestamp = existing.get("ts", timestamp)
+        right = sum(response == 1 for response in responses)
+        return {
+            "id": session_id, "ts": timestamp, "started_at": started,
+            "algo": "bayes-v140", "theta": round(theta, 4), "se": round(se, 4),
+            "vocab": int(round(estimate)), "rigor": rigor,
+            "lo": max(0, int(round(low))), "hi": int(round(high)),
+            "err": round(100 * (high - low) / max(2, estimate * 2), 1),
+            "right": right, "dontknow": sum(response < 0 for response in responses),
+            "total": len(responses), "baseline": baseline, "completed": bool(completed),
+            "prediction_eligible": right > 0 and len(responses) >= PREDICTION_MIN_N and rigor >= PREDICTION_MIN_RIGOR,
+        }
+
+    def _upsert_quiz_history(self, completed=False, session=None):
+        if not self._can_act():
+            return None
+        record = self._quiz_history_record(completed=completed, session=session)
+        if record is None:
+            return None
+        history = self.progress.setdefault("history", [])
+        existing = next((row for row in history if row.get("id") == record["id"]), None)
+        if existing is None:
+            history.append(record)
+        else:
+            existing.update(record)       # Preserve the row and unrecognized metadata.
+            record = existing
+        self.last_test = (record, bool(record["baseline"]))
+        meta = self.progress.get("quiz_session") if session is None else session
+        if isinstance(meta, dict):
+            meta["history_id"] = record["id"]
+            meta["history_response_count"] = record["total"]
+            meta["history_deleted"] = False
+        return record
 
     def _save_quiz_session(self):
         if not self._can_act():
@@ -2807,48 +3101,77 @@ class Card(QWidget):
         if not isinstance(sess, dict):
             sess = {}
             self.progress["quiz_session"] = sess
+        previous_count = sess.get("history_response_count", 0)
+        if type(previous_count) is not int:
+            previous_count = 0
         sess.update({
-            "algo": "staircase-v1",
-            "state": self.quiz_state,
-            "items": self.quiz_items, "resp": self.quiz_resp,
-            "i": self.quiz_i, "rigor": self.rigor, "ts": int(time.time()),
-        })                              # 保留 session 的未知字段和原字典身份
-        self.save()
+            "schema": 1, "algo": "bayes-v140", "id": self.quiz_session_id,
+            "bank_id": self.quiz_bank_fingerprint,
+            "started_at": self.quiz_started_at, "updated_at": int(time.time()),
+            "from_welcome": self.quiz_origin_welcome,
+            "state": self.quiz_state, "items": self.quiz_items,
+            "resp": self.quiz_resp, "i": self.quiz_i, "rigor": self.rigor,
+        })
+        if self.quiz_resp and (not sess.get("history_deleted") or len(self.quiz_resp) > previous_count):
+            self._upsert_quiz_history()
+        self.save()                      # Answer, session and history commit together.
         return True
 
     def skip_test(self):
-        """只有明确跳过且保存成功，才丢弃本次测试；失败仍保留原 session。"""
-        if not self._can_act():
+        """Pause for later; settings entry returns to settings, not study."""
+        if not self._can_act() or self.mode != "quiz":
             return False
         before = self._capture_quiz()
         self.quiz_timer.stop()
         try:
-            self.progress.pop("quiz_session", None)
-            self.progress["snooze_until"] = int(time.time()) + SKIP_SNOOZE
-            from_welcome = bool(self.progress.pop("quiz_from_welcome", False) or
-                                not self.progress.get("book_confirmed"))
-            self.save()
+            self._save_quiz_session()
         except storage.StorageError as error:
             self._quiz_save_error(error, before, "skip")
             return False
         self._set_quiz_retry(None)
-        if from_welcome:
-            self.open_books("welcome")
+        if getattr(self, "quiz_return_to_settings", False):
+            self.open_settings()
         else:
-            self._new_session()
+            self._startup()
         return True
 
+    def _test_bank_exhausted(self):
+        return len(self.quiz_state.get("asked", [])) >= len(self.bank)
+
     def _quiz_status(self, delta=None):
-        txt = "词汇量测试 %d/%d   ·   严谨度 %d" % (
-            self.quiz_i + 1, QUIZ_N, int(round(self.rigor)))
-        if delta:
-            col = "#79e0ac" if delta > 0 else "#ef9cad"
-            txt += "  <span style='color:%s'>%+.1f</span>" % (col, delta)
-        self.status.setText(txt)
+        """Four fragments; the score becomes literal 'max' at 105, not '/105'."""
+        record = next((row for row in self.progress.get("history", [])
+                       if row.get("id") == self.quiz_session_id and row.get("total") == len(self.quiz_resp)), None)
+        if record is None and self.quiz_resp:
+            record = self._quiz_history_record()  # A deleted history row must not erase the live measurement.
+        values = {"id": self.quiz_session_id, "vocab": record["vocab"] if record else 0,
+                  "err": record.get("err", 0) if record else 0, "rigor": float(self.rigor)}
+        previous = getattr(self, "quiz_status_values", None)
+        comparable = isinstance(previous, dict) and previous.get("id") == self.quiz_session_id
+        green, red = (("#79e0ac", "#ef9cad") if getattr(self, "theme_key", None) == "dark"
+                      else ("#177245", "#b82c3c"))
+
+        def colored(key, text):
+            old = previous.get(key) if comparable else None
+            if old is not None and values[key] != old:
+                color = green if values[key] > old else red
+                return "<span style='color:%s'>%s</span>" % (color, text)
+            return text
+
+        rigor = "max" if values["rigor"] >= 105 else ("%.1f" % values["rigor"]).rstrip("0").rstrip(".")
+        self.status.setText("词汇量测试 · 词目量%s · 误差%s%% · 严谨度%s" % (
+            colored("vocab", str(values["vocab"])),
+            colored("err", ("%.1f" % values["err"]).rstrip("0").rstrip(".")),
+            colored("rigor", rigor)))
+        if isinstance(previous, dict):
+            previous.update(values)
+        else:
+            self.quiz_status_values = values
 
     def _quiz_show(self):
-        item = self.quiz_items[self.quiz_i]
-        w = self.bank[item["idx"]]
+        record = self.quiz_items[self.quiz_i]
+        item = record["item"]
+        w = self.bank[self.quiz_item_indices[record["key"]]]
         if not w.get("display_w"):
             # 显示拼写可能来自当前词书的浅拷贝（通用 bank 仍保留稳定 w）。
             for candidate in (getattr(self, "book_words", ()) or ()):
@@ -2859,7 +3182,7 @@ class Card(QWidget):
         self.quiz_word.setText(word_caption(w))
         self._quiz_status()
         for i, b in enumerate(self.opt_btns):
-            caption = "%s  %s" % (LETTERS[i], item["opts"][i])
+            caption = "%s  %s" % (LETTERS[i], item["options"][i]["text"])
             b.setProperty("_quiz_caption", caption)
             b.setText(caption)
             b.setEnabled(True)
@@ -2882,8 +3205,8 @@ class Card(QWidget):
             return False
         before = self._capture_quiz()
         self.quiz_timer.stop()
-        item = self.quiz_items[self.quiz_i]
-        correct = item["correct"]
+        item = self.quiz_items[self.quiz_i]["item"]
+        correct = item["correct_index"]
         good = choice >= 0 and choice == correct
         try:
             self.quiz_locked = True
@@ -2897,9 +3220,13 @@ class Card(QWidget):
                 self.quiz_resp.append(0)
                 delta = -3.0
             old = self.rigor
-            self.rigor = max(0.0, min(100.0, self.rigor + delta))
+            self.rigor = pl.update_rigor(self.rigor, self.quiz_resp[-1])
             delta = self.rigor - old
-            pl.step(self.quiz_state, good, len(self.quiz_resp))
+            pl.step(self.quiz_state, good, len(self.quiz_resp), self.quiz_resp[-1])
+            bs = [self.bs[self.quiz_item_indices[entry["key"]]]
+                  for entry in self.quiz_items[:len(self.quiz_resp)]]
+            self.quiz_state["theta"], _ = pl.estimate_theta(bs, self.quiz_resp)
+            self.quiz_last_answer_at = int(time.time())
             self._save_quiz_session()
         except storage.StorageError as error:
             self._quiz_save_error(error, before, before["attrs"].get("_quiz_retry_action"))
@@ -2930,71 +3257,45 @@ class Card(QWidget):
         if len(self.quiz_resp) != self.quiz_i + 1:
             return False               # 仅推进已答题；迟到回调不能跳过未答题
         before = before if before is not None else self._capture_quiz()
-        if len(self.quiz_resp) == QUIZ_N:
-            action = "start" if retry_action == "start" else "finish"
-            return self._finish_quiz(before=before, retry_action=action)
+        finish_action = retry_action if retry_action in ("start", "start_new") else "finish"
+        if self._test_bank_exhausted():
+            return self._finish_quiz(before=before, retry_action=finish_action)
         try:
-            self.quiz_i += 1
-            while len(self.quiz_items) <= self.quiz_i:
-                self._gen_item()
+            item_count = len(self.quiz_items)
+            item = self._gen_item()
+            if item is None:
+                return self._finish_quiz(before=before, retry_action=finish_action)
+            self.quiz_i = item_count
             self._save_quiz_session()
         except storage.StorageError as error:
             self._quiz_save_error(error, before, retry_action)
             return False
         self._set_quiz_retry(None)
-        self._set_mode("quiz")
+        # Normal advancement stays on the quiz page; avoid repolishing the
+        # entire application on every question. A cold resume still switches
+        # pages after its next-question snapshot has committed successfully.
+        if before["attrs"].get("mode") != "quiz":
+            self._set_mode("quiz")
         self._quiz_show()
         return True
 
     def _finish_quiz(self, before=None, retry_action="finish"):
-        if (not self._can_act() or self.mode != "quiz" or len(self.quiz_resp) != QUIZ_N
-                or len(self.quiz_items) != QUIZ_N or not self.progress.get("quiz_session")):
-            return False               # 不补零造结果；已完成/迟到的调用也不重复提交
+        if (not self._can_act() or self.mode != "quiz" or not self.quiz_items
+                or len(self.quiz_items) != len(self.quiz_resp) or not self.progress.get("quiz_session")):
+            return False
         self.quiz_timer.stop()
         before = before if before is not None else self._capture_quiz()
-        items, resp = self.quiz_items, self.quiz_resp
-        bs = [self.bs[it["idx"]] for it in items]
-        theta, se = pl.estimate_theta(bs, resp)
-        est = int(round(pl.vocab_at(self.bs, theta)))
-        lo, hi = pl.error_band(self.bs, theta, se * 1.5)
-        rigor = int(round(self.rigor))
-        se_err = (hi - lo) / 2.0 / max(1, est) * 100.0
-        err = max(4.0, min(40.0, max(se_err, 4 + (100 - rigor) * 0.35)))
-        lo = int(round(est * (1 - err / 100.0)))
-        hi = int(round(est * (1 + err / 100.0)))
         try:
-            history = self.progress.setdefault("history", [])
-            is_baseline = not any(h.get("baseline") for h in history)
-            if is_baseline or self.progress.get("theta") is None:
-                self._set_theta(theta)  # 0.0 也是合法基准，不可误判成尚未设置
-            elif self.last_test is None:
-                self._refresh_known()
-            rec = {
-                "ts": int(time.time()),
-                "algo": "staircase-v1",
-                "theta": round(theta, 3), "se": round(se, 3),
-                "vocab": est, "rigor": rigor, "err": round(err, 1),
-                "lo": max(0, lo), "hi": hi,
-                "right": sum(1 for r in resp if r == 1),
-                "dontknow": sum(1 for r in resp if r < 0),
-                "total": QUIZ_N,
-                "known": len(self.known),
-                "to_learn": len(self.bank) - len(self.known),
-                "baseline": is_baseline,
-            }
-            history.append(rec)
-            from_welcome = bool(self.progress.pop("quiz_from_welcome", False) or
-                                not self.progress.get("book_confirmed"))
+            rec = self._upsert_quiz_history(completed=True)
             self.progress.pop("quiz_session", None)
-            self.progress.pop("snooze_until", None)
-            self.last_test = (rec, is_baseline)
+            self.progress.pop("quiz_from_welcome", None)
             self.save()
         except storage.StorageError as error:
             self._quiz_save_error(error, before, retry_action)
             return False
         self._set_quiz_retry(None)
-        self.status.setText("词汇量测试完成")
-        self._show_result(rec, is_baseline, from_welcome)
+        self.quiz_result = rec
+        self._show_result(rec, bool(rec["baseline"]), self.quiz_origin_welcome)
         return True
 
     def _set_theta(self, theta):
@@ -3019,7 +3320,7 @@ class Card(QWidget):
 
         tail = ""
         if self.book_id:
-            _, known, _, total = self._book_stats(self.book_id)
+            _, known, _, total, predicted = self._book_stats(self.book_id)
             tail = "%s已会 %s / %s" % (self._book_short_name(self.book_id),
                                        format(known, ","), format(total, ","))
 
@@ -3043,31 +3344,116 @@ class Card(QWidget):
 
     def _show_result(self, rec, is_baseline, from_welcome=False):
         from_welcome = from_welcome or not self.progress.get("book_confirmed")
+        self.quiz_result = rec
         self.result_ctx = "welcome_test" if from_welcome else "test"
         self.btn_start.setText("选择词书" if from_welcome else "继续背单词")
-        self.btn_rebase.setVisible(not is_baseline)
+        self.btn_rebase.setVisible(not is_baseline and bool(rec.get("prediction_eligible")))
+        days = self._quiz_remaining_days()
+        self.btn_continue_quiz.setText("继续上次测试（剩余%d天）" % days if days else "继续上次测试")
+        self.btn_continue_quiz.setVisible(bool(days))
         self._fill_result(rec, self.progress.get("history", []), is_baseline)
         self._set_mode("result")
 
     def _show_history(self, rec, upto):
         self.result_ctx = "history"
+        self.quiz_result = rec
         self.btn_start.setText("返回设置")
         self.btn_rebase.hide()
+        days = self._quiz_remaining_days()
+        self.btn_continue_quiz.setText("继续上次测试（剩余%d天）" % days if days else "继续上次测试")
+        self.btn_continue_quiz.setVisible(bool(days))
         self._fill_result(rec, upto, bool(rec.get("baseline")))
         self._set_mode("result")
 
+    def _apply_prediction(self):
+        """Apply one of the explicit predicted-mastery strategies to eligible words."""
+        rec = self.quiz_result or (self.last_test[0] if self.last_test else None)
+        if not rec or not rec.get("prediction_eligible"):
+            QMessageBox.information(self, "暂不可预测", "需要至少 50 个回答，且严谨度达到 60。")
+            return False
+        dialog = QDialog(self)
+        dialog.setWindowTitle("预测掌握范围")
+        layout = QVBoxLayout(dialog)
+        mode = QPushButton("保守 · 估计减误差")
+        median = QPushButton("按估计")
+        high = QPushButton("宽松 · 估计加误差")
+        strategy_group = QButtonGroup(dialog)
+        strategy_group.setExclusive(True)
+        for button in (mode, median, high):
+            button.setCheckable(True)
+            strategy_group.addButton(button)
+            layout.addWidget(button)
+        mode.setChecked(True)
+        controls = QHBoxLayout()
+        confirm = QPushButton("应用")
+        cancel = QPushButton("取消")
+        controls.addStretch(1)
+        controls.addWidget(cancel)
+        controls.addWidget(confirm)
+        layout.addLayout(controls)
+        chosen = []
+        mode.clicked.connect(lambda: chosen.__setitem__(slice(None), ["conservative"]))
+        median.clicked.connect(lambda: chosen.__setitem__(slice(None), ["estimate"]))
+        high.clicked.connect(lambda: chosen.__setitem__(slice(None), ["optimistic"]))
+        confirm.clicked.connect(dialog.accept)
+        cancel.clicked.connect(dialog.reject)
+        if not dialog.exec_() or not chosen:
+            return False
+        strategy = chosen[0]
+        target = pred.apply_strategy(rec["vocab"], (rec["hi"] - rec["lo"]) / 2, strategy)
+        selected, counts = pred.select_prediction_candidates(
+            self.bank, self.states, target, bands={entry["w"]: entry["lvl"] for entry in self.bank},
+            rejected=self.prediction_data["rejected"], excluded=self.prediction_data["excluded"], seed=rec["id"])
+        prior = copy.deepcopy(self.prediction_data)
+        previous = set(self.prediction_data["selected"])
+        explicitly_returned = set(self.prediction_data["excluded"])
+        self.prediction_data["excluded"] = sorted(explicitly_returned | (previous - selected))
+        self.prediction_data["selected"] = sorted(selected)
+        self.prediction_data["effective"] = {key: counts[key] for key in ("target", "available", "selected")}
+        self.prediction_data["strategy"] = strategy
+        self.prediction_data["source_history_id"] = rec["id"]
+        try:
+            self.save()
+        except storage.StorageError as error:
+            self.prediction_data.clear()
+            self.prediction_data.update(prior)
+            QMessageBox.critical(self, "预测未保存", str(error))
+            return False
+        self._refresh_known()
+        self.catalog.set_metadata(self.states, known=set(), predicted=self.known)
+        self._new_session()
+        return True
+
+    def _bulk_learn_selected(self, keys_to_learn):
+        if not self._can_act():
+            return False
+        states_before = copy.deepcopy(self.states)
+        pred_before = copy.deepcopy(self.prediction_data)
+        for key in keys_to_learn:
+            if key in self.known:
+                self.known.discard(key)
+                self.prediction_data["selected"].remove(key)
+                if key not in self.prediction_data["excluded"]:
+                    self.prediction_data["excluded"].append(key)
+            state = self.states.get(key)
+            if state and (state.get("st") in ("mastered", "retired") or int(state.get("lv", 0)) >= 10):
+                state["st"] = "new"
+                state["lv"] = 0
+                state["due"] = None
+        try:
+            self.save()
+        except storage.StorageError as error:
+            self.states.clear()
+            self.states.update(states_before)
+            self.prediction_data.clear()
+            self.prediction_data.update(pred_before)
+            QMessageBox.critical(self, "未加入学习", str(error))
+            return False
+        self.catalog.set_metadata(self.states, known=set(), predicted=self.known)
+        return True
+
     def _rebase(self):
-        """用最近这次测试的结果重排学习队列。"""
-        if not self.last_test:
-            return
-        rec, _ = self.last_test
-        self._set_theta(rec.get("theta", 0.0))
-        for h in self.progress.get("history", []):
-            h["baseline"] = (h is rec)
-        rec["known"] = len(self.known)
-        rec["to_learn"] = len(self.bank) - len(self.known)
-        self.save()
-        self._show_result(rec, True)
+        return self._apply_prediction()
 
     def _leave_result(self):
         self._new_session()
@@ -3162,7 +3548,7 @@ class Card(QWidget):
         if self._editor_has_focus():
             super().keyPressEvent(ev)
             return
-        if self.mode == "catalog":
+        if self.mode in ("catalog", "history"):
             if k == Qt.Key_Escape:
                 self._page_back()
             return
@@ -3229,25 +3615,32 @@ def main():
         w.quiz_timer.stop()
         if w.mode != "quiz" and not w.start_quiz():
             return
-        if len(w.quiz_resp) == w.quiz_i + 1 and len(w.quiz_resp) < QUIZ_N:
+        if len(w.quiz_resp) == w.quiz_i + 1:
             if not w._quiz_next():
                 return
-        while len(w.quiz_resp) < QUIZ_N:
+        while w.mode == "quiz":
             i = len(w.quiz_resp)
-            it = w.quiz_items[w.quiz_i]
+            if i >= len(w.quiz_items):
+                return
+            record = w.quiz_items[w.quiz_i]
+            it = record["item"]
+            b = w.bs[w.quiz_item_indices[record["key"]]]
+            correct = it["correct_index"]
             if dk and i % 7 == 3:
                 choice = -1
-            elif good and w.bs[it["idx"]] < 0.25:
-                choice = it["correct"]
-            elif good and w.bs[it["idx"]] < 0.9:
-                choice = it["correct"] if i % 3 else (it["correct"] + 1) % 4
+            elif good and b < 0.25:
+                choice = correct
+            elif good and b < 0.9:
+                choice = correct if i % 3 else (correct + 1) % 4
             else:
-                choice = (it["correct"] + 1) % 4
+                choice = (correct + 1) % 4
             if not w._quiz_answer(choice):
-                return                 # 失败留给明确重试，不在调试循环里反复弹错
-            if len(w.quiz_resp) < QUIZ_N and not w._quiz_next():
                 return
-        w._finish_quiz()
+            if w._test_bank_exhausted():
+                w._finish_quiz()
+                return
+            if not w._quiz_next():
+                return
 
     def _seed():
         """调试用：造点历史记录和学习进度，方便截设置页。"""

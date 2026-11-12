@@ -80,7 +80,7 @@ class StudyQueue:
         self.record["cursor"] = min(len(self.words), _count(value))
 
     def _skip_known(self, key, st):
-        # 显式状态或 pending 代表用户记录，优先于词汇量测试的估计。
+        # Prediction is explicitly opt-in and never overrides scheduler records.
         return key in self.known and not st and key not in self.record["pending"]
 
     def _sync_pending(self):
