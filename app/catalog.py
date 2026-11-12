@@ -201,8 +201,6 @@ class WordTableModel(QAbstractTableModel):
         self.entries, self.rows = [], []
         self.states, self.known, self.predicted = {}, set(), set()
         self.category, self.query = "all", ""
-        self.selection_mode = False
-        self.selected_keys = set()
         self.order_index = None
         self.palette = th.get(th.DEFAULT)
         self.scale = 1.0
@@ -226,7 +224,6 @@ class WordTableModel(QAbstractTableModel):
                             if preserve_order else None)
         self.entries = list(entries)
         entry_keys = {entry["w"] for entry in self.entries}
-        self.selected_keys.intersection_update(entry_keys)
         self.states = states
         self.known = known or set()
         self.predicted = set(predicted or ())
@@ -249,17 +246,11 @@ class WordTableModel(QAbstractTableModel):
                 category, level, label = memory_info(key, self.states, self.known)
             if category not in ("mastered", "predicted", "known", "unlearned"):
                 category = "unlearned"
-            if category == "predicted":
-                self._counts["mastered"] = self._counts.get("mastered", 0) + 1
             self._meta.append((category, label))
             self._levels.append(level)
-            self._counts[category] = self._counts.get(category, 0) + 1
-            if category != "unlearned":
-                self._counts["learned"] = self._counts.get("learned", 0) + 1
-            if key in self.predicted:
-                self._counts["predicted"] = self._counts.get("predicted", 0) + 1
-        self._counts.setdefault("learned", 0)
-        self._counts.setdefault("predicted", 0)
+            learned = category != "unlearned"
+            self._counts["learned"] += int(learned)
+            self._counts["unlearned"] += int(not learned)
         self._row_meta_dirty = True
         self.refilter()
 
@@ -344,12 +335,9 @@ class WordTableModel(QAbstractTableModel):
             rows = []
             for entry, (word_ci, meaning_ci), (entry_cat, _) in zip(
                     self.entries, self._search, self._meta):
-                key = entry["w"]
-                if cat == "predicted" and key not in self.predicted:
-                    continue
                 if cat == "learned" and entry_cat == "unlearned":
                     continue
-                if cat not in ("all", "predicted", "learned") and entry_cat != cat:
+                if cat == "unlearned" and entry_cat != "unlearned":
                     continue
                 if query and query not in word_ci and query not in meaning_ci:
                     continue
@@ -368,24 +356,6 @@ class WordTableModel(QAbstractTableModel):
     def columnCount(self, parent=QModelIndex()):
         return 0 if parent.isValid() else 3
 
-    def flags(self, index):
-        flags = super().flags(index)
-        if (index.isValid() and index.column() == 0 and self.selection_mode):
-            flags |= Qt.ItemIsUserCheckable
-        return flags
-
-    def setData(self, index, value, role=Qt.EditRole):
-        if (not index.isValid() or index.column() != 0
-                or role != Qt.CheckStateRole or not self.selection_mode):
-            return False
-        key = self.rows[index.row()]["w"]
-        if value == Qt.Checked:
-            self.selected_keys.add(key)
-        else:
-            self.selected_keys.discard(key)
-        self.dataChanged.emit(index, index, [Qt.CheckStateRole])
-        return True
-
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
             return ("单词 / 词组", "释义", "记忆等级")[section]
@@ -396,8 +366,6 @@ class WordTableModel(QAbstractTableModel):
             return None
         row = index.row()
         entry = self.rows[row]
-        if role == Qt.CheckStateRole and index.column() == 0 and self.selection_mode:
-            return Qt.Checked if entry["w"] in self.selected_keys else Qt.Unchecked
         if role == Qt.DisplayRole:
             if index.column() == 0:
                 return word_caption(entry)
@@ -488,8 +456,6 @@ class ControlFlowLayout(QLayout):
 
 
 class BookCatalog(QWidget):
-    bulk_learn_requested = pyqtSignal(object)
-    toggle_select_mode = pyqtSignal(bool)
     refresh_metadata = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -521,16 +487,8 @@ class BookCatalog(QWidget):
         self.filter_group = QButtonGroup(self)
         self.filter_group.setExclusive(True)
         self.filter_chips = {}
-        # entries providers may already expose learned/predicted. Never create two
-        # widgets for the same key: a dict would orphan the first widget's state.
-        self._category_labels = []
-        seen_categories = set()
-        for key, label in list(CATEGORIES) + [
-                ("learned", "已学习"), ("predicted", "预测掌握")]:
-            if key in seen_categories:
-                continue
-            seen_categories.add(key)
-            self._category_labels.append((key, label))
+        self._category_labels = list(CATEGORIES)
+        for key, label in CATEGORIES:
             button = QPushButton(label)
             button.setObjectName("chip")
             button.setProperty("catalogControl", "filter")
@@ -547,37 +505,6 @@ class BookCatalog(QWidget):
         self.search.setClearButtonEnabled(True)
         self.search.textChanged.connect(self._search_changed)
         layout.addWidget(self.search)
-        self.selection_controls = QWidget(self)
-        self.selection_layout = ControlFlowLayout(self.selection_controls)
-        self.select_mode_button = QPushButton("选择")
-        self.select_mode_button.setObjectName("chip")
-        self.select_mode_button.setProperty("catalogControl", "selection")
-        self.select_mode_button.setProperty("on", "0")
-        self.select_mode_button.setCheckable(True)
-        self.select_mode_button.toggled.connect(self._selection_mode_changed)
-        self.selection_layout.addWidget(self.select_mode_button)
-        self.select_filtered_button = QPushButton("选择当前筛选")
-        self.select_filtered_button.clicked.connect(self.select_filtered)
-        self.select_filtered_button.hide()
-        self.selection_layout.addWidget(self.select_filtered_button)
-        self.bulk_learn_button = QPushButton("加入学习")
-        self.bulk_learn_button.clicked.connect(self._request_bulk_learn)
-        self.bulk_learn_button.hide()
-        self.selection_layout.addWidget(self.bulk_learn_button)
-        for button in (self.select_filtered_button, self.bulk_learn_button):
-            button.setObjectName("chip")
-            button.setProperty("catalogControl", "action")
-        for button in (self.select_mode_button, self.select_filtered_button,
-                       self.bulk_learn_button):
-            button.setCursor(Qt.PointingHandCursor)
-        layout.addWidget(self.selection_controls)
-        self.selection_hint = QLabel(
-            "勾选词条或选择当前筛选，再加入学习；切换筛选保留已选词。")
-        self.selection_hint.setWordWrap(True)
-        self.selection_hint.setTextFormat(Qt.PlainText)
-        self.selection_hint.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        self.selection_hint.hide()
-        layout.addWidget(self.selection_hint)
         self.model = WordTableModel(self)
         self.table = NoSelectTableView()
         self.table.setModel(self.model)
@@ -779,47 +706,6 @@ class BookCatalog(QWidget):
         self.set_filter(self.model.category)
         self.refresh_metadata.emit()
 
-    def _selection_mode_changed(self, enabled):
-        self.set_selection_mode(enabled)
-
-    def set_selection_mode(self, enabled):
-        enabled = bool(enabled)
-        self.select_mode_button.blockSignals(True)
-        self.select_mode_button.setChecked(enabled)
-        self.select_mode_button.blockSignals(False)
-        self.select_mode_button.setProperty("on", "1" if enabled else "0")
-        self.select_mode_button.style().unpolish(self.select_mode_button)
-        self.select_mode_button.style().polish(self.select_mode_button)
-        self.select_mode_button.update()
-        self.model.selection_mode = enabled
-        self.table.setEditTriggers(
-            QAbstractItemView.AllEditTriggers if enabled
-            else QAbstractItemView.NoEditTriggers)
-        self.select_filtered_button.setVisible(enabled)
-        self.bulk_learn_button.setVisible(enabled)
-        self.selection_hint.setVisible(enabled)
-        self.selection_layout.invalidate()
-        self.selection_controls.updateGeometry()
-        if self.model.rowCount():
-            self.model.dataChanged.emit(
-                self.model.index(0, 0),
-                self.model.index(self.model.rowCount() - 1, 0),
-                [Qt.CheckStateRole])
-        self.toggle_select_mode.emit(enabled)
-
-    def select_filtered(self):
-        self.model.selected_keys.update(entry["w"] for entry in self.model.rows)
-        if self.model.rowCount():
-            self.model.dataChanged.emit(
-                self.model.index(0, 0),
-                self.model.index(self.model.rowCount() - 1, 0),
-                [Qt.CheckStateRole])
-
-    def _request_bulk_learn(self):
-        keys = sorted(self.model.selected_keys, key=str.casefold)
-        if keys:
-            self.bulk_learn_requested.emit(keys)
-
     def set_filter(self, category):
         if category not in self.filter_chips:
             category = "all"
@@ -907,13 +793,8 @@ class BookCatalog(QWidget):
             'color:%(chip_sel_fg)s;}'
             % dict(self.theme, pad_y=round(5 * scale), pad_x=round(10 * scale))))
         self.filter_layout.setSpacing(round(6 * scale))
-        self.selection_layout.setSpacing(round(6 * scale))
         self.filter_layout.invalidate()
-        self.selection_layout.invalidate()
         self.filter_controls.updateGeometry()
-        self.selection_controls.updateGeometry()
-        self.selection_hint.setStyleSheet(
-            th.label_qss(self.theme, "note", round(12 * scale)))
         self.path_label.setStyleSheet(th.label_qss(self.theme, "mean", round(13 * scale)))
         self.table.setStyleSheet(
             "QTableView{border:none;background:%(bg)s;color:%(fg_mean)s;outline:0;"

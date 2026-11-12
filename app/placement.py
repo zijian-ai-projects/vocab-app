@@ -20,6 +20,8 @@ GRID_MAX = 6.0
 GRID_STEP = 0.02
 PRIOR_SD = 2.0
 TRAP_PROB = 0.25
+PICK_WINDOW = 0.10
+HIST_BIN = 0.02
 
 
 def sigmoid(x):
@@ -166,22 +168,14 @@ def new_session(seed=None):
 
 
 def step(sess, correct, answered, response=None):
-    """Update level and rigor-like streak state; unknown pauses rather than clears streak."""
+    """Update level/streak; unknown (-1) follows the same staircase as wrong.
+
+    The distinct response code is preserved by the caller/session response list;
+    rigor policy remains separate in update_rigor (unknown does not alter rigor).
+    """
     if response is None:
         response = 1 if correct else 0
-    if response < 0:
-        return sess["level"]
-    if correct:
-        sess["up"] = min(105, sess.get("up", 0) + 1)
-        sess["down"] = 0
-        sess["wrong_streak"] = 0
-        if sess["up"] >= 2:
-            inc = 2 if sess.get("fast", False) and answered <= FAST_N else 1
-            sess["level"] = min(TOP_LEVEL, sess["level"] + inc)
-            sess["up"] = 0
-            if answered >= FAST_N:
-                sess["fast"] = False
-    else:
+    if response != 1:
         sess["wrong_streak"] = min(12, sess.get("wrong_streak", 0) + 1)
         sess["down"] = sess["wrong_streak"]
         sess["up"] = 0
@@ -189,6 +183,16 @@ def step(sess, correct, answered, response=None):
         if sess["down"] >= 2:
             sess["level"] = max(0, sess["level"] - 1)
             sess["down"] = 0
+        return sess["level"]
+    sess["up"] = min(105, sess.get("up", 0) + 1)
+    sess["down"] = 0
+    sess["wrong_streak"] = 0
+    if sess["up"] >= 2:
+        inc = 2 if sess.get("fast", False) and answered <= FAST_N else 1
+        sess["level"] = min(TOP_LEVEL, sess["level"] + inc)
+        sess["up"] = 0
+        if answered >= FAST_N:
+            sess["fast"] = False
     return sess["level"]
 
 
@@ -204,24 +208,40 @@ def update_rigor(rigor, response):
 
 
 def pick_idx(lvls, level, asked, rng, bs=None, theta=0.0):
-    """Choose a unique item by nearest band, then Fisher information; exhaustion is None."""
+    """Pick a unique item around expected 70% success difficulty.
+
+    With bs: target = theta - 0.5 (or the easiest unseen edge for the first
+    question), ignoring the coarse level bands. A deterministic shortlist is
+    formed from difficulties within PICK_WINDOW of the nearest target; no full
+    candidate sorting is performed. Without bs, retain the legacy band policy.
+    """
     seen = set(asked)
-    candidates = [i for i, band in enumerate(lvls) if i not in seen]
+    if bs is None:
+        candidates = [i for i, band in enumerate(lvls) if i not in seen]
+        if not candidates:
+            return None
+        band_distance = min(abs(lvls[i] - level) for i in candidates)
+        candidates = [i for i in candidates if abs(lvls[i] - level) == band_distance]
+        candidates.sort()
+        return candidates[rng.randrange(len(candidates))]
+    candidates = [i for i in range(len(bs)) if i not in seen]
     if not candidates:
         return None
-    band_distance = min(abs(lvls[i] - level) for i in candidates)
-    candidates = [i for i in candidates if abs(lvls[i] - level) == band_distance]
-    if bs is not None:
-        candidates.sort(key=lambda i: (-(p_correct(theta, bs[i]) * (1 - p_correct(theta, bs[i]))), i))
-        best_info = p_correct(theta, bs[candidates[0]]) * (1 - p_correct(theta, bs[candidates[0]]))
-        candidates = [i for i in candidates if abs(p_correct(theta, bs[i]) * (1 - p_correct(theta, bs[i])) - best_info) < 1e-12]
-    candidates.sort()
-    # Deterministic for an RNG seed/state and independent of bank traversal order.
-    return candidates[rng.randrange(len(candidates))]
+    if not asked:
+        target = min(bs[i] for i in candidates)
+    else:
+        target = float(theta) - 0.5
+    best = min(abs(float(bs[i]) - target) for i in candidates)
+    # Two linear passes avoid sorting the full candidate bank. Keep every
+    # candidate in the same small difficulty window, even if a later candidate
+    # is slightly closer; this is the intended deterministic tie shortlist.
+    window = best + PICK_WINDOW
+    shortlist = [i for i in candidates if abs(float(bs[i]) - target) <= window]
+    return shortlist[rng.randrange(len(shortlist))]
 
 
 def posterior(bs, responses, prior_sd=PRIOR_SD, grid_min=GRID_MIN, grid_max=GRID_MAX, grid_step=GRID_STEP):
-    """Fixed-grid posterior for correct=1, wrong=0, unknown=-1 (unknown contributes no likelihood)."""
+    """Fixed-grid posterior; both incorrect and unknown responses are negative evidence."""
     if len(bs) != len(responses):
         raise ValueError("bs and responses must have equal length")
     if prior_sd <= 0 or grid_step <= 0 or grid_max < grid_min:
@@ -235,10 +255,8 @@ def posterior(bs, responses, prior_sd=PRIOR_SD, grid_min=GRID_MIN, grid_max=GRID
     for theta in grid:
         ll = -(theta * theta) / (2 * prior_sd * prior_sd)
         for b, response in zip(bs, responses):
-            if response < 0:
-                continue
             p = min(max(p_correct(theta, b), 1e-12), 1 - 1e-12)
-            ll += math.log(p if response else 1 - p)
+            ll += math.log(p if response == 1 else 1 - p)
         logw.append(ll)
     top = max(logw)
     weights = [math.exp(value - top) for value in logw]
@@ -275,22 +293,72 @@ def vocab_at(bs, theta):
     return sum(p_know(theta, b) for b in bs)
 
 
-def vocab_posterior(bs, responses, bank_total=None):
-    """Posterior expected vocabulary and equal-tail 95% vocabulary interval.
+# Full-bank difficulty histogram cache. The UI/quiz may call vocab_posterior
+# after every answer; without this, 34k words × 601 grid points would be
+# recomputed repeatedly. Values are rounded into HIST_BIN (0.02) bins, well
+# below the measurement precision, and the resulting vocab-at-grid row is cached.
+_BANK_HIST_CACHE = {}
 
-    `bank_total` may supply a precomputed plausible universe; when larger than the
-    sampled difficulty bank, its unseen mass is conservatively assigned b=CLAMP.
+
+def _bank_histogram(bank_bs):
+    values = tuple(float(value) for value in bank_bs)
+    key = id(bank_bs)
+    cached = _BANK_HIST_CACHE.get(key)
+    if cached is not None and cached[0] == values:
+        return cached[1]
+    counts = {}
+    for value in values:
+        q = int(round(value / HIST_BIN))
+        bin_value = round(q * HIST_BIN, 10)
+        counts[bin_value] = counts.get(bin_value, 0) + 1
+    hist = tuple(sorted(counts.items()))
+    _BANK_HIST_CACHE[key] = (values, hist)
+    if len(_BANK_HIST_CACHE) > 8:
+        _BANK_HIST_CACHE.pop(next(iter(_BANK_HIST_CACHE)))
+    return hist
+
+
+@lru_cache(maxsize=8)
+def _bank_vocab_grid(hist, grid):
+    return tuple(sum(count * p_know(theta, b) for b, count in hist)
+                 for theta in grid)
+
+
+def vocab_posterior(bs, responses, bank_total=None, bank_bs=None):
+    """Posterior expected vocabulary over the sampled or complete difficulty bank.
+
+    `bank_bs` is the complete bank difficulty profile. Its rounded histogram and
+    vocabulary-at-grid row are cached; repeated measurement updates are cheap.
+    `bank_total` remains the legacy API when bank_bs is not supplied (unseen mass
+    uses CLAMP), and must agree with bank_bs when both are given.
     """
-    total = len(bs) if bank_total is None else max(len(bs), int(bank_total))
-    unseen = total - len(bs)
+    if bank_bs is not None and bank_total is not None and bank_total != len(bank_bs):
+        raise ValueError("bank_total must match bank_bs")
     grid, weights = posterior(bs[:len(responses)], responses)
-    # All unseen terms use the same difficulty. Sum their mass once instead
-    # of evaluating the identical sigmoid for every word at every grid point.
-    # This preserves the existing posterior model while making UI work depend
-    # on the answered sample size, not on the size of the entire word bank.
-    vocab = [vocab_at(bs, theta) + unseen * p_know(theta, CLAMP) for theta in grid]
+    if bank_bs is not None:
+        hist = _bank_histogram(bank_bs)
+        vocab = list(_bank_vocab_grid(hist, tuple(grid)))
+    else:
+        total = len(bs) if bank_total is None else max(len(bs), int(bank_total))
+        if total > len(bs):
+            vocab = [vocab_at(bs, theta) + (total - len(bs)) * p_know(theta, CLAMP)
+                     for theta in grid]
+        else:
+            vocab = [vocab_at(bs, theta) for theta in grid]
     mean = sum(value * weight for value, weight in zip(vocab, weights))
     return mean, _quantile(vocab, weights, 0.025), _quantile(vocab, weights, 0.975)
+
+
+def vocab_error_percent(low, high, bank_total):
+    """Honest measurement error as 95%-interval half-width / full bank * 100.
+
+    This is intentionally an absolute-uncertainty percentage, not a relative
+    interval around the current estimate; never clamp the interval to fake it.
+    """
+    total = float(bank_total)
+    if total <= 0:
+        raise ValueError("bank_total must be positive")
+    return max(0.0, float(high) - float(low)) / 2.0 / total * 100.0
 
 
 def error_band(bs, theta, se):

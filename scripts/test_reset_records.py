@@ -193,6 +193,23 @@ class ResetTests(unittest.TestCase):
         self.assertIn("20", out)
         self.assertTrue(all(path.exists() for path in files))
 
+    def test_preview_labels_counts_and_exact_names_without_mutation(self):
+        files = self.seed()
+        before = {path: path.read_bytes() for path in files}
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            found = reset.preview(self.install)
+        text = output.getvalue()
+        self.assertEqual(len(found), 20)
+        self.assertIn("当前写入目录：" + str(self.install / "data"), text)
+        self.assertIn("旧版迁移来源（非当前写入目录）：" + str(self.profile), text)
+        self.assertIn("10 个匹配文件", text)
+        self.assertIn("这是文件数，不是目录数", text)
+        self.assertIn("避免下次启动把旧进度迁移回来", text)
+        self.assertIn("progress.json.bak.tmp-fixture", text)
+        self.assertNotIn("progress-copy.json", text)
+        self.assertEqual({path: path.read_bytes() for path in files}, before)
+
     def test_cli_cancel_never_deletes(self):
         files = self.seed()
         code, out = self.cli([], "cancel\n")

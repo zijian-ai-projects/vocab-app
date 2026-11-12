@@ -6,8 +6,8 @@
   2. 首次选书 sel_book=None、开始按钮禁用、无选中行；初次主分类无返回且 Esc/返回不能退出；
      子层有返回；设置入口的主分类有返回；标题 15px 与 22×20 返回槽保留；
   3. 选书页顶部不再显示 已学/已会/已掌握；
-  4. 选中书按钮统一「用这本开始」；
-  5. 未点「用这本开始」关闭重启仍停在选书页；点过才算 book_confirmed；
+  4. 选中书按钮统一「用这本书开始」；
+  5. 未点「用这本书开始」关闭重启仍停在选书页；点过才算 book_confirmed；
   6. 首测中断优先续测；首测完成/跳过进空选书；
   7. 设置页不再有「已掌握 / 测试判定已会」；
   8. 老 progress 迁移：有学习证据的保留；纯历史/默认六级占位记录仍进待选书；
@@ -184,7 +184,7 @@ def no_forbidden_settings(w):
 # ======================================================================
 def t_fresh_start(sb):
     w = sb.new_card(progress={}, show=False)
-    check(w.mode == "welcome", "fresh Card 创建后即为 welcome（未先闪学习页），实际 %s" % w.mode)
+    check(w.mode == "books", "fresh Card 创建后即为 welcome（未先闪学习页），实际 %s" % w.mode)
     check(getattr(w, "book_id", "MISSING") is None,
           "fresh book_id is None，实际 %r" % getattr(w, "book_id", "MISSING"))
     check(getattr(w, "sel_book", "MISSING") is None,
@@ -199,7 +199,7 @@ def t_fresh_start(sb):
     check(w.progress.get("welcome_done") in (None, False),
           "fresh welcome_done 未提前写成 True：%r" % w.progress.get("welcome_done"))
     check(w._test_show_deferred, "首次创建用 show 拦截，检查的是 show 前状态")
-    check(w._test_first_show_mode == "welcome",
+    check(w._test_first_show_mode == "books",
           "第一次 show 的瞬间就是 welcome，实际 %r" % w._test_first_show_mode)
     check(w._test_first_show_book is None,
           "第一次 show 时 book_id=None，实际 %r" % (w._test_first_show_book,))
@@ -209,10 +209,10 @@ def t_fresh_start(sb):
           "第一次 show 时 queue_words 长度 0，实际 %d" % w._test_first_show_queue_words_len)
     check(not w.stage.isVisibleTo(w), "show 前学习区不可见")
     check(w.word.text() == "", "show 前没有预填单词：%r" % w.word.text())
-    check(w.welcome_page.isVisibleTo(w), "show 前欢迎页已设为当前页")
+    check(w.books_page.isVisibleTo(w), "show 前选书页已设为当前页")
     sb.show(w)
     pump(8)
-    check(w.mode == "welcome", "show 后仍停在欢迎页，实际 %s" % w.mode)
+    check(w.mode == "books", "show 后仍停在欢迎页，实际 %s" % w.mode)
 
 
 # ======================================================================
@@ -227,8 +227,8 @@ def t_first_books(sb):
           "不测了 -> books 第 1 级，实际 %s/%s" % (w.mode, w.nav_level))
     check(w.sel_book is None, "首次选书 sel_book is None，实际 %r" % w.sel_book)
     check(not w.btn_learn.isEnabled(), "首次选书「开始」按钮禁用")
-    check(w.btn_learn.text() == "用这本开始",
-          "首次选书按钮文案统一「用这本开始」：%r" % w.btn_learn.text())
+    check(w.btn_learn.text() == "用这本书开始",
+          "首次选书按钮文案统一「用这本书开始」：%r" % w.btn_learn.text())
     check(w.status.text() == "", "选书页顶部不再显示统计：%r" % w.status.text())
     check(not any(b.property("on") == "1" for b in w.book_btns.values()),
           "首次选书没有任何行处于选中态")
@@ -297,7 +297,7 @@ def t_settings_entry_geometry(sb):
 
 
 # ======================================================================
-# 3. 选择但未点「用这本开始」：不算确认；重启仍在选书页
+# 3. 选择但未点「用这本书开始」：不算确认；重启仍在选书页
 # ======================================================================
 def t_unconfirmed_restart(sb):
     w = sb.new_card(progress={}, show=True)
@@ -308,8 +308,8 @@ def t_unconfirmed_restart(sb):
     pick_book_via_ui(w, target)
     check(w.sel_book == target, "点选词书：%s" % target)
     check(w.btn_learn.isEnabled(), "选中后开始按钮启用")
-    check(w.btn_learn.text() == "用这本开始",
-          "选中后按钮仍统一「用这本开始」：%r" % w.btn_learn.text())
+    check(w.btn_learn.text() == "用这本书开始",
+          "选中后按钮仍统一「用这本书开始」：%r" % w.btn_learn.text())
     check(sum(1 for b in w.book_btns.values() if b.property("on") == "1") == 1,
           "选中行恰好一个高亮")
     check(not w.progress.get("book_confirmed"), "只点选不写 book_confirmed")
@@ -328,7 +328,7 @@ def t_unconfirmed_restart(sb):
 
 
 # ======================================================================
-# 4. 点「用这本开始」：book_confirmed 写入；重启进学习
+# 4. 点「用这本书开始」：book_confirmed 写入；重启进学习
 # ======================================================================
 def t_confirm_and_restart(sb):
     w = sb.new_card(progress={}, show=True)
@@ -339,7 +339,7 @@ def t_confirm_and_restart(sb):
     pick_book_via_ui(w, target)
     w.btn_learn.click()
     pump(8)
-    check(w.mode == "front", "点「用这本开始」-> 学习页，实际 %s" % w.mode)
+    check(w.mode == "front", "点「用这本书开始」-> 学习页，实际 %s" % w.mode)
     check(w.book_id == target, "确认后 book_id = %s，实际 %r" % (target, w.book_id))
     check(w.progress.get("book_confirmed") is True, "确认后 progress[book_confirmed]=True")
     check(w.progress.get("book") == target,
@@ -363,7 +363,7 @@ def t_quiz_resume_and_skip(sb):
     w = sb.new_card(progress={}, show=True)
     w._due_timer.stop()
     w._window_save_timer.stop()
-    check(w.mode == "welcome", "新用户真实启动首次引导")
+    check(w.mode == "books", "新用户真实启动首次引导")
     with patch.object(QMessageBox, "question", side_effect=AssertionError("首次测试不应弹窗")):
         started = w._welcome_test()
     check(started and w.mode == "quiz", "首次引导点测试 -> quiz，实际 %s" % w.mode)
@@ -535,7 +535,7 @@ def t_fresh_settings(sb):
 
 
 # ======================================================================
-# 8. 选书页统一「用这本开始」/ 无顶部统计（已确认用户）
+# 8. 选书页统一「用这本书开始」/ 无顶部统计（已确认用户）
 # ======================================================================
 def t_books_unified_label(sb):
     prog = confirmed_progress("cet4-dg", confirmed=True)
@@ -547,12 +547,12 @@ def t_books_unified_label(sb):
     check(w.status.text() == "", "已确认用户选书页顶部也无统计：%r" % w.status.text())
     check(w.btn_back.isVisibleTo(w), "设置入口主分类返回可见")
     # 选中当前书 / 换一本，文案都统一
-    check(w.btn_learn.text() == "用这本开始",
-          "进入选书页按钮就是「用这本开始」：%r" % w.btn_learn.text())
+    check(w.btn_learn.text() == "用这本书开始",
+          "进入选书页按钮就是「用这本书开始」：%r" % w.btn_learn.text())
     other = first_item("cet6")
     pick_book_via_ui(w, other)
-    check(w.btn_learn.text() == "用这本开始",
-          "换选另一本后仍是「用这本开始」：%r" % w.btn_learn.text())
+    check(w.btn_learn.text() == "用这本书开始",
+          "换选另一本后仍是「用这本书开始」：%r" % w.btn_learn.text())
     check(w.btn_learn.isEnabled(), "换选后开始按钮可用")
 
 
@@ -654,7 +654,7 @@ def t_nottest(sb):
     # 首次引导：带 --nottest 也必须 welcome
     w = sb.new_card(progress={}, show=True)
     pump(6)
-    check(w.mode == "welcome", "--nottest 下首次打开仍进欢迎页，实际 %s" % w.mode)
+    check(w.mode == "books", "--nottest 下首次打开仍进欢迎页，实际 %s" % w.mode)
     w.close()
     pump(4)
 

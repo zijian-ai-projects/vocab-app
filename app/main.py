@@ -34,6 +34,7 @@ from catalog import BookCatalog
 from entries import is_phrase, meaning as entry_meaning, pronunciation, memory_info, word_caption
 import level_meanings
 import study_options
+import school_knowledge as school
 from app_icon import application_icon, configure_application_icon, set_windows_app_id
 
 DEFAULT_PROGRESS_PATH, DEFAULT_WIN_PATH = storage.paths(ROOT)
@@ -45,10 +46,10 @@ LEGACY_PROGRESS_PATHS = tuple(os.path.join(directory, "progress.json")
                               for directory in storage.legacy_dirs(ROOT))
 LEGACY_WIN_PATHS = tuple(os.path.join(directory, "_win.json")
                          for directory in storage.legacy_dirs(ROOT))
-VERSION = "1.4.0"
+VERSION = "1.4.1"
 DEFAULTS_JOURNAL = "_v136_defaults_pending"
 RESET_PREF_KEYS = ("theme", "study_mode", "retry_gap", "learning_policy",
-                   "keybindings")
+                   "keybindings", "school_knowledge")
 
 COMPACT_QSS = """
 QPushButton { font-size: 15px; padding: 4px 12px; border-radius: 12px; }
@@ -752,7 +753,14 @@ class Card(QWidget):
         self.theta = self.progress.get("theta")
         data = self.progress.get("prediction_state")
         keys = data.get("selected", []) if isinstance(data, dict) else []
-        self.known = {key for key in keys if isinstance(key, str)} if isinstance(keys, list) else set()
+        selected = {key for key in keys if isinstance(key, str)} if isinstance(keys, list) else set()
+        selected.update(school.words(school.normalize(self.progress.get("school_knowledge"))))
+        # Preserve the set shared with StudyQueue when preferences change.
+        if hasattr(self, "known"):
+            self.known.clear()
+            self.known.update(selected)
+        else:
+            self.known = selected
 
     def _book_stats(self, book_id):
         learned = mastered = known = predicted = 0
@@ -906,7 +914,9 @@ class Card(QWidget):
             self._scale_signature = signature
             i = 1 if self.compact else 0
             self._base_qss = th.qss(self.t, scale)
-            self.setStyleSheet(self._base_qss + (COMPACT_QSS if self.compact else ""))
+            action_qss = ('QPushButton[bookAction="1"] { font-size: %dpx; padding: 4px %dpx; }'
+                          % (round(13 * scale), round(12 * scale)))
+            self.setStyleSheet(self._base_qss + (COMPACT_QSS if self.compact else "") + action_qss)
             self.root.setContentsMargins(*(round(value * scale) for value in MARGINS[i]))
             for button in self.findChildren(QPushButton):
                 if isinstance(button, MiniButton) or button is self.btn_close:
@@ -1076,7 +1086,6 @@ class Card(QWidget):
         self._build_books()
         self._build_settings()
         self.catalog = BookCatalog(self)
-        self.catalog.bulk_learn_requested.connect(self._bulk_learn_selected)
         self.root.addWidget(self.catalog, 1)
         self.catalog.hide()
         self.history_page = QWidget()
@@ -1446,12 +1455,15 @@ class Card(QWidget):
         self.btn_catalog_books.setEnabled(False)
         self.btn_catalog_books.clicked.connect(lambda: self.open_catalog(self.sel_book, "books"))
         bottom.addWidget(self.btn_catalog_books)
-        self.btn_learn = QPushButton("用这本开始")
+        self.btn_learn = QPushButton("用这本书开始")
         self.btn_learn.setEnabled(False)
         self.btn_learn.setObjectName("remember")
         self.btn_learn.setCursor(Qt.PointingHandCursor)
-        self.btn_learn.setMinimumHeight(40)
-        self.btn_learn.setMinimumWidth(132)
+        for button in (self.btn_catalog_books, self.btn_learn):
+            button.setProperty("bookAction", "1")
+            button.setFixedHeight(36)
+            button.setMinimumWidth(0)
+            button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         self.btn_learn.clicked.connect(self._start_learning)
         bottom.addWidget(self.btn_learn)
         bv.addLayout(bottom)
@@ -1647,6 +1659,31 @@ class Card(QWidget):
         layout.addLayout(modes)
         layout.addSpacing(6)
 
+        layout.addWidget(self.reg(QLabel("已认识词汇范围"), "note", 12))
+        school_rows = QVBoxLayout()
+        school_rows.setSpacing(4)
+        school_row = None
+        self.school_chips = {}
+        for index, (key, caption) in enumerate(school.LEVELS):
+            if index % 2 == 0:
+                school_row = QHBoxLayout()
+                school_row.setSpacing(4)
+                school_rows.addLayout(school_row)
+            button = QPushButton(caption)
+            button.setObjectName("chip")
+            button.setMinimumHeight(30)
+            button.clicked.connect(lambda _, value=key: self.set_school_knowledge(value))
+            self.school_chips[key] = button
+            school_row.addWidget(button)
+            if index % 2:
+                school_row.addStretch(1)
+        layout.addLayout(school_rows)
+        note = self.reg(QLabel("默认关闭；选择初中包含小学，选择高中包含小学和初中。\n"
+                               "按现有民间考纲词表跳过未学新词；关闭后恢复，不改记忆等级。"), "note", 11)
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        layout.addSpacing(6)
+
         self.key_edits = {}
         self.btn_apply_keys = None
         self.key_dialog = None
@@ -1789,6 +1826,7 @@ class Card(QWidget):
             self.study_engine.retry_gap = 3
 
     def _apply_preference_ui(self):
+        self._refresh_known()
         self._apply_scaling(force=True)
         self.catalog.set_palette(self.t)
         self.window_ctl.update_palette(self.t)
@@ -1822,6 +1860,27 @@ class Card(QWidget):
             return False
         self._sync_preference_attrs()
         self._apply_preference_ui()
+        return True
+
+    def set_school_knowledge(self, level):
+        if level != school.normalize(level):
+            return False
+        if level == school.normalize(self.progress.get("school_knowledge")):
+            return True
+        # A previously skipped word may be behind the cursor. Re-scan without
+        # changing scheduler records, pending retries, or daily learning counts.
+        old_records, old_cursors = copy.deepcopy(self.study_records), dict(self.cursors)
+        for book_id, record in self.study_records.items():
+            record["cursor"] = 0
+            self.cursors[book_id] = 0
+        if not self._commit_preferences({"school_knowledge": level}):
+            for book_id, saved in old_records.items():
+                self.study_records[book_id].clear()
+                self.study_records[book_id].update(saved)
+            self.cursors.clear()
+            self.cursors.update(old_cursors)
+            return False
+        self._policy_changed_in_settings = True
         return True
 
     def set_study_mode(self, mode):
@@ -1991,7 +2050,7 @@ class Card(QWidget):
         journal = {"schema": 1, "preferences": before, "window": old_window}
         defaults = {"theme": th.DEFAULT, "study_mode": "brush", "retry_gap": 3,
                     "learning_policy": dict(learn.DEFAULTS),
-                    "keybindings": dict(keys.DEFAULT_BINDINGS)}
+                    "keybindings": dict(keys.DEFAULT_BINDINGS), "school_knowledge": "off"}
         self._window_save_timer.stop()
         self.progress[DEFAULTS_JOURNAL] = journal
         window_written = False
@@ -2087,6 +2146,8 @@ class Card(QWidget):
             self.settings_study_mode_start = self.study_mode
             self._policy_changed_in_settings = False
         self._refresh_settings()
+        if not self.progress.get("book_confirmed") and self.mode in ("books", "welcome"):
+            self.pre_settings_mode = "front"
         self._set_mode("settings")
 
     def close_settings(self):
@@ -2095,6 +2156,9 @@ class Card(QWidget):
 
         self._reset_key_draft()
         if not self.progress.get("book_confirmed"):
+            self.open_books("welcome")
+            return
+        if self.mode == "settings" and not hasattr(self, "study_engine"):
             self.open_books("welcome")
             return
         mode = self.pre_settings_mode
@@ -2158,9 +2222,12 @@ class Card(QWidget):
             chip.setProperty("on", "1" if mode == self.sel_order else "0")
             chip.style().unpolish(chip)
             chip.style().polish(chip)
-        self.btn_learn.setText("用这本开始")
+        self.btn_learn.setText("用这本书开始")
         self.btn_learn.setEnabled(bool(self.sel_book))
         self.btn_catalog_books.setEnabled(bool(self.sel_book))
+        if self.btn_learn is not None:
+            self.btn_learn.adjustSize()
+        self.btn_catalog_books.adjustSize()
         if self.nav_level == 3 and self.sel_book in self.book_btns:
             try:
                 self.book_scroll.ensureWidgetVisible(self.book_btns[self.sel_book], 0, 6)
@@ -2231,15 +2298,13 @@ class Card(QWidget):
         if self._quiz_remaining_days(session):
             self._new_session()
             return
-        if not self.progress.get("welcome_done"):
-            self.welcome()
-            return
         if not self.progress.get("book_confirmed"):
             self.open_books("welcome")            # 是否测试不等于已经确认词书
             return
         self._new_session()
 
     def welcome(self):
+        # Kept for old progress paths; new installs open book selection directly.
         self._set_mode("welcome")
 
     def _welcome_test(self):
@@ -2258,7 +2323,12 @@ class Card(QWidget):
             button.setProperty("on", "1" if key == self.study_mode else "0")
             button.style().unpolish(button)
             button.style().polish(button)
-        location = "V%s" % VERSION
+        selected_school = school.normalize(self.progress.get("school_knowledge"))
+        for key, button in self.school_chips.items():
+            button.setProperty("on", "1" if key == selected_school else "0")
+            button.style().unpolish(button)
+            button.style().polish(button)
+        location = "V%s\n记录目录：%s" % (VERSION, os.path.dirname(PROGRESS_PATH))
         if self.storage_notices:
             location += "\n" + "\n".join(self.storage_notices)
         self.lab_storage.setText(location)
@@ -3047,7 +3117,7 @@ class Card(QWidget):
         session_id = self.quiz_session_id if session is None else session["id"]
         started = self.quiz_started_at if session is None else session["started_at"]
         bs = [self.bs[self.quiz_item_indices[item["key"]]] for item in items[:len(responses)]]
-        estimate, low, high = pl.vocab_posterior(bs, responses, bank_total=len(self.bank))
+        estimate, low, high = pl.vocab_posterior(bs, responses, bank_bs=self.bs)
         theta, se = pl.estimate_theta(bs, responses)
         history = self.progress.get("history") or []
         existing = next((row for row in history if row.get("id") == session_id), None)
@@ -3067,7 +3137,7 @@ class Card(QWidget):
             "algo": "bayes-v140", "theta": round(theta, 4), "se": round(se, 4),
             "vocab": int(round(estimate)), "rigor": rigor,
             "lo": max(0, int(round(low))), "hi": int(round(high)),
-            "err": round(100 * (high - low) / max(2, estimate * 2), 1),
+            "err": round(pl.vocab_error_percent(low, high, len(self.bank)), 1),
             "right": right, "dontknow": sum(response < 0 for response in responses),
             "total": len(responses), "baseline": baseline, "completed": bool(completed),
             "prediction_eligible": right > 0 and len(responses) >= PREDICTION_MIN_N and rigor >= PREDICTION_MIN_RIGOR,
@@ -3154,7 +3224,8 @@ class Card(QWidget):
         def colored(key, text):
             old = previous.get(key) if comparable else None
             if old is not None and values[key] != old:
-                color = green if values[key] > old else red
+                improved = values[key] < old if key == "err" else values[key] > old
+                color = green if improved else red
                 return "<span style='color:%s'>%s</span>" % (color, text)
             return text
 
@@ -3212,7 +3283,7 @@ class Card(QWidget):
             self.quiz_locked = True
             if choice < 0:
                 self.quiz_resp.append(-1)
-                delta = 0.0
+                delta = -1.0
             elif good:
                 self.quiz_resp.append(1)
                 delta = 1.5
@@ -3432,7 +3503,8 @@ class Card(QWidget):
         for key in keys_to_learn:
             if key in self.known:
                 self.known.discard(key)
-                self.prediction_data["selected"].remove(key)
+                if key in self.prediction_data["selected"]:
+                    self.prediction_data["selected"].remove(key)
                 if key not in self.prediction_data["excluded"]:
                     self.prediction_data["excluded"].append(key)
             state = self.states.get(key)
@@ -3440,6 +3512,7 @@ class Card(QWidget):
                 state["st"] = "new"
                 state["lv"] = 0
                 state["due"] = None
+        self.prediction_data["effective"]["selected"] = len(self.prediction_data["selected"])
         try:
             self.save()
         except storage.StorageError as error:
@@ -3447,6 +3520,7 @@ class Card(QWidget):
             self.states.update(states_before)
             self.prediction_data.clear()
             self.prediction_data.update(pred_before)
+            self._refresh_known()
             QMessageBox.critical(self, "未加入学习", str(error))
             return False
         self.catalog.set_metadata(self.states, known=set(), predicted=self.known)

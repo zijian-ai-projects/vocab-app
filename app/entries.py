@@ -2,9 +2,8 @@
 """词条展示与记忆分类：词和词组共用数据，不编造音标或词性。"""
 import re
 
-CATEGORIES = (("all", "全部"), ("mastered", "已掌握"),
-              ("predicted", "预测掌握"), ("learned", "已学习"),
-              ("known", "认识"), ("unlearned", "待学习"))
+CATEGORIES = (("all", "全部"), ("learned", "已学习"),
+              ("unlearned", "待学习"))
 POS_RE = re.compile(r"^(?:n|v|vt|vi|adj|adv|prep|conj|pron|det|art|num|aux|int|interj|abbr)\.")
 
 

@@ -20,6 +20,7 @@ sys.dont_write_bytecode = True
 APP = Path(__file__).resolve().parents[1] / "app"
 sys.path.insert(0, str(APP))
 import placement as pl
+import school_knowledge as school
 from entries import word_caption
 
 
@@ -147,7 +148,7 @@ def make_subject(session=True, answered=False, index=0, count=1, history_count=1
     def no_prediction(*args, **kwargs):
         raise AssertionError("Quiz transactions must not implicitly apply prediction")
 
-    namespace = dict(copy=copy, random=random, math=math, os=os, pl=pl,
+    namespace = dict(copy=copy, random=random, math=math, os=os, pl=pl, school=school,
                      word_caption=word_caption, storage=store,
                      LETTERS="ABCD", VERSION="1.4.0", RESUME_TTL=RESUME_TTL,
                      PREDICTION_MIN_N=50, PREDICTION_MIN_RIGOR=60,

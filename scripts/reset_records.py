@@ -101,21 +101,35 @@ def clear_records(root=ROOT, confirmed=False):
     return deleted
 
 
+def preview(root=ROOT):
+    """List exact immediate candidates without reading record contents or deleting."""
+    directories = record_dirs(root)
+    active = Path(storage.data_dir(str(Path(root).resolve()))).resolve()
+    files = record_files(directories)
+    print("当前写入目录仅有一个；旧目录是兼容迁移检查来源，不表示程序同时向多处写入。")
+    print("清空时也检查旧来源，避免下次启动把旧进度迁移回来；不会删除词库或整个目录。")
+    for directory in directories:
+        role = "当前写入目录" if directory == active else "旧版迁移来源（非当前写入目录）"
+        matches = [path for path in files if path.parent == directory]
+        print("%s：%s（%d 个匹配文件）" % (role, directory, len(matches)))
+        for path in matches:
+            print("  - %s" % path.name)
+        if not matches:
+            print("  - 无匹配记录文件")
+    print("发现 %d 个已知记录/备份/临时文件（这是文件数，不是目录数）。" % len(files))
+    print("只匹配各目录第一层 progress.json、_win.json 及其已知备份/临时文件；不递归扫描。")
+    return files
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true", help="只显示目标，不清空")
     parser.add_argument("--yes", action="store_true", help="明确确认清空（自动化用）")
     args = parser.parse_args(argv)
     try:
-        directories = record_dirs()
         print("请先关闭背单词。将清空学习进度、词汇量测试历史与窗口设置，词库不会删除。")
-        for directory in directories:
-            print("记录目录：", directory)
-        files = record_files(directories)
-        print("发现 %d 个已知记录/备份/临时文件。" % len(files))
+        preview()
         if args.dry_run:
-            for path in files:
-                print(path)
             return 0
         if not args.yes and input("输入 CLEAR 并回车确认，其它输入取消：").strip() != "CLEAR":
             print("已取消，没有清空。")

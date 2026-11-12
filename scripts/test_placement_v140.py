@@ -21,8 +21,8 @@ class PosteriorTests(unittest.TestCase):
         self.assertGreater(correct, 0.0)
         self.assertLess(wrong, 0.0)
 
-    def test_unknown_has_no_likelihood_effect(self):
-        self.assertEqual(pl.posterior([0.5], [-1]), pl.posterior([], []))
+    def test_unknown_is_negative_evidence_v141(self):
+        self.assertEqual(pl.posterior([0.5], [-1]), pl.posterior([0.5], [0]))
 
     def test_vocab_posterior_interval_contains_mean_and_uses_bank_total(self):
         mean, low, high = pl.vocab_posterior([-1.0, 0.0, 1.0], [1, 0, -1], bank_total=20)
@@ -145,12 +145,12 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(pl.update_rigor(104, 1), 105)
         self.assertEqual(pl.update_rigor(3, 0), 0)
 
-    def test_unknown_pauses_wrong_streak(self):
+    def test_unknown_advances_wrong_streak_v141(self):
         sess = pl.new_session()
         pl.step(sess, False, 1)
         before = dict(sess)
         pl.step(sess, False, 2, response=-1)
-        self.assertEqual(sess["wrong_streak"], before["wrong_streak"])
+        self.assertEqual(sess["wrong_streak"], before["wrong_streak"] + 1)
         for n in range(20):
             pl.step(sess, False, n + 3)
         self.assertLessEqual(sess["wrong_streak"], 12)

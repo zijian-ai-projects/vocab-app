@@ -120,9 +120,7 @@ def control_geometry(c, label):
         pump(0.01)
         check(bar.value() == bar.maximum(), label + " 真实水平滚动可访问等级表头")
     widgets = list(c.filter_chips.values()) + [
-        c.path_label, c.search, c.select_mode_button, c.table, badge]
-    if c.model.selection_mode:
-        widgets += [c.select_filtered_button, c.bulk_learn_button, c.selection_hint]
+        c.path_label, c.search, c.table, badge]
     rect_errors, text_errors = [], []
     for widget in widgets:
         name = widget.text() if hasattr(widget, "text") else type(widget).__name__
@@ -173,93 +171,23 @@ def control_geometry(c, label):
 
 
 def click_controls(c, label):
-    """Real clicks must preserve legitimate cross-group activation and selected keys."""
+    """V1.4.1: three exclusive filters, no word selection actions."""
     c.search.clear()
     c.set_filter("all")
-    c.set_selection_mode(False)
-    c.model.selected_keys.clear()
-    pump(0.02)
-    check(len(c.filter_controls.findChildren(QPushButton)) == len(c.filter_chips)
-          == len(c._category_labels)
-          and len({key for key, _ in c._category_labels}) == len(c._category_labels),
-          label + " 过滤 key/按钮一一对应，无旧按钮被字典覆盖")
-    control_geometry(c, label + "/浏览")
-    QTest.mouseClick(c.select_mode_button, Qt.LeftButton)
-    pump(0.02)
-    check(c.model.selection_mode and c.select_mode_button.isChecked()
-          and c.select_mode_button.property("on") == "1"
-          and c.filter_chips["all"].isChecked(),
-          label + " 选择与过滤为独立功能组，可合法同时启用")
-    control_geometry(c, label + "/选择")
-    # A real checkbox click still works despite the no-current/focus delegate.
-    index = c.model.index(0, 0)
-    option = QStyleOptionViewItem()
-    option.initFrom(c.table)
-    option.rect = c.table.visualRect(index)
-    c.table.itemDelegate().initStyleOption(option, index)
-    indicator = c.table.style().subElementRect(QStyle.SE_ItemViewItemCheckIndicator,
-                                              option, c.table)
-    QTest.mouseClick(c.table.viewport(), Qt.LeftButton, Qt.NoModifier, indicator.center())
-    pump(0.01)
-    check(c.model.rows[0]["w"] in c.model.selected_keys,
-          label + " 真实鼠标点击词条复选框可选词")
-    keys_before = set(c.model.selected_keys)
-    errors = []
+    check(tuple(c.filter_chips) == ("all", "learned", "unlearned"), label + " three filters")
+    check(not hasattr(c, "select_mode_button"), label + " no word selection")
     for key, button in c.filter_chips.items():
         QTest.mouseClick(button, Qt.LeftButton)
         pump(0.01)
-        # Move/click outside: native focus/hover is not a second persistent selection.
-        QTest.mouseMove(c.search, c.search.rect().center())
-        QTest.mouseClick(c.search, Qt.LeftButton)
-        pump(0.01)
         selected = [k for k, b in c.filter_chips.items() if b.isChecked()]
-        styled = [k for k, b in c.filter_chips.items() if b.property("on") == "1"]
-        if selected != [key] or styled != [key] or c.model.category != key:
-            errors.append((key, selected, styled, c.model.category))
-        for other_key, other in c.filter_chips.items():
-            expected = QColor(c.theme["chip_sel" if other_key == key else "chip_bg"])
-            if button_fill(other) != expected:
-                errors.append((key, other_key, "outside fill", button_fill(other).name()))
-            if other_key != key:
-                if button_fill(other, QStyle.State_HasFocus) != QColor(c.theme["chip_bg"]):
-                    errors.append((key, other_key, "focus resembles selection"))
-                if button_fill(other, QStyle.State_MouseOver) != QColor(c.theme["chip_hover"]):
-                    errors.append((key, other_key, "hover resembles selection"))
-        if (not c.model.selection_mode or not c.select_mode_button.isChecked()
-                or c.model.selected_keys != keys_before):
-            errors.append((key, "selection lost"))
-    check(not errors, label + " 各过滤真实点击/外部点击后唯一状态及绘制正确：%r" % errors)
-    QTest.mouseClick(c.filter_chips["known"], Qt.LeftButton)
-    pump(0.01)
-    filtered_keys = {entry["w"] for entry in c.model.rows}
-    QTest.mouseClick(c.select_filtered_button, Qt.LeftButton)
-    pump(0.01)
-    check(c.model.selected_keys == keys_before | filtered_keys,
-          label + " 批量选择只新增当前筛选，并保留其它筛选已选词")
-    spy = QSignalSpy(c.bulk_learn_requested)
-    QTest.mouseClick(c.bulk_learn_button, Qt.LeftButton)
-    QTest.mouseClick(c.search, Qt.LeftButton)
-    pump(0.01)
-    check(len(spy) == 1 and set(spy[0][0]) == c.model.selected_keys,
-          label + " 加入学习真实点击仅发出所选 key")
-    check(not c.select_filtered_button.isCheckable()
-          and not c.bulk_learn_button.isCheckable()
-          and button_fill(c.select_filtered_button) == QColor(c.theme["chip_bg"])
-          and button_fill(c.bulk_learn_button) == QColor(c.theme["chip_bg"])
-          and button_fill(c.select_mode_button) == QColor(c.theme["chip_sel"]),
-          label + " 外部点击后动作不持续亮，有效选择模式仍亮")
-    QTest.mouseClick(c.select_mode_button, Qt.LeftButton)
-    pump(0.01)
-    check(not c.model.selection_mode and c.select_mode_button.property("on") == "0"
-          and c.model.selected_keys == keys_before | filtered_keys
-          and not c.select_filtered_button.isVisible() and not c.bulk_learn_button.isVisible(),
-          label + " 退出选择模式仅隐藏动作，不丢失已选词")
+        check(selected == [key] and c.model.category == key, label + "/" + key + " exclusive filter")
+        check(c.model.rowCount() == c.model.counts()[key], label + "/" + key + " consistent count")
+    c.set_filter("all")
+    control_geometry(c, label + "/browse")
     c.search.setFocus()
     QTest.keyClicks(c.search, "beta")
     pump(0.01)
-    check(c.model.query == "beta" and all(entry["w"] == "beta" for entry in c.model.rows)
-          and c.filter_chips["known"].isChecked(),
-          label + " 搜索与过滤独立、真实键入有效")
+    check(c.model.query == "beta" and all(entry["w"] == "beta" for entry in c.model.rows), label + " search works")
     c.search.clear()
     c.set_filter("all")
 
@@ -903,8 +831,7 @@ def main():
                 check((card.width(), card.height()) == expected,
                       "Card %s/%s 预设/工作区尺寸保持 %dx%d（实际 %dx%d）" %
                       (theme_key, name, expected[0], expected[1], card.width(), card.height()))
-                for selecting in (False, True):
-                    card.catalog.set_selection_mode(selecting)
+                for selecting in (False,):
                     pump(0.02)
                     control_geometry(card.catalog, "Card %s/%s/%s" %
                                      (theme_key, name, "选择" if selecting else "浏览"))
@@ -915,8 +842,6 @@ def main():
                                   toolbar_entries, copy.deepcopy(toolbar_states),
                                   set(), predicted={"delta"})
             pump(0.03)
-            if theme_key == catalog.th.ORDER[0]:
-                card.catalog.bulk_learn_requested.disconnect(card._bulk_learn_selected)
             click_controls(card.catalog, "Card %s/小窗真实点击" % theme_key)
         card.close()
         card = None
