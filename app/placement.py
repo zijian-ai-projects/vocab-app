@@ -22,6 +22,13 @@ PRIOR_SD = 2.0
 TRAP_PROB = 0.25
 PICK_WINDOW = 0.10
 HIST_BIN = 0.02
+# Display calibration, not an empirically validated population distribution.
+# The bank starts at -3.2: a -4 prior places ability below that easiest edge,
+# while SD 1.5 leaves room for substantial upward revision from real answers.
+MEASUREMENT_PRIOR_MEAN = -4.0
+MEASUREMENT_PRIOR_SD = 1.5
+PROVISIONAL_MIN_ANSWERS = 20
+PROVISIONAL_MIN_CORRECT = 5
 
 
 def sigmoid(x):
@@ -240,8 +247,13 @@ def pick_idx(lvls, level, asked, rng, bs=None, theta=0.0):
     return shortlist[rng.randrange(len(shortlist))]
 
 
-def posterior(bs, responses, prior_sd=PRIOR_SD, grid_min=GRID_MIN, grid_max=GRID_MAX, grid_step=GRID_STEP):
-    """Fixed-grid posterior; both incorrect and unknown responses are negative evidence."""
+def posterior(bs, responses, prior_sd=PRIOR_SD, grid_min=GRID_MIN, grid_max=GRID_MAX, grid_step=GRID_STEP,
+              prior_mean=0.0):
+    """Fixed-grid posterior; incorrect and unknown share negative likelihood.
+
+    The default prior retains the legacy inference API. A caller may explicitly
+    supply a conservative prior; this never changes the response likelihood.
+    """
     if len(bs) != len(responses):
         raise ValueError("bs and responses must have equal length")
     if prior_sd <= 0 or grid_step <= 0 or grid_max < grid_min:
@@ -253,7 +265,7 @@ def posterior(bs, responses, prior_sd=PRIOR_SD, grid_min=GRID_MIN, grid_max=GRID
         t += grid_step
     logw = []
     for theta in grid:
-        ll = -(theta * theta) / (2 * prior_sd * prior_sd)
+        ll = -((theta - prior_mean) ** 2) / (2 * prior_sd * prior_sd)
         for b, response in zip(bs, responses):
             p = min(max(p_correct(theta, b), 1e-12), 1 - 1e-12)
             ll += math.log(p if response == 1 else 1 - p)
@@ -359,6 +371,58 @@ def vocab_error_percent(low, high, bank_total):
     if total <= 0:
         raise ValueError("bank_total must be positive")
     return max(0.0, float(high) - float(low)) / 2.0 / total * 100.0
+
+
+def measurement_summary(bs, responses, bank_bs):
+    """Conservative, evidence-labelled display summary in *bank entries*.
+
+    These entries are not lemmatized word families or all English word forms.
+    A low-ability normal prior (mean -4, SD 1.5) is an explicit product
+    assumption, not population calibration. Each answer updates it with the
+    unchanged guessing-aware likelihood. More evidence can therefore move the
+    estimate upward without arbitrary answer-count scaling or hard word caps.
+
+    ``estimate`` is withheld as zero until a correct answer exists. That is a
+    display convention meaning 'not yet demonstrated', NOT a posterior claim
+    of zero knowledge. ``raw_estimate``, ``low`` and ``high`` always describe
+    the unmodified calibrated posterior (equal-tail 95% model interval). The
+    zero display may lie outside that interval; callers must label it as such.
+
+    ``err`` is the larger interval radius / raw estimate, in percent, never
+    divided by bank size or capped at 100%. It is None before any correct
+    answer (or with an empty bank), when a relative displayed error would be
+    misleading. ``provisional`` remains true with sparse evidence or a >50%
+    relative interval radius; these are display safeguards, not guarantees of
+    empirical coverage. Frequency-ranked item difficulties are heuristic, so
+    the model interval does not include all sources of measurement error.
+    """
+    if len(responses) > len(bs):
+        raise ValueError("responses cannot outnumber item difficulties")
+    grid, weights = posterior(bs[:len(responses)], responses,
+                              prior_sd=MEASUREMENT_PRIOR_SD,
+                              prior_mean=MEASUREMENT_PRIOR_MEAN,
+                              grid_min=-10.0)
+    hist = _bank_histogram(bank_bs)
+    values = _bank_vocab_grid(hist, tuple(grid))
+    mean = sum(value * weight for value, weight in zip(values, weights))
+    low = _quantile(values, weights, 0.025)
+    high = _quantile(values, weights, 0.975)
+    correct_count = sum(response == 1 for response in responses)
+    available = correct_count > 0 and bool(bank_bs)
+    err = (max(mean - low, high - mean) / mean * 100.0
+           if available and mean > 0 else None)
+    sparse = (len(responses) < PROVISIONAL_MIN_ANSWERS or
+              correct_count < PROVISIONAL_MIN_CORRECT)
+    theta = sum(value * weight for value, weight in zip(grid, weights))
+    se = math.sqrt(sum(weight * (value - theta) ** 2
+                       for value, weight in zip(grid, weights)))
+    return {"estimate": mean if available else 0.0, "raw_estimate": mean,
+            "low": low, "high": high, "err": err,
+            "estimate_available": available, "evidence_limited": sparse,
+            "provisional": sparse or err is None or err > 50.0,
+            "answered": len(responses), "correct_count": correct_count,
+            "theta": theta, "se": se,
+            "unit": "bank_entries", "interval_level": 0.95}
 
 
 def error_band(bs, theta, se):

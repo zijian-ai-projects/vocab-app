@@ -153,14 +153,16 @@ def normalize_retry_gap(progress):
 class ChartCanvas(QWidget):
     """词汇量历史折线图。points: [(timestamp, vocab), ...]"""
 
-    def __init__(self, points, parent=None):
+    def __init__(self, points, parent=None, integrated=False):
         super().__init__(parent)
+        self.integrated = integrated
         self.points = points
         self.setMinimumHeight(168)
         self.set_palette(th.get(th.DEFAULT))
 
     def set_palette(self, t):
-        self.c = dict(bg=t["chart_bg"], grid=t["chart_grid"], text=t["chart_text"],
+        self.c = dict(bg=t["bg"] if self.integrated else t["chart_bg"],
+                      grid=t["chart_grid"], text=t["chart_text"],
                       date=t["chart_date"], line=t["chart_line"])
         self.update()
 
@@ -754,7 +756,8 @@ class Card(QWidget):
         data = self.progress.get("prediction_state")
         keys = data.get("selected", []) if isinstance(data, dict) else []
         selected = {key for key in keys if isinstance(key, str)} if isinstance(keys, list) else set()
-        selected.update(school.words(school.normalize(self.progress.get("school_knowledge"))))
+        self.school_known = school.words(school.normalize(self.progress.get("school_knowledge")))
+        selected.update(self.school_known)
         # Preserve the set shared with StudyQueue when preferences change.
         if hasattr(self, "known"):
             self.known.clear()
@@ -764,7 +767,8 @@ class Card(QWidget):
 
     def _book_stats(self, book_id):
         learned = mastered = known = predicted = 0
-        words = self._book_word_strs(book_id)
+        excluded = school.words(school.normalize(self.progress.get("school_knowledge")))
+        words = [key for key in self._book_word_strs(book_id) if key not in excluded]
         for key in words:
             category, _, _ = memory_info(key, self.states, None, self.known)
             if category == "mastered":
@@ -786,7 +790,8 @@ class Card(QWidget):
         self.learning_policy = learn.LearningPolicy(self.learning_settings, self.daily_new_ledger)
         self.study_engine = StudyQueue(self.queue_words, self.states, self.study_record,
                                       retry_gap=self.retry_gap, known=self.known,
-                                      policy=self.learning_policy)
+                                      policy=self.learning_policy,
+                                      excluded=school.words(school.normalize(self.progress.get("school_knowledge"))))
         self.cursor = self.study_engine.cursor
 
     def _new_session(self):
@@ -916,7 +921,8 @@ class Card(QWidget):
             self._base_qss = th.qss(self.t, scale)
             action_qss = ('QPushButton[bookAction="1"] { font-size: %dpx; padding: 4px %dpx; }'
                           % (round(13 * scale), round(12 * scale)))
-            self.setStyleSheet(self._base_qss + (COMPACT_QSS if self.compact else "") + action_qss)
+            self.setStyleSheet(self._base_qss + (COMPACT_QSS if self.compact else "") + action_qss
+                               + th.history_qss(self.t, scale))
             self.root.setContentsMargins(*(round(value * scale) for value in MARGINS[i]))
             for button in self.findChildren(QPushButton):
                 if isinstance(button, MiniButton) or button is self.btn_close:
@@ -1024,6 +1030,7 @@ class Card(QWidget):
         for b in (self.btn_min, self.btn_gear, self.btn_back):
             b.set_colors(self.t["bar"], self.t["bar_hover"])
         self.chart.set_palette(self.t)
+        self.history_chart.set_palette(self.t)
 
     def _build_ui(self):
         self._base_qss = th.qss(self.t)
@@ -1091,7 +1098,7 @@ class Card(QWidget):
         self.history_page = QWidget()
         hv = QVBoxLayout(self.history_page)
         hv.setContentsMargins(0, 0, 0, 0)
-        self.history_chart = ChartCanvas([])
+        self.history_chart = ChartCanvas([], integrated=True)
         hv.addWidget(self.history_chart)
         self.history_scroll = QScrollArea()
         self.history_scroll.setWidgetResizable(True)
@@ -1105,7 +1112,8 @@ class Card(QWidget):
         self._learning_buttons = ([self.btn_forget, self.btn_remember, self.btn_wrong, self.btn_next,
                                   self.btn_study_dk, self.btn_study_next, self.btn_dontknow, self.btn_skip]
                                  + self.study_btns + self.opt_btns)
-        for button in self._learning_buttons:
+        self._window_buttons = [self.btn_min, self.btn_gear, self.btn_back, self.btn_close]
+        for button in self._learning_buttons + self._window_buttons:
             button.setFocusPolicy(Qt.NoFocus)
             button.installEventFilter(self)
         self.setFocusPolicy(Qt.StrongFocus)
@@ -1659,29 +1667,22 @@ class Card(QWidget):
         layout.addLayout(modes)
         layout.addSpacing(6)
 
-        layout.addWidget(self.reg(QLabel("已认识词汇范围"), "note", 12))
-        school_rows = QVBoxLayout()
-        school_rows.setSpacing(4)
-        school_row = None
+        scope_heading = self.reg(QLabel("已认识词汇范围—开启后跳过对应词汇的学习"), "note", 12)
+        scope_heading.setWordWrap(True)
+        scope_heading.setToolTip("以小学／中考／高考大纲英语词汇三本词书为准；包括已学词的复现。关闭后恢复原记录与排期。")
+        layout.addWidget(scope_heading)
+        school_row = QHBoxLayout()
+        school_row.setSpacing(4)
         self.school_chips = {}
-        for index, (key, caption) in enumerate(school.LEVELS):
-            if index % 2 == 0:
-                school_row = QHBoxLayout()
-                school_row.setSpacing(4)
-                school_rows.addLayout(school_row)
+        for key, caption in school.LEVELS:
             button = QPushButton(caption)
             button.setObjectName("chip")
             button.setMinimumHeight(30)
             button.clicked.connect(lambda _, value=key: self.set_school_knowledge(value))
             self.school_chips[key] = button
             school_row.addWidget(button)
-            if index % 2:
-                school_row.addStretch(1)
-        layout.addLayout(school_rows)
-        note = self.reg(QLabel("默认关闭；选择初中包含小学，选择高中包含小学和初中。\n"
-                               "按现有民间考纲词表跳过未学新词；关闭后恢复，不改记忆等级。"), "note", 11)
-        note.setWordWrap(True)
-        layout.addWidget(note)
+        school_row.addStretch(1)
+        layout.addLayout(school_row)
         layout.addSpacing(6)
 
         self.key_edits = {}
@@ -1720,7 +1721,7 @@ class Card(QWidget):
         layout.addLayout(book_row)
         layout.addSpacing(6)
 
-        layout.addWidget(self.reg(QLabel("词汇量测试"), "note", 12))
+        layout.addWidget(self.reg(QLabel("词汇量测试—结果仅供参考"), "note", 12))
         test_row = QHBoxLayout()
         self.btn_history = QPushButton("历史记录")
         self.btn_history.clicked.connect(self._open_history_page)
@@ -1881,6 +1882,7 @@ class Card(QWidget):
             self.cursors.update(old_cursors)
             return False
         self._policy_changed_in_settings = True
+        self._school_changed_in_settings = True
         return True
 
     def set_study_mode(self, mode):
@@ -2163,7 +2165,8 @@ class Card(QWidget):
             return
         mode = self.pre_settings_mode
         changed = self.study_mode != self.settings_study_mode_start
-        if self._policy_changed_in_settings and mode in ("front", "choice", "empty"):
+        school_changed = getattr(self, "_school_changed_in_settings", False)
+        if self._policy_changed_in_settings and (mode in ("front", "choice", "empty") or school_changed):
             before = self._capture_study()
             try:
                 self._make_engine()
@@ -2185,6 +2188,7 @@ class Card(QWidget):
         else:
             self._set_mode(mode if mode in ("front", "back", "empty", "choice", "choice_back") else "front")
         self._policy_changed_in_settings = False
+        self._school_changed_in_settings = False
 
     def _test_from_settings(self):
         return self.start_quiz(fresh=True)
@@ -2328,10 +2332,8 @@ class Card(QWidget):
             button.setProperty("on", "1" if key == selected_school else "0")
             button.style().unpolish(button)
             button.style().polish(button)
-        location = "V%s\n记录目录：%s" % (VERSION, os.path.dirname(PROGRESS_PATH))
-        if self.storage_notices:
-            location += "\n" + "\n".join(self.storage_notices)
-        self.lab_storage.setText(location)
+        self.lab_storage.setText("V%s" % VERSION)
+        self.lab_storage.setToolTip("\n".join(self.storage_notices))
         learned, _, _, total, predicted = self._stats()
         path = self._book_path(self.book_id)
         self.lab_book.setText(path or "未选择词书")
@@ -2346,6 +2348,8 @@ class Card(QWidget):
         days = self._quiz_remaining_days()
         self.btn_continue.setText("继续上次测试（剩余%d天）" % days if days else "继续上次测试")
         self.btn_continue.setVisible(bool(days))
+        if self.progress.get("quiz_session", {}).get("resume_disabled"):
+            self.btn_continue.setVisible(False)
         for k, chip in self.theme_chips.items():
             chip.setProperty("on", "1" if k == self.theme_key else "0")
             chip.style().unpolish(chip)
@@ -2372,6 +2376,13 @@ class Card(QWidget):
         history = self.progress.get("history") or []
         self.history_chart.points = [(row["ts"], row["vocab"]) for row in history]
         self.history_chart.update()
+        session = self.progress.get("quiz_session")
+        if (isinstance(session, dict) and session.get("resume_disabled")
+                and self._quiz_remaining_days(session) == 0):
+            self.btn_continue.setVisible(False)
+            self.btn_continue.setToolTip("最新测试记录已删除，不能继续上次测试")
+        else:
+            self.btn_continue.setToolTip("")
 
         def clear_rows(layout):
             while layout.count():
@@ -2385,17 +2396,41 @@ class Card(QWidget):
                     child.deleteLater()
 
         clear_rows(self.history_rows_layout)
+        self.history_details = {}
         for idx, row in reversed(list(enumerate(history))):
+            block = QVBoxLayout()
+            block.setContentsMargins(0, 0, 0, 0)
+            block.setSpacing(0)
             line = QHBoxLayout()
-            view = QPushButton("%s  ≈ %s 词 · %d/%d" % (
-                time.strftime("%Y-%m-%d", time.localtime(row["ts"])),
-                format(row["vocab"], ","), row.get("right", 0), row.get("total", 0)))
-            view.clicked.connect(lambda _=False, i=idx: self._open_history(i))
-            line.addWidget(view, 1)
+            line.setContentsMargins(0, 0, 0, 0)
+            line.setSpacing(0)
+            summary_column = QVBoxLayout()
+            summary_column.setContentsMargins(0, 0, 0, 0)
+            summary_column.setSpacing(0)
+            view = QPushButton("%s  平均 %s" % (
+                time.strftime("%Y-%m-%d", time.localtime(row["ts"])), format(row["vocab"], ",")))
+            view.setCheckable(True)
+            view.setObjectName("historySummary")
+            view.setFixedHeight(round(34 * self._ui_scale()))
+            view._base_height, view._base_fixed = 34, True
+            detail = QLabel("已测词数 %d · 误差 %s · 严谨度 %s" % (
+                row.get("total", 0), self._measurement_error_text(row), row.get("rigor", 0)))
+            detail.setWordWrap(True)
+            detail.setObjectName("historyDetail")
+            detail.hide()
+            self.history_details[idx] = detail
+            view.toggled.connect(detail.setVisible)
+            summary_column.addWidget(view)
+            summary_column.addWidget(detail)
+            line.addLayout(summary_column, 1)
             delete = QPushButton("删除")
+            delete.setObjectName("historyDelete")
+            delete.setFixedHeight(round(34 * self._ui_scale()))
+            delete._base_height, delete._base_fixed = 34, True
             delete.clicked.connect(lambda _=False, i=idx: self._delete_history(i))
-            line.addWidget(delete)
-            self.history_rows_layout.addLayout(line)
+            line.addWidget(delete, 0, Qt.AlignTop)
+            block.addLayout(line)
+            self.history_rows_layout.addLayout(block)
         self.history_rows_layout.addStretch(1)
         self._set_mode("history")
 
@@ -2406,8 +2441,11 @@ class Card(QWidget):
         if not (0 <= index < len(history)):
             return
         before = self._capture_quiz()
+        latest = max(range(len(history)), key=lambda i: (history[i].get("ts", 0), i))
         removed = history.pop(index)
         session = self.progress.get("quiz_session")
+        if index == latest and isinstance(session, dict):
+            session["resume_disabled"] = True
         if isinstance(session, dict) and (session.get("id") == removed.get("id")
                                          or session.get("history_id") == removed.get("id")):
             session["history_id"] = None
@@ -2429,7 +2467,9 @@ class Card(QWidget):
         hist = self.progress.get("history") or []
         if not (0 <= idx < len(hist)):
             return
-        self._show_history(hist[idx], hist[:idx + 1])
+        detail = getattr(self, "history_details", {}).get(idx)
+        if detail is not None:
+            detail.setVisible(detail.isHidden())
 
     def _result_primary(self):
         if self.result_ctx == "history":
@@ -3067,7 +3107,7 @@ class Card(QWidget):
     def _quiz_remaining_days(self, session=None, now=None):
         """Days left in this attempt; resuming never renews started_at."""
         session = self.progress.get("quiz_session") if session is None else session
-        if not isinstance(session, dict):
+        if not isinstance(session, dict) or session.get("resume_disabled"):
             return 0
         started = session.get("started_at")
         try:
@@ -3117,8 +3157,9 @@ class Card(QWidget):
         session_id = self.quiz_session_id if session is None else session["id"]
         started = self.quiz_started_at if session is None else session["started_at"]
         bs = [self.bs[self.quiz_item_indices[item["key"]]] for item in items[:len(responses)]]
-        estimate, low, high = pl.vocab_posterior(bs, responses, bank_bs=self.bs)
-        theta, se = pl.estimate_theta(bs, responses)
+        measurement = pl.measurement_summary(bs, responses, self.bs)
+        estimate, low, high = (measurement[key] for key in ("estimate", "low", "high"))
+        theta, se = measurement["theta"], measurement["se"]
         history = self.progress.get("history") or []
         existing = next((row for row in history if row.get("id") == session_id), None)
         baseline = bool(existing.get("baseline")) if existing else not any(row.get("baseline") for row in history)
@@ -3137,7 +3178,10 @@ class Card(QWidget):
             "algo": "bayes-v140", "theta": round(theta, 4), "se": round(se, 4),
             "vocab": int(round(estimate)), "rigor": rigor,
             "lo": max(0, int(round(low))), "hi": int(round(high)),
-            "err": round(pl.vocab_error_percent(low, high, len(self.bank)), 1),
+            "err": round(measurement["err"], 1) if measurement["err"] is not None else None,
+            "measurement_schema": 2, "provisional": measurement["provisional"],
+            "evidence_limited": measurement["evidence_limited"],
+            "estimate_available": measurement["estimate_available"],
             "right": right, "dontknow": sum(response < 0 for response in responses),
             "total": len(responses), "baseline": baseline, "completed": bool(completed),
             "prediction_eligible": right > 0 and len(responses) >= PREDICTION_MIN_N and rigor >= PREDICTION_MIN_RIGOR,
@@ -3208,14 +3252,26 @@ class Card(QWidget):
     def _test_bank_exhausted(self):
         return len(self.quiz_state.get("asked", [])) >= len(self.bank)
 
+    @staticmethod
+    def _measurement_error_text(record):
+        if not record or record.get("err") is None:
+            return "样本不足"
+        if record.get("measurement_schema") == 2 and record.get("evidence_limited"):
+            return "样本不足"
+        return "±%s%%" % (("%.1f" % record["err"]).rstrip("0").rstrip("."))
+
     def _quiz_status(self, delta=None):
         """Four fragments; the score becomes literal 'max' at 105, not '/105'."""
+        initial = not self.quiz_resp
         record = next((row for row in self.progress.get("history", [])
                        if row.get("id") == self.quiz_session_id and row.get("total") == len(self.quiz_resp)), None)
-        if record is None and self.quiz_resp:
+        if initial:
+            record = None
+        elif record is None:
             record = self._quiz_history_record()  # A deleted history row must not erase the live measurement.
-        values = {"id": self.quiz_session_id, "vocab": record["vocab"] if record else 0,
-                  "err": record.get("err", 0) if record else 0, "rigor": float(self.rigor)}
+        values = {"id": self.quiz_session_id, "vocab": record["vocab"] if record else None,
+                  "err": 100 if initial else (record.get("err") if record else None),
+                  "rigor": float(self.rigor)}
         previous = getattr(self, "quiz_status_values", None)
         comparable = isinstance(previous, dict) and previous.get("id") == self.quiz_session_id
         green, red = (("#79e0ac", "#ef9cad") if getattr(self, "theme_key", None) == "dark"
@@ -3223,17 +3279,23 @@ class Card(QWidget):
 
         def colored(key, text):
             old = previous.get(key) if comparable else None
-            if old is not None and values[key] != old:
+            if old is not None and values[key] is not None and values[key] != old:
                 improved = values[key] < old if key == "err" else values[key] > old
                 color = green if improved else red
                 return "<span style='color:%s'>%s</span>" % (color, text)
             return text
 
         rigor = "max" if values["rigor"] >= 105 else ("%.1f" % values["rigor"]).rstrip("0").rstrip(".")
-        self.status.setText("词汇量测试 · 词目量%s · 误差%s%% · 严谨度%s" % (
-            colored("vocab", str(values["vocab"])),
-            colored("err", ("%.1f" % values["err"]).rstrip("0").rstrip(".")),
-            colored("rigor", rigor)))
+        error_text = "100%" if initial else self._measurement_error_text(record)
+        if error_text == "样本不足":
+            values["err"] = None
+        shown = "-" if values["vocab"] is None or (record and record.get("estimate_available") is False) else str(values["vocab"])
+        self.status.setText("词汇量测试 · 词目量%s · 误差%s · 严谨度%s" % (
+            colored("vocab", shown),
+            colored("err", error_text), colored("rigor", rigor)))
+        self.status.setToolTip("按词库独立词条估计，不额外乘以时态、复数等变形数；词库已有的变形词条可能单独计入。\n"
+                               "暂估依赖保守先验与词频难度假设，未经标准化校准；少量回答不能证明掌握总量。\n"
+                               "误差为模型95%区间相对估计值的最大偏差，不是答题错误率或准确率保证。")
         if isinstance(previous, dict):
             previous.update(values)
         else:
@@ -3296,7 +3358,7 @@ class Card(QWidget):
             pl.step(self.quiz_state, good, len(self.quiz_resp), self.quiz_resp[-1])
             bs = [self.bs[self.quiz_item_indices[entry["key"]]]
                   for entry in self.quiz_items[:len(self.quiz_resp)]]
-            self.quiz_state["theta"], _ = pl.estimate_theta(bs, self.quiz_resp)
+            self.quiz_state["theta"] = pl.measurement_summary(bs, self.quiz_resp, self.bs)["theta"]
             self.quiz_last_answer_at = int(time.time())
             self._save_quiz_session()
         except storage.StorageError as error:
@@ -3315,7 +3377,7 @@ class Card(QWidget):
             b.style().unpolish(b)
             b.style().polish(b)
         self.btn_dontknow.setEnabled(False)
-        self.btn_dontknow.setProperty("state", "picked" if choice < 0 else "")
+        self.btn_dontknow.setProperty("state", "pressed" if choice < 0 else "")
         self.btn_dontknow.style().unpolish(self.btn_dontknow)
         self.btn_dontknow.style().polish(self.btn_dontknow)
         self.quiz_timer.start(650)
@@ -3380,9 +3442,10 @@ class Card(QWidget):
         prevs = [h for h in hist if h is not rec]
         prev = prevs[-1] if prevs else None
 
-        self.res_big.setText("≈ %s 词" % format(rec["vocab"], ","))
-        self.res_sub.setText("严谨度 %d  ·  误差 ±%d%%  ·  %s – %s 词" % (
-            rec.get("rigor", 100), int(round(rec.get("err", 0))),
+        vocab_text = "-" if rec.get("estimate_available") is False else format(rec["vocab"], ",")
+        self.res_big.setText("≈ %s 词目" % vocab_text)
+        self.res_sub.setText("严谨度 %d  ·  误差 %s\n模型95%%区间 %s – %s 词目（非准确率保证）" % (
+            rec.get("rigor", 100), self._measurement_error_text(rec),
             format(rec.get("lo", rec["vocab"]), ","),
             format(rec.get("hi", rec["vocab"]), ",")))
         line = "答对 %d/%d" % (rec["right"], rec["total"])
@@ -3545,7 +3608,16 @@ class Card(QWidget):
         if not hasattr(self, "window_ctl") or not (self.window_ctl.collapsed or self.window_ctl.animating):
             self.study_status.setVisible(study and bool(parts))
 
+    def _brush_correction_page(self):
+        return self.mode == "back" and bool(self.last_action and self.last_action[2])
+
     def _key_caption(self, text, action):
+        if action == "next":
+            hint = "enter" if self._brush_correction_page() else "空格/enter"
+            binding = self.key_bindings[action]
+            if binding not in ("Space", "Enter"):
+                hint += "/" + keys.caption(binding)
+            return text + " [%s]" % hint
         return text + "  [%s]" % keys.caption(self.key_bindings[action])
 
     def _refresh_key_hints(self):
@@ -3589,6 +3661,13 @@ class Card(QWidget):
             return
         phase = ("brush" if self.mode == "front" else "choice" if self.mode in ("choice", "quiz")
                  else "back" if self.mode in ("back", "empty", "choice_back") else None)
+        if self._brush_correction_page():
+            # 认识后的反面保留“不认识/选错了”键，不能被下一词别名抢占。
+            if keys.event_action(ev, self.key_bindings, "brush") == "forget":
+                self.correct()
+                return
+            if k == Qt.Key_Space:
+                return
         action = keys.event_action(ev, self.key_bindings, phase)
         if action in ("remember", "forget"):
             self.act(action)
@@ -3602,6 +3681,14 @@ class Card(QWidget):
                 self._study_answer(selected)
 
     def eventFilter(self, watched, event):
+        if watched in getattr(self, "_window_buttons", ()) and not self._editor_has_focus():
+            if event.type() == QEvent.KeyPress:
+                self.keyPressEvent(event)
+                event.accept()
+                return True
+            if event.type() == QEvent.KeyRelease and event.key() in (Qt.Key_Space, Qt.Key_Return, Qt.Key_Enter):
+                event.accept()
+                return True
         if (watched in getattr(self, "_learning_buttons", ())
                 and self.mode in ("front", "back", "empty", "choice", "choice_back", "quiz")
                 and not self._editor_has_focus()):

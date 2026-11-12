@@ -115,6 +115,12 @@ def test_events():
           "choice Space -> unknown")
     check(action(Qt.Key_Return, phase="back") == "next",
           "back Enter -> next")
+    check(action(Qt.Key_Space, phase="back") == "next", "back Space -> next")
+    check(action(Qt.Key_Enter, phase="back") == "next", "back keypad Enter -> next")
+    check(action(Qt.Key_Space, phase="back", auto=True) is None, "back auto-repeat ignored")
+    custom_next = kb.normalize({"next": "N"})
+    check(all(action(key, phase="back", bindings=custom_next) == "next"
+              for key in (Qt.Key_Space, Qt.Key_Return, Qt.Key_N)), "custom next preserves Space/Enter aliases")
     check(action(Qt.Key_0, phase="brush") is None,
           "非当前 phase 动作不触发")
     check(action(Qt.Key_Space, phase="brush", auto=True) is None,

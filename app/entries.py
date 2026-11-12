@@ -87,5 +87,5 @@ def memory_info(key, states, known=None, predicted=None):
     if key in (known or ()):
         return "known", None, "认识 · 测试估计"
     if key in (predicted or ()):
-        return "predicted", None, "预测 · 已掌握"
+        return "predicted", None, "已掌握"
     return "unlearned", 0, "待学习"

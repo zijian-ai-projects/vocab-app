@@ -84,7 +84,7 @@ class PredictionTests(unittest.TestCase):
         self.assertEqual(entries.memory_info("explicit", states, predicted=predicted),
                          ("unlearned", 0, "待学习"))
         self.assertEqual(entries.memory_info("guess", {}, predicted=predicted),
-                         ("predicted", None, "预测 · 已掌握"))
+                         ("predicted", None, "已掌握"))
 
     def test_legacy_known_wins_over_prediction(self):
         self.assertEqual(entries.memory_info("x", {}, known={"x"}, predicted={"x"}),

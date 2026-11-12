@@ -139,6 +139,9 @@ def event_action(event, bindings, phase):
     pressed = _event_binding(event)
     if not pressed:
         return None
+    # 两种学习模式的答题后页面共用下一词双快捷键；不影响答题前空格。
+    if phase == "back" and pressed in ("Space", "Enter"):
+        return "next"
     for action in PHASE_ACTIONS[phase]:
         if mapping[action].casefold() == pressed.casefold():
             return action

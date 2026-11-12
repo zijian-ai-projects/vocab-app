@@ -3,8 +3,8 @@
 from functools import lru_cache
 import books
 
-LEVELS = (("off", "关闭"), ("primary", "小学词汇已掌握"),
-          ("middle", "初中词汇已掌握"), ("high", "高中词汇已掌握"))
+LEVELS = (("off", "关闭"), ("primary", "小学"),
+          ("middle", "小初"), ("high", "小初高"))
 BOOKS = ("xx-dg", "zk-dg", "gk-dg")
 
 

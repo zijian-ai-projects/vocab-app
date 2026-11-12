@@ -195,7 +195,7 @@ QPushButton#dontknow {
     border-radius: 12px;
 }
 QPushButton#dontknow:hover { background: %(dk_hover)s; }
-QPushButton#dontknow:pressed { background: %(dk_pressed)s; }
+QPushButton#dontknow:pressed, QPushButton#dontknow[state="pressed"] { background: %(dk_pressed)s; color: %(dk_fg)s; }
 QPushButton#dontknow[state="picked"] { background: %(dk_pick)s; color: %(dk_pick_fg)s; }
 QPushButton#plain {
     background: transparent; color: %(fg_sub)s; font-size: 15px;
@@ -228,12 +228,43 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: transparent; }
 """
 
+HISTORY_QSS = """
+QPushButton#historySummary {
+    background: %(opt_bg)s; color: %(fg_mean)s; border: 1px solid %(border)s;
+    border-radius: 0; text-align: left; padding: 7px 10px; font-size: 13px;
+}
+QPushButton#historySummary:hover { background: %(opt_hover)s; }
+QPushButton#historySummary:checked { border-bottom: none; }
+QLabel#historyDetail {
+    background: %(chip_bg)s; color: %(chip_fg)s; border: 1px solid %(border)s;
+    border-top: none; border-radius: 0; padding: 7px 10px; font-size: 12px;
+}
+QPushButton#historyDelete {
+    background: %(opt_bg)s; color: %(fg_mean)s; border: 1px solid %(border)s;
+    border-radius: 0; padding: 7px 10px; font-size: 13px;
+}
+QPushButton#historyDelete:hover { background: %(opt_hover)s; }
+QPushButton#historyDelete:pressed { background: %(btn_pressed)s; }
+QPushButton#historySummary:pressed { background: %(btn_pressed)s; }
+QPushButton#historySummary:checked:pressed { background: %(btn_pressed)s; }
+"""
+
+
+def history_qss(t, scale=1.0):
+    import re
+    scale = max(1.0, min(1.6, float(scale)))
+    css = HISTORY_QSS % t
+    if scale != 1.0:
+        css = re.sub(r"(\d+)px", lambda match: "%dpx" % max(1, round(int(match.group(1)) * scale)), css)
+    return css
+
 
 def qss(t, scale=1.0):
     import re
     scale = max(1.0, min(1.6, float(scale)))
     css = QSS % t
     css += """
+QPushButton#wrong { border: 1px solid %(border)s; }
 QLineEdit, QSpinBox, QComboBox {
     border: 1px solid %(border)s; border-radius: 7px; padding: 5px 7px;
     background: %(opt_bg)s; color: %(fg_mean)s;

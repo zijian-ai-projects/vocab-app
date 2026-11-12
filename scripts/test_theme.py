@@ -80,6 +80,7 @@ V133_DK = {
 
 # 穷举 QSS/label_qss 的可用文字状态；同一文字若用于不同背景，则分别检查。
 TEXT_PAIRS = (
+    ("chip_fg", "chip_bg"), ("btn_fg", "btn_bg"), ("btn_fg", "btn_hover"),
     ("fg_word", "bg"), ("fg_ipa", "bg"), ("fg_mean", "bg"),
     ("fg_empty", "bg"), ("fg_sub", "bg"), ("muted", "bg"),
     ("bar", "bg"), ("bar_hover", "bar_hover_bg"), ("bar_hover", "bg"),
@@ -528,11 +529,13 @@ def main():
             check(all(key in th.KEYS for key in DOCK_KEYS + ("chip_fg",)),
                   "dock_* / chip_fg 纳入 required keys，不只是可选临时色")
             check(all(key in th.KEYS for key in DK_SURFACES), "DK normal/hover/pressed 四套 required keys 齐全")
-            check(th.QSS.count(DK_PRESSED_RULE) == 1 and "QPushButton#dk" not in th.QSS,
-                  "三处只共用既有 #dontknow；pressed 一条规则，不新造 #dk CSS")
-            base_qss = th.QSS.replace(DK_PRESSED_RULE, "")
+            pressed_rule = ('QPushButton#dontknow:pressed, QPushButton#dontknow[state="pressed"] '
+                            '{ background: %(dk_pressed)s; color: %(dk_fg)s; }\n')
+            check(th.QSS.count(pressed_rule) == 1 and "QPushButton#dk" not in th.QSS,
+                  "三处共用 #dontknow pressed/选中态，不新造 #dk CSS")
+            base_qss = th.QSS.replace(pressed_rule, "")
             check(hashlib.sha256(base_qss.encode("utf-8")).hexdigest() == V136_QSS_HASH,
-                  "去除 DK pressed 规则后 QSS 与已提交 V136 基线完全相同（字号/留白/反馈/其他控件）")
+                  "去除明确授权的 DK 状态规则后核心 QSS 保持 V136 基线（历史样式单独追加）")
 
             for theme_key in th.ORDER:
                 palette = th.get(theme_key)

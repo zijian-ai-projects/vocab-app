@@ -43,10 +43,10 @@ with Sandbox(m, 'v141') as sb:
     w.progress['history'] = [{'id':'synthetic','total':1,'vocab':100,'err':10}]
     w.quiz_status_values = {'id':'synthetic','vocab':120,'err':15,'rigor':10}
     w._quiz_status()
-    check("#177245'>10" in w.status.text(), 'decreasing error green')
+    check("#177245'>±10" in w.status.text(), 'decreasing error green')
     w.progress['history'][0]['err'] = 20
     w._quiz_status()
-    check("#b82c3c'>20" in w.status.text(), 'increasing error red')
+    check("#b82c3c'>±20" in w.status.text(), 'increasing error red')
     # Legacy direct callers cannot leave a mismatched persisted prediction count.
     w.prediction_data['selected'] = ['synthetic']
     w.prediction_data['effective']['selected'] = 1

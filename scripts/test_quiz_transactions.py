@@ -35,7 +35,7 @@ FIELDS = ("quiz_state", "quiz_items", "quiz_resp", "quiz_i", "rigor",
 METHODS = {"_can_act", "save", "_capture_quiz", "_restore_quiz", "_set_quiz_retry",
            "_quiz_save_error", "retry_or_skip", "_welcome_test", "_test_from_settings",
            "_confirm_new_quiz", "_startup", "start_quiz", "_gen_item",
-           "_save_quiz_session", "skip_test", "_test_bank_exhausted", "_quiz_status", "_quiz_show",
+           "_save_quiz_session", "skip_test", "_test_bank_exhausted", "_quiz_status", "_measurement_error_text", "_quiz_show",
            "_quiz_answer", "_quiz_next", "_finish_quiz", "_set_theta", "_refresh_known",
            "_quiz_remaining_days", "_quiz_history_record", "_upsert_quiz_history"}
 SOURCE = (APP / "main.py").read_text(encoding="utf-8")
@@ -348,8 +348,8 @@ class QuizTransactionTests(unittest.TestCase):
         parts = [part.strip() for part in plain.split("·")]
         self.assertEqual(len(parts), 4, plain)
         self.assertEqual(parts[0], "词汇量测试")
-        self.assertRegex(parts[1], r"^词目量\s*[\d,]+$")
-        self.assertRegex(parts[2], r"^误差\s*\d+(?:\.\d+)?%$")
+        self.assertRegex(parts[1], r"^词目量(?:-|[\d,]+)$")
+        self.assertRegex(parts[2], r"^误差(?:100%|±?\d+(?:\.\d+)?%|样本不足)$")
         self.assertRegex(parts[3], r"^严谨度\s*(?:\d+(?:\.\d+)?|max)$")
 
     def assert_no_implicit_mastery(self, subject, before, known):
@@ -1341,6 +1341,8 @@ class QuizTransactionTests(unittest.TestCase):
         subject.theme_key = "dark"
         row = subject.progress["history"][-1]
         cache = subject.quiz_status_values
+        row["err"] = cache["err"] = 40
+        row["evidence_limited"] = False
         old = copy.deepcopy(cache)
         row["vocab"] = old["vocab"] + 20
         row["err"] = old["err"] + 1
@@ -1353,7 +1355,7 @@ class QuizTransactionTests(unittest.TestCase):
         spans = re.findall(r"<span[^>]*>(.*?)</span>", subject.status.text)
         self.assertTrue(spans)
         for number in spans:
-            self.assertRegex(number, r"^(?:\d+(?:\.\d+)?|max)$")
+            self.assertRegex(number, r"^(?:±?\d+(?:\.\d+)?%?|max)$")
         self.assertIs(subject.quiz_status_values, cache)
         row["vocab"] -= 10
         row["err"] -= 2
