@@ -256,19 +256,18 @@ check((st_big["normal_w"], st_big["normal_h"]) == (1400, 900),
 check(st_big["w"] == 1400 and st_big["h"] == 900, "大窗 state w/h 逻辑尺寸")
 w.close()
 
-# 拖拽 resize 也可超过 832×688，直到工作区
+# 手动拖边改尺寸已取消：按在边缘只移动窗口，不改变大小
 w, c = new_ctl(pos=(20, 20))
 c._screens = lambda: [fake_big]
+size0 = w.size()
 g0 = w.mapToGlobal(QPoint(w.width() - 1, w.height() - 1))
 send_mouse(w, QEvent.MouseButtonPress, g0)
-g1 = w.mapToGlobal(QPoint(1200, 800))
+check(c._resizing is None, "按在右下边缘不再进入 resize")
+g1 = g0 + QPoint(40, 30)
 send_mouse(w, QEvent.MouseMove, g1, button=Qt.NoButton, buttons=Qt.LeftButton)
 send_mouse(w, QEvent.MouseButtonRelease, g1, button=Qt.LeftButton, buttons=Qt.NoButton)
-check(w.width() > 832 and w.height() > 688,
-      "拖拽 resize 可超过 832×688：%r" % w.size())
-check(w.width() <= 1400 and w.height() <= 900, "拖拽 resize 不超过工作区")
-check(abs(c.scale_factor - wd.MAX_SCALE) < 1e-9,
-      "超过 832×688 后 scale_factor 仍 1.6")
+check(w.size() == size0, "拖边缘不改变窗口尺寸：%r" % w.size())
+check(w.pos() != QPoint(20, 20), "边缘按下改为移动窗口：%r" % w.pos())
 w.close()
 
 # restore 大尺寸也按工作区保留
@@ -281,40 +280,19 @@ check(abs(c.scale_factor - wd.MAX_SCALE) < 1e-9, "restore 大尺寸 scale=1.6")
 w.close()
 
 # ======================================================================
-# 3. 正常窗四边拖拽 resize / 最小限制
+# 3. 手动拖边缩放已取消；尺寸只由设置的预设切换
 # ======================================================================
 w, c = new_ctl()
-avail = primary_avail()
-start = QRect(w.geometry())
+check(wd.EDGE_RESIZE_ENABLED is False, "窗口边缘缩放已禁用")
+check(c._edges_at(QPoint(1, 1)) == (), "左上角不再识别 resize 边缘")
 g0 = w.mapToGlobal(QPoint(1, 1))
 send_mouse(w, QEvent.MouseButtonPress, g0)
-check(c._resizing is not None, "左上角按下进入 resize")
-check(set(c._resizing["edges"]) == {"left", "top"}, "左上角识别 left+top")
-# 左上向外拖（global 变小）=> 变大、左上角外移
-g1 = g0 - QPoint(60, 50)
-send_mouse(w, QEvent.MouseMove, g1, button=Qt.NoButton, buttons=Qt.LeftButton)
-check(w.width() == start.width() + 60 and w.height() == start.height() + 50,
-      "左上拖拽改宽高：%r -> %r" % (start.size(), w.size()))
-check(w.pos() == QPoint(start.x() - 60, start.y() - 50),
-      "左上拖拽同时移动左上角：%r" % (w.pos(),))
-send_mouse(w, QEvent.MouseButtonRelease, g1, button=Qt.LeftButton, buttons=Qt.NoButton)
-check(c._resizing is None, "释放结束 resize")
-check(c.normal_size == w.size(), "resize 后 normal_size 同步：%r" % c.normal_size)
-
-# 右下角往内拖到很小 -> 不低于 520×430
-w2, c2 = new_ctl(pos=(120, 100))
-p0 = w2.mapToGlobal(QPoint(w2.width() - 1, w2.height() - 1))
-send_mouse(w2, QEvent.MouseButtonPress, p0)
-p1 = w2.mapToGlobal(QPoint(50, 50))
-send_mouse(w2, QEvent.MouseMove, p1, button=Qt.NoButton, buttons=Qt.LeftButton)
-send_mouse(w2, QEvent.MouseButtonRelease, p1, button=Qt.LeftButton, buttons=Qt.NoButton)
-check(w2.width() >= wd.NORMAL_MIN[0] and w2.height() >= wd.NORMAL_MIN[1],
-      "右下缩到最小仍 >=520×430：%r" % w2.size())
-check(c2.normal_size.width() >= wd.NORMAL_MIN[0]
-      and c2.normal_size.height() >= wd.NORMAL_MIN[1],
-      "normal_size 最小限制")
+check(c._resizing is None, "左上角按下不进入 resize")
+send_mouse(w, QEvent.MouseButtonRelease, g0, button=Qt.LeftButton, buttons=Qt.NoButton)
+c.set_normal_size(640, 520)
+check(c.normal_size == QSize(640, 520) and w.size() == QSize(640, 520),
+      "设置预设仍可切到标准尺寸：%r" % w.size())
 w.close()
-w2.close()
 
 # ======================================================================
 # 4. Move 夹紧 / clamp_position

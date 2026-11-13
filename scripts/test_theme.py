@@ -48,6 +48,10 @@ DOCK_KEYS = ("dock_bg", "dock_border", "dock_fg", "dock_hover")
 DK_SURFACES = ("dk_bg", "dk_hover", "dk_pressed")
 DK_CHANGED_KEYS = frozenset(DK_SURFACES + ("dk_fg",))
 DK_PRESSED_RULE = "QPushButton#dontknow:pressed { background: %(dk_pressed)s; }\n"
+SUMMARY_OK_RULES = (
+    "QPushButton#summaryOk { background: %(chip_bg)s; color: %(chip_fg)s; }\n"
+    "QPushButton#summaryOk:hover { background: %(chip_hover)s; color: %(fg_word)s; }\n"
+)
 DK_STATES = (
     ("normal", QStyle.State_None, "dk_bg"),
     ("hover", QStyle.State_MouseOver, "dk_hover"),
@@ -224,6 +228,13 @@ def build_panel(theme_key, option_class):
     chips.addStretch(1)
     layout.addLayout(chips)
 
+    summary_ok = QPushButton("知道了", panel)
+    summary_ok.setObjectName("summaryOk")
+    layout.addWidget(summary_ok)
+    probes.append((summary_ok, QPalette.ButtonText, "chip_fg"))
+    fills.extend(((summary_ok, QStyle.State_None, "chip_bg"),
+                  (summary_ok, QStyle.State_MouseOver, "chip_hover")))
+
     for text, state, fg, bg in (
             ("A  正确 · 主题化反馈", "correct", "opt_ok_fg", "opt_ok_bg"),
             ("B  错误 · 文字仍清晰", "wrong", "opt_bad_fg", "opt_bad_bg")):
@@ -236,12 +247,12 @@ def build_panel(theme_key, option_class):
         probes.append((button.content, QPalette.WindowText, fg))
         fills.append((button, QStyle.State_MouseOver, bg))
 
-    unknown = QPushButton("不认识 · 已选择（反馈原色）", panel)
+    unknown = QPushButton("不认识 · 已选择（原填充不变）", panel)
     unknown.setObjectName("dontknow")
     unknown.setProperty("state", "picked")
     layout.addWidget(unknown)
-    probes.append((unknown, QPalette.ButtonText, "dk_pick_fg"))
-    fills.append((unknown, QStyle.State_MouseOver, "dk_pick"))
+    probes.append((unknown, QPalette.ButtonText, "dk_fg"))
+    fills.append((unknown, QStyle.State_MouseOver, "dk_bg"))
 
     fields = QHBoxLayout()
     edit = QLineEdit("搜索词条 / warm text", panel)
@@ -373,15 +384,15 @@ def check_dk_group(buttons, palette, label):
         for _, button in buttons:
             set_feedback(button, "picked")
         for state_name, state, _ in DK_STATES:
-            check(all(button_fill(button, state) == QColor(palette["dk_pick"])
+            check(all(button_fill(button, state) == QColor(palette["dk_bg"])
                       for _, button in buttons),
-                  "%s picked 优先于 %s，保留原反馈填充" % (label, state_name))
+                  "%s picked 优先于 %s，保持正常填充" % (label, state_name))
         for _, button in buttons:
             button.setEnabled(False)
-        check(all(button.palette().color(QPalette.Disabled, QPalette.ButtonText) == QColor(palette["dk_pick_fg"])
-                  for _, button in buttons), "%s disabled picked 前景仍为原 dk_pick_fg" % label)
-        check(all(button_fill(button, enabled=False) == QColor(palette["dk_pick"])
-                  for _, button in buttons), "%s disabled picked 填充仍为原 dk_pick" % label)
+        check(all(button.palette().color(QPalette.Disabled, QPalette.ButtonText) == QColor(palette["dk_fg"])
+                  for _, button in buttons), "%s disabled picked 前景保持 dk_fg" % label)
+        check(all(button_fill(button, enabled=False) == QColor(palette["dk_bg"])
+                  for _, button in buttons), "%s disabled picked 填充保持 dk_bg" % label)
     finally:
         for button, state, enabled in saved:
             button.setEnabled(enabled)
@@ -461,7 +472,7 @@ def build_dk_comparison():
             add_caption(layout, caption, palette)
             add_button_image(layout, button_image(button, state, size=(300, 44)))
         set_feedback(button, "picked")
-        add_caption(layout, "选中反馈 · picked（原色保留）", palette)
+        add_caption(layout, "选中反馈 · picked（原填充 + 粗描边）", palette)
         add_button_image(layout, button_image(button, size=(300, 44)))
         add_caption(layout, "页面 %s\n文字 %s\n填充:bg %.3f -> %.3f\nDK 状态文字最低 %.3f:1" %
                     (palette["bg"], palette["dk_fg"],
@@ -533,9 +544,11 @@ def main():
                             '{ background: %(dk_pressed)s; color: %(dk_fg)s; }\n')
             check(th.QSS.count(pressed_rule) == 1 and "QPushButton#dk" not in th.QSS,
                   "三处共用 #dontknow pressed/选中态，不新造 #dk CSS")
-            base_qss = th.QSS.replace(pressed_rule, "")
+            check(th.QSS.count(SUMMARY_OK_RULES) == 1,
+                  "完成页 #summaryOk 仅复用设置控件普通/悬停配色")
+            base_qss = th.QSS.replace(pressed_rule, "").replace(SUMMARY_OK_RULES, "")
             check(hashlib.sha256(base_qss.encode("utf-8")).hexdigest() == V136_QSS_HASH,
-                  "去除明确授权的 DK 状态规则后核心 QSS 保持 V136 基线（历史样式单独追加）")
+                  "去除明确授权的 DK 与完成确认规则后核心 QSS 保持 V136 基线（历史样式单独追加）")
 
             for theme_key in th.ORDER:
                 palette = th.get(theme_key)
@@ -589,6 +602,10 @@ def main():
                     check("selection-background-color: %s;" % palette["chip_sel"] in css
                           and "selection-color: %s;" % palette["chip_sel_fg"] in css,
                           "%s/scale%.1f 输入框/下拉选中颜色主题化" % (theme_key, scale))
+                    border = "border: %dpx solid %s;" % (round(2 * scale), palette["chip_sel_fg"])
+                    check(css.count(border) >= 2
+                          and 'QPushButton#dontknow[state="picked"]' in css,
+                          "%s/scale%.1f 不认识与释义选中态使用同款粗描边" % (theme_key, scale))
                     check_dk_widgets(theme_key, scale)
                 check(th.qss(palette, 0.8) == th.qss(palette, 1.0)
                       and th.qss(palette, 2.0) == th.qss(palette, 1.6),

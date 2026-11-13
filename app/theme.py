@@ -171,6 +171,8 @@ QPushButton:hover { background: %(btn_hover)s; }
 QPushButton:pressed { background: %(btn_pressed)s; }
 QPushButton#remember { background: %(rem_bg)s; color: %(rem_fg)s; }
 QPushButton#remember:hover { background: %(rem_hover)s; }
+QPushButton#summaryOk { background: %(chip_bg)s; color: %(chip_fg)s; }
+QPushButton#summaryOk:hover { background: %(chip_hover)s; color: %(fg_word)s; }
 QPushButton#forget { background: %(fgt_bg)s; color: %(fgt_fg)s; }
 QPushButton#forget:hover { background: %(fgt_hover)s; }
 QPushButton#wrong { background: transparent; color: %(wrong_fg)s; font-size: 14px; }
@@ -279,6 +281,20 @@ QPushButton#opt QLabel { background: transparent; color: %(opt_fg)s; font-size: 
     font-family: 'Microsoft YaHei UI'; }
 QPushButton#opt[state="correct"] QLabel { color: %(opt_ok_fg)s; }
 QPushButton#opt[state="wrong"] QLabel { color: %(opt_bad_fg)s; }
+/* V1.4.2 assessment acknowledgement: clearly marks the chosen item, never correctness. */
+QPushButton#opt[state="picked"] {
+    background: %(chip_sel)s; color: %(chip_sel_fg)s;
+    border: 2px solid %(chip_sel_fg)s;
+}
+QPushButton#opt[state="picked"] QLabel { color: %(chip_sel_fg)s; font-weight: 600; }
+/* “不认识”与四个释义选项使用同样的描边，避免看起来像另一类控件。 */
+QPushButton#dontknow { border: 1px solid %(border)s; }
+QPushButton#dontknow[state="picked"] {
+    background: %(dk_bg)s; color: %(dk_fg)s;
+    border: 2px solid %(chip_sel_fg)s;
+}
+QProgressBar { background: %(opt_bg)s; border: none; border-radius: 3px; }
+QProgressBar::chunk { background: %(chart_line)s; border-radius: 3px; }
 """ % t
     if scale != 1.0:
         css = re.sub(r"(\d+)px", lambda match: "%dpx" % max(1, round(int(match.group(1)) * scale)), css)

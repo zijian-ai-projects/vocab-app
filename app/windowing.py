@@ -70,6 +70,8 @@ DOCK_ANIM_MS = 140           # 收起/展开短缓动
 DOCK_RADIUS = 4
 SNAP_DISTANCE = 8            # 贴边吸附阈值
 EDGE_RESIZE_MARGIN = 6       # 正常窗四边可拖拽的像素宽度
+# V1.4.2 优化：取消手动拖边改窗口大小，尺寸只通过设置里的三档预设切换。
+EDGE_RESIZE_ENABLED = False
 HOVER_DELAY_MS = 180         # 鼠标离开后延迟收条，更宽容
 
 
@@ -86,6 +88,7 @@ class WindowController(QObject):
     SNAP_DISTANCE = SNAP_DISTANCE
     STRIP_THICKNESS = STRIP_THICKNESS
     EDGE_RESIZE_MARGIN = EDGE_RESIZE_MARGIN
+    EDGE_RESIZE_ENABLED = EDGE_RESIZE_ENABLED
 
     def __init__(self, widget, parent=None):
         super().__init__(parent if parent is not None else widget)
@@ -1034,7 +1037,7 @@ class WindowController(QObject):
                 pass
 
     def _edges_at(self, local):
-        if self._compact or self._collapsed:
+        if not self.EDGE_RESIZE_ENABLED or self._compact or self._collapsed:
             return ()
         r = self.widget.rect()
         m = self.EDGE_RESIZE_MARGIN
