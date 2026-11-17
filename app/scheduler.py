@@ -103,7 +103,7 @@ def on_remember(st, now=None):
 
 
 def on_forget(st, now=None):
-    """忘记不退级：旧词按当前等级重新排期，新词仍然是无 due 的新词。"""
+    """忘记不退级：旧词统一 5 分钟后再复习，新词仍然是无 due 的新词。"""
     out = migrate_state(st)
     if out["st"] in _TERMINAL:
         return out
@@ -112,7 +112,7 @@ def on_forget(st, now=None):
     out["streak"] += 1
     lv = out["lv"]
     out["st"] = "learning" if lv else "new"
-    out["due"] = _now(now) + LEVELS[lv - 1] if lv else None
+    out["due"] = _now(now) + LEVELS[0] if lv else None
     return out
 
 

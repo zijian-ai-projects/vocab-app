@@ -4,3 +4,7 @@
 /data/school_gloss/*.json text eol=lf
 # Preserve the exact raw bytes cited by the frozen acceptance archive.
 /docs/validation-v135/** -text -whitespace
+
+# Local release artifacts must retain their exact verified archive bytes.
+/vocab-app-releases/**/*.zip -text
+/vocab-app-releases/**/*.tgz -text

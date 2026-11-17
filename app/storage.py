@@ -18,6 +18,11 @@ import tempfile
 import time
 import warnings
 
+try:                                    # 冻结发行需要安装目录/用户目录的独立解析
+    import paths as _paths
+except ImportError:                     # 被单独复制时保持旧行为
+    _paths = None
+
 
 class StorageError(RuntimeError):
     """记录无法安全加载或保存；调用方不得将此异常视为新用户空记录。"""
@@ -130,7 +135,7 @@ def _unique_dirs(directories, exclude=None):
     return result
 
 
-def _old_user_dirs():
+def _old_user_dirs(name="VocabApp"):
     """旧稳定目录，按旧默认优先级排列；只计算路径，不查询是否存在。"""
     if os.name == "nt":
         bases = [os.environ.get("LOCALAPPDATA"), os.environ.get("APPDATA")]
@@ -144,19 +149,54 @@ def _old_user_dirs():
     except StorageError:
         if not bases:
             raise
-    return _unique_dirs(os.path.join(base, "VocabApp") for base in bases)
+    return _unique_dirs(os.path.join(base, name) for base in bases)
+
+
+def _directory_redirected(directory):
+    """只检测目录本身的链接/NTFS junction，允许安装根的祖先有合法链接。"""
+    absolute = _absolute(directory)
+    expected = os.path.join(os.path.realpath(os.path.dirname(absolute)),
+                            os.path.basename(absolute))
+    return (os.path.islink(absolute) or
+            os.path.normcase(os.path.realpath(absolute)) != os.path.normcase(expected))
+
+
+def _portable_ok(directory):
+    """冻结发行：可写就便携；不存在时看父目录能否创建。"""
+    try:
+        if _directory_redirected(directory):
+            return False
+        if os.path.isdir(directory):
+            return _directory_writable(directory)
+        if os.path.lexists(directory):
+            return False
+        parent = os.path.dirname(directory)
+        return os.path.isdir(parent) and _directory_writable(parent)
+    except OSError:
+        return False
 
 
 def data_dir(root=None):
     """返回绝对记录目录，不创建目录。
 
     VOCABAPP_DATA_DIR 指定目录本身（不追加子目录），优先级最高。
-    否则可写 root 优先用 <root>/data；root=None 使用本模块的插件根目录。
-    只读安装目录回退 LOCALAPPDATA/APPDATA/home（POSIX: XDG/home）旧逻辑。
+    冻结发行（Windows 便携包）：安装目录旁 ``userdata``，只读安装回退到
+    用户目录 ``VocabAppWindows``，与源码资料、DSH 插件资料互不相干。
+    源码运行：可写 root 优先用 <root>/data；只读时回退旧用户目录。
     """
     override = os.environ.get("VOCABAPP_DATA_DIR")
     if override:
         return _absolute(override)
+    if root is None and _paths is not None and _paths.is_frozen():
+        portable = _absolute(_paths.portable_data_dir())
+        if _directory_redirected(portable):
+            raise StorageError("默认记录目录是目录链接，拒绝读写或清空：%s" % portable)
+        if _portable_ok(portable):
+            return portable
+        fallback = _old_user_dirs("VocabAppWindows")[0]
+        if _directory_redirected(fallback):
+            raise StorageError("默认记录目录是目录链接，拒绝读写或清空：%s" % fallback)
+        return fallback
     plugin = _plugin_root(root)
     if _can_use_plugin(plugin):
         return os.path.join(plugin, "data")
@@ -168,8 +208,11 @@ def legacy_dirs(root=None):
 
     旧稳定用户目录优先；只读插件回退时也保留旧 <root>/data 候选。
     排除当前目标目录、去重。显式隔离 override 时返回 []，不引入真实资料。
+    冻结发行返回 []：便携包不自动搬入源码树或旧 AppData 的既有记录。
     """
     if os.environ.get("VOCABAPP_DATA_DIR"):
+        return []
+    if root is None and _paths is not None and _paths.is_frozen():
         return []
     plugin = _plugin_root(root)
     target = data_dir(plugin)

@@ -12,7 +12,9 @@ import io
 import json
 import os
 
-DATA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+import paths
+
+DATA = paths.data_root()
 DEFAULT_PATH = os.path.join(DATA, "level_meanings.json")
 STAGES = ("primary", "middleschool")
 _STAGE_ALIASES = {

@@ -72,7 +72,7 @@ class SchedulerTests(unittest.TestCase):
                 after = sch.on_forget(before, 0)
                 self.assertEqual(before, original)
                 self.assertEqual((after["st"], after["lv"], after["due"]),
-                                 ("learning", lv, interval))
+                                 ("learning", lv, sch.LEVELS[0]))
                 self.assertEqual((after["seen"], after["lapse"]), (8, 3))
                 self.assertNotIn("retry_now", after)
                 self.assertEqual(after["custom"], before["custom"])
@@ -81,7 +81,7 @@ class SchedulerTests(unittest.TestCase):
                 for now in range(12):
                     after = sch.on_forget(after, now)
                     self.assertEqual(after["lv"], lv)
-                    self.assertEqual(after["due"], now + interval)
+                    self.assertEqual(after["due"], now + sch.LEVELS[0])
 
     def test_forget_new_stays_new(self):
         st = sch.new_state(0)

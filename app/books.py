@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """词书 V2：三级目录 主类 → 分组 → 词书（+ 分组全选并集 / 教材分册）。
 
-数据来自 data/books.json（schema 2，由 scripts/build_books_v2.py 生成）：
+数据来自冻结的 data/books.json（schema 2；保持现有目录与成员顺序）：
   mains[] → groups[] → union{id,count,words} + items[{id,name,display,series,count,words}]
 
 对上层保持简单接口：get/words/size/name/path/all/默认书；
@@ -12,7 +12,9 @@ import io
 import json
 import os
 
-DATA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+import paths
+
+DATA = paths.data_root()
 
 # 旧 V1.1 词书 id → V2 分组并集 id
 LEGACY = {

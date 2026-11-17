@@ -171,6 +171,12 @@ QPushButton:hover { background: %(btn_hover)s; }
 QPushButton:pressed { background: %(btn_pressed)s; }
 QPushButton#remember { background: %(rem_bg)s; color: %(rem_fg)s; }
 QPushButton#remember:hover { background: %(rem_hover)s; }
+QPushButton#brushForget {
+    background: %(btn_bg)s; color: %(btn_fg)s; font-size: 15px;
+    border-radius: 12px; border: 1px solid %(border)s;
+}
+QPushButton#brushForget:hover { background: %(btn_hover)s; color: %(btn_fg)s; }
+QPushButton#brushForget:pressed { background: %(btn_pressed)s; color: %(btn_fg)s; }
 QPushButton#summaryOk { background: %(chip_bg)s; color: %(chip_fg)s; }
 QPushButton#summaryOk:hover { background: %(chip_hover)s; color: %(fg_word)s; }
 QPushButton#forget { background: %(fgt_bg)s; color: %(fgt_fg)s; }

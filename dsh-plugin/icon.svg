@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="背单词：字母卡片与书签">
+  <title>背单词 · 字母卡片</title>
+  <desc>原创应用图标：柔和蓝灰底，叠放的词卡、字母 A 和暖金书签。</desc>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#71849b"/>
+      <stop offset="1" stop-color="#485b75"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#f3eadb"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="54" fill="url(#tile)"/>
+  <rect x="9" y="9" width="238" height="238" rx="53" fill="none" stroke="#8d9cb0" stroke-opacity=".35" stroke-width="2"/>
+  <g transform="rotate(9 132 132)">
+    <rect x="68" y="49" width="139" height="166" rx="18" fill="#374a64" opacity=".16"/>
+    <rect x="64" y="43" width="139" height="166" rx="18" fill="#c5d0df"/>
+  </g>
+  <rect x="48" y="46" width="144" height="168" rx="19" fill="#324761" opacity=".18"/>
+  <rect x="48" y="39" width="144" height="168" rx="19" fill="url(#paper)"/>
+  <rect x="49" y="40" width="142" height="166" rx="18" fill="none" stroke="#ffffff" stroke-opacity=".55" stroke-width="2"/>
+  <path d="M160 39 H176 V81 L168 74 L160 81 Z" fill="#d4a666"/>
+  <path d="M160 39 H176 V46 H160 Z" fill="#e5bd83"/>
+  <path d="M84 144 L109 80 H123 L149 144 H135 L130 129 H102 L97 144 Z M106 117 H126 L116 89 Z" fill="#536984" fill-rule="evenodd"/>
+  <rect x="83" y="160" width="66" height="6" rx="3" fill="#b6ac9e"/>
+  <rect x="96" y="175" width="40" height="5" rx="2.5" fill="#cec4b5"/>
+</svg>

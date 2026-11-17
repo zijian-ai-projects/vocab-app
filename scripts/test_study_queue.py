@@ -358,7 +358,7 @@ class StudyQueueTests(unittest.TestCase):
         queue = StudyQueue(book("a"), {"a": learning(6, 0)}, {"new_count": 42})
         for now in (0, 345600):
             after = queue.answer(self.assert_item(queue.next(now), "a", "review"), False, now)
-            self.assertEqual((after["st"], after["lv"], after["due"]), ("learning", 6, now + 345600))
+            self.assertEqual((after["st"], after["lv"], after["due"]), ("learning", 6, now + 300))
             self.assertEqual(queue.record["new_count"], 42)
             self.assertEqual(queue.record["pending"], {})
             self.assertIsNone(queue.next(now))

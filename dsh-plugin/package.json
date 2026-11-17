@@ -1,0 +1,39 @@
+{
+  "name": "dsh-vocab-app",
+  "version": "0.1.9",
+  "private": true,
+  "type": "module",
+  "description": "背单词：DSH Web 浮层插件（刷词 / 四选一 / 词汇量测评）",
+  "license": "UNLICENSED",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "icon.svg",
+    "lib/",
+    "data/",
+    "locale/",
+    "readme.md"
+  ],
+  "engines": {
+    "node": ">=24.9.0",
+    "dsh": ">=0.2.2-rc.1"
+  },
+  "dsh": {
+    "category": "extension",
+    "displayName": "背单词",
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  }
+}

@@ -7,7 +7,9 @@ from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QIcon, QPainter, QPixmap
 from PyQt5.QtSvg import QSvgRenderer
 
-ASSET_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets")
+import paths
+
+ASSET_DIR = paths.assets_root()
 APP_ID = "VocabCard.Desktop"
 ICON_SIZES = (16, 20, 24, 32, 40, 48, 64, 128, 256)
 

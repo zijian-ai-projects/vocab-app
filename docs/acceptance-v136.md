@@ -57,7 +57,7 @@
 - **同键恢复字段保留**：[study_queue.py](<../app/study_queue.py>) 的 `_select` 在恢复同 key 的合法 current / 配额挂起项时，继承完整原字典再规范化 `kind/key/resume`，不丢未知字段；不同 key 仍然新建。补跑队列 32/32、重现 10/10、策略队列 23/23。
 - **README现行说明更新**：[README.md](<../README.md>) 里仍写着“没有每日新词限额”、旧固定键位、旧“贴边收起”名称及两个版本“未提交”的段落，已更新为现行行为；V1.3.4/V1.3.5历史章节保留原叙述，只加注已执行的发布状态。版本记录新增V1.3.6条目，历史章节不重写。
 
-另说明：[data/frq.txt](<../data/frq.txt>)、[data/quality.txt](<../data/quality.txt>) 是 [check_frq.py](<../scripts/check_frq.py>)/[check_quality.py](<../scripts/check_quality.py>) 每次运行都会重写的只读统计快照（词频分位与抽样），不是运行时词库、学习记录或测验数据。它们不在矩阵的 36 条受保护路径内；本轮矩阵运行时曾按 [words.json](<../data/words.json>) 重算，确认统计数字与提交版完全一致后，已在交付前用 `git checkout -- data/frq.txt data/quality.txt` 恢复为已提交字节，最终 `git status` 中 `data/` 无改动。
+另说明（本段是 V1.3.6 当时的历史统计）：当时的只读统计快照（词频分位与抽样）由检查脚本每次运行重写，不是运行时词库、学习记录或测验数据。它们不在矩阵的 36 条受保护路径内；本轮矩阵运行时曾按旧中间词表重算，确认统计数字与提交版完全一致后，已在交付前用 `git checkout -- data/frq.txt data/quality.txt` 恢复为已提交字节，最终 `git status` 中 `data/` 无改动。V1.4.3 清理以 Git 与 [已核验插件外备份](<../../vocab-app-v143-cleanup-backup-20261113-1457.zip>) 归档这些旧统计、旧中间词表和对应检查脚本，不改变上述历史事实，也不再保留活动链接；仅在插件仓库目录用 `git show b9ced5d:data/frq.txt`、`git show b9ced5d:data/quality.txt`、`git show b9ced5d:data/words.json`、`git show b9ced5d:scripts/check_frq.py`、`git show b9ced5d:scripts/check_quality.py` 查看历史，不用于当前词库重建或验收。
 
 ## 未覆盖
 

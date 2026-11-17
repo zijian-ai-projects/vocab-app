@@ -1,25 +1,54 @@
 # -*- coding: utf-8 -*-
 """明确确认后清空 VocabApp 使用记录；仅删除已知记录文件，不删目录或词库。
 
-命令行必须从真实安装目录运行（由本文件位置确定）。测试仅调用隔离安装目录。
+源码运行必须从真实安装目录运行（由本文件位置确定）；冻结发行（ResetRecords.exe）
+从可执行文件所在目录确定安装根，并要求同目录存在 GUI 主程序作为身份标记。
+测试仅调用隔离安装目录。
 """
 import argparse
 import os
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "app"))
+FROZEN = bool(getattr(sys, "frozen", False))
+if FROZEN:
+    ROOT = Path(sys.executable).resolve().parent
+    sys.path.insert(0, str(Path(getattr(sys, "_MEIPASS", str(ROOT)))))
+else:
+    ROOT = Path(__file__).resolve().parents[1]
+    sys.path.insert(0, str(ROOT / "app"))
 import storage
+
+GUI_EXE_NAME = "VocabApp.exe"
 
 
 class ResetError(RuntimeError):
     pass
 
 
+def _resources_dir():
+    """只读资源目录（词库/图标）：冻结在包内，源码在项目根。"""
+    if FROZEN:
+        return Path(getattr(sys, "_MEIPASS", str(ROOT)))
+    return ROOT
+
+
+def _install_identity(root):
+    """安装身份标记：冻结要求同目录 GUI 主程序，源码要求 app/main.py。"""
+    root = Path(root)
+    if FROZEN:
+        return (root / GUI_EXE_NAME).is_file()
+    return (root / "app" / "main.py").is_file()
+
+
 def record_dirs(root=ROOT):
     root = Path(root).resolve()
-    if not (root / "app" / "main.py").is_file() or not (root / "data" / "bank.json").is_file():
+    if FROZEN:
+        # 冻结：exe 同目录的 GUI 主程序 + 包内词库构成安装身份。
+        if not _install_identity(root) or not (_resources_dir() / "data" / "bank.json").is_file():
+            raise ResetError("安装目录校验失败，拒绝清空。")
+        return [Path(storage.data_dir(None)).resolve()]
+    if not _install_identity(root) or not (root / "data" / "bank.json").is_file():
         raise ResetError("安装目录校验失败，拒绝清空。")
     target = Path(storage.data_dir(str(root))).resolve()
     if os.environ.get("VOCABAPP_DATA_DIR"):
@@ -66,7 +95,7 @@ def clear_records(root=ROOT, confirmed=False):
         raise ResetError("未确认，不清空任何记录。")
     directories = record_dirs(root)
     # 必须在读取待删除名单前取得锁，避免与迁移或新进程启动交错。
-    stable = Path(storage.data_dir(str(Path(root).resolve()))).resolve()
+    stable = Path(storage.data_dir(None if FROZEN else str(Path(root).resolve()))).resolve()
     try:
         stable.mkdir(parents=True, exist_ok=True)
     except OSError as error:
@@ -104,10 +133,14 @@ def clear_records(root=ROOT, confirmed=False):
 def preview(root=ROOT):
     """List exact immediate candidates without reading record contents or deleting."""
     directories = record_dirs(root)
-    active = Path(storage.data_dir(str(Path(root).resolve()))).resolve()
+    active = Path(storage.data_dir(None if FROZEN else str(Path(root).resolve()))).resolve()
     files = record_files(directories)
-    print("当前写入目录仅有一个；旧目录是兼容迁移检查来源，不表示程序同时向多处写入。")
-    print("清空时也检查旧来源，避免下次启动把旧进度迁移回来；不会删除词库或整个目录。")
+    if FROZEN:
+        print("仅检查 Windows 版当前资料目录；不读取、迁移或清空源码版、DSH 插件版记录。")
+        print("仅删除已知记录文件；不会删除词库、无关文件或整个目录。")
+    else:
+        print("当前写入目录仅有一个；旧目录是兼容迁移检查来源，不表示程序同时向多处写入。")
+        print("清空时也检查旧来源，避免下次启动把旧进度迁移回来；不会删除词库或整个目录。")
     for directory in directories:
         role = "当前写入目录" if directory == active else "旧版迁移来源（非当前写入目录）"
         matches = [path for path in files if path.parent == directory]
@@ -138,6 +171,9 @@ def main(argv=None):
         print("已清空 %d 个使用记录文件。重新打开插件即可。" % len(deleted))
         return 0
     except (ResetError, OSError, EOFError) as error:
+        if os.environ.get("VOCABAPP_DEBUG"):
+            import traceback
+            traceback.print_exc()
         print("清空未完成：" + str(error), file=sys.stderr)
         return 1
 

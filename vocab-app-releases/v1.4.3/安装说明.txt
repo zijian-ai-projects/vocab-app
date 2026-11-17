@@ -1,0 +1,69 @@
+背单词：Windows 1.4.3 / DSH 0.1.9 本地交付（2026-11-17）
+
+一、当前保留的包
+- VocabApp-1.4.3-windows-x64.zip：原 patch-20261116-ui.zip 只改外层文件名，原字节完全保留。
+  ZIP 内目录名仍带 patch-20261116-ui，这是原包布局，不影响使用。
+- dsh-vocab-app-0.1.9.tgz：最新 DSH 插件，32 个运行文件。
+- SHA256SUMS.txt：仅包含上面两个压缩包的 SHA-256。
+旧安装包及解压目录已按用户要求删除；两个旧解压目录中的 userdata 也已获明确授权直接删除。
+源码与 DSH 的资料不在此次删除范围内。包内旧说明关于“保留旧发行包”的文字已由本说明替代。
+
+二、Windows 使用与升级
+1. 将整个 ZIP 解压到新目录，运行其中 VocabApp.exe，不要在 ZIP 内运行。
+   必须保留 _internal 和随包文件；不需要额外安装 Python/PyQt5/Node。
+   目标 Windows 10/11 x64；未完成无开发环境干净机验收。
+2. 学习资料优先保存在 EXE 旁 userdata；目录不可写时回退到
+   %LOCALAPPDATA%\VocabAppWindows。VOCABAPP_DATA_DIR 可显式覆盖。
+   不自动迁移源码或 DSH 的记录，也不把包内词库当学习资料。
+3. 搬移或后续升级前先关闭应用并备份当前资料目录，不覆盖 userdata。
+   ResetRecords.exe 是清空工具，不是升级工具，请勿为升级运行它。
+4. 本次保留 UI 补丁的中性色“不认识”按钮和旧词忘记后保级、5 分钟复习规则。
+   已保存 due 不重算；新规则在下次回答/改判生效。其它 CAT 算法和原词库保持。
+
+三、SmartScreen 提示
+本包 VocabApp.exe 的实际 Authenticode 状态为 NotSigned（未签名）。
+“未识别的应用”通常表示文件或发布者信誉不足；这不是程序内部错误，
+不等于已检出病毒，也不能作为安全保证。SHA-256 只能核对完整性，不是发布者签名。
+“目前无法访问 SmartScreen”表示此次在线检查未完成，应确认一般联网正常后稍后重试；
+受组织管理的设备请联系管理员。没有检查通过的依据时不要把联网失败视为安全认证。
+
+仅当你已核实来源可信、散列与本清单一致并决定信任此文件后，可自行查看下载 ZIP
+的“属性 → 常规”；如果有“解除锁定/Unblock”，选择并应用，再解压到新目录。
+没有该选项无需操作。已解压的旧 EXE 不会自动改变。此操作仅移除下载来源标记，
+不是签名、扫描或提高云端信誉，也不能保证所有安全提示消失。
+若安全中心报告具体恶意软件名称或隔离，停止运行并保留防护。
+本次没有关闭 Defender/SmartScreen、添加排除、自动解除锁定或制作自签证书。
+长期改善需合法的受信任代码签名与持续信誉，或合适的商店发行；
+OV/EV 签名的新版本仍可能被提示，不承诺买证书或重新打包即免警告。
+微软说明：
+https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation
+https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/unblock-file?view=powershell-7.5
+https://learn.microsoft.com/en-us/defender-endpoint/streamlined-device-connectivity-urls-commercial#common-endpoints
+
+四、DSH 使用与更新
+1. DSH >=0.2.2-rc.1、Node >=24.9.0。本机 desktop 已安装并启用 0.1.9。
+   其它 profile 请使用 DSH 的插件安装功能选择本 TGZ；刷新对应已登录 Web 页面。
+   不启动替代服务器，不保证无需刷新自动更新。
+2. 固定 400×400 迷你卡片，无尺寸档位或拖边缩放；可拖动位置、关闭再打开。
+   历史行有紧凑删除按钮；加载页左上角留空，进度从 0 按真实后台构建增长，
+   满格短留后进入题目。缓存题库不强行延迟。
+3. 资料命名空间 dsh-vocab-app/vocab_app_default 保持；本机主记录与原备份
+   已在升级时独立核对字节未变，未读取内容用于测试。
+   DSH_HOME/storages/dsh-vocab-app 为默认资料位置；显式覆盖按原配置。
+   它与 Windows 的 userdata/VocabAppWindows 相互独立，不自动导入或同步。
+4. 备份前先停止本插件，再复制主 JSON 和 .bak。不在实例存活时强行删除锁。
+   主文件损坏可由有效备份恢复；两者均坏时拒绝启动，不静默清空。
+
+五、校验与验证边界
+PowerShell 示例（将路径换成你的文件）：
+  Get-FileHash -Algorithm SHA256 '你的路径\VocabApp-1.4.3-windows-x64.zip'
+  Get-FileHash -Algorithm SHA256 '你的路径\dsh-vocab-app-0.1.9.tgz'
+Windows ZIP 共 178 个文件；DSH TGZ 共 32 个运行文件。两包均不含学习记录、日志、锁或开发测试资料。
+DSH 完整 Node 回归 246/246 通过；公共全词库和已安装 Worker 验证通过。
+实际 GUI 浏览器因认证要求未完成登录态点击验收；离线实际渲染器的四主题/两尺寸检查通过。
+Windows 既有清理验收为 22 个入口通过、7 个既有失败，保留历史事实，不宣称全绿。
+其它范围与最新定向检查见仓库 docs/release-v143-dsh019.md。
+
+六、交付范围
+本次为本地 Git 提交与注释标签，不上传 GitHub/npm，不改旧标签或历史。
+项目仍 private/UNLICENSED；Windows 包内第三方组件许可与词库再分发权边界保持。

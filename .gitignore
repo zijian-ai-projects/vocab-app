@@ -40,3 +40,10 @@ Thumbs.db
 
 # 词表抽取的中间产物（raw / lists / gloss / report，可随时重建）
 build/
+.build/
+
+# 发行解压目录和本机资料不进 Git；只提交最终 ZIP/TGZ 与说明/校验
+/vocab-app-releases/**/VocabApp-*/
+**/userdata/
+**/vocab_app_default.json
+**/vocab_app_default.json.*

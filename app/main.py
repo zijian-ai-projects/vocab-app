@@ -19,8 +19,11 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QPushButton,
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-DATA = os.path.join(ROOT, "data")
 sys.path.insert(0, HERE)
+import paths
+DATA = paths.data_root()
+# 冻结发行由 storage 自己解析安装目录；源码运行沿用原来的 ROOT。
+STORAGE_ROOT = None if paths.is_frozen() else ROOT
 import scheduler as sch
 import vocabulary_test as vt
 import assessment_history as assessment_history
@@ -39,16 +42,16 @@ import study_options
 import school_knowledge as school
 from app_icon import application_icon, configure_application_icon, set_windows_app_id
 
-DEFAULT_PROGRESS_PATH, DEFAULT_WIN_PATH = storage.paths(ROOT)
+DEFAULT_PROGRESS_PATH, DEFAULT_WIN_PATH = storage.paths(STORAGE_ROOT)
 PROGRESS_PATH, WIN_PATH = DEFAULT_PROGRESS_PATH, DEFAULT_WIN_PATH
 LEGACY_PROGRESS_PATH = os.path.join(DATA, "progress.json")
 LEGACY_WIN_PATH = os.path.join(DATA, "_win.json")
 # 单路径常量保留给旧隔离脚本；实际迁移覆盖所有旧稳定资料目录。
 LEGACY_PROGRESS_PATHS = tuple(os.path.join(directory, "progress.json")
-                              for directory in storage.legacy_dirs(ROOT))
+                              for directory in storage.legacy_dirs(STORAGE_ROOT))
 LEGACY_WIN_PATHS = tuple(os.path.join(directory, "_win.json")
-                         for directory in storage.legacy_dirs(ROOT))
-VERSION = "1.4.2"
+                         for directory in storage.legacy_dirs(STORAGE_ROOT))
+VERSION = "1.4.3"
 DEFAULTS_JOURNAL = "_v136_defaults_pending"
 RESET_PREF_KEYS = ("theme", "study_mode", "retry_gap", "learning_policy",
                    "keybindings", "school_knowledge")
@@ -1235,7 +1238,7 @@ class Card(QWidget):
         fb.setContentsMargins(0, 0, 0, 0)
         fb.setSpacing(10)
         self.btn_forget = QPushButton("不认识")
-        self.btn_forget.setObjectName("dontknow")
+        self.btn_forget.setObjectName("brushForget")
         self.btn_forget.clicked.connect(lambda: self.act("forget"))
         self.btn_remember = QPushButton("认识")
         self.btn_remember.setObjectName("remember")
@@ -3922,10 +3925,19 @@ def main():
     if destructive_debug.intersection(sys.argv) and not os.environ.get("VOCABAPP_DATA_DIR"):
         QMessageBox.critical(None, "调试需隔离资料", "造数据和自动答题只能在显式设置 VOCABAPP_DATA_DIR 的隔离目录中运行。\n默认学习记录未读取或修改。")
         sys.exit(1)
-    directory = storage.data_dir(ROOT)
+    directory = storage.data_dir(STORAGE_ROOT)
     try:
         os.makedirs(directory, exist_ok=True)
     except OSError as error:
+        if os.environ.get("VOCABAPP_TRACE"):
+            try:
+                if sys.stderr is not None:
+                    sys.stderr.write("[trace] makedirs failed dir=%r frozen=%r err=%r\n"
+                                     % (directory, paths.is_frozen(), error))
+                    sys.stderr.flush()
+                traceback.print_exc()
+            except Exception:
+                pass
         QMessageBox.critical(None, "无法访问记录目录", str(error))
         sys.exit(1)
     instance_lock = QLockFile(os.path.join(directory, "vocab-app.lock"))

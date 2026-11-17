@@ -26,10 +26,21 @@ ROOT = os.path.dirname(APP_DIR)
 LOG_NAME = "startup.log"
 MAX_LOG_BYTES = 200 * 1024
 QT_DLL_NAMES = ("Qt5Core_conda.dll", "Qt5Core.dll")
+FROZEN = bool(getattr(sys, "frozen", False))
 
 
 def qt_dll_dirs():
     """返回可能存放 Qt5Core DLL 的目录（只读判断，不创建、不写入）。"""
+    if FROZEN:
+        # 冻结包里 Qt 运行库随包携带，绝不依赖开发机的 Anaconda/PATH。
+        candidates = []
+        try:
+            sys.path.insert(0, APP_DIR)
+            import paths as app_paths
+            candidates.extend(app_paths.qt_dll_candidates())
+        except Exception:
+            candidates.append(getattr(sys, "_MEIPASS", ROOT))
+        return candidates
     prefix = os.path.abspath(sys.prefix)
     site = os.path.join(prefix, "Lib", "site-packages")
     return [
@@ -59,10 +70,21 @@ def ensure_qt_on_path():
         return None
     parts = [p for p in os.environ.get("PATH", "").split(os.pathsep) if p]
     normalized = {os.path.normcase(os.path.abspath(p)) for p in parts}
-    if os.path.normcase(directory) in normalized:
-        return None
-    os.environ["PATH"] = os.pathsep.join([directory] + parts)
-    return directory
+    added = None
+    if os.path.normcase(directory) not in normalized:
+        os.environ["PATH"] = os.pathsep.join([directory] + parts)
+        added = directory
+    if FROZEN:
+        # 让 Qt 只从随包插件目录加载，避免混入系统里其它 Qt 的插件。
+        try:
+            import paths as app_paths
+            plugins = app_paths.qt_plugin_dir()
+        except Exception:
+            plugins = None
+        if plugins:
+            os.environ["QT_PLUGIN_PATH"] = plugins
+            os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH", None)
+    return added
 
 
 def log_file():
@@ -71,7 +93,7 @@ def log_file():
         if APP_DIR not in sys.path:
             sys.path.insert(0, APP_DIR)
         import storage
-        return os.path.join(storage.data_dir(ROOT), LOG_NAME)
+        return os.path.join(storage.data_dir(None if FROZEN else ROOT), LOG_NAME)
     except Exception:
         return os.path.join(tempfile.gettempdir(), "VocabApp-" + LOG_NAME)
 
@@ -135,19 +157,37 @@ def _last_line(detail):
     return lines[-1][:600] if lines else "未知错误"
 
 
+def trace(text):
+    """仅在显式设置 VOCABAPP_TRACE 时向 stderr 写启动阶段标记（排查冻结包卡住）。"""
+    if not os.environ.get("VOCABAPP_TRACE"):
+        return
+    try:
+        stream = sys.stderr
+        if stream is not None:
+            stream.write("[trace] %s\n" % text)
+            stream.flush()
+    except Exception:
+        pass
+
+
 def run(argv=None):
     """启动应用并返回退出码；主流程仍由 main.main() 负责。"""
     started = time.time()
     if APP_DIR not in sys.path:
         sys.path.insert(0, APP_DIR)
+    trace("start frozen=%s app_dir=%s sys_prefix=%s" % (FROZEN, APP_DIR, sys.prefix))
     try:
         added = ensure_qt_on_path()
+        trace("qt_path=%s" % (added or "-"))
         import main as app_main
+        trace("import main ok")
         version = getattr(app_main, "VERSION", "?")
-        write_log("%s start version=%s qt_dll=%s profile=%s pid=%s"
-                  % (time.strftime("%Y-%m-%d %H:%M:%S"), version,
-                     added or "-", os.path.dirname(log_file()), os.getpid()))
+        path = write_log("%s start version=%s qt_dll=%s profile=%s pid=%s"
+                         % (time.strftime("%Y-%m-%d %H:%M:%S"), version,
+                            added or "-", os.path.dirname(log_file()), os.getpid()))
+        trace("log=%s" % path)
         result = app_main.main()
+        trace("main returned %r" % (result,))
         code = 0 if result is None else result
         write_log("%s exit code=%s seconds=%.2f"
                   % (time.strftime("%Y-%m-%d %H:%M:%S"), code,

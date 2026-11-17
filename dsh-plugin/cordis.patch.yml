@@ -1,0 +1,6 @@
+# dsh-vocab-app bundle patch: one host row inserted over the profile root.
+# The client half is declared by package.json `dsh.client` and served through
+# the package export subpath `./client`.
+- insert:
+    - id: vocab-app
+      name: dsh-vocab-app
