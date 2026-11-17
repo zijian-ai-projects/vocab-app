@@ -3786,7 +3786,8 @@ class Card(QWidget):
         study = self.mode in ("front", "back", "empty", "choice", "choice_back")
         if study and self.mode != "empty" and self.queue and 0 <= self.qi < len(self.queue):
             kind = self.queue[self.qi]["kind"]
-            parts.append("新词" if kind == "new" else "复习")
+            # retry 是尚未认识的新词重现，不是有等级/到期时间的旧词复习。
+            parts.append("新词" if kind in ("new", "retry") else "复习")
         self.study_status.setText(" · ".join(parts))
         if not hasattr(self, "window_ctl") or not (self.window_ctl.collapsed or self.window_ctl.animating):
             self.study_status.setVisible(study and bool(parts))

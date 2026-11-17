@@ -32,10 +32,10 @@ D:\software\anaconda\pythonw.exe -B app/launcher.py
 
 ## 当前交付：Windows V1.4.3 / DSH 0.1.10（2026-11-17）
 
-- Windows 便携版：[VocabApp-1.4.3-windows-x64.zip](<vocab-app-releases/v1.4.3/VocabApp-1.4.3-windows-x64.zip>) 保持原 UI 补丁字节不变。中性色“不认识”、忘记保级及 5 分钟复习规则保持；本轮不修改 Windows。
-- DSH：[0.1.10 插件包](<vocab-app-releases/v1.4.3/dsh-vocab-app-0.1.10.tgz>) 是 0.1.9 的小补丁：**每次打开或刷新 DSH，先显示可拖动的最小化图标；单击才展开 400×400 卡片，关闭后回到图标**。不记忆展开偏好，不增加学习写入；原加载进度、拖动和全部业务规则保持。
-- 发行目录继续仅保留最新 Windows / DSH 包和说明、校验；旧 Git 历史与 `V1.4.3`、`dsh-vocab-app-v0.1.9` 标签不变。本补丁不自动 commit/tag 或 push。
-- 验证范围与安装结果见 [0.1.10 补丁验收](<docs/release-dsh0110.md>)、[安装说明](<vocab-app-releases/v1.4.3/安装说明.txt>)、[校验清单](<vocab-app-releases/v1.4.3/SHA256SUMS.txt>)。此前联合版本的测试与清理事实见 [0.1.9 历史验收](<docs/release-v143-dsh019.md>)；Windows 既有失败不在本补丁修复范围。
+- Windows 便携版：[V1.4.3 新词标签修订版](<vocab-app-releases/v1.4.3/VocabApp-1.4.3-windows-x64.zip>)：ZIP 文件名及包内顶层目录统一为 `VocabApp-1.4.3-windows-x64`。新词“认识 → 选错了”及直接“不认识”后的重现均显示 **新词**，真正到期旧词仍显示 **复习**。仅修复左上角对 `retry` 的分类，记忆状态、排期、每日新词记账不改；保留中性色“不认识”和旧词忘记保级、5 分钟复习规则。
+- DSH：[0.1.10 插件包](<vocab-app-releases/v1.4.3/dsh-vocab-app-0.1.10.tgz>) 已通过真实 Engine 改判、重现和重启回归，**没有同类标签问题，本次不发新版本、不重新安装，运行文件原字节保持**。每次打开或刷新仍先显示可拖动图标；单击展开 400×400 卡片，关闭后回到图标。不记忆展开偏好，隐藏时不自动推进学习或已答测验。
+- 发行目录继续仅保留最新 Windows / DSH 包和说明、校验；既有 `V1.4.3`、`dsh-vocab-app-v0.1.9`、`dsh-vocab-app-v0.1.10` 标签不移动。本次 Windows 修订版由本地提交及注释标签 `V1.4.3-windows` 固化，未 push。
+- 本次验证与安全升级见 [新词标签补丁验收](<docs/release-v143-newword-patch.md>)、[安装说明](<vocab-app-releases/v1.4.3/安装说明.txt>)、[校验清单](<vocab-app-releases/v1.4.3/SHA256SUMS.txt>)。此前 [0.1.10 最小化补丁](<docs/release-dsh0110.md>)、[0.1.9 联合版](<docs/release-v143-dsh019.md>) 保留为历史验收；Windows 既有失败不在此次修复范围。
 
 ### Windows SmartScreen 提示
 

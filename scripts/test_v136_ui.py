@@ -328,7 +328,7 @@ class V136Suite(base.Suite):
                    "首次学习账本保留原始学习事实")
         self.close()
 
-        # retry badge 必须归复习，不能继续显示新词。构造仅剩 retry 的合法记录。
+        # V1.4.3 新词标签补丁：retry 仍是 Lv0 未认识新词，不能归为旧词复习。
         states = {key: base.mastered() for key in base.KEYS}
         states[base.KEYS[0]] = {"st": "new", "lv": 0, "due": None,
                                 "seen": 1, "lapse": 1, "streak": 0}
@@ -341,9 +341,11 @@ class V136Suite(base.Suite):
             study_records={base.BOOK: retry_record}), win_fixture())
         base.pump()
         if w.queue and w.queue[w.qi]["kind"] == "retry":
-            self.check(w.study_status.text().startswith("复习")
-                       and "重现" not in w.study_status.text(),
-                       "retry badge 归为复习不冒充新词：%r" % w.study_status.text())
+            self.check(w.study_status.text() == "新词",
+                       "retry badge 保持新词，不误标复习：%r" % w.study_status.text())
+            self.check(w.states[base.KEYS[0]]["lv"] == 0
+                       and w.states[base.KEYS[0]]["due"] is None,
+                       "新词标签与 Lv0 / 无复习到期时间一致")
         else:
             self.check(False, "构造 retry fixture 未出现 retry：%s" %
                        (w.queue[w.qi] if w.queue else None))

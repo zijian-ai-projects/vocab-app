@@ -2739,3 +2739,233 @@ test('Host v0.1.3: empty到期GET只读，正常POST next才唤醒并多轮五�
     }
   });
 });
+
+// Windows V1.4.3 correction report: exercise DSH's real Engine actions,
+// synthetic records and injected clocks (never a live profile or learning file).
+test('DSH 0.1.10: 首次新词认识后correct仍是新词，按队列重现/重启且跨日只记一次', async (t) => {
+  await withClockedEngine(t, async (first, sandbox, clock, reopen) => {
+    let engine = first;
+    clock.now = new Date(2024, 0, 15, 23, 59, 50).getTime() / 1000;
+    await navToBook(engine);
+    assert.equal((await act(engine, 'start')).ok, true);
+    const [key, ...others] = sandbox.synthetic.words;
+    assert.equal(engine.view().word.w, key);
+    assert.equal(engine.view().kind, 'new');
+    assert.equal(engine.view().studyStatus, '新词');
+    assert.equal(engine.doc.progress.states[key], undefined, 'a first-new word has no previous answer');
+    const before = structuredClone(engine.doc.progress);
+    const answeredAt = clock.now;
+    assert.equal((await act(engine, 'answer', { action: 'remember' })).ok, true);
+    assert.equal(engine.view().screen, 'back');
+    assert.equal(engine.view().canCorrect, true);
+    assert.equal(engine.doc.progress.states[key].lv, 1);
+    assert.equal(engine.doc.progress.states[key].due, answeredAt + 300);
+    const snapshot = engine.ep.snapshot;
+    const frozenSnapshot = structuredClone(snapshot);
+    assert.deepEqual(snapshot.states, before.states, 'snapshot contains pre-answer states, not the upgraded lv1 state');
+    assert.deepEqual(snapshot.record, before.study_records['tb-1']);
+    assert.deepEqual(snapshot.ledger, before.daily_new_ledger);
+    assert.notStrictEqual(snapshot.states, engine.doc.progress.states);
+    assert.notStrictEqual(snapshot.record.pending, engine.doc.progress.study_records['tb-1'].pending);
+    assert.notStrictEqual(snapshot.ledger.days, engine.doc.progress.daily_new_ledger.days);
+    const introducedLedger = structuredClone(engine.doc.progress.daily_new_ledger);
+    assert.deepEqual(introducedLedger.days['2024-01-15'], [key]);
+    assert.equal(engine.doc.progress.study_records['tb-1'].new_count, 1);
+    assert.equal(Object.hasOwn(engine.doc.progress.study_records['tb-1'].pending, key), false);
+
+    clock.now += 20; // Correct after local midnight; preserve the original introduction day.
+    const corrected = await act(engine, 'correct');
+    assert.equal(corrected.ok, true, corrected.message);
+    const correctedState = { lv: 0, due: null, seen: 1, lapse: 1, streak: 1, st: 'new' };
+    assert.deepEqual(engine.doc.progress.states[key], correctedState, 'correct replaces remember with forget from the pre-answer lv0 state');
+    assert.deepEqual(snapshot, frozenSnapshot, 'answer/correct/next must not mutate the saved pre-answer snapshot');
+    assert.deepEqual(engine.doc.progress.daily_new_ledger, introducedLedger);
+    assert.equal(Object.hasOwn(engine.doc.progress.daily_new_ledger.days, '2024-01-16'), false);
+    let record = engine.doc.progress.study_records['tb-1'];
+    assert.equal(record.new_count, 1, 'correction must count the first introduction exactly once');
+    assert.equal(record.pending[key], 4, 'lv0 retry is scheduled after three other first-new answers');
+    assert.equal(record.cursor, 1);
+    assert.equal(engine.view().screen, 'front');
+    assert.equal(engine.view().word.w, others[0], 'correct advances immediately, without showing the next meaning');
+    assert.equal(engine.view().kind, 'new');
+    assert.equal(engine.view().studyStatus, '新词');
+    assert.equal(engine.view().revealed, false);
+    assert.equal(engine.view().canCorrect, undefined, 'the front view has no correction action');
+    assert.deepEqual(readStorage(sandbox.storageFile).progress, engine.doc.progress);
+    const afterCorrect = clockedSnapshot(engine, sandbox);
+    assert.equal((await act(engine, 'correct')).ok, true);
+    assertClockedUnchanged(engine, sandbox, afterCorrect);
+
+    // The saved retry target is three first-new answers away, but the existing
+    // default policy also waits until today's 20-word allowance is used. Exercise
+    // that real scheduling path instead of stubbing StudyQueue or forcing next.
+    const intervening = others.slice(0, 20);
+    for (const word of intervening) {
+      assert.equal(engine.view().word.w, word, 'only an actual first-new answer advances the retry gap');
+      assert.equal(engine.view().kind, 'new');
+      clock.now += 1;
+      await answerAndNext(engine);
+    }
+    record = engine.doc.progress.study_records['tb-1'];
+    assert.equal(record.new_count, 21);
+    assert.equal(record.pending[key], 4);
+    assert.equal(engine.view().word.w, key);
+    assert.equal(engine.view().kind, 'retry');
+    assert.equal(engine.view().studyStatus, '新词', 'a corrected first-new word is 新词 on reappearance, never 复习');
+    assert.equal(engine.view().due, null);
+    assert.deepEqual(engine.doc.progress.states[key], correctedState);
+    assert.deepEqual(engine.doc.progress.daily_new_ledger.days['2024-01-15'], [key]);
+    assert.deepEqual(engine.doc.progress.daily_new_ledger.days['2024-01-16'], intervening);
+    const persisted = structuredClone(engine.doc.progress);
+    await engine.close();
+    engine = await reopen();
+    assert.equal(engine.view().word.w, key);
+    assert.equal(engine.view().kind, 'retry');
+    assert.equal(engine.view().studyStatus, '新词', 'restart must not turn lv0/no-due retry into a review');
+    assert.equal(engine.view().due, null);
+    assert.deepEqual(engine.doc.progress, persisted);
+    const readOnly = await clockedGet(engine, sandbox);
+    assert.equal(readOnly.view.studyStatus, '新词');
+    assert.equal(readOnly.view.kind, 'retry');
+  });
+});
+
+test('DSH 0.1.10: 已重现新词认识后correct深拷贝恢复lv0，无其它新词可立即再现且不重计账本', async (t) => {
+  await withClockedEngine(t, async (first, sandbox, clock, reopen) => {
+    let engine = first;
+    clock.now = new Date(2024, 0, 16, 12, 0, 0).getTime() / 1000;
+    await navToBook(engine);
+    const key = sandbox.synthetic.words[0];
+    for (const word of sandbox.synthetic.words.slice(1)) engine.doc.progress.states[word] = {
+      lv: 10, st: 'mastered', due: null, seen: 10, lapse: 0, streak: 0,
+    };
+    const original = {
+      lv: 0, st: 'new', due: null, seen: 2, lapse: 2, streak: 2,
+      future: { nested: ['saved-retry', { preserve: true }] },
+    };
+    engine.doc.progress.states[key] = structuredClone(original);
+    engine.doc.progress.daily_new_ledger = {
+      schema: 1, days: { '2024-01-15': [key] }, future: { untouched: ['ledger'] },
+    };
+    engine.doc.progress.study_records['tb-1'] = {
+      cursor: WORD_COUNT, new_count: 13, pending: { [key]: 13 },
+      current: { kind: 'retry', key }, held_current: null, last_retry: null,
+      future: { nested: ['record'] },
+    };
+    assert.equal((await act(engine, 'start')).ok, true);
+    assert.equal(engine.view().word.w, key);
+    assert.equal(engine.view().kind, 'retry');
+    assert.equal(engine.view().studyStatus, '新词');
+    const ledger = structuredClone(engine.doc.progress.daily_new_ledger);
+    const frozenStates = structuredClone(engine.doc.progress.states);
+    const beforeRecord = structuredClone(engine.doc.progress.study_records['tb-1']);
+    const answeredAt = clock.now;
+    assert.equal((await act(engine, 'answer', { action: 'remember' })).ok, true);
+    assert.equal(engine.doc.progress.states[key].lv, 1);
+    assert.equal(engine.doc.progress.states[key].due, answeredAt + 300);
+    const snapshot = engine.ep.snapshot;
+    const frozenSnapshot = structuredClone(snapshot);
+    assert.deepEqual(snapshot.states[key], original);
+    assert.deepEqual(snapshot.record, beforeRecord);
+    assert.deepEqual(snapshot.ledger, ledger);
+    assert.notStrictEqual(snapshot.states[key].future, engine.doc.progress.states[key].future, 'even nested fields are independent of the upgraded answer');
+    assert.notStrictEqual(snapshot.record.future, engine.doc.progress.study_records['tb-1'].future);
+    assert.notStrictEqual(snapshot.ledger.days, engine.doc.progress.daily_new_ledger.days);
+    clock.now += 23;
+    const corrected = await act(engine, 'correct');
+    assert.equal(corrected.ok, true, corrected.message);
+    const expected = { ...original, seen: 3, lapse: 3, streak: 3 };
+    assert.deepEqual(engine.doc.progress.states, { ...frozenStates, [key]: expected });
+    assert.deepEqual(snapshot, frozenSnapshot);
+    assert.deepEqual(engine.doc.progress.daily_new_ledger, ledger, 'retry correction must not add a first-new ledger entry');
+    const record = engine.doc.progress.study_records['tb-1'];
+    assert.equal(record.new_count, 13);
+    assert.equal(record.pending[key], 16);
+    assert.equal(record.cursor, WORD_COUNT);
+    assert.equal(record.last_retry, key);
+    assert.deepEqual(record.future, beforeRecord.future);
+    assert.equal(engine.view().screen, 'front');
+    assert.equal(engine.view().word.w, key, 'book-end fallback allows a retry when there are no other new words');
+    assert.equal(engine.view().kind, 'retry');
+    assert.equal(engine.view().studyStatus, '新词');
+    assert.equal(engine.view().due, null);
+    assert.equal(engine.view().revealed, false);
+    assert.deepEqual(readStorage(sandbox.storageFile).progress, engine.doc.progress);
+    const persisted = structuredClone(engine.doc.progress);
+    await engine.close();
+    clock.now += 600;
+    engine = await reopen();
+    assert.equal(engine.view().word.w, key);
+    assert.equal(engine.view().kind, 'retry');
+    assert.equal(engine.view().studyStatus, '新词', 'elapsed time cannot schedule a lv0/no-due word as review');
+    assert.equal(engine.view().due, null);
+    assert.deepEqual(engine.doc.progress, persisted);
+    assert.equal((await clockedGet(engine, sandbox)).view.studyStatus, '新词');
+  });
+});
+
+test('DSH 0.1.10: 真正旧词correct恢复原等级而非新词，300秒后/重启仍显示复习', async (t) => {
+  for (const level of [1, 5, 9]) {
+    await t.test(`original lv${level}`, async (st) => {
+      await withClockedEngine(st, async (first, sandbox, clock, reopen) => {
+        let engine = first;
+        await navToBook(engine);
+        const key = sandbox.synthetic.words[0];
+        for (const word of sandbox.synthetic.words.slice(1)) engine.doc.progress.states[word] = {
+          lv: 10, st: 'mastered', due: null, seen: 10, lapse: 0, streak: 0,
+        };
+        const original = {
+          lv: level, st: 'learning', due: clock.now - 1, seen: level + 2, lapse: 2, streak: 3,
+          future: { nested: ['already-learned', { level }] },
+        };
+        engine.doc.progress.states[key] = structuredClone(original);
+        engine.doc.progress.study_records['tb-1'] = {
+          cursor: WORD_COUNT, new_count: 7, pending: {}, current: null,
+          held_current: null, last_retry: null,
+        };
+        assert.equal((await act(engine, 'start')).ok, true);
+        assert.equal(engine.view().word.w, key);
+        assert.equal(engine.view().kind, 'review');
+        assert.equal(engine.view().studyStatus, '复习');
+        const ledger = structuredClone(engine.doc.progress.daily_new_ledger);
+        const answeredAt = clock.now;
+        assert.equal((await act(engine, 'answer', { action: 'remember' })).ok, true);
+        assert.equal(engine.doc.progress.states[key].lv, level + 1);
+        const rememberedIntervals = { 1: 1800, 5: 4 * 86400, 9: null };
+        assert.equal(engine.doc.progress.states[key].due,
+          level === 9 ? null : answeredAt + rememberedIntervals[level]);
+        assert.equal(engine.view().canCorrect, true, 'the remembered lv9-to-mastered answer must still be correctable');
+        assert.deepEqual(engine.ep.snapshot.states[key], original);
+        clock.now += 17;
+        const correctedAt = clock.now;
+        const corrected = await act(engine, 'correct');
+        assert.equal(corrected.ok, true, corrected.message);
+        const expected = { ...original, due: correctedAt + 300, seen: original.seen + 1, lapse: 3, streak: 4 };
+        assert.deepEqual(engine.doc.progress.states[key], expected, 'correct is forget from the original level, not forget from its already-raised level');
+        assert.deepEqual(engine.doc.progress.daily_new_ledger, ledger);
+        assert.equal(engine.doc.progress.study_records['tb-1'].new_count, 7);
+        assert.deepEqual(engine.doc.progress.study_records['tb-1'].pending, {});
+        assert.equal(engine.view().screen, 'empty');
+        assert.equal(engine.ep.waitingDue, correctedAt + 300);
+        assert.deepEqual(readStorage(sandbox.storageFile).progress.states[key], expected);
+        clock.now = correctedAt + 299;
+        assert.equal((await clockedGet(engine, sandbox)).view.screen, 'empty');
+        await engine.close();
+        engine = await reopen();
+        assert.equal(engine.view().screen, 'empty');
+        assert.deepEqual(engine.doc.progress.states[key], expected);
+        clock.now += 1;
+        assert.equal((await clockedGet(engine, sandbox)).view.screen, 'empty', 'GET does not auto-advance even when the old word is due');
+        assert.equal((await act(engine, 'next')).ok, true);
+        assert.equal(engine.view().word.w, key);
+        assert.equal(engine.view().kind, 'review');
+        assert.equal(engine.view().studyStatus, '复习', 'a real lv1+ old word remains review after correction and restart');
+        assert.deepEqual(engine.doc.progress.states[key], expected);
+        assert.deepEqual(engine.doc.progress.daily_new_ledger, ledger);
+        assert.equal(engine.doc.progress.study_records['tb-1'].new_count, 7);
+        assert.deepEqual(engine.doc.progress.study_records['tb-1'].pending, {});
+        assert.deepEqual(readStorage(sandbox.storageFile).progress.study_records['tb-1'].current, { kind: 'review', key });
+      });
+    });
+  }
+});
