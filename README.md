@@ -30,12 +30,12 @@ D:\software\anaconda\pythonw.exe -B app/launcher.py
 首次进入引导，可以先测词汇量或直接选书。词书必须主动点选并确认“用这本开始”；不会预拉默认词书或悄悄替用户确认。
 同一资料目录一次只允许一个窗口，启动时先取得长期实例锁，再加载/迁移记录。
 
-## V1.4.3 Windows 与 DSH 0.1.9 联合交付（2026-11-17）
+## 当前交付：Windows V1.4.3 / DSH 0.1.10（2026-11-17）
 
-- Windows 便携版：保留 2026-11-16 UI 补丁的原 ZIP 字节，统一命名为 [VocabApp-1.4.3-windows-x64.zip](<vocab-app-releases/v1.4.3/VocabApp-1.4.3-windows-x64.zip>)。刷词“不认识”使用主题中性色；旧词忘记后保级、5 分钟复习。便携资料默认在 EXE 旁 `userdata`，不可写时独立回退到 `VocabAppWindows`，不自动迁入源码/DSH 资料。
-- DSH：[0.1.9 插件包](<vocab-app-releases/v1.4.3/dsh-vocab-app-0.1.9.tgz>)，固定 400×400 迷你卡片，历史行独立紧凑删除按钮，精简设置/冗余提示。首次测验加载从 0 按真实后台构建进度增长，左上角无重复标题，满格后进入题目；缓存路径快速进入。
-- 发行目录只保留这两个包和当前说明/校验；旧 Git 历史与标签保留。本次按用户明确指示删除旧解压发行目录，包括其中的 userdata，不涉及源码或 DSH 资料。
-- 当前 DSH 完整回归 **246/246 通过**；Windows 清理历史的 7 个既有失败仍单独记录，不能解读为本次 Windows 全部测试通过。见 [联合发行验收](<docs/release-v143-dsh019.md>)、[安装说明](<vocab-app-releases/v1.4.3/安装说明.txt>) 与 [校验清单](<vocab-app-releases/v1.4.3/SHA256SUMS.txt>)。
+- Windows 便携版：[VocabApp-1.4.3-windows-x64.zip](<vocab-app-releases/v1.4.3/VocabApp-1.4.3-windows-x64.zip>) 保持原 UI 补丁字节不变。中性色“不认识”、忘记保级及 5 分钟复习规则保持；本轮不修改 Windows。
+- DSH：[0.1.10 插件包](<vocab-app-releases/v1.4.3/dsh-vocab-app-0.1.10.tgz>) 是 0.1.9 的小补丁：**每次打开或刷新 DSH，先显示可拖动的最小化图标；单击才展开 400×400 卡片，关闭后回到图标**。不记忆展开偏好，不增加学习写入；原加载进度、拖动和全部业务规则保持。
+- 发行目录继续仅保留最新 Windows / DSH 包和说明、校验；旧 Git 历史与 `V1.4.3`、`dsh-vocab-app-v0.1.9` 标签不变。本补丁不自动 commit/tag 或 push。
+- 验证范围与安装结果见 [0.1.10 补丁验收](<docs/release-dsh0110.md>)、[安装说明](<vocab-app-releases/v1.4.3/安装说明.txt>)、[校验清单](<vocab-app-releases/v1.4.3/SHA256SUMS.txt>)。此前联合版本的测试与清理事实见 [0.1.9 历史验收](<docs/release-v143-dsh019.md>)；Windows 既有失败不在本补丁修复范围。
 
 ### Windows SmartScreen 提示
 

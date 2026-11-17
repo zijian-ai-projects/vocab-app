@@ -1,9 +1,9 @@
-背单词：Windows 1.4.3 / DSH 0.1.9 本地交付（2026-11-17）
+背单词：Windows 1.4.3 / DSH 0.1.10 本地交付（2026-11-17）
 
 一、当前保留的包
 - VocabApp-1.4.3-windows-x64.zip：原 patch-20261116-ui.zip 只改外层文件名，原字节完全保留。
   ZIP 内目录名仍带 patch-20261116-ui，这是原包布局，不影响使用。
-- dsh-vocab-app-0.1.9.tgz：最新 DSH 插件，32 个运行文件。
+- dsh-vocab-app-0.1.10.tgz：最新 DSH 插件，32 个运行文件。
 - SHA256SUMS.txt：仅包含上面两个压缩包的 SHA-256。
 旧安装包及解压目录已按用户要求删除；两个旧解压目录中的 userdata 也已获明确授权直接删除。
 源码与 DSH 的资料不在此次删除范围内。包内旧说明关于“保留旧发行包”的文字已由本说明替代。
@@ -41,10 +41,13 @@ https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility
 https://learn.microsoft.com/en-us/defender-endpoint/streamlined-device-connectivity-urls-commercial#common-endpoints
 
 四、DSH 使用与更新
-1. DSH >=0.2.2-rc.1、Node >=24.9.0。本机 desktop 已安装并启用 0.1.9。
+1. DSH >=0.2.2-rc.1、Node >=24.9.0。本机 desktop 已安装并启用 0.1.10。
    其它 profile 请使用 DSH 的插件安装功能选择本 TGZ；刷新对应已登录 Web 页面。
    不启动替代服务器，不保证无需刷新自动更新。
-2. 固定 400×400 迷你卡片，无尺寸档位或拖边缩放；可拖动位置、关闭再打开。
+2. 每次打开或刷新 DSH，默认只显示最小化图标，单击展开完整卡片；关闭后回到图标。
+   图标仍可立即拖动；不保存展开偏好，不写入学习偏好。
+   隐藏时不自动取到期复习、不自动跳过已答测验；展开后恢复原唤醒和 350ms 自动下一题。
+   固定 400×400 迷你卡片，无尺寸档位或拖边缩放；可拖动位置、关闭再打开。
    历史行有紧凑删除按钮；加载页左上角留空，进度从 0 按真实后台构建增长，
    满格短留后进入题目。缓存题库不强行延迟。
 3. 资料命名空间 dsh-vocab-app/vocab_app_default 保持；本机主记录与原备份
@@ -57,13 +60,16 @@ https://learn.microsoft.com/en-us/defender-endpoint/streamlined-device-connectiv
 五、校验与验证边界
 PowerShell 示例（将路径换成你的文件）：
   Get-FileHash -Algorithm SHA256 '你的路径\VocabApp-1.4.3-windows-x64.zip'
-  Get-FileHash -Algorithm SHA256 '你的路径\dsh-vocab-app-0.1.9.tgz'
+  Get-FileHash -Algorithm SHA256 '你的路径\dsh-vocab-app-0.1.10.tgz'
 Windows ZIP 共 178 个文件；DSH TGZ 共 32 个运行文件。两包均不含学习记录、日志、锁或开发测试资料。
-DSH 完整 Node 回归 246/246 通过；公共全词库和已安装 Worker 验证通过。
-实际 GUI 浏览器因认证要求未完成登录态点击验收；离线实际渲染器的四主题/两尺寸检查通过。
+0.1.10 完整 Node 回归 251/251 通过，含首次/重新挂载最小化、展开/关闭、请求失败重试、
+隐藏复习与已答测验不自动下一题；原拖动/四主题/迷你窗口/加载进度回归保持。
+32 个已安装运行文件与发行包、源码一致；本机主记录及 .bak 与升级前原字节备份一致。
+实际 GUI 浏览器仍要求认证，刷新既有 URL 后未完成登录态实点，不将 Hook 测试冒充浏览器验收。
 Windows 既有清理验收为 22 个入口通过、7 个既有失败，保留历史事实，不宣称全绿。
-其它范围与最新定向检查见仓库 docs/release-v143-dsh019.md。
+本次范围见仓库 docs/release-dsh0110.md；0.1.9 的历史范围见 docs/release-v143-dsh019.md。
 
 六、交付范围
-本次为本地 Git 提交与注释标签，不上传 GitHub/npm，不改旧标签或历史。
+此前联合版提交 389a1ec 及 V1.4.3、dsh-vocab-app-v0.1.9 标签不变。
+本次 0.1.10 小补丁未自动 commit/tag 或 push；不上传 GitHub/npm。
 项目仍 private/UNLICENSED；Windows 包内第三方组件许可与词库再分发权边界保持。

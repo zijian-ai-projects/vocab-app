@@ -1759,7 +1759,9 @@ window.__ModuleLoader__.load({
       const errorState = React.useState(null);
       const error = errorState[0];
       const setError = errorState[1];
-      const hiddenState = React.useState(false);
+      // Start as the existing floating entry on each client mount. Opening is
+      // an explicit user action; no persisted preference or learning write.
+      const hiddenState = React.useState(true);
       const hidden = hiddenState[0];
       const setHidden = hiddenState[1];
       const [dragging, setDragging] = React.useState(false);
@@ -1829,12 +1831,15 @@ window.__ModuleLoader__.load({
         return function () { clearTimeout(timer); };
       }, [buildComplete]);
       // Original desktop auto-advances 350 ms after a quiz answer; the DSH
-      // host has no timer, so the client issues the `next` action.
+      // host has no timer, so the client issues `next` only while displayed.
+      // A reload/close must not advance a locked quiz behind the startup icon.
       React.useEffect(function () {
-        if (!view || view.screen !== 'quiz' || view.locked !== true) return undefined;
-        const timer = setTimeout(function () { sendAction('next', {}); }, 350);
+        if (hidden || !view || view.screen !== 'quiz' || view.locked !== true) return undefined;
+        const timer = setTimeout(function () {
+          if (mountedRef.current && !hiddenRef.current) sendAction('next', {});
+        }, 350);
         return function () { clearTimeout(timer); };
-      }, [view && view.screen, view && view.locked, view && view.index]);
+      }, [hidden, view && view.screen, view && view.locked, view && view.index]);
       // GET remains read-only; use the normal serialized/revisioned POST next
       // only while visible and empty. Never interrupt an unanswered card.
       React.useEffect(function () {

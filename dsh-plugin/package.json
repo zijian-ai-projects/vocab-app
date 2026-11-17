@@ -1,6 +1,6 @@
 {
   "name": "dsh-vocab-app",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "type": "module",
   "description": "背单词：DSH Web 浮层插件（刷词 / 四选一 / 词汇量测评）",

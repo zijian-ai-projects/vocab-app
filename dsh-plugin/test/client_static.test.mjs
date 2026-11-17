@@ -537,6 +537,154 @@ function mockTimeoutClock(t) {
   };
 }
 
+// User gesture only: full-panel tests must now explicitly open the startup
+// entry. Never override the product's useState initializer in the hook runtime.
+function openOverlay(runtime, clock) {
+  const tree = runtime.render();
+  const entry = findByAriaLabel(tree, '打开背单词浮层');
+  assert.ok(entry, 'a fresh client starts as its floating entry');
+  assert.equal(findByClass(tree, 'dsh-vocab-panel'), null);
+  entry.props.onClick(fakeEvent());
+  const opened = runtime.render();
+  if (clock) clock.tick(0); // normal focus / already-due review wake timer
+  return opened;
+}
+
+function mountOpenedOverlay(clock) {
+  const runtime = mountWithHooks('VocabApp');
+  openOverlay(runtime, clock);
+  return runtime;
+}
+
+test('v0.1.10: startup stays minimized before and after GET until an explicit click', async (t) => {
+  const { clock, intervals } = reviewClock(t);
+  const requests = [];
+  let resolveState;
+  t.mock.method(globalThis, 'fetch', (url, options) => {
+    requests.push({ url, options });
+    assert.equal(options.method, 'GET', 'startup and opening must not write personal state');
+    return new Promise((resolve) => { resolveState = resolve; });
+  });
+  const runtime = mountWithHooks('VocabApp');
+  try {
+    let tree = runtime.render();
+    assert.ok(findByAriaLabel(tree, '打开背单词浮层'));
+    assert.equal(findByClass(tree, 'dsh-vocab-panel'), null, 'no full-window flash while loading');
+    resolveState({ ok: true, json: async () => ({ rev: 17, view: frontView }) });
+    tree = await flushClient(runtime);
+    assert.ok(findByAriaLabel(tree, '打开背单词浮层'));
+    assert.equal(findByClass(tree, 'dsh-vocab-panel'), null, 'successful state loading must not auto-open');
+    for (const key of ['Enter', ' ', '1', 'Escape']) tree.props.onKeyDown(keyEvent({ key }));
+    await flushClient(runtime);
+    tree = openOverlay(runtime, clock);
+    assert.equal(tree.props['data-screen'], 'front');
+    assert.equal(findByClass(tree, 'dsh-vocab-panel').props.style.width, '400px');
+    assert.equal(findByClass(tree, 'dsh-vocab-panel').props.style.height, '400px');
+    findByAriaLabel(tree, '关闭浮层').props.onClick(fakeEvent());
+    tree = runtime.render();
+    assert.ok(findByAriaLabel(tree, '打开背单词浮层'));
+    tree = openOverlay(runtime, clock);
+    assert.equal(tree.props['data-screen'], 'front', 'reopen preserves the fetched view');
+    assert.equal(requests.length, 1);
+    assert.equal(intervals.size, 0);
+  } finally { runtime.unmount(); }
+  assert.equal(clock.pending, 0);
+  assert.equal(runtime.lateUpdates, 0);
+  assertListenerCount(['resize', 'pointermove', 'pointerup', 'pointercancel'], 0);
+});
+
+test('v0.1.10: each remount starts minimized even after the last instance was opened', async (t) => {
+  const { clock } = reviewClock(t);
+  const requests = mockClientFetch(t, frontView);
+  for (let mount = 0; mount < 2; mount += 1) {
+    const runtime = mountWithHooks('VocabApp');
+    try {
+      runtime.render(); const tree = await flushClient(runtime);
+      assert.equal(findByClass(tree, 'dsh-vocab-panel'), null);
+      assert.ok(findByAriaLabel(tree, '打开背单词浮层'));
+      assert.ok(findByClass(openOverlay(runtime, clock), 'dsh-vocab-panel'));
+    } finally { runtime.unmount(); }
+    assert.equal(runtime.lateUpdates, 0);
+  }
+  assert.equal(requests.length, 2);
+  assert.equal(actionRequests(requests).length, 0);
+  assert.equal(clock.pending, 0);
+});
+
+test('v0.1.10: a due review stays idle until the startup icon is opened', async (t) => {
+  const { clock, intervals } = reviewClock(t);
+  const requests = mockClientFetch(t, atEmpty(1700000002), () => frontView);
+  const runtime = mountWithHooks('VocabApp');
+  try {
+    runtime.render(); await flushClient(runtime);
+    clock.tick(60000); let tree = await flushClient(runtime);
+    assert.equal(actionRequests(requests).length, 0);
+    assert.equal(clock.pending, 0);
+    assert.equal(intervals.size, 0, 'hidden startup has no review polling');
+    assert.ok(findByAriaLabel(tree, '打开背单词浮层'));
+    openOverlay(runtime, clock); tree = await flushClient(runtime);
+    assert.equal(actionRequests(requests).length, 1);
+    assert.equal(actionRequests(requests)[0].type, 'next');
+    assert.equal(tree.props['data-screen'], 'front');
+  } finally { runtime.unmount(); }
+  assert.equal(clock.pending, 0);
+  assert.equal(intervals.size, 0);
+});
+
+test('v0.1.10: a locked quiz never auto-advances behind the startup icon or a closing panel', async (t) => {
+  const { clock, intervals } = reviewClock(t);
+  const requests = mockClientFetch(t, quizLockedView, (request) => {
+    assert.equal(request.type, 'next'); return quizView;
+  });
+  const runtime = mountWithHooks('VocabApp');
+  try {
+    runtime.render(); await flushClient(runtime);
+    clock.tick(1000); let tree = await flushClient(runtime);
+    assert.equal(actionRequests(requests).length, 0, 'no hidden startup quiz writes');
+    assert.equal(clock.pending, 0);
+    tree = openOverlay(runtime, clock);
+    clock.tick(349); tree = await flushClient(runtime);
+    assert.equal(actionRequests(requests).length, 0);
+    findByAriaLabel(tree, '关闭浮层').props.onClick(fakeEvent());
+    clock.tick(1); // hideRef must protect even before React commits the close
+    tree = await flushClient(runtime);
+    assert.ok(findByAriaLabel(tree, '打开背单词浮层'));
+    assert.equal(actionRequests(requests).length, 0, 'closing cancels the in-flight display timer');
+    tree = openOverlay(runtime, clock);
+    clock.tick(349); await flushClient(runtime);
+    assert.equal(actionRequests(requests).length, 0);
+    clock.tick(1); tree = await flushClient(runtime);
+    assert.equal(actionRequests(requests).length, 1, 'visible quiz keeps its original 350ms advance');
+    assert.equal(tree.props['data-screen'], 'quiz');
+  } finally { runtime.unmount(); }
+  assert.equal(clock.pending, 0);
+  assert.equal(intervals.size, 0);
+  assert.equal(runtime.lateUpdates, 0);
+});
+
+test('v0.1.10: a failed initial GET stays minimized and opening exposes the existing retry', async (t) => {
+  const { clock } = reviewClock(t);
+  let calls = 0;
+  t.mock.method(globalThis, 'fetch', async (url, options) => {
+    assert.equal(options.method, 'GET'); calls += 1;
+    if (calls === 1) throw new Error('synthetic offline');
+    return { ok: true, json: async () => ({ rev: 1, view: frontView }) };
+  });
+  const runtime = mountWithHooks('VocabApp');
+  try {
+    runtime.render(); let tree = await flushClient(runtime);
+    assert.ok(findByAriaLabel(tree, '打开背单词浮层'));
+    assert.equal(findByClass(tree, 'dsh-vocab-panel'), null);
+    tree = openOverlay(runtime, clock);
+    findByAriaLabel(tree, '重新加载背单词状态').props.onClick(fakeEvent());
+    tree = await flushClient(runtime);
+    assert.equal(tree.props['data-screen'], 'front');
+    assert.equal(calls, 2);
+  } finally { runtime.unmount(); }
+  assert.equal(clock.pending, 0);
+  assert.equal(runtime.lateUpdates, 0);
+});
+
 // ---------------------------------------------------------------------------
 // 1. Bundle shape
 // ---------------------------------------------------------------------------
@@ -1128,7 +1276,7 @@ test('catalog real overlay retains grade/filter/search/virtualization without co
     assert.equal(request.type, 'catalogFilter');
     return Object.assign({}, view, { filter: request.payload.category, query: request.payload.query });
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render();
     let tree = await flushClient(runtime);
@@ -1200,7 +1348,7 @@ test('real quiz overlay posts numeric/unknown intents and re-renders the fifth H
       })),
     });
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render();
     let tree = await flushClient(runtime);
@@ -1234,7 +1382,7 @@ test('all declared screens mount the mini overlay without dropping controls or s
   const clock = mockTimeoutClock(t);
   for (const screen of testing.screenNames) {
     mockClientFetch(t, Object.assign({}, allViews[screen], { windowSize: 'mini' }));
-    const runtime = mountWithHooks('VocabApp');
+    const runtime = mountOpenedOverlay(clock);
     try {
       runtime.render();
       const tree = await flushClient(runtime), panel = findElement(tree, (element) => element.type === 'section');
@@ -1270,7 +1418,7 @@ test('registered overlays ignore every stale Host size and preset list', async (
       });
       const before = structuredClone(staleView);
       const requests = mockClientFetch(t, staleView);
-      const runtime = mountWithHooks('VocabApp');
+      const runtime = mountOpenedOverlay(clock);
       try {
         runtime.render();
         const tree = await flushClient(runtime);
@@ -1314,7 +1462,7 @@ test('four themed real overlays bind border/background variables and inject the 
   try {
     for (const theme of ['dark', 'light', 'sepia', 'green']) {
       mockClientFetch(t, Object.assign({}, frontView, { theme }));
-      const runtime = mountWithHooks('VocabApp');
+      const runtime = mountOpenedOverlay();
       try {
         runtime.render();
         const tree = await flushClient(runtime);
@@ -1386,7 +1534,7 @@ test('title drag restores the fixed mini preset after viewport expansion', async
   }));
   bundleWindow.innerWidth = 400;
   bundleWindow.innerHeight = 400;
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay();
   const capture = captureSpy();
   try {
     runtime.render();
@@ -1439,7 +1587,7 @@ test('title drag keeps mini geometry before and after a stale settings response 
     assert.equal(options.method, 'GET');
     return new Promise((resolve) => { resolveState = resolve; });
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay();
   const capture = captureSpy();
   try {
     const loading = runtime.render();
@@ -1486,7 +1634,7 @@ test('title drag keeps mini geometry before and after a stale settings response 
 });
 test('unmounting an active title drag removes listeners and releases pointer capture', async (t) => {
   mockClientFetch(t, frontView);
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay();
   const capture = captureSpy();
   try {
     runtime.render();
@@ -1854,7 +2002,7 @@ function atEmpty(due) { return Object.assign({}, emptyView, { due }); }
 
 // v0.1.8: loading feedback cannot wait for a cold quizStart response.
 test('quizStart immediately shows loading before POST or response and suppresses duplicate clicks', async (t) => {
-  const { intervals, poll } = reviewClock(t);
+  const { clock, intervals, poll } = reviewClock(t);
   const requests = [];
   let release;
   t.mock.method(globalThis, 'fetch', (url, options) => {
@@ -1862,7 +2010,7 @@ test('quizStart immediately shows loading before POST or response and suppresses
     if (options.method === 'GET') return Promise.resolve({ ok: true, json: async () => ({ rev: 7, view: settingsView }) });
     return new Promise((resolve) => { release = () => resolve({ ok: true, json: async () => ({ ok: true, rev: 7, view: allViews.building }) }); });
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render(); let tree = await flushClient(runtime);
     const button = findByAriaLabel(tree, '开始新的词汇量测试');
@@ -1920,7 +2068,7 @@ test('loading follows successive actual build updates and disappears only on com
   });
   for (const end of [quizView, settingsView]) {
     hostView = settingsView;
-    const runtime = mountWithHooks('VocabApp');
+    const runtime = mountOpenedOverlay(clock);
     try {
       runtime.render(); let tree = await flushClient(runtime);
       findByAriaLabel(tree, '开始新的词汇量测试').props.onClick(fakeEvent());
@@ -1963,7 +2111,7 @@ test('quizStart loading goes directly to quiz for a warm bank and poll completio
   });
   for (const cold of [false, true]) {
     gets = 0; hostView = settingsView;
-    const runtime = mountWithHooks('VocabApp');
+    const runtime = mountOpenedOverlay(clock);
     try {
       runtime.render(); let tree = await flushClient(runtime);
       findByAriaLabel(tree, '开始新的词汇量测试').props.onClick(fakeEvent());
@@ -1989,7 +2137,7 @@ test('unmount during the final filled bar clears its timer and never updates a d
   let state = settingsView;
   t.mock.method(globalThis, 'fetch', (url, options) => Promise.resolve({ ok: true, json: async () => options.method === 'GET'
     ? { rev: 7, view: state } : { ok: true, rev: 7, view: baseView('building', { percent: 0 }) } }));
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   runtime.render(); let tree = await flushClient(runtime);
   findByAriaLabel(tree, '开始新的词汇量测试').props.onClick(fakeEvent()); await flushClient(runtime);
   state = quizView; poll(); tree = await flushClient(runtime);
@@ -2000,7 +2148,7 @@ test('unmount during the final filled bar clears its timer and never updates a d
   assert.equal(clock.pending, 0); assert.equal(intervals.size, 0); assert.equal(runtime.lateUpdates, 0);
 });
 test('quizStart failure restores settings with retry; stale and invalid responses cannot strand loading', async (t) => {
-  const { intervals } = reviewClock(t);
+  const { clock, intervals } = reviewClock(t);
   const requests = [];
   let outcome = 'network', release;
   t.mock.method(globalThis, 'fetch', (url, options) => {
@@ -2015,7 +2163,7 @@ test('quizStart failure restores settings with retry; stale and invalid response
   });
   for (const failure of ['network', 'stale', 'invalid', 'failed']) {
     outcome = failure;
-    const runtime = mountWithHooks('VocabApp');
+    const runtime = mountOpenedOverlay(clock);
     try {
       runtime.render(); let tree = await flushClient(runtime);
       findByAriaLabel(tree, '开始新的词汇量测试').props.onClick(fakeEvent());
@@ -2037,7 +2185,7 @@ test('quizStart failure restores settings with retry; stale and invalid response
   assert.equal(actionRequests(requests).length, 5, 'only the explicit retry repeats quizStart');
 });
 test('quizStart loading handles resume and unmount without late updates or leftover polls', async (t) => {
-  const { intervals } = reviewClock(t);
+  const { clock, intervals } = reviewClock(t);
   const requests = [];
   let release;
   t.mock.method(globalThis, 'fetch', (url, options) => {
@@ -2045,7 +2193,7 @@ test('quizStart loading handles resume and unmount without late updates or lefto
     if (options.method === 'GET') return Promise.resolve({ ok: true, json: async () => ({ rev: 9, view: Object.assign({}, settingsView, { hasSession: true }) }) });
     return new Promise((resolve) => { release = () => resolve({ ok: true, json: async () => ({ ok: true, rev: 10, view: quizView }) }); });
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   runtime.render(); const tree = await flushClient(runtime);
   findByAriaLabel(tree, '继续上次词汇量测试').props.onClick(fakeEvent());
   assert.equal(runtime.render().props['data-screen'], 'building');
@@ -2057,7 +2205,7 @@ test('quizStart loading handles resume and unmount without late updates or lefto
 });
 
 test('quizStart keeps loading through deferred JSON and discards it on an unreadable response', async (t) => {
-  const { intervals, poll } = reviewClock(t);
+  const { clock, intervals, poll } = reviewClock(t);
   const requests = [];
   let outcome, completeBody;
   t.mock.method(globalThis, 'fetch', (url, options) => {
@@ -2069,7 +2217,7 @@ test('quizStart keeps loading through deferred JSON and discards it on an unread
     });
   });
   for (outcome of ['success', 'bad-json']) {
-    const runtime = mountWithHooks('VocabApp');
+    const runtime = mountOpenedOverlay(clock);
     try {
       runtime.render(); let tree = await flushClient(runtime);
       findByAriaLabel(tree, '开始新的词汇量测试').props.onClick(fakeEvent());
@@ -2096,7 +2244,7 @@ test('quizStart welcome entry and hidden pending panel preserve one request and 
     if (options.method === 'GET') return Promise.resolve({ ok: true, json: async () => ({ rev: 30, view: allViews.welcome }) });
     return new Promise((resolve) => { release = () => resolve({ ok: true, json: async () => ({ ok: true, rev: 31, view: quizView }) }); });
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render(); let tree = await flushClient(runtime);
     findByAriaLabel(tree, '测试一下').props.onClick(fakeEvent());
@@ -2170,7 +2318,7 @@ test('v0.1.3: actual mouse forget hides correction; remember exposes a working o
     assert(['next', 'correct'].includes(request.type));
     return Object.assign({}, frontView, { word: { w: request.type === 'correct' ? 'after-correction' : 'next-word' } });
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay();
   try {
     runtime.render(); let tree = await flushClient(runtime);
     findByAriaLabel(tree, '不认识').props.onClick(fakeEvent());
@@ -2200,7 +2348,7 @@ test('v0.1.3: empty wakes at the precise five-minute boundary by POST, then stop
   const requests = mockClientFetch(t, atEmpty(1700000300), (request) => {
     assert.equal(request.type, 'next'); return frontView;
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render(); await flushClient(runtime);
     assert.equal(intervals.size, 1);
@@ -2226,13 +2374,13 @@ test('v0.1.3: null empty due never POSTs and a thirty-day future due uses bounde
     assert.equal(options.method, 'GET');
     return { ok: true, json: async () => ({ rev: 1, view: requestView }) };
   });
-  let runtime = mountWithHooks('VocabApp');
+  let runtime = mountOpenedOverlay(clock);
   runtime.render(); await flushClient(runtime);
   clock.tick(1000000); await flushClient(runtime);
   assert.equal(actionRequests(requests).length, 0);
   runtime.unmount();
   requestView = atEmpty((Date.now() / 1000) + 30 * 86400);
-  runtime = mountWithHooks('VocabApp');
+  runtime = mountOpenedOverlay(clock);
   try {
     runtime.render(); await flushClient(runtime);
     assert.equal(clock.nextDelay, 60000);
@@ -2257,7 +2405,7 @@ test('v0.1.3: stale auto-next retries with the latest revision after bounded bac
       ? { ok: false, code: 'stale', rev: 23, view, message: 'synthetic stale' }
       : { ok: true, rev: 24, view: frontView } };
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render(); await flushClient(runtime);
     clock.tick(1000); await flushClient(runtime);
@@ -2283,7 +2431,7 @@ test('v0.1.3: an in-flight quiet GET defers due POST and wakes it using the retu
     }
     return Promise.resolve({ ok: true, json: async () => ({ ok: true, rev: 42, view: frontView }) });
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render(); await flushClient(runtime);
     clock.tick(900); poll(); await flushClient(runtime);
@@ -2306,7 +2454,7 @@ test('v0.1.3: network failure backs off and a successful still-empty response ca
     if (posted === 1) throw new Error('synthetic offline');
     return { ok: true, json: async () => ({ ok: true, rev: posted + 1, view: posted === 2 ? view : frontView }) };
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render(); await flushClient(runtime);
     clock.tick(1000); await flushClient(runtime); assert.equal(posted, 1);
@@ -2326,7 +2474,7 @@ test('v0.1.3: unmount clears due/poll timers and late network completion cannot 
     posted += 1;
     return new Promise((resolve) => { release = () => resolve({ ok: true, json: async () => ({ ok: true, rev: 2, view: frontView }) }); });
   });
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   runtime.render(); await flushClient(runtime);
   clock.tick(1000); await flushClient(runtime);
   assert.equal(posted, 1);
@@ -2384,7 +2532,7 @@ test('v0.1.3: branch count/countText is gone but arrows, leaf counts and selecte
 test('v0.1.3: hiding immediately prevents due POST, reopening the bubble wakes the empty review', async (t) => {
   const { clock, intervals } = reviewClock(t);
   const requests = mockClientFetch(t, atEmpty(1700000002), () => frontView);
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render(); let tree = await flushClient(runtime);
     findByAriaLabel(tree, '关闭浮层').props.onClick(fakeEvent());
@@ -2408,7 +2556,7 @@ test('v0.1.3: actual title drag/collapse/bubble drag/reopen use one corner on bo
   const original = { width: bundleWindow.innerWidth, height: bundleWindow.innerHeight };
   bundleWindow.innerWidth = 1400; bundleWindow.innerHeight = 900;
   mockClientFetch(t, frontView);
-  const runtime = mountWithHooks('VocabApp');
+  const runtime = mountOpenedOverlay(clock);
   try {
     runtime.render(); let tree = await flushClient(runtime);
     for (const [x, y, bubbleX, bubbleY] of [[30, 30, 90, 600], [820, 30, 1270, 600]]) {

@@ -1,7 +1,7 @@
 # dsh-vocab-app 内部契约（协作基线，不是发行文档）
 
 ## 0. 版本与边界
-- 插件版本 **0.1.9**（由 package.json 派生）；功能/测评基线 **V1.4.3**，记录 APP_VERSION 仍为 `1.4.3-dsh`。Windows 仅做同版本小补丁；2026-11-17 联合交付仅保留 UI 补丁原字节，外层统一为 VocabApp-1.4.3-windows-x64.zip。
+- 插件版本 **0.1.10**（由 package.json 派生；0.1.9 的启动最小化补丁）；功能/测评基线 **V1.4.3**，记录 APP_VERSION 仍为 `1.4.3-dsh`。Windows 仅做同版本小补丁；2026-11-17 联合交付仅保留 UI 补丁原字节，外层统一为 VocabApp-1.4.3-windows-x64.zip。
 - Host为Node ESM，宿主能力一律经ctx；Client为ModuleLoader工厂内单文件React.createElement，只require react。不启动替代Web server。
 - 业务计算、持久化在Host；Client只渲染view/发送action。
 - 五份只读data资产、CAT及其它Core保持；唯一领域规则变更是双端scheduler旧词不认识保级、300秒后再复习。不读个人资料；用户说明在随包readme.md。
@@ -38,6 +38,7 @@
  windowPresets:[{key:'mini',label:'迷你',width:400,height:400}],
  storageNote:'',busy:false}
 ```
+- 每次 Client 挂载默认仅渲染 ClosedEntry 浮动图标（包括首次安装/重新打开/刷新）；GET 成功/失败均不自动展开。单击才打开；关闭/拖动沿用原行为。hidden 仅存在 React 内存，不新增展开偏好、资料迁移或写回；隐藏时不唤醒复习 POST，也不对已锁定测验自动发送 next；展开后保留原 350ms 自动进入下一题。关闭动作通过即时 hiddenRef 同步阻止未提交 React 渲染前的定时回调。
 - 固定迷你 400×400；移除设置页窗口选项。windowSize动作不再接受任何值。既有small/medium/large只读显示为mini，不落盘改窗口字段；不保存自定义几何。
 - Client窄视口可fit，恢复后按档位；长内容可滚动，固定操作不可被裁切。
 - 窗口/入口共享会话内角锚点，均从同一锚点派生；完整窗左/右侧关闭到原矩形左下/右下，拖入口后沿同锚点还原。当前档位/视口变化一致夹紧，位置仍只在React内存，不新增localStorage。标题栏拖动，无边框resize。入口左键单击打开，pointerdown即开始抓取，pointermove即时更新位置，无长按timer；4px仅用于防误开，不阻止小位移跟手。取消/blur/unmount清理监听及capture。
@@ -87,6 +88,7 @@ quizStart{fresh}, quizAnswer{index}, quizDontknow{}, quizPause{}, history{}, del
 ## 8. 验收/发行
 - node --test test/*.mjs，不是node --test test/；真实Hook/handler/清理、固定迷你/小视口、返回中心、主题边框和退休动作回归。
 - 原0.1.4本地包与既有合成资料在假DSH_HOME升0.1.5，检查学习/排期/未知字段/历史/暂停会话；从不读本机个人记录做测试。
-- 历次补丁构建时曾保持旧回滚包原字节；2026-11-17 按用户要求清理发行目录，仅保留 UI 补丁原 ZIP 字节（统一外层名称）与 DSH0.1.9，不重打包。旧 Git 历史/标签保留；包内历史说明的旧包保留策略由外部安装说明覆盖。Windows VERSION仍1.4.3，刷词forget专用objectName与中性色QSS、五分钟scheduler按当前源码保留。
+- 历次补丁构建时曾保持旧回滚包原字节；2026-11-17 按用户要求清理发行目录，仅保留 UI 补丁原 ZIP 字节（统一外层名称）与最新 DSH，不重打包 Windows。0.1.10 是 0.1.9 启动最小化小补丁，安全安装验证后以新包替代交付目录中的旧 TGZ。旧 Git 历史/标签保留，不自动 commit/tag；随包 readme 已同步最新包策略。Windows VERSION仍1.4.3，刷词forget专用objectName与中性色QSS、五分钟scheduler按当前源码保留。
+- 0.1.10提交与 `dsh-vocab-app-v0.1.10` 标签：仅启动最小化补丁、回归、说明与最新TGZ，不重打Windows、不push、不改既有标签。
 - 本地tgz仅运行白名单+readme.md；不含测试/审计/开发文档/脚本/个人资料/日志/锁/缓存。
 - 仅授权desktop更新，不公开上传；private:true/UNLICENSED及原许可边界保持。

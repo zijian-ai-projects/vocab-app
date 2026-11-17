@@ -947,7 +947,7 @@ test('设置：主题/学校/词书保留；0.1.5 版本默认迷你且无窗口
     assert.equal(settings.screen, 'settings');
     assert.equal(settings.windowSize, 'mini');
     assert.deepEqual(settings.windowPresets, [{ key: 'mini', label: '迷你', width: 400, height: 400 }]);
-    assert.equal(settings.version, '0.1.9');
+    assert.equal(settings.version, '0.1.10');
     assert.equal(settings.version, JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url))).version);
     assert.equal(engine.doc.progress.app_version, '1.4.3-dsh');
     assert.equal(settings.themeOptions.length, 4);
