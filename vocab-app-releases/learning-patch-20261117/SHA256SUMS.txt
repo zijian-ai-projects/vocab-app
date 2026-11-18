@@ -1,0 +1,2 @@
+e94b9990c66334ce216cbb854615a4ebd391061394179287bedd9df6812e6041  windows/VocabApp-1.4.3-windows-x64.zip
+fd76a1b48b4985ac0789ba8f124c9ad1e8095fad75114912bfd3cf27780c3ce5  dsh/dsh-vocab-app-0.1.11.tgz

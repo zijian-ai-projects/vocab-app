@@ -16,7 +16,6 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "app"))
-import learning_policy as learn
 import scheduler as sch
 from study_queue import StudyQueue
 
@@ -39,7 +38,7 @@ class SaveError(RuntimeError):
 
 namespace = {
     "copy": copy, "time": SimpleNamespace(time=lambda: 1000.0),
-    "StudyQueue": StudyQueue, "learn": learn,
+    "StudyQueue": StudyQueue,
     "school": SimpleNamespace(normalize=lambda value: value, words=lambda value: set()),
     "storage": SimpleNamespace(StorageError=SaveError),
 }
@@ -63,21 +62,26 @@ class Label:
 
 class Harness(namespace["CardLogic"]):
     def __init__(self, keys=("alpha", "beta", "gamma", "delta", "tail"),
-                 states=None, record=None, ledger=None, daily_new=20):
+                 states=None, record=None, ledger=None, policy=None, include_legacy=True):
         self.queue_words = [{"w": key, "s": "synthetic meaning " + key} for key in keys]
         self.states = deepcopy(states or {})
         self.book_id = "synthetic-book"
         self.study_records = {self.book_id: deepcopy(record or {})}
         self.cursors = {self.book_id: 0, "other-book": 17}
-        self.daily_new_ledger = deepcopy(ledger or {})
-        self.learning_settings = {"mode": learn.REVIEW_FIRST, "daily_new": daily_new}
+        self.legacy_policy = deepcopy(policy) if policy is not None else {"opaque": ["preserve"]}
+        self.daily_new_ledger = deepcopy(ledger) if ledger is not None else {"opaque": {"value": "preserve"}}
+        self.legacy_before = deepcopy((self.legacy_policy, self.daily_new_ledger))
+        self.include_legacy = include_legacy
         self.known = set()
-        self.retry_gap = 3
+        self.retry_gap = 4
         self.progress = {
             "states": self.states, "study_records": self.study_records,
-            "cursors": self.cursors, "daily_new_ledger": self.daily_new_ledger,
+            "cursors": self.cursors,
             "extension": {"keep": [1, 2]}, "history": [{"synthetic": True}],
         }
+        if self.include_legacy:
+            self.progress["learning_policy"] = self.legacy_policy
+            self.progress["daily_new_ledger"] = self.daily_new_ledger
         self.queue = []
         self.qi = 0
         self.cursor = 0
@@ -140,7 +144,7 @@ class LearningStatusTests(unittest.TestCase):
         self.assertIs(w.states, w.study_engine.states)
         self.assertIs(w.study_record, w.study_records[w.book_id])
         self.assertIs(w.study_record, w.study_engine.record)
-        self.assertIs(w.daily_new_ledger, w.learning_policy.ledger)
+        self.assertEqual((w.legacy_policy, w.daily_new_ledger), w.legacy_before)
         self.assertEqual(w.cursors["other-book"], 17)
 
     def test_every_learning_phase_distinguishes_new_retry_and_review(self):
@@ -158,10 +162,8 @@ class LearningStatusTests(unittest.TestCase):
                     self.assertEqual(w._capture_study(), before)
                     self.assertEqual(w.writes, writes)
 
-    def test_remember_then_correct_stays_new_and_reappears_after_three_new_answers(self):
-        # The existing daily-new policy defers ready retries until its quota;
-        # use a quota of four so three other first answers make alpha eligible.
-        w = Harness(daily_new=4)
+    def test_remember_then_correct_stays_new_and_reappears_after_four_other_first_answers(self):
+        w = Harness(keys=("alpha", "beta", "gamma", "delta", "epsilon", "tail"))
         self.assertEqual(w.current(), ("alpha", "new"))
         w.act("remember")
         self.assertEqual((w.states["alpha"]["lv"], w.states["alpha"]["due"]), (1, 1300))
@@ -172,41 +174,65 @@ class LearningStatusTests(unittest.TestCase):
         state = w.states["alpha"]
         self.assertEqual((state["st"], state["lv"], state["due"]), ("new", 0, None))
         self.assertEqual((state["seen"], state["lapse"], state["streak"]), (1, 1, 1))
-        self.assertEqual(w.study_record["pending"], {"alpha": 4})
-        self.assertEqual(w.learning_policy.learned_today(1000), 1)
-        for key in ("beta", "gamma", "delta"):
+        self.assertEqual(w.study_record["pending"], {"alpha": 5})
+        for key in ("beta", "gamma", "delta", "epsilon"):
             self.assertEqual(w.current(), (key, "new"))
             w.act("remember")
             w._next0()
         self.assertEqual(w.current(), ("alpha", "retry"))
         self.assertEqual(w.study_status.text, "新词")
-        self.assertEqual(w.study_record["new_count"], 4)
-        self.assertEqual(w.learning_policy.learned_today(1000), 4)
+        self.assertEqual(w.study_record["new_count"], 5)
+        self.assertEqual(w.study_record["pending"], {"alpha": 5})
         self.assertIsNone(w.states["alpha"]["due"])
         self.assertEqual(sch.review_items(w.queue_words, w.states, 10**12)[0]["w"]["w"], "beta")
         self.assertNotIn("alpha", [item["w"]["w"] for item in sch.review_items(w.queue_words, w.states, 10**12)])
         self.assert_aliases(w)
 
-    def test_book_end_early_retry_after_correction_is_new_not_review(self):
+    def test_book_end_waits_for_four_answers_then_retries_even_on_final_word(self):
         w = Harness(keys=("alpha",))
         w.act("remember")
         w.correct()
-        self.assertEqual(w.current(), ("alpha", "retry"))
-        self.assertEqual(w.study_status.text, "新词")
+        self.assertIsNone(w.current())
+        self.assertEqual(w.study_record["pending"], {"alpha": 5})
         self.assertEqual(w.study_record["new_count"], 1)
         self.assertEqual(sch.review_items(w.queue_words, w.states, 10**12), [])
         self.assert_aliases(w)
 
-    def test_direct_forget_repeated_retry_and_remember_have_matching_labels(self):
-        w = Harness(keys=("alpha",))
-        for _ in range(3):
-            w.act("forget")
-            self.assertEqual(w.study_status.text, "新词")
+        w = Harness(keys=("alpha", "beta", "gamma", "delta", "epsilon"))
+        w.act("forget")
+        w._next0()
+        for key in ("beta", "gamma", "delta", "epsilon"):
+            self.assertEqual(w.current(), (key, "new"))
+            w.act("remember")
             w._next0()
-            self.assertEqual(w.current(), ("alpha", "retry"))
-            self.assertEqual(w.study_status.text, "新词")
-        self.assertEqual(w.study_record["new_count"], 1)
-        self.assertEqual(w.learning_policy.learned_today(1000), 1)
+        self.assertEqual(w.current(), ("alpha", "retry"))
+        self.assertEqual(w.study_status.text, "新词")
+        self.assertEqual(w.study_record["new_count"], 5)
+        self.assertEqual(w.study_record["pending"], {"alpha": 5})
+
+    def test_direct_forget_and_retry_re_forget_wait_four_more_first_answers(self):
+        w = Harness(keys=("alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "tail"))
+        w.act("forget")
+        self.assertEqual(w.study_status.text, "新词")
+        w._next0()
+        self.now += 24 * 60 * 60
+        for key in ("beta", "gamma", "delta", "epsilon"):
+            self.assertEqual(w.current(), (key, "new"))
+            w.act("remember")
+            w._next0()
+        self.assertEqual(w.current(), ("alpha", "retry"))
+        self.assertEqual(w.study_status.text, "新词")
+        self.assertEqual(w.study_record["new_count"], 5)
+        w.act("forget")
+        w._next0()
+        for key in ("zeta", "eta", "theta", "tail"):
+            self.assertEqual(w.current(), (key, "new"))
+            w.act("remember")
+            w._next0()
+        self.assertEqual(w.current(), ("alpha", "retry"))
+        self.assertEqual(w.study_status.text, "新词")
+        self.assertEqual(w.study_record["new_count"], 9)
+        self.assertEqual(w.study_record["pending"], {"alpha": 9})
         w.act("remember")
         w._next0()
         self.assertEqual(w.mode, "empty")
@@ -224,12 +250,14 @@ class LearningStatusTests(unittest.TestCase):
         saved = json.loads(json.dumps(w.progress))
         restarted = Harness(keys=("alpha",), states=saved["states"],
                             record=saved["study_records"][w.book_id],
-                            ledger=saved["daily_new_ledger"])
-        self.assertEqual(restarted.current(), ("alpha", "retry"))
-        self.assertEqual(restarted.study_status.text, "新词")
+                            ledger=saved["daily_new_ledger"],
+                            policy=saved["learning_policy"])
+        self.assertIsNone(restarted.current())
+        self.assertEqual(restarted.study_record["pending"], {"alpha": 5})
         self.assertEqual(restarted.states, saved["states"])
         self.assertEqual(restarted.study_record, saved["study_records"][w.book_id])
         self.assertEqual(restarted.daily_new_ledger, saved["daily_new_ledger"])
+        self.assertEqual(restarted.legacy_policy, saved["learning_policy"])
         self.assert_aliases(restarted)
 
     def test_old_review_correction_keeps_original_level_and_five_minute_due(self):
@@ -248,7 +276,7 @@ class LearningStatusTests(unittest.TestCase):
                 self.assertEqual((state["seen"], state["lapse"], state["streak"]), (8, 3, 2))
                 self.assertEqual(state["extension"], original["extension"])
                 self.assertEqual(w.study_record["new_count"], 0)
-                self.assertEqual(w.daily_new_ledger.get("days", {}), {})
+                self.assertEqual((w.legacy_policy, w.daily_new_ledger), w.legacy_before)
                 self.now += 300
                 self.assertTrue(w._pull_new(persist=False))
                 w.qi = len(w.queue) - 1
@@ -256,6 +284,14 @@ class LearningStatusTests(unittest.TestCase):
                 self.assertEqual(w.current(), ("alpha", "review"))
                 self.assertEqual(w.study_status.text, "复习")
                 self.assert_aliases(w)
+
+    def test_due_review_precedes_unseen_new_word(self):
+        due = {"lv": 2, "st": "learning", "due": self.now,
+               "seen": 3, "lapse": 0, "streak": 2}
+        w = Harness(keys=("alpha", "beta"), states={"alpha": due})
+        self.assertEqual(w.current(), ("alpha", "review"))
+        self.assertEqual(w.study_status.text, "复习")
+        self.assertEqual(w.study_record["new_count"], 0)
 
     def test_undo_and_failed_correction_do_not_mutate_saved_learning(self):
         w = Harness(keys=("alpha",))
@@ -274,6 +310,21 @@ class LearningStatusTests(unittest.TestCase):
         self.assertEqual(w.study_status.text, "新词")
         self.assertEqual(w.states, {})
         self.assertEqual(w.study_record["new_count"], 0)
+
+    def test_legacy_learning_fields_are_opaque_and_not_created_when_absent(self):
+        malformed = {"learning_policy": ["not", "a", "mapping"],
+                     "daily_new_ledger": "opaque malformed value"}
+        w = Harness(keys=("alpha",), policy=malformed["learning_policy"],
+                    ledger=malformed["daily_new_ledger"])
+        w.act("forget")
+        self.assertEqual(w.progress["learning_policy"], malformed["learning_policy"])
+        self.assertEqual(w.progress["daily_new_ledger"], malformed["daily_new_ledger"])
+        self.assertEqual((w.legacy_policy, w.daily_new_ledger), w.legacy_before)
+
+        absent = Harness(keys=("alpha",), include_legacy=False)
+        absent.act("forget")
+        self.assertNotIn("learning_policy", absent.progress)
+        self.assertNotIn("daily_new_ledger", absent.progress)
 
     def test_empty_and_nonlearning_headers_are_blank(self):
         w = Harness(keys=("alpha",))

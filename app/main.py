@@ -31,8 +31,7 @@ import prediction as pred
 import theme as th
 import books as bk
 import storage
-from study_queue import StudyQueue, _count as _queue_count
-import learning_policy as learn
+from study_queue import StudyQueue
 import keybindings as keys
 from windowing import WindowController
 from catalog import BookCatalog
@@ -53,8 +52,8 @@ LEGACY_WIN_PATHS = tuple(os.path.join(directory, "_win.json")
                          for directory in storage.legacy_dirs(STORAGE_ROOT))
 VERSION = "1.4.3"
 DEFAULTS_JOURNAL = "_v136_defaults_pending"
-RESET_PREF_KEYS = ("theme", "study_mode", "retry_gap", "learning_policy",
-                   "keybindings", "school_knowledge")
+RESET_PREF_KEYS = ("theme", "study_mode", "keybindings", "school_knowledge")
+LEGACY_RESET_PREF_KEYS = (*RESET_PREF_KEYS, "retry_gap", "learning_policy")
 # V1.4.2 优化：按用户要求清空旧词汇量测试数据，测试回到出厂状态。
 # 只涉及测试字段；学习进度、词书、预测掌握、键位与主题保留。
 TEST_RESET_MARKER = "_v142_test_reset"
@@ -145,15 +144,26 @@ def stored_order(orders, book_id):
 
 
 def normalize_retry_gap(progress):
-    """把旧五词间隔的存量 retry 一次归一到三词；不丢队列或学习计数。"""
-    if _queue_count(progress.get("retry_gap", 3), 3) == 5:
-        for record in progress.get("study_records", {}).values():
+    """迁移已知三词间隔至四词；未知旧格式只更新默认值，不改 deadline。"""
+    def valid_count(value):
+        return (type(value) in (int, float) and 0 <= value <= 9007199254740991
+                and value % 1 == 0)
+
+    records = progress.get("study_records", {})
+    if progress.get("retry_gap") == 3 and isinstance(records, dict):
+        for record in records.values():
+            if not isinstance(record, dict):
+                continue
             pending = record.get("pending", {})
+            new_count = record.get("new_count", 0)
+            if not isinstance(pending, dict) or not valid_count(new_count):
+                continue
             for key, target in list(pending.items()):
-                # pending 是绝对首次新词计数；旧 5 改成 3 只需整体提前 2。
-                # 已 ready 的词保持 ready，不延后；未知词和其它书记录均保留。
-                pending[key] = max(0, _queue_count(target) - 2)
-    progress["retry_gap"] = 3       # 保存后再次加载不再调整 deadline。
+                # Ready and malformed targets stay untouched. Only explicitly
+                # marked, valid future three-gap deadlines move out by one.
+                if valid_count(target) and new_count < target < 9007199254740991:
+                    pending[key] = target + 1
+    progress["retry_gap"] = 4
     return progress
 
 
@@ -454,16 +464,9 @@ class Card(QWidget):
         self.study_record = None
         self.study_engine = None
         self.study_mode = self.progress.get("study_mode", "brush")
-        self.learning_settings = learn.normalize_settings(self.progress.get("learning_policy"))
-        self.learning_settings["mode"] = learn.REVIEW_FIRST
-        self.progress["learning_policy"] = self.learning_settings
-        self.daily_new_ledger = self.progress["daily_new_ledger"]
-        self.learning_policy = learn.LearningPolicy(self.learning_settings, self.daily_new_ledger)
         self.key_bindings = dict(self.progress["keybindings"])
         self.progress["keybindings"] = dict(self.key_bindings)
-        self._last_answer_time = None
-        self._policy_changed_in_settings = False
-        self.retry_gap = 3            # 固定隔 3 个其它新词重现，不再提供设置
+        self.retry_gap = 4            # 固定隔 4 个其它首次新词回答后重现
         self.settings_study_mode_start = self.study_mode
         self.catalog_src = "books"
         self.choice_question = None
@@ -576,13 +579,6 @@ class Card(QWidget):
         self.storage_notices.extend(str(notice.message) for notice in notices)
         if DEFAULTS_JOURNAL in p:
             self._recover_defaults_journal(p)
-        p["learning_policy"] = learn.normalize_settings(p.get("learning_policy"))
-        p["learning_policy"]["mode"] = learn.REVIEW_FIRST
-        p.setdefault("daily_new_ledger", {})
-        try:
-            learn.validate_ledger(p["daily_new_ledger"])
-        except ValueError as error:
-            raise storage.StorageError("每日新词账本异常；原文件未清空。" + str(error))
         p.pop("input_mode", None)
         p.pop("catalog_sort", None)
         try:
@@ -677,7 +673,7 @@ class Card(QWidget):
         self.progress["memory_schema"] = 2
         self.progress["app_version"] = VERSION
         self.progress["study_mode"] = self.study_mode
-        self.progress["retry_gap"] = 3
+        self.progress["retry_gap"] = 4
         self.progress["prediction_state"] = self.prediction_data
         storage.atomic_save(PROGRESS_PATH, self.progress)
 
@@ -851,10 +847,8 @@ class Card(QWidget):
     def _make_engine(self):
         self.study_record = self.study_records.setdefault(
             self.book_id, {"cursor": self.cursors.get(self.book_id, 0)})
-        self.learning_policy = learn.LearningPolicy(self.learning_settings, self.daily_new_ledger)
         self.study_engine = StudyQueue(self.queue_words, self.states, self.study_record,
                                       retry_gap=self.retry_gap, known=self.known,
-                                      policy=self.learning_policy,
                                       excluded=school.words(school.normalize(self.progress.get("school_knowledge"))))
         self.cursor = self.study_engine.cursor
 
@@ -897,7 +891,7 @@ class Card(QWidget):
             return
         waiting = self.study_engine.next_due_time(now)
         old_waiting = getattr(self, "waiting_due", None)
-        # A quota midnight becomes eligible immediately, even after changing the clock/day.
+        # The previously scheduled review may already be due after a clock change.
         ready = old_waiting is not None and now >= old_waiting
         self.waiting_due = waiting
         if not ready and (waiting is None or now < waiting):
@@ -1953,12 +1947,15 @@ class Card(QWidget):
                 or not isinstance(journal.get("preferences"), dict)):
             raise storage.StorageError("未完成的设置重置日志格式异常；学习记录未清空。")
         prefs = journal["preferences"]
-        if any(name not in RESET_PREF_KEYS or not isinstance(value, dict)
+        if any(name not in LEGACY_RESET_PREF_KEYS or not isinstance(value, dict)
                or not isinstance(value.get("present"), bool)
                or (value.get("present") and "value" not in value) for name, value in prefs.items()):
             raise storage.StorageError("设置重置日志的偏好格式异常；学习记录未清空。")
         storage.atomic_save(WIN_PATH, journal["window"])
-        self._restore_pref_fields(progress, prefs)
+        # Old journals can name retired policy/spacing preferences. Recognize
+        # their shape for recovery but never restore or erase inert legacy data.
+        self._restore_pref_fields(progress, {name: saved for name, saved in prefs.items()
+                                             if name in RESET_PREF_KEYS})
         progress.pop(DEFAULTS_JOURNAL, None)
         try:
             storage.atomic_save(PROGRESS_PATH, progress)
@@ -1969,18 +1966,13 @@ class Card(QWidget):
 
     def _sync_preference_attrs(self):
         self.study_mode = self.progress.get("study_mode", "brush")
-        self.retry_gap = 3
-        self.learning_settings = learn.normalize_settings(self.progress.get("learning_policy"))
-        self.learning_settings["mode"] = learn.REVIEW_FIRST
-        self.progress["learning_policy"] = self.learning_settings
-        self.learning_policy = learn.LearningPolicy(self.learning_settings, self.daily_new_ledger)
+        self.retry_gap = 4
         self.key_bindings = keys.load_bindings(self.progress.get("keybindings"))
         self.progress["keybindings"] = dict(self.key_bindings)
         self.theme_key = self.progress.get("theme") if self.progress.get("theme") in th.THEMES else th.DEFAULT
         self.t = th.get(self.theme_key)
         if self.study_engine is not None:
-            self.study_engine.policy = self.learning_policy
-            self.study_engine.retry_gap = 3
+            self.study_engine.retry_gap = 4
 
     def _apply_preference_ui(self, changed=None):
         changed = None if changed is None else frozenset(changed)
@@ -2031,7 +2023,7 @@ class Card(QWidget):
         if level == school.normalize(self.progress.get("school_knowledge")):
             return True
         # A previously skipped word may be behind the cursor. Re-scan without
-        # changing scheduler records, pending retries, or daily learning counts.
+        # changing scheduler records, pending retries, or first-new answer counts.
         old_records, old_cursors = copy.deepcopy(self.study_records), dict(self.cursors)
         for book_id, record in self.study_records.items():
             record["cursor"] = 0
@@ -2043,7 +2035,6 @@ class Card(QWidget):
             self.cursors.clear()
             self.cursors.update(old_cursors)
             return False
-        self._policy_changed_in_settings = True
         self._school_changed_in_settings = True
         return True
 
@@ -2051,18 +2042,6 @@ class Card(QWidget):
         if mode not in ("brush", "choice"):
             return False
         return self._commit_preferences({"study_mode": mode})
-
-    def set_learning_plan(self, mode=None, daily_new=None):
-        candidate = dict(self.learning_settings)
-        candidate["mode"] = learn.REVIEW_FIRST
-        if mode == learn.DAILY_NEW_FIRST or daily_new is not None:
-            candidate["daily_new"] = learn.DEFAULTS["daily_new"]
-        if candidate == self.learning_settings:
-            return True
-        if self._commit_preferences({"learning_policy": candidate}):
-            self._policy_changed_in_settings = True
-            return True
-        return False
 
     def apply_key_bindings(self, raw):
         try:
@@ -2191,8 +2170,8 @@ class Card(QWidget):
     def _confirm_restore_defaults(self):
         answer = QMessageBox.question(
             self, "恢复全部默认设置",
-            "恢复背景、窗口、学习模式/安排及键位。\n"
-            "不改变所选词书、学习状态/队列/词序游标/今日计数、词汇量测试记录。\n继续吗？",
+            "恢复背景、窗口和键位。\n"
+            "不改变所选词书、学习状态/队列/词序游标或词汇量测试记录。\n继续吗？",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if answer == QMessageBox.Yes:
             self.restore_defaults()
@@ -2212,8 +2191,7 @@ class Card(QWidget):
         old_window.update(old_state)
         old_compact = self.window_ctl.compact
         journal = {"schema": 1, "preferences": before, "window": old_window}
-        defaults = {"theme": th.DEFAULT, "study_mode": "brush", "retry_gap": 3,
-                    "learning_policy": dict(learn.DEFAULTS),
+        defaults = {"theme": th.DEFAULT, "study_mode": "brush",
                     "keybindings": dict(keys.DEFAULT_BINDINGS), "school_knowledge": "off"}
         self._window_save_timer.stop()
         self.progress[DEFAULTS_JOURNAL] = journal
@@ -2256,7 +2234,6 @@ class Card(QWidget):
             QMessageBox.critical(self, "恢复默认未完成", message)
             return False
         self._window_save_timer.stop()
-        self._policy_changed_in_settings = True
         self._apply_preference_ui()
         self._reset_key_draft()
         return True
@@ -2313,7 +2290,6 @@ class Card(QWidget):
         if self.mode in ("front", "back", "empty", "choice", "choice_back"):
             self.pre_settings_mode = self.mode
             self.settings_study_mode_start = self.study_mode
-            self._policy_changed_in_settings = False
         self._refresh_settings()
         if not self.progress.get("book_confirmed") and self.mode in ("books", "welcome"):
             self.pre_settings_mode = "front"
@@ -2333,7 +2309,7 @@ class Card(QWidget):
         mode = self.pre_settings_mode
         changed = self.study_mode != self.settings_study_mode_start
         school_changed = getattr(self, "_school_changed_in_settings", False)
-        if self._policy_changed_in_settings and (mode in ("front", "choice", "empty") or school_changed):
+        if school_changed:
             before = self._capture_study()
             try:
                 self._make_engine()
@@ -2342,7 +2318,6 @@ class Card(QWidget):
             except storage.StorageError as error:
                 self._study_save_error(error, before)
                 return
-            self._policy_changed_in_settings = False
             if found:
                 self.qi = len(self.queue) - 1
                 self._show_current()
@@ -2354,7 +2329,6 @@ class Card(QWidget):
             self._show_current()
         else:
             self._set_mode(mode if mode in ("front", "back", "empty", "choice", "choice_back") else "front")
-        self._policy_changed_in_settings = False
         self._school_changed_in_settings = False
 
     def _test_from_settings(self):
@@ -2883,9 +2857,7 @@ class Card(QWidget):
                 "cursor": self.cursor, "cursors": copy.deepcopy(self.cursors),
                 "qi": self.qi, "book": self.book_id,
                 "queue": list(self.queue), "last_action": self.last_action,
-                "corrected": self.corrected,
-                "daily_new_ledger": copy.deepcopy(self.daily_new_ledger),
-                "last_answer_time": self._last_answer_time}
+                "corrected": self.corrected}
 
     def _snapshot(self):
         self.snapshot = self._capture_study()
@@ -2898,10 +2870,6 @@ class Card(QWidget):
         self.states.update(copy.deepcopy(snapshot["states"]))
         self.study_record.clear()
         self.study_record.update(copy.deepcopy(snapshot["record"]))
-        if "daily_new_ledger" in snapshot:
-            self.daily_new_ledger.clear()
-            self.daily_new_ledger.update(copy.deepcopy(snapshot["daily_new_ledger"]))
-        self._last_answer_time = snapshot.get("last_answer_time")
         self.cursor, self.qi = snapshot["cursor"], snapshot["qi"]
         if "cursors" in snapshot:
             self.cursors.clear()
@@ -2929,7 +2897,6 @@ class Card(QWidget):
         try:
             answered_at = time.time()
             self.study_engine.answer(item, remember, answered_at)
-            self._last_answer_time = answered_at
             self.cursor = self.study_engine.cursor
             self.cursors[self.book_id] = self.cursor
             self.last_action = (item["kind"], item["w"]["w"], remember)
@@ -2978,13 +2945,11 @@ class Card(QWidget):
                 or self.corrected or self.mode not in ("back", "choice_back") or not self.snapshot):
             return
         before = self._capture_study()
-        introduced_at = self._last_answer_time
         if not self._restore_snapshot():
             return
         item = self.queue[self.qi]
         try:
-            self.study_engine.answer(item, False, time.time(), introduced_at=introduced_at)
-            self._last_answer_time = introduced_at
+            self.study_engine.answer(item, False, time.time())
             self.cursor = self.study_engine.cursor
             self.cursors[self.book_id] = self.cursor
             self.corrected = True

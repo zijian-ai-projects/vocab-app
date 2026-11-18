@@ -1,10 +1,10 @@
 # dsh-vocab-app 内部契约（协作基线，不是发行文档）
 
 ## 0. 版本与边界
-- 插件版本 **0.1.10**（由 package.json 派生；0.1.9 的启动最小化补丁）；功能/测评基线 **V1.4.3**，记录 APP_VERSION 仍为 `1.4.3-dsh`。Windows 仅做同版本小补丁；2026-11-17 联合交付仅保留 UI 补丁原字节，外层统一为 VocabApp-1.4.3-windows-x64.zip。
+- 插件版本 **0.1.11**（由 package.json 派生）；功能/测评基线 **V1.4.3**，记录 APP_VERSION 保留既有 assessment baseline，Lead 另行决定是否升级。Windows 包版本目标为 V1.4.4。
 - Host为Node ESM，宿主能力一律经ctx；Client为ModuleLoader工厂内单文件React.createElement，只require react。不启动替代Web server。
 - 业务计算、持久化在Host；Client只渲染view/发送action。
-- 五份只读data资产、CAT及其它Core保持；唯一领域规则变更是双端scheduler旧词不认识保级、300秒后再复习。不读个人资料；用户说明在随包readme.md。
+- 五份只读data资产、CAT及其它Core保持；新规则为其它4个首次新词回答后才展示忘记/改判/选错的新词，无书末早退；到期重试即使没有候选也显示，且到期复习优先。daily policy/ledger 不参与新规则且作为不透明字段保留。学校暂停门禁保留。
 
 ## 1. 文档与安全
 ```js
@@ -16,6 +16,7 @@
 - progress保留states/cursors/orders/study_records/study_mode/learning_policy/daily_new_ledger/theme/book/school_knowledge/theta/prediction_state/memory_schema/book_confirmed/history/quiz_session及未知字段。
 - 0.1.0兼容仍只清理退役keybindings/_v136_defaults_pending和窗口几何偏好；0.1.1旧medium/large、0.1.4 small均只读归一为mini。不清学习/历史/暂停测评，不增revision或改写旧窗口偏好。
 - 原memory_schema=2、_v142_test_reset的一次性迁移保持，不对已有完成标记重做清理。
+- 新迁移只在显式 `retry_gap=3` 时运行：有效 future retry deadline 迁移为 deadline+1（四个其它首次新词）；ready retry 不变；缺失/未知标记不变；完成后写入4确保幂等。
 - 保存：克隆→计算→同目录临时/fsync/原子替换→rev+1→替换内存。失败不推进队列或内存。
 - .bak保留上一份有效原文，主损坏可恢复；无有效源拒绝启动。进程锁、安全接管、加载/关闭竞争及卸载清理保持。
 - 删除公开恢复/清空接口不等于删除内部备份恢复。
@@ -79,7 +80,7 @@ quizStart{fresh}, quizAnswer{index}, quizDontknow{}, quizPause{}, history{}, del
 - windowSize/compact/keys/resetSettings/resetRecords/method/flip已退役，原合法payload也invalid，不推进rev。
 
 ## 7. 数值硬约束（测评与其它Core不修改）
-- scheduler/study_queue/study_options/learning_policy/school_knowledge/prediction/entries/books/level_meanings保持纯函数API及双端一致语义；唯一规则例外为已批准的旧词onForget：lv1—9保级、从每次回答时刻now+300，认识仍按新等级正常排期。已有due及迁移字段不重算。
+- scheduler/study_queue/school_knowledge/prediction/entries/books/level_meanings保持各自API；学习 policy / daily ledger 不再参与活动队列，不初始化、校验、记账或清除，但原值作为扩展字段保留。新词 forget/correct/wrong-choice 重现需4个其它 first-new answers，同书跨日计数；retry/review/skip/show不计数；无书末早退。到期旧词优先。已 eligible retry 在无候选时也可显示。0级 retry 本身不成为每日新词目标或门禁。
 - ALGORITHM=vst-cat-v143-web，MEASUREMENT_SCHEMA=3，SESSION_SCHEMA=2，UNIT=frequency_ranked_entries。
 - 3PL A=1.4、C=0.25；先验N(0,2²)，theta -5…7 step.05，b=ln((rank+100)/1000)；EAP/Fisher/band/停止规则不变。
 - SHA-256 counter DRBG、canonical指纹、BigInt exactSum不变；同指纹/种子/记录序列同题序。
@@ -89,6 +90,6 @@ quizStart{fresh}, quizAnswer{index}, quizDontknow{}, quizPause{}, history{}, del
 - node --test test/*.mjs，不是node --test test/；真实Hook/handler/清理、固定迷你/小视口、返回中心、主题边框和退休动作回归。
 - 原0.1.4本地包与既有合成资料在假DSH_HOME升0.1.5，检查学习/排期/未知字段/历史/暂停会话；从不读本机个人记录做测试。
 - 历次补丁构建时曾保持旧回滚包原字节；2026-11-17 按用户要求清理发行目录，仅保留 UI 补丁原 ZIP 字节（统一外层名称）与最新 DSH，不重打包 Windows。0.1.10 是 0.1.9 启动最小化小补丁，安全安装验证后以新包替代交付目录中的旧 TGZ。旧 Git 历史/标签保留，不自动 commit/tag；随包 readme 已同步最新包策略。Windows VERSION仍1.4.3，刷词forget专用objectName与中性色QSS、五分钟scheduler按当前源码保留。
-- 0.1.10提交与 `dsh-vocab-app-v0.1.10` 标签：仅启动最小化补丁、回归、说明与最新TGZ，不重打Windows、不push、不改既有标签。
+- 当前准备 Windows V1.4.4 / DSH 0.1.11；构建和验证尚未完成。版本化 builder staging/work/config 路径不得清理既有目录；发布目标、归档、校验文件存在时必须失败，绝不覆盖/删除旧档案。Lead负责批准后的实际构建；本任务不安装、不触碰live app、不commit/tag/push。
 - 本地tgz仅运行白名单+readme.md；不含测试/审计/开发文档/脚本/个人资料/日志/锁/缓存。
 - 仅授权desktop更新，不公开上传；private:true/UNLICENSED及原许可边界保持。

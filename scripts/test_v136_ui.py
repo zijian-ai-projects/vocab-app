@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""V1.3.6 isolated UI acceptance: settings, keyboard, daily plan, reset, save failure.
+"""Historical V1.3.6 UI acceptance, isolated from real records.
 
-Only runs against Sandbox/VOCABAPP_DATA_DIR, never real records.
-`python -B scripts/test_v136_ui.py [--native]`
+The daily-plan scenarios are retained only as historical documentation and are
+not run after removal of active daily policy. `python -B scripts/test_v136_ui.py`
 """
 from copy import deepcopy
 from pathlib import Path
@@ -715,9 +715,6 @@ def run_suite():
                     ("keyboard-custom", suite.keyboard_custom_and_errors),
                     ("editing-focus", suite.editing_focus_does_not_score),
                     ("button-focus", suite.button_focus_uses_config),
-                    ("daily-status", suite.daily_status_and_quota),
-                    ("quota-change", suite.settings_quota_change_keeps_current),
-                    ("undo-amend", suite.undo_and_amend_keep_first_day),
                     ("sort-learning", suite.sort_filters_do_not_change_learning_order),
                     ("restore-defaults", suite.restore_defaults_preserves_learning),
                     ("save-progress-stage", suite.save_failure_stage_progress),

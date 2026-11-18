@@ -1,4 +1,4 @@
-# 背单词 · V1.4.3
+# 背单词 · V1.4.4
 
 Windows / PyQt5 常驻背词卡片。离线词书、独立记忆排期、词汇量测试、内容浏览和四套配色。
 
@@ -30,12 +30,23 @@ D:\software\anaconda\pythonw.exe -B app/launcher.py
 首次进入引导，可以先测词汇量或直接选书。词书必须主动点选并确认“用这本开始”；不会预拉默认词书或悄悄替用户确认。
 同一资料目录一次只允许一个窗口，启动时先取得长期实例锁，再加载/迁移记录。
 
-## 当前交付：Windows V1.4.3 / DSH 0.1.10（2026-11-17）
+## DSH 插件（Web 浮层）
 
-- Windows 便携版：[V1.4.3 新词标签修订版](<vocab-app-releases/v1.4.3/VocabApp-1.4.3-windows-x64.zip>)：ZIP 文件名及包内顶层目录统一为 `VocabApp-1.4.3-windows-x64`。新词“认识 → 选错了”及直接“不认识”后的重现均显示 **新词**，真正到期旧词仍显示 **复习**。仅修复左上角对 `retry` 的分类，记忆状态、排期、每日新词记账不改；保留中性色“不认识”和旧词忘记保级、5 分钟复习规则。
-- DSH：[0.1.10 插件包](<vocab-app-releases/v1.4.3/dsh-vocab-app-0.1.10.tgz>) 已通过真实 Engine 改判、重现和重启回归，**没有同类标签问题，本次不发新版本、不重新安装，运行文件原字节保持**。每次打开或刷新仍先显示可拖动图标；单击展开 400×400 卡片，关闭后回到图标。不记忆展开偏好，隐藏时不自动推进学习或已答测验。
-- 发行目录继续仅保留最新 Windows / DSH 包和说明、校验；既有 `V1.4.3`、`dsh-vocab-app-v0.1.9`、`dsh-vocab-app-v0.1.10` 标签不移动。本次 Windows 修订版由本地提交及注释标签 `V1.4.3-windows` 固化，未 push。
-- 本次验证与安全升级见 [新词标签补丁验收](<docs/release-v143-newword-patch.md>)、[安装说明](<vocab-app-releases/v1.4.3/安装说明.txt>)、[校验清单](<vocab-app-releases/v1.4.3/SHA256SUMS.txt>)。此前 [0.1.10 最小化补丁](<docs/release-dsh0110.md>)、[0.1.9 联合版](<docs/release-v143-dsh019.md>) 保留为历史验收；Windows 既有失败不在此次修复范围。
+同一套学习机制在 DSH / DeepSeek Harness Web GUI 中以本地浮层插件运行，源码在 [dsh-plugin/](<dsh-plugin/>)，清单版本 **0.1.11**。
+
+- **运行要求**：Node.js ≥ 24.9.0；DSH ≥ 0.2.2-rc.1（见 `dsh-plugin/package.json` 的 `engines` 与 `dsh.client` 区块）。
+- **安装**：使用 `vocab-app-releases/` 下的本地 TGZ（如 `dsh-vocab-app-0.1.11.tgz`）更新，装完刷新已登录页面一次；不启动替代服务器，也不替换 Windows 程序。
+- **界面与操作**：窗口固定为 400×400 迷你浮层，关闭后缩为可拖动的浮动入口；支持刷词、四选一和词汇量测试。键位与窗口规则见 [插件说明](<dsh-plugin/readme.md>)。
+- **资料**：沿用 `dsh-vocab-app/vocab_app_default` 资料命名空间，升级不清空学习状态、词书顺序/游标、测评历史或暂停会话；与 Windows 端资料不共享、不同步。
+- **版本关系**：插件版本（0.1.11）、Windows 程序版本（V1.4.3）、测评算法标识（`vst-cat-v143-web`）是三个独立版本号，插件版本不能推断测评算法或 Windows 版本。
+- **构建**：`release/build_plugin.mjs` 生成插件包，目标路径按版本隔离，发现已存在的目标/归档即失败，不覆盖旧档案。
+
+## 当前开发目标：Windows V1.4.4 / DSH 0.1.11（待构建验证）
+
+- 当前版本目标为 Windows V1.4.4 与 DSH 0.1.11，仍处于准备阶段；尚未构建、安装或在 live app 验证，不应将其描述为已交付。
+- 新词忘记、改判为不认识或选错后，必须再回答同一本书中的 **4 个其它首次新词**才重现；这一计数跨日。retry、复习、跳过和展示不计数，书末不提前重现。到期复习优先；符合条件的 retry 即使没有候选也显示。没有每日目标 UI、门禁或记账；旧 `learning_policy` / `daily_new_ledger` 仅作为不透明字段保留。学校暂停规则保留。
+- 只迁移显式 `retry_gap=3` 标记下有效且未来的 retry deadline，改为 deadline+1；ready retry 不动，缺失/未知标记不改排期；完成后写入4，迁移幂等。测评 APP_VERSION 是否调整仍由 Lead 评估，不能从插件版本推断。
+- 版本化构建器只在新的 staging/work/config 路径生成；检测到目标或档案存在即失败，不覆盖/删除旧发行档案及历史。当前任务不构建、不安装、不操作 live app、不 commit/tag/push。待构建后的独立验收记录见 [V1.4.4 / 0.1.11 发布准备](<docs/release-v144-dsh0111.md>)。
 
 ### Windows SmartScreen 提示
 

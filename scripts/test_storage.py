@@ -211,7 +211,9 @@ class PathTests(FixtureCase):
         self.assertFalse(os.path.exists(second))
 
     def test_relative_override_always_resolves_to_absolute_paths(self):
-        override = os.path.relpath(self.fixture_path("relative-dir"))
+        target = self.fixture_path("relative-dir")
+        override = (os.path.relpath(target) if os.path.splitdrive(target)[0].casefold()
+                    == os.path.splitdrive(os.getcwd())[0].casefold() else target)
         with mock.patch.dict(os.environ, {"VOCABAPP_DATA_DIR": override}, clear=True):
             self.assertEqual(storage.data_dir(), os.path.abspath(override))
             self.assertTrue(all(os.path.isabs(p) for p in storage.paths()))

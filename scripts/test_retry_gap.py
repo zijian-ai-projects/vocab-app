@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""纯测试：旧五词 retry 绝对计数迁移至三词；AST 只抽取纯函数，不导入 Qt/资料。"""
+"""Pure retry-gap migration tests; AST extraction avoids importing Qt or user data."""
 import ast
 import copy
 import json
@@ -9,7 +9,6 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "app"))
-import scheduler as sch
 import study_queue as queue
 
 TREE = ast.parse((ROOT / "app" / "main.py").read_text(encoding="utf-8"))
@@ -20,73 +19,57 @@ exec(compile(ast.Module(body=[NODE], type_ignores=[]), "retry_gap_subject", "exe
 normalize = NAMESPACE["normalize_retry_gap"]
 
 
-def fixture(gap=5):
+def fixture(gap=3):
     return {"retry_gap": gap,
             "study_records": {"book": {"cursor": 7, "new_count": 1,
-                                       "pending": {"alpha": 6, "ready": 1, "old": 0},
-                                       "current": {"kind": "new", "key": "beta"},
-                                       "held_current": {"kind": "retry", "key": "held"},
-                                       "last_retry": "previous", "extension": {"keep": 1}}},
+                                        "pending": {"alpha": 6, "ready": 1, "old": 0},
+                                        "current": {"kind": "new", "key": "beta"},
+                                        "held_current": {"kind": "retry", "key": "held"},
+                                        "last_retry": "previous", "extension": {"keep": 1}}},
             "states": {"alpha": {"st": "new", "lv": 0, "seen": 1}},
             "cursors": {"book": 7}, "orders": {"book": {"mode": "seq", "seed": 42}},
             "history": [{"ts": i, "vocab": 1000 + i} for i in range(60)],
+            "daily_new_ledger": {"days": {"2026-11-17": ["untouched"]}},
             "extension": {"nested": [1, 2, 3]}}
 
 
 class RetryGapTests(unittest.TestCase):
-    def test_old_five_is_three_without_losing_state_or_queue(self):
+    def test_known_three_gap_migrates_future_targets_only(self):
         progress = fixture()
         before = copy.deepcopy(progress)
         record = progress["study_records"]["book"]
         pending = record["pending"]
         self.assertIs(normalize(progress), progress)
-        self.assertEqual(progress["retry_gap"], 3)
+        self.assertEqual(progress["retry_gap"], 4)
         self.assertIs(record["pending"], pending)
-        self.assertEqual(pending, {"alpha": 4, "ready": 0, "old": 0})
+        self.assertEqual(pending, {"alpha": 7, "ready": 1, "old": 0})
         for key in ("cursor", "new_count", "current", "held_current", "last_retry", "extension"):
             self.assertEqual(record[key], before["study_records"]["book"][key])
-        for key in ("states", "cursors", "orders", "history", "extension"):
+        for key in ("states", "cursors", "orders", "history", "daily_new_ledger", "extension"):
             self.assertEqual(progress[key], before[key])
 
-    def test_migrated_retry_waits_exactly_three_other_new_answers(self):
-        words = [{"w": key, "s": key} for key in ("alpha", "beta", "gamma", "delta", "epsilon")]
-        state = sch.new_state()
-        state["seen"] = 1
-        states = {"alpha": state}
-        record = {"cursor": 1, "new_count": 1, "pending": {"alpha": 6}}
-        progress = {"retry_gap": 5, "study_records": {"book": record}}
-        normalize(progress)
-        self.assertEqual(record["pending"]["alpha"], 4)
-        engine = queue.StudyQueue(words, states, record, retry_gap=3)
-        for key in ("beta", "gamma", "delta"):
-            item = engine.next(now=1700000000)
-            self.assertEqual((item["kind"], item["w"]["w"]), ("new", key))
-            engine.answer(item, True, now=1700000000)
-        self.assertEqual(record["new_count"], 4)
-        item = engine.next(now=1700000000)
-        self.assertEqual((item["kind"], item["w"]["w"]), ("retry", "alpha"))
-
-    def test_other_books_and_orphan_keys_are_migrated_and_retained(self):
+    def test_migration_preserves_unknown_and_malformed_records(self):
         progress = fixture()
-        progress["study_records"]["other"] = {"new_count": 10, "cursor": 99,
-                                                "pending": {"second": 15, "orphan": 2},
-                                                "extension": {"not_current_book": True}}
+        progress["study_records"]["unknown"] = {"new_count": 0, "pending": {"x": 9}, "extension": True}
+        progress["study_records"]["broken"] = None
         normalize(progress)
-        other = progress["study_records"]["other"]
-        self.assertEqual(other["pending"], {"second": 13, "orphan": 0})
-        self.assertEqual((other["new_count"], other["cursor"]), (10, 99))
-        self.assertEqual(other["extension"], {"not_current_book": True})
+        self.assertEqual(progress["study_records"]["unknown"]["pending"], {"x": 10})
+        self.assertEqual(progress["study_records"]["broken"], None)
 
-    def test_ready_retry_stays_ready(self):
-        state = sch.new_state()
-        state["seen"] = 1
-        record = {"cursor": 1, "new_count": 10, "pending": {"alpha": 3}}
-        progress = {"retry_gap": 5, "study_records": {"book": record}}
+    def test_malformed_counts_and_targets_are_not_inferred(self):
+        progress = fixture()
+        malformed = [None, True, False, "6", "bad", -1, 3.5, [], {}, 9007199254740991]
+        pending = {"bad%s" % i: value for i, value in enumerate(malformed)}
+        progress["study_records"]["book"]["pending"].update(copy.deepcopy(pending))
+        for i, value in enumerate(malformed[:-1]):
+            progress["study_records"]["bad_count%s" % i] = {"new_count": value, "pending": {"future": 8}}
+        before = copy.deepcopy(progress["study_records"])
         normalize(progress)
-        self.assertEqual(record["pending"]["alpha"], 1)
-        engine = queue.StudyQueue([{"w": "alpha"}, {"w": "beta"}], {"alpha": state}, record)
-        item = engine.next(now=1700000000)
-        self.assertEqual((item["kind"], item["w"]["w"]), ("retry", "alpha"))
+        migrated = progress["study_records"]["book"]["pending"]
+        self.assertEqual({key: migrated[key] for key in pending}, pending)
+        for key in before:
+            if key.startswith("bad_count"):
+                self.assertEqual(progress["study_records"][key], before[key])
 
     def test_serialized_restart_does_not_apply_migration_twice(self):
         progress = fixture()
@@ -95,21 +78,20 @@ class RetryGapTests(unittest.TestCase):
         before = copy.deepcopy(saved)
         normalize(saved)
         self.assertEqual(saved, before)
-        self.assertEqual(saved["study_records"]["book"]["pending"]["alpha"], 4)
 
-    def test_existing_three_preserves_all_deadlines(self):
-        progress = fixture(3)
+    def test_existing_four_preserves_deadlines(self):
+        progress = fixture(4)
         before = copy.deepcopy(progress)
         normalize(progress)
         self.assertEqual(progress, before)
 
-    def test_missing_or_invalid_gap_does_not_shift_deadlines(self):
-        for gap in (None, "invalid", 0, -4, True):
+    def test_missing_invalid_and_unrecognized_gaps_do_not_shift_deadlines(self):
+        for gap in (None, "invalid", "3", 3.9, 0, -4, True, 5):
             with self.subTest(gap=gap):
                 progress = fixture(gap)
                 before = copy.deepcopy(progress["study_records"])
                 normalize(progress)
-                self.assertEqual(progress["retry_gap"], 3)
+                self.assertEqual(progress["retry_gap"], 4)
                 self.assertEqual(progress["study_records"], before)
         progress = fixture()
         progress.pop("retry_gap")
@@ -117,20 +99,37 @@ class RetryGapTests(unittest.TestCase):
         normalize(progress)
         self.assertEqual(progress["study_records"], before)
 
-    def test_string_five_and_queue_count_conversion_are_compatible(self):
-        progress = {"retry_gap": "5", "study_records": {"book": {
-            "new_count": "1", "pending": {"alpha": "6", "ready": None}, "extension": True}}}
-        normalize(progress)
-        record = progress["study_records"]["book"]
-        self.assertEqual(record["pending"], {"alpha": 4, "ready": 0})
-        self.assertEqual(record["new_count"], "1")
-        self.assertTrue(record["extension"])
+    def test_malformed_targets_remain_opaque_through_queue_restart(self):
+        malformed = [None, True, False, "5", "bad", -1, 5.5,
+                     {"opaque": ["retain"]}, [], 9007199254740992]
+        for value in malformed:
+            for slot in ("current", "held_current", "policy_held"):
+                with self.subTest(target=value, slot=slot):
+                    saved = {"kind": "retry", "key": "alpha", "custom": ["keep"]}
+                    record = {"new_count": 1, "pending": {"alpha": copy.deepcopy(value)},
+                              slot: [saved] if slot == "policy_held" else saved}
+                    progress = {"retry_gap": 3, "study_records": {"book": record}}
+                    normalize(progress)
+                    states = {"alpha": {"st": "new", "lv": 0, "seen": 1}}
+                    words = [{"w": key} for key in ("alpha", "fresh")]
+                    engine = queue.StudyQueue(words, states, record)
+                    self.assertEqual(record["pending"]["alpha"], value)
+                    item = engine.next(0)
+                    self.assertEqual((item["w"]["w"], item["kind"]), ("fresh", "new"))
+                    engine.answer(item, True, 0)
+                    states, record = json.loads(json.dumps([states, record]))
+                    engine = queue.StudyQueue(words, states, record)
+                    self.assertIsNone(engine.next(0))
+                    self.assertEqual(record["pending"]["alpha"], value)
+                    retained = record.get("policy_held", [])
+                    self.assertTrue(any(entry.get("key") == "alpha" and entry.get("custom") == ["keep"]
+                                        for entry in retained))
 
     def test_no_optional_records_are_created(self):
-        progress = {"retry_gap": 5, "history": [{"ts": 1, "vocab": 123}], "extension": [1, 2]}
+        progress = {"retry_gap": 3, "history": [{"ts": 1, "vocab": 123}], "extension": [1, 2]}
         normalize(progress)
         self.assertNotIn("study_records", progress)
-        self.assertEqual(progress, {"retry_gap": 3, "history": [{"ts": 1, "vocab": 123}],
+        self.assertEqual(progress, {"retry_gap": 4, "history": [{"ts": 1, "vocab": 123}],
                                     "extension": [1, 2]})
 
     def test_main_load_progress_calls_pure_normalization(self):

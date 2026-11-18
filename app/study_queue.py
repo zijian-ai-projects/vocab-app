@@ -7,7 +7,7 @@ words 已由调用方排好顺序，states 是跨书共享的记忆状态，reco
 pending 将词 key 映射到再次出现时所需的首次新词回答总数；current 只存
 {"kind": ..., "key": ...}，因此重启或词书换序后仍能找到未回答的词。
 额外 held_current（同样的结构或 None）保存被到期复习挂起的未答词；
-last_retry（词 key 或 None）只用于书末提前重试的公平轮转。
+last_retry（词 key 或 None）兼容保留；书末不会绕过 pending 的计数目标。
 """
 import time
 
@@ -27,6 +27,12 @@ def _count(value, default=0):
         return default
 
 
+def _valid_target(value):
+    # Unknown persisted values are not deadlines; never coerce them into ready 0.
+    return (type(value) in (int, float) and 0 <= value <= 9007199254740991
+            and value % 1 == 0)
+
+
 def _has_answer(st):
     return bool(st and (_count(st.get("seen")) or _count(st.get("lapse"))))
 
@@ -35,8 +41,6 @@ class StudyQueue:
     """到期旧词优先；未答 new/retry 用 held_current 挂起后再恢复。
 
     新词忘记后隔 retry_gap 个「首次新词回答」重考（不是隔任意题数）。
-    没有其它新词时允许提前重考，避免书末永久等待；last_retry 使多个
-    提前重考的未知词公平轮转，不影响 ready retry 的目标计数/词书排序。
     等级、due、seen 和 lapse 的变化全部交给 scheduler，retry 仍然使用
     lv=0 的新词状态。
 
@@ -45,7 +49,7 @@ class StudyQueue:
     excluded 后恢复；被暂停的未答题沿用 policy_held 保存其额外字段。
     """
 
-    def __init__(self, words, states, record, retry_gap=3, known=None, policy=None,
+    def __init__(self, words, states, record, retry_gap=4, known=None,
                  excluded=None):
         if not isinstance(states, dict) or not isinstance(record, dict):
             raise TypeError("states and record must be shared dictionaries")
@@ -60,7 +64,6 @@ class StudyQueue:
         # Explicit school exclusions override *all* queue paths, unlike prediction.
         # Keep the supplied collection live so disabling it resumes saved work.
         self.excluded = excluded if excluded is not None else set()
-        self.policy = policy
         policy_held = record.get("policy_held", [])
         if not isinstance(policy_held, list) or any(not isinstance(item, dict) for item in policy_held):
             raise TypeError("record.policy_held must be a list of saved items")
@@ -73,8 +76,6 @@ class StudyQueue:
         record.setdefault("pending", {})
         if not isinstance(record["pending"], dict):
             raise TypeError("record.pending must be a dictionary")
-        for key, target in list(record["pending"].items()):
-            record["pending"][key] = _count(target)
         record.setdefault("current", None)
         record.setdefault("held_current", None)
         record.setdefault("last_retry", None)
@@ -173,6 +174,11 @@ class StudyQueue:
             if kind == "retry" or key in self.record["pending"] or _has_answer(st):
                 self.record["pending"].setdefault(key, self.record["new_count"])
                 kind = "retry"
+                target = self.record["pending"][key]
+                if not _valid_target(target) or target > self.record["new_count"]:
+                    # Unknown deadlines and saved items cannot bypass the target.
+                    self._park_policy_current()
+                    return None
             return self._select(key, kind,
                                 resume=bool(current.get("resume")) if kind == "new" else False,
                                 saved=current)
@@ -184,7 +190,7 @@ class StudyQueue:
         return sorted((target, self._indices[key], key)
                       for key, target in self.record["pending"].items()
                       if key in self._indices and key not in self.excluded
-                      and sch._is_new(self.states.get(key)))
+                      and _valid_target(target) and sch._is_new(self.states.get(key)))
 
     def _next_new(self):
         n, start = len(self.words), self.cursor
@@ -200,12 +206,6 @@ class StudyQueue:
                     return key, idx
         return None
 
-    def _is_first_new_key(self, key):
-        st = self.states.get(key)
-        return (key in self._indices and key not in self.excluded
-                and sch._is_new(st) and not _has_answer(st)
-                and key not in self.record["pending"] and not self._skip_known(key, st))
-
     def _park_policy_current(self):
         """An extra saved list avoids overwriting the existing held_current slot."""
         current = self.record.get("current")
@@ -216,7 +216,20 @@ class StudyQueue:
                 held.append(copy)
         self.record["current"] = None
 
-    def _take_policy_held(self, now, allow_new=True):
+    def _hold_current(self):
+        """Suspend current without overwriting an earlier interrupted item."""
+        current = self.record.get("current")
+        if not isinstance(current, dict):
+            return
+        held = self.record.get("held_current")
+        if isinstance(held, dict) and held != current:
+            saved = self.record.setdefault("policy_held", [])
+            if held not in saved:
+                saved.append(dict(held))
+        self.record["held_current"] = dict(current)
+        self.record["current"] = None
+
+    def _take_policy_held(self, now):
         held = self.record.get("policy_held", [])
         for entry in list(held):
             key = self._current_key(entry)
@@ -225,94 +238,19 @@ class StudyQueue:
             self.record["current"] = dict(entry)
             current = self._reuse_current(now)
             if current is not None:
-                if entry.get("kind") == "new":
+                if current["kind"] == "new":
                     self.record["current"]["resume"] = True
                 held.remove(entry)
                 return current
         self.record["current"] = None
         return None
 
-    def _policy_new_first(self, now, current):
-        if current is not None and current["kind"] == "new":
-            return current
-        held = self.record.get("held_current")
-        if (isinstance(held, dict) and held.get("kind") == "new"
-                and self._is_first_new_key(self._current_key(held))):
-            if current is not None:
-                self._park_policy_current()
-            self.record["held_current"] = None
-            return self._select(self._current_key(held), "new", resume=True, saved=held)
-        saved = self.record.get("policy_held", [])
-        for entry in list(saved):
-            key = self._current_key(entry)
-            if entry.get("kind") == "new" and self._is_first_new_key(key):
-                if current is not None:
-                    self._park_policy_current()
-                saved.remove(entry)
-                return self._select(key, "new", resume=True, saved=entry)
-        candidate = self._next_new()
-        if candidate is not None:
-            if current is not None:
-                self._park_policy_current()
-            key, idx = candidate
-            self.cursor = idx
-            return self._select(key, "new")
-        return None
-
     def _reviews(self, now):
         return [item for item in sch.review_items(self.words, self.states, now)
                 if item["w"]["w"] not in self.excluded]
 
-    def _next_daily(self, now):
-        self._sync_pending()
-        current = self._reuse_current(now)
-        review_first_now = (self.policy.should_review_before_new(now)
-                            and bool(self._reviews(now)))
-        if not review_first_now and self.policy.allows_new(now):
-            preferred = self._policy_new_first(now, current)
-            if preferred is not None:
-                return preferred
-        if current is not None and current["kind"] == "new" and review_first_now:
-            self._park_policy_current()
-            current = None
-        if current is not None and current["kind"] == "review":
-            return current
-        reviews = self._reviews(now)
-        if reviews:
-            if current is not None:
-                self._park_policy_current()
-            return self._select(reviews[0]["w"]["w"], "review")
-        if current is not None:
-            return current
-        held = self.record.get("held_current")
-        if held is not None:
-            self.record["current"] = dict(held)
-            current = self._reuse_current(now)
-            if current is not None:
-                self.record["held_current"] = None
-                return current
-        current = self._take_policy_held(now, True)
-        if current is not None:
-            return current
-        pending = self._pending_order()
-        if pending and pending[0][0] <= self.record["new_count"]:
-            if self.policy.remaining(now) <= 0:
-                return self._select(pending[0][2], "retry")
-        candidate = self._next_new()
-        if candidate is not None:
-            key, idx = candidate
-            self.cursor = idx
-            return self._select(key, "new")
-        self.cursor = len(self.words)
-        if pending:
-            last_idx = self._indices.get(self.record.get("last_retry"), -1)
-            by_idx = sorted(pending, key=lambda entry: entry[1])
-            choice = next((entry for entry in by_idx if entry[1] > last_idx), by_idx[0])
-            return self._select(choice[2], "retry")
-        return None
-
     def next(self, now=None):
-        """取一题并保存 current；默认到期旧词优先，可每日N首次新词优先。"""
+        """取一题并保存 current；到期旧词优先，新词重试严格按计数间隔。"""
         now = time.time() if now is None else now
         held = self.record.get("held_current")
         if isinstance(held, dict) and self._current_key(held) in self.excluded:
@@ -321,8 +259,6 @@ class StudyQueue:
             if held not in saved:
                 saved.append(dict(held))
             self.record["held_current"] = None
-        if self.policy is not None and self.policy.daily_new_first:
-            return self._next_daily(now)
         self._sync_pending()
         current = self._reuse_current(now)
         if current is not None and current["kind"] == "review":
@@ -333,9 +269,17 @@ class StudyQueue:
             if current is not None:
                 # next/startup 会优先复习；不前移 cursor、不增加 new_count，
                 # 挂起的 new/retry 在所有到期旧词答完后继续原题。
-                self.record["held_current"] = dict(self.record["current"])
+                self._hold_current()
             return self._select(reviews[0]["w"]["w"], "review")
 
+        if current is not None and current["kind"] == "retry":
+            return current
+        # Ready retries also beat saved fresh items; suspend rather than lose them.
+        pending = self._pending_order()
+        if pending and pending[0][0] <= self.record["new_count"]:
+            if current is not None:
+                self._hold_current()
+            return self._select(pending[0][2], "retry")
         if current is not None:
             return current
         held = self.record.get("held_current")
@@ -345,33 +289,20 @@ class StudyQueue:
             current = self._reuse_current(now)
             if current is not None:
                 return current
-        # Also restore suspended school items when no daily policy is configured.
+        # A restored school-new item cannot delay an already eligible retry.
         current = self._take_policy_held(now)
         if current is not None:
             return current
-
-        pending = self._pending_order()
-        if (pending and pending[0][0] <= self.record["new_count"]
-                and (self.policy is None or self.policy.remaining(now) <= 0)):
-            return self._select(pending[0][2], "retry")
 
         candidate = self._next_new()
         if candidate is not None:
             key, idx = candidate
             self.cursor = idx
             return self._select(key, "new")
-
         self.cursor = len(self.words)
-        if pending:
-            # 书末没有首次新词可让计数前进。提前重试按词书轮转，避免多个
-            # 未知词目标相同而第一个一直忘记时，永远看不到后面的未知词。
-            last_idx = self._indices.get(self.record.get("last_retry"), -1)
-            by_idx = sorted(pending, key=lambda entry: entry[1])
-            choice = next((entry for entry in by_idx if entry[1] > last_idx), by_idx[0])
-            return self._select(choice[2], "retry")
         return None
 
-    def answer(self, item, remember: bool, now=None, introduced_at=None):
+    def answer(self, item, remember: bool, now=None):
         """回答 next 返回的当前词，写 states，清 current，返回新状态。
 
         拒绝已回答或其它题的 stale item，避免重复计数；使用 states 中最新
@@ -391,8 +322,6 @@ class StudyQueue:
                      and key not in self.record["pending"])
         before = before or sch.new_state(now)
         after = sch.on_remember(before, now) if remember else sch.on_forget(before, now)
-        if first_new and self.policy is not None:
-            self.policy.introduce_new(key, now if introduced_at is None else introduced_at)
         self.states[key] = after
 
         if first_new:

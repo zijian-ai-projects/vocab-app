@@ -667,9 +667,6 @@ test('assessment_history: 常量/分类/系列/趋势/归档边界', () => {
 // study_queue
 // --------------------------------------------------------------------------- //
 function makeScenarioQueue(scenario) {
-  const policy = new learningPolicy.LearningPolicy(
-    clone(scenario.settings), clone(scenario.ledger),
-  );
   const queue = new StudyQueue(
     clone(scenario.words),
     clone(scenario.states),
@@ -677,7 +674,6 @@ function makeScenarioQueue(scenario) {
     {
       retryGap: scenario.retry_gap,
       known: new Set(scenario.known),
-      policy,
       excluded: new Set(scenario.excluded),
     },
   );
@@ -695,7 +691,7 @@ function queueItemSnapshot(item) {
   };
 }
 
-test('study_queue: 固定时钟轨迹（含掉队重现/daily_new/排除/损坏 record）', () => {
+test('study_queue: 固定时钟轨迹（含掉队重现/排除/损坏 record）', () => {
   const data = fixture('core-queue.json');
   for (const scenario of data.scenarios) {
     const queue = makeScenarioQueue(scenario);
@@ -718,8 +714,7 @@ test('study_queue: 固定时钟轨迹（含掉队重现/daily_new/排除/损坏 
           states: clone(queue.states),
         };
       } else {
-        const after = queue.answer(pendingItem, step.remember, step.now,
-          step.introduced_at === undefined ? null : step.introduced_at);
+        const after = queue.answer(pendingItem, step.remember, step.now);
         pendingItem = null;
         actual = {
           op: 'answer',
@@ -768,9 +763,6 @@ test('study_queue: 构造期校验与 answer stale 保护', () => {
   const queue = new StudyQueue([{ w: 'a' }, { w: 'b' }], states, record, {
     retryGap: 3,
     known: new Set(),
-    policy: new learningPolicy.LearningPolicy(
-      { mode: learningPolicy.REVIEW_FIRST, daily_new: 20 }, {},
-    ),
     excluded: new Set(),
   });
   const first = queue.next(1700000000);
@@ -794,12 +786,7 @@ test('study_queue: stats 摘要形状（JS 侧新增）', () => {
     [{ w: 'a' }, { w: 'b' }, { w: 'c' }],
     states,
     record,
-    {
-      retryGap: 3,
-      policy: new learningPolicy.LearningPolicy(
-        { mode: learningPolicy.REVIEW_FIRST, daily_new: 20 }, {},
-      ),
-    },
+    { retryGap: 3 },
   );
   const item = queue.next(1000);
   assert.equal(item.kind, 'new');
@@ -961,13 +948,12 @@ test('study_queue v0.1.3: 到期旧词多轮五分钟优先，held new/retry 与
     };
     if (kind === 'retry') states.current = { lv: 0, st: 'new', due: null, seen: 2, lapse: 2, streak: 2 };
     const record = {
-      cursor: 1, new_count: 13, pending: kind === 'retry' ? { current: 15 } : {},
+      cursor: 1, new_count: 13, pending: kind === 'retry' ? { current: 13 } : {},
       current: { kind, key: 'current', custom: { originalUnanswered: kind } },
       held_current: null, last_retry: null,
     };
     const ledger = { schema: 1, days: {}, custom: { preserve: ['ledger'] } };
-    const policy = new learningPolicy.LearningPolicy({ ...learningPolicy.DEFAULTS }, ledger);
-    const queue = new StudyQueue([{ w: 'old' }, { w: 'current' }, { w: 'tail' }], states, record, { policy, retryGap: 3 });
+    const queue = new StudyQueue([{ w: 'old' }, { w: 'current' }, { w: 'tail' }], states, record, { retryGap: 4 });
     const pendingBefore = clone(record.pending);
     const ledgerBefore = clone(ledger);
     assert.equal(queue.next(1000).w.w, 'current');
@@ -1003,28 +989,38 @@ test('study_queue v0.1.3: 到期旧词多轮五分钟优先，held new/retry 与
   }
 });
 
-test('study_queue v0.1.3: lv0无due、pending3与每日残留20门槛均保持不变', () => {
+test('DSH study_queue retry gap is four across days and independent of daily policy', () => {
   const states = {};
   const record = {};
-  const ledger = {};
-  const policy = new learningPolicy.LearningPolicy({ ...learningPolicy.DEFAULTS }, ledger);
-  const queue = new StudyQueue(Array.from({ length: 30 }, (_, i) => ({ w: `synthetic${i}` })), states, record, { policy, retryGap: 3 });
-  const now = 1700000000;
-  for (let i = 0; i < 4; i += 1) queue.answer(queue.next(now + i), i !== 0, now + i);
-  assert.equal(states.synthetic0.lv, 0);
-  assert.equal(states.synthetic0.due, null);
-  assert.equal(record.pending.synthetic0, 4);
-  assert.equal(record.new_count, 4);
-  assert.equal(policy.learnedToday(now), 4);
-  assert.equal(queue.next(now + 4).w.w, 'synthetic4', 'ready retry still has the saved daily_new gate');
-  for (let i = 4; i < 20; i += 1) queue.answer(queue.next(now + i), true, now + i);
-  const retry = queue.next(now + 20);
+  const legacyData = { learning_policy: { mode: 'daily_new_first' }, daily_new_ledger: { days: { '2024-01-01': ['unrelated'] } } };
+  const queue = new StudyQueue(Array.from({ length: 12 }, (_, i) => ({ w: `synthetic${i}` })), states, record);
+  const day1 = new Date(2024, 0, 1, 12).getTime() / 1000;
+  const day2 = new Date(2024, 0, 2, 12).getTime() / 1000;
+  const first = queue.next(day1);
+  queue.answer(first, false, day1);
+  assert.equal(record.pending.synthetic0, 5);
+  assert.deepEqual(legacyData.daily_new_ledger.days['2024-01-01'], ['unrelated'], 'legacy data remains opaque');
+
+  for (let i = 1; i <= 3; i += 1) {
+    const next = queue.next(day2 + i);
+    assert.equal(next.w.w, `synthetic${i}`);
+    queue.answer(next, true, day2 + i);
+  }
+  assert.equal(queue.next(day2 + 4).w.w, 'synthetic4', 'retry remains ineligible after only three others');
+  queue.answer(queue.next(day2 + 4), true, day2 + 4);
+  const retry = queue.next(day2 + 5);
   assert.equal(retry.kind, 'retry');
   assert.equal(retry.w.w, 'synthetic0');
-  queue.answer(retry, false, now + 20);
-  assert.equal(states.synthetic0.lv, 0);
-  assert.equal(states.synthetic0.due, null);
-  assert.equal(record.pending.synthetic0, 23);
-  assert.equal(record.new_count, 20);
-  assert.equal(policy.learnedToday(now), 20);
+  queue.answer(retry, false, day2 + 5);
+  assert.equal(record.pending.synthetic0, 9, 'failed retry starts a fresh four-other-answer interval');
+});
+
+test('DSH study_queue book end never permits an early retry', () => {
+  const states = { only: { lv: 0, st: 'new', due: null, seen: 1, lapse: 1, streak: 1 } };
+  const record = { cursor: 1, new_count: 1, pending: { only: 5 }, current: null };
+  const queue = new StudyQueue([{ w: 'only' }], states, record);
+  assert.equal(queue.next(100), null);
+  assert.equal(record.current, null);
+  record.new_count = 5;
+  assert.equal(queue.next(101).kind, 'retry', 'once the target is reached, book end must not block an eligible retry');
 });

@@ -19,7 +19,6 @@ import { Store, StorageError } from './store.js';
 import { Dataset, formatNumber, parseSeriesId, seriesLabel, bookQuantity } from './dataset.js';
 import * as scheduler from '../core/scheduler.js';
 import { StudyQueue } from '../core/study_queue.js';
-import * as learn from '../core/learning_policy.js';
 import * as school from '../core/school_knowledge.js';
 import * as pred from '../core/prediction.js';
 import * as assessmentHistory from '../core/assessment_history.js';
@@ -205,7 +204,6 @@ export class Engine {
     this._readyError = null;
     this._chain = Promise.resolve();
     this._notices = [];
-    this._settings = null;
     this._known = new Set();
     this._studyEngine = null;
     this._queueWords = null;
@@ -482,8 +480,6 @@ export class Engine {
 
   _refreshRuntime() {
     const p = this.doc.progress;
-    this._settings = learn.normalizeSettings(p.learning_policy);
-    this._settings.mode = learn.REVIEW_FIRST;
     this._known = this._buildKnown(p);
     this._studyEngine = null;
   }
@@ -510,14 +506,6 @@ export class Engine {
         delete p[name];
         changed = true;
       }
-    }
-    p.learning_policy = learn.normalizeSettings(p.learning_policy);
-    p.learning_policy.mode = learn.REVIEW_FIRST;
-    if (!isPlainObject(p.daily_new_ledger)) p.daily_new_ledger = {};
-    try {
-      learn.validateLedger(p.daily_new_ledger);
-    } catch (error) {
-      throw new StorageError(`每日新词账本异常；原文件未清空。${error.message || error}`);
     }
     delete p.input_mode;
     delete p.catalog_sort;
@@ -640,30 +628,26 @@ export class Engine {
       p.prediction_state = pred.newPredictionData();
       changed = true;
     }
-    if (!('daily_new_ledger' in p)) {
-      p.daily_new_ledger = {};
-      changed = true;
-    }
     return changed;
   }
 
   _normalizeRetryGap(p) {
-    const count = intLike(p.retry_gap, 3);
-    if (count !== 5) {
-      if (p.retry_gap !== 3) {
-        p.retry_gap = 3;
-        return true;
+    if (p.retry_gap === 4) return false;
+    if (p.retry_gap === 3) {
+      for (const record of Object.values(p.study_records || {})) {
+        if (!isPlainObject(record) || !isPlainObject(record.pending)) continue;
+        const newCount = 'new_count' in record ? record.new_count : 0;
+        if (!Number.isSafeInteger(newCount) || newCount < 0) continue;
+        for (const key of Object.keys(record.pending)) {
+          const target = record.pending[key];
+          // Ready and malformed values are opaque; never infer a deadline.
+          if (Number.isSafeInteger(target) && target > newCount && target < Number.MAX_SAFE_INTEGER) {
+            record.pending[key] = target + 1;
+          }
+        }
       }
-      return false;
     }
-    for (const record of Object.values(p.study_records || {})) {
-      const pending = record.pending;
-      if (!isPlainObject(pending)) continue;
-      for (const key of Object.keys(pending)) {
-        pending[key] = Math.max(0, intLike(pending[key], 0) - 2);
-      }
-    }
-    p.retry_gap = 3;
+    p.retry_gap = 4;
     return true;
   }
 
@@ -682,7 +666,6 @@ export class Engine {
       catalog: null,
       preSettingsMode: 'front',
       settingsStudyModeStart: 'brush',
-      policyChanged: false,
       schoolChanged: false,
       resultCtx: 'test',
       queue: [],
@@ -693,7 +676,6 @@ export class Engine {
       snapshot: null,
       lastAction: null,
       corrected: false,
-      lastAnswerTime: null,
       choice: null,
       choiceLocked: false,
       choicePicked: null,
@@ -777,15 +759,13 @@ export class Engine {
     }
     const record = p.study_records[bookId]
       || (p.study_records[bookId] = { cursor: intLike(p.cursors[bookId], 0) });
-    const policy = new learn.LearningPolicy(this._settings || learn.normalizeSettings(p.learning_policy), p.daily_new_ledger);
     this._studyEngine = new StudyQueue(
       this._queueWordsFor(p),
       p.states,
       record,
       {
-        retryGap: 3,
+        retryGap: 4,
         known: this._known,
-        policy,
         excluded: this._excludedFor(p, ep),
       },
     );
@@ -851,13 +831,11 @@ export class Engine {
       states: clone(p.states),
       record: bookId && p.study_records[bookId] ? clone(p.study_records[bookId]) : null,
       cursors: clone(p.cursors),
-      ledger: clone(p.daily_new_ledger || {}),
       qi: ep.qi,
       book: bookId,
       queue: ep.queue.slice(),
       lastAction: ep.lastAction ? { ...ep.lastAction } : null,
       corrected: ep.corrected,
-      lastAnswerTime: ep.lastAnswerTime,
     };
   }
 
@@ -867,12 +845,10 @@ export class Engine {
     if (snapshot.record === null) delete p.study_records[snapshot.book];
     else p.study_records[snapshot.book] = clone(snapshot.record);
     p.cursors = clone(snapshot.cursors);
-    p.daily_new_ledger = clone(snapshot.ledger);
     ep.queue = snapshot.queue.slice();
     ep.qi = snapshot.qi;
     ep.lastAction = snapshot.lastAction ? { ...snapshot.lastAction } : null;
     ep.corrected = snapshot.corrected;
-    ep.lastAnswerTime = snapshot.lastAnswerTime;
     ep.choice = null;
     ep.choiceLocked = false;
     ep.choicePicked = null;
@@ -897,7 +873,6 @@ export class Engine {
     if (brushScreens.includes(ep.screen)) {
       ep.preSettingsMode = ep.screen;
       ep.settingsStudyModeStart = p.study_mode;
-      ep.policyChanged = false;
       ep.schoolChanged = false;
     }
     if (!p.book_confirmed && (ep.screen === 'books' || ep.screen === 'welcome')) {
@@ -1040,9 +1015,7 @@ export class Engine {
     const item = this._itemForAnswer(p, ep);
     ep.snapshot = this._captureStudy(p, ep);
     ep.corrected = false;
-    const answeredAt = this._now();
-    this._studyEngine.answer(item, Boolean(remember), answeredAt);
-    ep.lastAnswerTime = answeredAt;
+    this._studyEngine.answer(item, Boolean(remember), this._now());
     p.cursors[p.book] = this._studyEngine.cursor;
     ep.lastAction = { kind: item.kind, key: item.w.w, remember: Boolean(remember) };
   }
@@ -1442,7 +1415,6 @@ export class Engine {
       },
       quiz: { hasSession: Boolean(p.quiz_session), remainingDays: days },
       theme: p.theme,
-      dailyNew: this._settings.daily_new,
       themeOptions: THEME_ORDER.filter((key) => key in THEMES).map((key) => ({ key, label: THEMES[key] })),
       schoolOptions: school.LEVELS.map(([key, label]) => ({ key, label })),
       studyModeOptions: [
@@ -2284,12 +2256,10 @@ export class Engine {
     const p = t.draft.progress;
     const ep = t.ep;
     const snapshot = current.snapshot;
-    const introducedAt = current.lastAnswerTime;
     if (!this._restoreStudy(p, ep, snapshot)) return;
     this._makeEngine(p, ep);
     const item = this._itemForAnswer(p, ep);
-    this._studyEngine.answer(item, false, this._now(), introducedAt);
-    ep.lastAnswerTime = introducedAt;
+    this._studyEngine.answer(item, false, this._now());
     p.cursors[p.book] = this._studyEngine.cursor;
     ep.corrected = true;
     ep.lastAction = { kind: item.kind, key: item.w.w, remember: false };
@@ -2338,9 +2308,8 @@ export class Engine {
     }
     const mode = ep.preSettingsMode;
     const changed = p.study_mode !== ep.settingsStudyModeStart;
-    const schoolChanged = ep.schoolChanged;
     let persist = false;
-    if (ep.policyChanged && (mode === 'front' || mode === 'choice' || mode === 'empty' || schoolChanged)) {
+    if (ep.schoolChanged) {
       this._studyEngine = null;
       this._makeEngine(p, ep);
       const found = this._pullNew(p, ep);
@@ -2350,7 +2319,6 @@ export class Engine {
       } else {
         this._showEmpty(p, ep);
       }
-      ep.policyChanged = false;
       ep.schoolChanged = false;
       persist = true;
     } else if (changed && (mode === 'back' || mode === 'choice_back')) {
@@ -2361,7 +2329,6 @@ export class Engine {
     } else {
       this._restoreStudyScreen(p, ep, STUDY_SCREENS.includes(mode) ? mode : 'front');
     }
-    ep.policyChanged = false;
     ep.schoolChanged = false;
     if (persist) this._commit(t);
     else this._commitEp(ep);
@@ -2402,7 +2369,6 @@ export class Engine {
       draft.cursors[bookId] = 0;
     }
     this._applyPreference(draft, t.ep, { school_knowledge: level });
-    t.ep.policyChanged = true;
     t.ep.schoolChanged = true;
     this._commit(t);
   }

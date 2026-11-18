@@ -1164,17 +1164,13 @@ def build_queue_fixture():
             "idx": item["idx"],
         }
 
-    def run_scenario(name, words, states, record, steps, settings=None,
-                     ledger=None, excluded=None, known=None, retry_gap=3):
-        policy_settings = deep(settings) if settings is not None else {
-            "mode": learn.REVIEW_FIRST, "daily_new": 20}
-        policy = learn.LearningPolicy(policy_settings, deep(ledger or {}))
+    def run_scenario(name, words, states, record, steps,
+                     excluded=None, known=None, retry_gap=4):
         state_dict = deep(states)
         record_dict = deep(record)
         queue = StudyQueue([{"w": word} for word in words], state_dict,
                            record_dict, retry_gap=retry_gap,
-                           known=set(known or ()), policy=policy,
-                           excluded=set(excluded or ()))
+                           known=set(known or ()), excluded=set(excluded or ()))
         record_after_init = deep(record_dict)
         cursor_after_init = queue.cursor
         trace = []
@@ -1192,8 +1188,7 @@ def build_queue_fixture():
                     "states": deep(state_dict),
                 })
             else:
-                after = queue.answer(pending_item, step["remember"], now,
-                                     introduced_at=step.get("introduced_at"))
+                after = queue.answer(pending_item, step["remember"], now)
                 trace.append({
                     "op": "answer", "now": now,
                     "remember": step["remember"],
@@ -1209,8 +1204,6 @@ def build_queue_fixture():
             "words": [{"w": word} for word in words],
             "states": deep(states),
             "record": deep(record),
-            "settings": policy_settings,
-            "ledger": deep(ledger or {}),
             "excluded": sorted(excluded or ()),
             "known": sorted(known or ()),
             "retry_gap": retry_gap,
@@ -1231,30 +1224,7 @@ def build_queue_fixture():
     run_scenario("review_first_trajectory", [f"w{index}" for index in range(12)],
                  {}, {}, steps_a)
 
-    # B. daily_new_first：配额耗尽后先清到期复习，再继续新词。
-    steps_b = []
-    steps_b.append({"op": "next", "now": base})
-    steps_b.append({"op": "answer", "remember": True, "now": base + 1})
-    steps_b.append({"op": "next", "now": base + 2})
-    steps_b.append({"op": "answer", "remember": True, "now": base + 3})
-    steps_b.append({"op": "next", "now": base + 400})
-    steps_b.append({"op": "answer", "remember": True, "now": base + 401})
-    steps_b.append({"op": "next", "now": base + 402})
-    steps_b.append({"op": "answer", "remember": False, "now": base + 403})
-    cursor_time = base + 410
-    for index in range(4):
-        steps_b.append({"op": "next", "now": cursor_time})
-        steps_b.append({"op": "answer", "remember": index % 2 == 0,
-                        "now": cursor_time + 1})
-        cursor_time += 2
-    steps_b.append({"op": "next", "now": base + 900})
-    steps_b.append({"op": "answer", "remember": True, "now": base + 901})
-    run_scenario("daily_new_first_quota", [f"n{index}" for index in range(10)],
-                 {}, {}, steps_b,
-                 settings={"mode": learn.DAILY_NEW_FIRST, "daily_new": 2},
-                 ledger={"schema": 1, "days": {}})
-
-    # C. 新词忘记后隔 3 个「首次新词回答」重现；书末提前重试。
+    # C. A retry is delayed until four other first-new answers are complete.
     steps_c = [
         {"op": "next", "now": base},
         {"op": "answer", "remember": False, "now": base + 1},
@@ -1277,7 +1247,7 @@ def build_queue_fixture():
         {"op": "next", "now": base + 500},
         {"op": "answer", "remember": True, "now": base + 501},
     ]
-    run_scenario("retry_gap_and_book_end", ["a", "b", "c", "d"], {}, {},
+    run_scenario("retry_gap_and_book_end", ["a", "b", "c", "d", "e", "f"], {}, {},
                  steps_c)
 
     # D. excluded 学校词：跳过新词与复习，但保留挂起记录。
@@ -1300,7 +1270,7 @@ def build_queue_fixture():
                  {}, {"current": {"kind": "new", "key": "b"}},
                  steps_e, excluded=["b"])
 
-    # F. 损坏/旧格式 record 的容错（_count、current.w 兼容）。
+    # F. 旧计数/current.w 兼容；异常 pending 目标保持不透明，不推断为 ready。
     damaged = {
         "cursor": "-3",
         "new_count": "7",
@@ -1317,6 +1287,21 @@ def build_queue_fixture():
         {"op": "next", "now": base + 3},
     ]
     run_scenario("damaged_record", ["a", "b", "c"], {}, damaged, steps_f)
+    # Unknown targets are not made ready, nor replaced during initialization.
+
+    # Nested interruptions must keep both the held new and the retry metadata.
+    run_scenario("nested_review_retry_restore", ["a", "p", "old"],
+                 {"p": sch.on_forget(sch.new_state(), base),
+                  "old": {"st": "learning", "lv": 2, "due": base + 10, "seen": 2}},
+                 {"new_count": 5, "pending": {"p": 5},
+                  "current": {"kind": "new", "key": "a", "custom": {"new": [1]}},
+                  "policy_held": [{"kind": "retry", "key": "p", "custom": {"retry": [2]}}]},
+                 [{"op": "next", "now": base},
+                  {"op": "next", "now": base + 10},
+                  {"op": "answer", "remember": True, "now": base + 10},
+                  {"op": "next", "now": base + 10},
+                  {"op": "answer", "remember": True, "now": base + 10},
+                  {"op": "next", "now": base + 10}])
 
     # G. known 预测词：只跳过没有显式状态的词。
     steps_g = [
@@ -1360,10 +1345,8 @@ def build_queue_fixture():
     words = [{"w": "a"}, {"w": "b"}]
     states = {}
     record = {}
-    policy = learn.LearningPolicy({"mode": learn.REVIEW_FIRST,
-                                   "daily_new": 20}, {})
-    queue = StudyQueue(words, states, record, retry_gap=3, known=set(),
-                       policy=policy, excluded=set())
+    queue = StudyQueue(words, states, record, retry_gap=4, known=set(),
+                       excluded=set())
     first = queue.next(base)
     queue.answer(first, True, base + 1)
     for name, item, remember in (

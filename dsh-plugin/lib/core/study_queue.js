@@ -58,6 +58,11 @@ export function count(value, fallback = 0) {
 
 export const _count = count;
 
+function validTarget(value) {
+  // Unknown persisted values are not deadlines; never coerce them into ready 0.
+  return Number.isSafeInteger(value) && value >= 0;
+}
+
 function hasAnswer(st) {
   return pyTruthy(st) && Boolean(count(st.seen) || count(st.lapse));
 }
@@ -97,7 +102,7 @@ export class StudyQueue {
    * @param {Array<{w:string}>} words 已排好序的词条
    * @param {Record<string, object|null>} states 跨书共享状态（原地更新）
    * @param {Record<string, unknown>} record 当前词书队列记录（原地更新）
-   * @param {{retryGap?:number, known?:Set<string>|null, policy?:object|null,
+   * @param {{retryGap?:number, known?:Set<string>|null,
    *   excluded?:Set<string>|null}} [options]
    */
   constructor(words, states, record, options = {}) {
@@ -107,7 +112,7 @@ export class StudyQueue {
     const opts = isPlainObject(options) ? options : {};
     let gap;
     try {
-      gap = pyInt(opts.retryGap === undefined ? 3 : opts.retryGap);
+      gap = pyInt(opts.retryGap === undefined ? 4 : opts.retryGap);
     } catch {
       throw new TypeError('retry_gap must be an integer');
     }
@@ -121,7 +126,6 @@ export class StudyQueue {
     this.excluded = opts.excluded !== undefined && opts.excluded !== null
       ? opts.excluded
       : new Set();
-    this.policy = opts.policy === undefined ? null : opts.policy;
     // Python 只在调用方已提供 policy_held 时校验；缺失时不写入 record（保持记录形状）。
     if (hasOwn(record, 'policy_held')) {
       const policyHeld = record.policy_held;
@@ -140,9 +144,6 @@ export class StudyQueue {
     if (!hasOwn(record, 'pending')) record.pending = {};
     if (!isPlainObject(record.pending)) {
       throw new TypeError('record.pending must be a dictionary');
-    }
-    for (const key of Object.keys(record.pending)) {
-      record.pending[key] = count(record.pending[key]);
     }
     if (!hasOwn(record, 'current')) record.current = null;
     if (!hasOwn(record, 'held_current')) record.held_current = null;
@@ -260,6 +261,12 @@ export class StudyQueue {
           this.record.pending[key] = this.record.new_count;
         }
         effectiveKind = 'retry';
+        const target = this.record.pending[key];
+        if (!validTarget(target) || target > this.record.new_count) {
+          // Unknown deadlines and saved items cannot bypass the target.
+          this._parkPolicyCurrent();
+          return null;
+        }
       }
       return this._select(
         key,
@@ -278,7 +285,7 @@ export class StudyQueue {
     for (const key of Object.keys(this.record.pending)) {
       const target = this.record.pending[key];
       if (!this._indices.has(key) || membership(this.excluded, key)
-          || !sch.isNew(this.states[key])) {
+          || !validTarget(target) || !sch.isNew(this.states[key])) {
         continue;
       }
       entries.push([target, this._indices.get(key), key]);
@@ -310,13 +317,6 @@ export class StudyQueue {
     return null;
   }
 
-  _isFirstNewKey(key) {
-    const st = this.states[key];
-    return this._indices.has(key) && !membership(this.excluded, key)
-      && sch.isNew(st) && !hasAnswer(st)
-      && !hasOwn(this.record.pending, key) && !this._skipKnown(key, st);
-  }
-
   /** 额外的保存列表，避免覆盖 existing held_current 槽位。 */
   _parkPolicyCurrent() {
     const current = this.record.current;
@@ -325,6 +325,19 @@ export class StudyQueue {
       const copy = { ...current };
       if (!held.some((entry) => isDeepStrictEqual(entry, copy))) held.push(copy);
     }
+    this.record.current = null;
+  }
+
+  _holdCurrent() {
+    // Suspending another item must not overwrite an earlier interruption.
+    const current = this.record.current;
+    if (!isPlainObject(current)) return;
+    const held = this.record.held_current;
+    if (isPlainObject(held) && !isDeepStrictEqual(held, current)) {
+      const saved = this._policyHeld();
+      if (!saved.some((entry) => isDeepStrictEqual(entry, held))) saved.push({ ...held });
+    }
+    this.record.held_current = { ...current };
     this.record.current = null;
   }
 
@@ -338,7 +351,7 @@ export class StudyQueue {
       this.record.current = { ...entry };
       const current = this._reuseCurrent(now);
       if (current !== null) {
-        if (entry.kind === 'new') this.record.current.resume = true;
+        if (current.kind === 'new') this.record.current.resume = true;
         const idx = held.indexOf(entry);
         if (idx >= 0) held.splice(idx, 1);
         return current;
@@ -348,94 +361,13 @@ export class StudyQueue {
     return null;
   }
 
-  _policyNewFirst(now, current) {
-    if (current !== null && current.kind === 'new') return current;
-    const held = this.record.held_current;
-    if (isPlainObject(held) && held.kind === 'new'
-        && this._isFirstNewKey(currentKey(held))) {
-      if (current !== null) this._parkPolicyCurrent();
-      this.record.held_current = null;
-      return this._select(currentKey(held), 'new', true, held);
-    }
-    const saved = this._policyHeld(true);
-    for (const entry of [...saved]) {
-      const key = currentKey(entry);
-      if (entry.kind === 'new' && this._isFirstNewKey(key)) {
-        if (current !== null) this._parkPolicyCurrent();
-        const idx = saved.indexOf(entry);
-        if (idx >= 0) saved.splice(idx, 1);
-        return this._select(key, 'new', true, entry);
-      }
-    }
-    const candidate = this._nextNew();
-    if (candidate !== null) {
-      if (current !== null) this._parkPolicyCurrent();
-      const [key, idx] = candidate;
-      this.cursor = idx;
-      return this._select(key, 'new');
-    }
-    return null;
-  }
-
   _reviews(now) {
     return sch.reviewItems(this.words, this.states, now)
       .filter((item) => !membership(this.excluded, item.w.w));
   }
 
-  _nextDaily(now) {
-    this._syncPending();
-    let current = this._reuseCurrent(now);
-    const reviewFirstNow = this.policy.shouldReviewBeforeNew(now)
-      && this._reviews(now).length > 0;
-    if (!reviewFirstNow && this.policy.allowsNew(now)) {
-      const preferred = this._policyNewFirst(now, current);
-      if (preferred !== null) return preferred;
-    }
-    if (current !== null && current.kind === 'new' && reviewFirstNow) {
-      this._parkPolicyCurrent();
-      current = null;
-    }
-    if (current !== null && current.kind === 'review') return current;
-    const reviews = this._reviews(now);
-    if (reviews.length) {
-      if (current !== null) this._parkPolicyCurrent();
-      return this._select(reviews[0].w.w, 'review');
-    }
-    if (current !== null) return current;
-    const held = this.record.held_current;
-    if (held !== null && held !== undefined) {
-      this.record.current = { ...held };
-      current = this._reuseCurrent(now);
-      if (current !== null) {
-        this.record.held_current = null;
-        return current;
-      }
-    }
-    current = this._takePolicyHeld(now);
-    if (current !== null) return current;
-    const pending = this._pendingOrder();
-    if (pending.length && pending[0][0] <= this.record.new_count) {
-      if (this.policy.remaining(now) <= 0) return this._select(pending[0][2], 'retry');
-    }
-    const candidate = this._nextNew();
-    if (candidate !== null) {
-      const [key, idx] = candidate;
-      this.cursor = idx;
-      return this._select(key, 'new');
-    }
-    this.cursor = this.words.length;
-    if (pending.length) {
-      const lastIdxRaw = this.record.last_retry;
-      const lastIdx = this._indices.has(lastIdxRaw) ? this._indices.get(lastIdxRaw) : -1;
-      const byIdx = pending.slice().sort((left, right) => left[1] - right[1]);
-      const next = byIdx.find((entry) => entry[1] > lastIdx) || byIdx[0];
-      return this._select(next[2], 'retry');
-    }
-    return null;
-  }
-
   /**
-   * 取一题并保存 current；默认到期旧词优先，可每日N首次新词优先。
+   * 取一题并保存 current；到期旧词优先，新词重试严格按计数间隔。
    * @param {number|null} [now]
    */
   next(now = null) {
@@ -447,9 +379,6 @@ export class StudyQueue {
       if (!saved.some((entry) => isDeepStrictEqual(entry, held))) saved.push({ ...held });
       this.record.held_current = null;
     }
-    if (this.policy !== null && this.policy !== undefined && this.policy.dailyNewFirst) {
-      return this._nextDaily(time);
-    }
     this._syncPending();
     let current = this._reuseCurrent(time);
     if (current !== null && current.kind === 'review') return current;
@@ -459,11 +388,18 @@ export class StudyQueue {
       if (current !== null) {
         // next/startup 会优先复习；不前移 cursor、不增加 new_count，
         // 挂起的 new/retry 在所有到期旧词答完后继续原题。
-        this.record.held_current = { ...this.record.current };
+        this._holdCurrent();
       }
       return this._select(reviews[0].w.w, 'review');
     }
 
+    if (current !== null && current.kind === 'retry') return current;
+    // Ready retries also beat saved fresh items; suspend rather than lose them.
+    const pending = this._pendingOrder();
+    if (pending.length && pending[0][0] <= this.record.new_count) {
+      if (current !== null) this._holdCurrent();
+      return this._select(pending[0][2], 'retry');
+    }
     if (current !== null) return current;
     const heldCurrent = this.record.held_current;
     this.record.held_current = null;
@@ -472,16 +408,9 @@ export class StudyQueue {
       current = this._reuseCurrent(time);
       if (current !== null) return current;
     }
-    // 没有每日策略时也恢复被暂停的学校词。
+    // A restored school-new item cannot delay an already eligible retry.
     current = this._takePolicyHeld(time);
     if (current !== null) return current;
-
-    const pending = this._pendingOrder();
-    if (pending.length && pending[0][0] <= this.record.new_count
-        && (this.policy === null || this.policy === undefined
-          || this.policy.remaining(time) <= 0)) {
-      return this._select(pending[0][2], 'retry');
-    }
 
     const candidate = this._nextNew();
     if (candidate !== null) {
@@ -491,14 +420,6 @@ export class StudyQueue {
     }
 
     this.cursor = this.words.length;
-    if (pending.length) {
-      // 书末没有首次新词可让计数前进；提前重试按词书轮转。
-      const lastIdxRaw = this.record.last_retry;
-      const lastIdx = this._indices.has(lastIdxRaw) ? this._indices.get(lastIdxRaw) : -1;
-      const byIdx = pending.slice().sort((left, right) => left[1] - right[1]);
-      const next = byIdx.find((entry) => entry[1] > lastIdx) || byIdx[0];
-      return this._select(next[2], 'retry');
-    }
     return null;
   }
 
@@ -508,9 +429,8 @@ export class StudyQueue {
    * @param {{kind:string, w:{w:string}}} item
    * @param {boolean} remember
    * @param {number|null} [now]
-   * @param {number|null} [introducedAt]
    */
-  answer(item, remember, now = null, introducedAt = null) {
+  answer(item, remember, now = null) {
     const time = nowValue(now);
     if (!isPlainObject(item) || !isPlainObject(item.w)) {
       throw new TypeError('answer 需要 next() 返回的 item');
@@ -529,11 +449,6 @@ export class StudyQueue {
       && !hasOwn(this.record.pending, key);
     if (!pyTruthy(before)) before = sch.newState(time);
     const after = remember ? sch.onRemember(before, time) : sch.onForget(before, time);
-    if (firstNew && this.policy !== null && this.policy !== undefined) {
-      this.policy.introduceNew(key, introducedAt === null || introducedAt === undefined
-        ? time
-        : introducedAt);
-    }
     this.states[key] = after;
 
     if (firstNew) this.record.new_count += 1;

@@ -169,7 +169,7 @@ function stateSnapshot(engine) {
   const p = engine.doc.progress;
   return {
     states: JSON.stringify(p.states),
-    ledger: JSON.stringify(p.daily_new_ledger || null),
+    legacyData: JSON.stringify({ learning_policy: p.learning_policy, daily_new_ledger: p.daily_new_ledger }),
     history: JSON.stringify(p.history || null),
     quizSession: JSON.stringify(p.quiz_session || null),
   };
@@ -178,7 +178,7 @@ function stateSnapshot(engine) {
 function assertSnapshotUnchanged(engine, snapshot, label = '') {
   const now = stateSnapshot(engine);
   assert.equal(now.states, snapshot.states, `${label} 不得判定 states`);
-  assert.equal(now.ledger, snapshot.ledger, `${label} 不得改学习账本`);
+  assert.equal(now.legacyData, snapshot.legacyData, `${label} 不得改动未知的旧策略数据`);
   assert.equal(now.history, snapshot.history, `${label} 不得改测评历史`);
   assert.equal(now.quizSession, snapshot.quizSession, `${label} 不得改测评会话`);
 }
@@ -417,9 +417,11 @@ test('首次引导 → 选书 → 刷词 20 步，进度落盘且 revision 递�
     }
     const persisted = readStorage(sandbox.storageFile);
     assert.equal(persisted.revision, engine.revision);
-    assert.equal(Object.keys(persisted.progress.states).length, 20);
+    const firstNewCount = persisted.progress.study_records['tb-1'].new_count;
+    assert.equal(firstNewCount, 17, '20 answers contain 17 first-new and three retry answers');
+    assert.equal(Object.keys(persisted.progress.states).length, firstNewCount);
     assert.equal(persisted.progress.study_mode, 'brush');
-    assert.equal(persisted.progress.study_records['tb-1'].cursor, 20);
+    assert.equal(persisted.progress.study_records['tb-1'].cursor, firstNewCount);
     const learnedKeys = Object.keys(persisted.progress.states);
     assert.equal(
       JSON.stringify(learnedKeys),
@@ -706,8 +708,9 @@ test('选择题无题跳过：ready retry 跳过后保留 pending 元数据，�
     const target = sandbox.synthetic.words[0];
     const p = engine.doc.progress;
     const book = p.book;
+    const freshCandidate = sandbox.synthetic.words[1];
     for (const word of sandbox.synthetic.words) {
-      if (word === target) continue;
+      if (word === target || word === freshCandidate) continue;
       p.states[word] = {
         st: 'mastered', lv: 10, due: null, seen: 5, lapse: 0, streak: 0,
       };
@@ -719,6 +722,7 @@ test('选择题无题跳过：ready retry 跳过后保留 pending 元数据，�
     delete record.policy_held;
     record.pending = { ...(record.pending || {}), [target]: Number(record.new_count) || 0 };
     record.cursor = sandbox.synthetic.words.length;
+    record.new_count = 4;
     await act(engine, 'settings');
     await act(engine, 'studyMode', { key: 'choice' });
     failChoiceBuildFor(engine, [target]);
@@ -947,7 +951,7 @@ test('设置：主题/学校/词书保留；0.1.5 版本默认迷你且无窗口
     assert.equal(settings.screen, 'settings');
     assert.equal(settings.windowSize, 'mini');
     assert.deepEqual(settings.windowPresets, [{ key: 'mini', label: '迷你', width: 400, height: 400 }]);
-    assert.equal(settings.version, '0.1.10');
+    assert.equal(settings.version, '0.1.11');
     assert.equal(settings.version, JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url))).version);
     assert.equal(engine.doc.progress.app_version, '1.4.3-dsh');
     assert.equal(settings.themeOptions.length, 4);
@@ -2578,7 +2582,7 @@ test('Host v0.1.3: 已保存new/retry队列升级保留due/未知字段，到期
           lv: 0, st: 'new', due: null, seen: 2, lapse: 2, streak: 2,
         };
         engine.doc.progress.study_records['tb-1'] = {
-          cursor: 1, new_count: 13, pending: kind === 'retry' ? { [current]: 15 } : {},
+          cursor: 1, new_count: 13, pending: kind === 'retry' ? { [current]: 13 } : {},
           current: { kind, key: current, future: { unanswered: kind } },
           held_current: null, last_retry: null,
         };
@@ -2742,7 +2746,7 @@ test('Host v0.1.3: empty到期GET只读，正常POST next才唤醒并多轮五�
 
 // Windows V1.4.3 correction report: exercise DSH's real Engine actions,
 // synthetic records and injected clocks (never a live profile or learning file).
-test('DSH 0.1.10: 首次新词认识后correct仍是新词，按队列重现/重启且跨日只记一次', async (t) => {
+test('DSH 0.1.11: 首次新词认识后correct仍是新词，跨日答四个首次新词后重现/重启', async (t) => {
   await withClockedEngine(t, async (first, sandbox, clock, reopen) => {
     let engine = first;
     clock.now = new Date(2024, 0, 15, 23, 59, 50).getTime() / 1000;
@@ -2764,26 +2768,23 @@ test('DSH 0.1.10: 首次新词认识后correct仍是新词，按队列重现/重
     const frozenSnapshot = structuredClone(snapshot);
     assert.deepEqual(snapshot.states, before.states, 'snapshot contains pre-answer states, not the upgraded lv1 state');
     assert.deepEqual(snapshot.record, before.study_records['tb-1']);
-    assert.deepEqual(snapshot.ledger, before.daily_new_ledger);
     assert.notStrictEqual(snapshot.states, engine.doc.progress.states);
     assert.notStrictEqual(snapshot.record.pending, engine.doc.progress.study_records['tb-1'].pending);
-    assert.notStrictEqual(snapshot.ledger.days, engine.doc.progress.daily_new_ledger.days);
+    assert.deepEqual(engine.doc.progress.daily_new_ledger, before.daily_new_ledger, 'first-new queue answers preserve the stored ledger');
     const introducedLedger = structuredClone(engine.doc.progress.daily_new_ledger);
-    assert.deepEqual(introducedLedger.days['2024-01-15'], [key]);
     assert.equal(engine.doc.progress.study_records['tb-1'].new_count, 1);
     assert.equal(Object.hasOwn(engine.doc.progress.study_records['tb-1'].pending, key), false);
 
-    clock.now += 20; // Correct after local midnight; preserve the original introduction day.
+    clock.now += 20; // Correct after local midnight; the new-word count is not day-scoped.
     const corrected = await act(engine, 'correct');
     assert.equal(corrected.ok, true, corrected.message);
     const correctedState = { lv: 0, due: null, seen: 1, lapse: 1, streak: 1, st: 'new' };
     assert.deepEqual(engine.doc.progress.states[key], correctedState, 'correct replaces remember with forget from the pre-answer lv0 state');
     assert.deepEqual(snapshot, frozenSnapshot, 'answer/correct/next must not mutate the saved pre-answer snapshot');
     assert.deepEqual(engine.doc.progress.daily_new_ledger, introducedLedger);
-    assert.equal(Object.hasOwn(engine.doc.progress.daily_new_ledger.days, '2024-01-16'), false);
     let record = engine.doc.progress.study_records['tb-1'];
     assert.equal(record.new_count, 1, 'correction must count the first introduction exactly once');
-    assert.equal(record.pending[key], 4, 'lv0 retry is scheduled after three other first-new answers');
+    assert.equal(record.pending[key], 5, 'lv0 retry is scheduled after four other first-new answers');
     assert.equal(record.cursor, 1);
     assert.equal(engine.view().screen, 'front');
     assert.equal(engine.view().word.w, others[0], 'correct advances immediately, without showing the next meaning');
@@ -2796,10 +2797,8 @@ test('DSH 0.1.10: 首次新词认识后correct仍是新词，按队列重现/重
     assert.equal((await act(engine, 'correct')).ok, true);
     assertClockedUnchanged(engine, sandbox, afterCorrect);
 
-    // The saved retry target is three first-new answers away, but the existing
-    // default policy also waits until today's 20-word allowance is used. Exercise
-    // that real scheduling path instead of stubbing StudyQueue or forcing next.
-    const intervening = others.slice(0, 20);
+    // Retry eligibility counts first-new answers across natural days; there is no daily-new cap.
+    const intervening = others.slice(0, 4);
     for (const word of intervening) {
       assert.equal(engine.view().word.w, word, 'only an actual first-new answer advances the retry gap');
       assert.equal(engine.view().kind, 'new');
@@ -2807,15 +2806,15 @@ test('DSH 0.1.10: 首次新词认识后correct仍是新词，按队列重现/重
       await answerAndNext(engine);
     }
     record = engine.doc.progress.study_records['tb-1'];
-    assert.equal(record.new_count, 21);
-    assert.equal(record.pending[key], 4);
+    assert.equal(record.new_count, 5);
+    assert.equal(record.pending[key], 5);
     assert.equal(engine.view().word.w, key);
     assert.equal(engine.view().kind, 'retry');
     assert.equal(engine.view().studyStatus, '新词', 'a corrected first-new word is 新词 on reappearance, never 复习');
     assert.equal(engine.view().due, null);
     assert.deepEqual(engine.doc.progress.states[key], correctedState);
-    assert.deepEqual(engine.doc.progress.daily_new_ledger.days['2024-01-15'], [key]);
-    assert.deepEqual(engine.doc.progress.daily_new_ledger.days['2024-01-16'], intervening);
+    assert.deepEqual(engine.doc.progress.daily_new_ledger, introducedLedger);
+    assert.equal(engine.doc.progress.daily_new_ledger, undefined, 'active queue no longer creates a daily ledger');
     const persisted = structuredClone(engine.doc.progress);
     await engine.close();
     engine = await reopen();
@@ -2830,7 +2829,7 @@ test('DSH 0.1.10: 首次新词认识后correct仍是新词，按队列重现/重
   });
 });
 
-test('DSH 0.1.10: 已重现新词认识后correct深拷贝恢复lv0，无其它新词可立即再现且不重计账本', async (t) => {
+test('DSH 0.1.11: 已重现新词correct恢复lv0，书末不足四个首次新词则等待且保留旧账本', async (t) => {
   await withClockedEngine(t, async (first, sandbox, clock, reopen) => {
     let engine = first;
     clock.now = new Date(2024, 0, 16, 12, 0, 0).getTime() / 1000;
@@ -2867,10 +2866,9 @@ test('DSH 0.1.10: 已重现新词认识后correct深拷贝恢复lv0，无其它�
     const frozenSnapshot = structuredClone(snapshot);
     assert.deepEqual(snapshot.states[key], original);
     assert.deepEqual(snapshot.record, beforeRecord);
-    assert.deepEqual(snapshot.ledger, ledger);
     assert.notStrictEqual(snapshot.states[key].future, engine.doc.progress.states[key].future, 'even nested fields are independent of the upgraded answer');
     assert.notStrictEqual(snapshot.record.future, engine.doc.progress.study_records['tb-1'].future);
-    assert.notStrictEqual(snapshot.ledger.days, engine.doc.progress.daily_new_ledger.days);
+    assert.deepEqual(engine.doc.progress.daily_new_ledger, ledger, 'ledger remains preserved during retry correction');
     clock.now += 23;
     const corrected = await act(engine, 'correct');
     assert.equal(corrected.ok, true, corrected.message);
@@ -2880,27 +2878,22 @@ test('DSH 0.1.10: 已重现新词认识后correct深拷贝恢复lv0，无其它�
     assert.deepEqual(engine.doc.progress.daily_new_ledger, ledger, 'retry correction must not add a first-new ledger entry');
     const record = engine.doc.progress.study_records['tb-1'];
     assert.equal(record.new_count, 13);
-    assert.equal(record.pending[key], 16);
+    assert.equal(record.pending[key], 17);
     assert.equal(record.cursor, WORD_COUNT);
     assert.equal(record.last_retry, key);
     assert.deepEqual(record.future, beforeRecord.future);
-    assert.equal(engine.view().screen, 'front');
-    assert.equal(engine.view().word.w, key, 'book-end fallback allows a retry when there are no other new words');
-    assert.equal(engine.view().kind, 'retry');
-    assert.equal(engine.view().studyStatus, '新词');
+    assert.equal(engine.view().screen, 'empty', 'book end waits until the four-answer retry threshold');
+    assert.equal(engine.doc.progress.study_records['tb-1'].current, null);
     assert.equal(engine.view().due, null);
-    assert.equal(engine.view().revealed, false);
     assert.deepEqual(readStorage(sandbox.storageFile).progress, engine.doc.progress);
     const persisted = structuredClone(engine.doc.progress);
     await engine.close();
     clock.now += 600;
     engine = await reopen();
-    assert.equal(engine.view().word.w, key);
-    assert.equal(engine.view().kind, 'retry');
-    assert.equal(engine.view().studyStatus, '新词', 'elapsed time cannot schedule a lv0/no-due word as review');
-    assert.equal(engine.view().due, null);
+    assert.equal(engine.view().screen, 'empty', 'elapsed time alone cannot satisfy the answer-count interval');
+    assert.equal(engine.doc.progress.study_records['tb-1'].current, null);
     assert.deepEqual(engine.doc.progress, persisted);
-    assert.equal((await clockedGet(engine, sandbox)).view.studyStatus, '新词');
+    assert.equal((await clockedGet(engine, sandbox)).view.screen, 'empty');
   });
 });
 

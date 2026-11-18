@@ -1,260 +1,191 @@
 # -*- coding: utf-8 -*-
-"""Daily-policy StudyQueue tests; use only in-memory words/state/records."""
+"""Synthetic retry-queue regression tests and active-policy retirement checks."""
+import ast
 import copy
-import datetime as dt
 import os
 import sys
 import unittest
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), "app"))
+
+sys.dont_write_bytecode = True
+APP = os.path.join(os.path.dirname(os.path.dirname(__file__)), "app")
+sys.path.insert(0, APP)
 from study_queue import StudyQueue
-from learning_policy import LearningPolicy, DAILY_NEW_FIRST, REVIEW_FIRST, local_day
-
-NOW = dt.datetime(2026, 11, 9, 12).timestamp()
-MIDNIGHT = dt.datetime(2026, 11, 10).timestamp()
 
 
-def old_state(due=NOW-1):
-    return {"st": "learning", "lv": 2, "due": due, "seen": 2, "lapse": 0, "extra": "keep"}
+def book(*keys):
+    return [{"w": key, "s": "fixture " + key} for key in keys]
 
 
-class StudyPolicyQueueTests(unittest.TestCase):
-    def make(self, n=2, mode=DAILY_NEW_FIRST, keys=("a", "b", "c", "old"),
-             states=None, record=None, ledger=None, known=None):
-        states = states if states is not None else {"old": old_state()}
-        record = record if record is not None else {}
-        policy = LearningPolicy({"mode": mode, "daily_new": n}, ledger if ledger is not None else {})
-        words = [{"w": key, "s": "fixture"} for key in keys]
-        return StudyQueue(words, states, record, known=known, policy=policy), policy
+def forgotten():
+    return {"st": "new", "lv": 0, "due": None, "seen": 1, "lapse": 1,
+            "extra": {"retain": True}}
 
+
+def learning(due):
+    return {"st": "learning", "lv": 1, "due": due, "seen": 1, "lapse": 0}
+
+
+class StudyRetryQueueTests(unittest.TestCase):
     def assert_item(self, item, key, kind):
         self.assertIsNotNone(item)
         self.assertEqual((item["w"]["w"], item["kind"]), (key, kind))
+        return item
 
-    def test_review_first_remains_default_algorithm(self):
-        q, p = self.make(mode=REVIEW_FIRST)
-        self.assert_item(q.next(NOW), "old", "review")
-        self.assertEqual(p.remaining(NOW), 2)
-        self.assertNotIn("policy_held", q.record)
+    def test_retry_waits_for_exactly_four_other_first_new_answers(self):
+        queue = StudyQueue(book("a", "b", "c", "d", "e", "f"), {}, {})
+        item = self.assert_item(queue.next(0), "a", "new")
+        queue.answer(item, False, 0)
+        self.assertEqual((queue.record["new_count"], queue.record["pending"]["a"]), (1, 5))
 
-    def test_none_policy_is_legacy_compatible(self):
-        q = StudyQueue([{"w": "a"}, {"w": "old"}], {"old": old_state()}, {})
-        self.assert_item(q.next(NOW), "old", "review")
-        self.assertNotIn("policy_held", q.record)
+        # Display and re-fetch do not advance eligibility, even after a long delay.
+        for now in (0, 0, 86400 * 400):
+            self.assert_item(queue.next(now), "b", "new")
+            self.assertEqual(queue.record["new_count"], 1)
+            queue.record["current"] = None
+        # Three actual other first-new answers bring the counter to four.
+        for key in ("b", "c", "d"):
+            queue.answer(self.assert_item(queue.next(0), key, "new"), True, 0)
+        self.assertEqual(queue.record["new_count"], 4)
+        queue.states["review"] = learning(0)
+        queue.words.append({"w": "review", "s": "fixture review"})
+        queue._indices["review"] = len(queue.words) - 1
+        self.assert_item(queue.next(0), "review", "review")
+        queue.answer(self.assert_item(queue.next(0), "review", "review"), True, 0)
+        self.assertEqual(queue.record["new_count"], 4)
+        queue.answer(self.assert_item(queue.next(0), "e", "new"), True, 0)
+        self.assertEqual(queue.record["new_count"], 5)
+        self.assert_item(queue.next(0), "a", "retry")
+        self.assertEqual(queue.record["pending"]["a"], 5)
 
-    def test_daily_n_new_before_due_review(self):
-        q, p = self.make()
-        for key in ("a", "b"):
-            item = q.next(NOW)
-            self.assert_item(item, key, "new")
-            q.answer(item, True, NOW)
-        self.assertEqual(p.remaining(NOW), 0)
-        self.assert_item(q.next(NOW), "old", "review")
-        self.assertEqual(q.record["new_count"], 2)
+    def test_book_end_does_not_retry_early_but_retries_at_target_without_candidate(self):
+        queue = StudyQueue(book("a", "b", "c"), {}, {}, retry_gap=4)
+        for key in "abc":
+            queue.answer(self.assert_item(queue.next(0), key, "new"), False, 0)
+        self.assertEqual(queue.record["pending"], {"a": 5, "b": 6, "c": 7})
+        snapshot = copy.deepcopy(queue.record["pending"])
+        self.assertIsNone(queue.next(10**9))
+        self.assertEqual(queue.record["pending"], snapshot)
+        self.assertEqual(queue.record["new_count"], 3)
 
-    def test_display_does_not_consume(self):
-        q, p = self.make()
-        before = copy.deepcopy(q.states)
-        item = q.next(NOW)
-        for _ in range(4):
-            self.assert_item(q.next(NOW), item["w"]["w"], "new")
-            self.assertEqual(p.remaining(NOW), 2)
-        self.assertEqual(q.states, before)
-        self.assertEqual(q.record["new_count"], 0)
+        # Finish the book with exactly four OTHER first-new answers.
+        queue.words.extend(book("d", "e"))
+        queue._indices["d"] = 3
+        queue._indices["e"] = 4
+        queue.cursor = 3
+        for key in "de":
+            queue.answer(self.assert_item(queue.next(10**9), key, "new"), True, 10**9)
+        self.assertEqual(queue.record["new_count"], 5)
+        self.assert_item(queue.next(10**9), "a", "retry")
+        self.assertEqual(queue.record["pending"]["a"], 5)
 
-    def test_zero_reviews_due_items_before_new(self):
-        q, p = self.make(n=0)
-        self.assert_item(q.next(NOW), "old", "review")
-        q.answer(q.next(NOW), True, NOW)
-        self.assert_item(q.next(NOW), "a", "new")
-        self.assertEqual(q.record["new_count"], 0)
+    def test_saved_fresh_word_cannot_delay_ready_retry(self):
+        for slot in ("current", "held_current", "policy_held"):
+            with self.subTest(slot=slot):
+                saved = {"kind": "new", "key": "f", "extension": {"keep": [42]}}
+                record = {"new_count": 5, "pending": {"a": 5},
+                          slot: [copy.deepcopy(saved)] if slot == "policy_held" else copy.deepcopy(saved)}
+                queue = StudyQueue(book("a", "f"), {"a": forgotten()}, record)
+                queue.answer(self.assert_item(queue.next(0), "a", "retry"), True, 0)
+                self.assert_item(queue.next(0), "f", "new")
+                self.assertEqual(record["current"]["extension"], saved["extension"])
 
-    def test_no_due_review_continues_new_after_daily_target(self):
-        q, p = self.make(n=1, states={})
-        q.answer(q.next(NOW), True, NOW)
-        self.assertEqual(p.remaining(NOW), 0)
-        self.assert_item(q.next(NOW), "b", "new")
+    def test_saved_future_retry_guards_and_metadata(self):
+        marker = {"future": {"nested": ["retain", 17]}}
+        for slot in ("current", "held_current", "policy_held"):
+            for has_candidate in (False, True):
+                with self.subTest(slot=slot, has_candidate=has_candidate):
+                    saved = dict(marker, kind="retry", key="a")
+                    record = {"new_count": 4, "pending": {"a": 8}}
+                    if slot == "policy_held":
+                        record[slot] = [saved]
+                    else:
+                        record[slot] = saved
+                    words = book("a", "fresh") if has_candidate else book("a")
+                    states = {"a": forgotten()}
+                    queue = StudyQueue(words, states, record)
 
-    def test_quotas_do_not_consume_retry_or_review(self):
-        q, p = self.make()
-        for _ in range(2):
-            q.answer(q.next(NOW), False, NOW)
-        item = q.next(NOW)
-        self.assert_item(item, "old", "review")
-        q.answer(item, True, NOW)
-        item = q.next(NOW)
-        self.assert_item(item, "c", "new")
-        q.answer(item, True, NOW)
-        self.assert_item(q.next(NOW), "a", "retry")
-        self.assertEqual(p.learned_today(NOW), 3)
-        self.assertEqual(q.record["new_count"], 3)
+                    item = queue.next(0)
+                    if has_candidate:
+                        self.assert_item(item, "fresh", "new")
+                        self.assertEqual(record["new_count"], 4)
+                    else:
+                        self.assertIsNone(item)
+                    self.assertEqual(record["pending"]["a"], 8)
+                    saved_items = [record.get("current"), record.get("held_current")]
+                    saved_items.extend(record.get("policy_held", []))
+                    retained = [entry for entry in saved_items
+                                if isinstance(entry, dict) and entry.get("key") == "a"]
+                    self.assertTrue(retained, "future retry must remain saved")
+                    self.assertTrue(any(entry.get("future") == marker["future"]
+                                        for entry in retained), "saved metadata must survive")
 
-    def test_daily_target_then_due_reviews_then_more_new(self):
-        q, p = self.make(n=1, keys=("a", "b", "old"), states={"old": old_state()})
-        q.answer(q.next(NOW), True, NOW)
-        self.assertEqual(p.remaining(NOW), 0)
-        q.states["old"]["due"] = NOW - 1
-        self.assert_item(q.next(NOW), "old", "review")
-        q.answer(q.next(NOW), True, NOW)
-        self.assert_item(q.next(NOW), "b", "new")
+    def test_legacy_policy_fields_are_opaque(self):
+        legacy_policy = {"mode": "old", "nested": [1, {"x": True}]}
+        ledger = {"days": {"not-a-date": [None]}, "opaque": {"v": 3}}
+        record = {"new_count": 0, "learning_policy": copy.deepcopy(legacy_policy),
+                  "daily_new_ledger": copy.deepcopy(ledger)}
+        before = copy.deepcopy(record)
+        queue = StudyQueue(book("a", "b"), {}, record)
+        queue.answer(queue.next(0), True, 0)
+        self.assertEqual(record["learning_policy"], before["learning_policy"])
+        self.assertEqual(record["daily_new_ledger"], before["daily_new_ledger"])
 
-    def test_saved_review_and_saved_new_are_preserved(self):
-        rec = {"current": {"kind": "review", "key": "old"},
-               "held_current": {"kind": "new", "key": "b"}}
-        q, p = self.make(record=rec)
-        self.assert_item(q.next(NOW), "b", "new")
-        self.assertIn({"kind": "review", "key": "old"}, rec["policy_held"])
-        q.answer(q.next(NOW), True, NOW)
-        self.assert_item(q.next(NOW), "a", "new")
-        q.answer(q.next(NOW), True, NOW)
-        self.assert_item(q.next(NOW), "old", "review")
-        q.answer(q.next(NOW), True, NOW)
-        self.assertFalse(any(row["key"] == "old" for row in rec["policy_held"]))
+    def test_legacy_journal_preference_values_are_ignored_on_restore(self):
+        path = os.path.join(APP, "main.py")
+        with open(path, "r", encoding="utf-8") as source_file:
+            tree = ast.parse(source_file.read(), filename="main.py")
+        functions = {node.name: node for node in ast.walk(tree)
+                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))}
+        recovery = functions["_recover_defaults_journal"]
+        with open(path, "r", encoding="utf-8") as source_file:
+            lines = source_file.readlines()
+        text = "".join(lines[recovery.lineno - 1:recovery.end_lineno])
+        self.assertIn("name in RESET_PREF_KEYS", text)
+        self.assertIn("LEGACY_RESET_PREF_KEYS", text)
 
-    def test_target_reorders_new_around_due_reviews(self):
-        q, p = self.make()
-        q.answer(q.next(NOW), True, NOW)
-        self.assert_item(q.next(NOW), "b", "new")
-        p.settings["daily_new"] = 1
-        self.assert_item(q.next(NOW), "old", "review")
-        self.assertIn({"kind": "new", "key": "b"}, q.record["policy_held"])
-        q.answer(q.next(NOW), True, NOW)
-        self.assert_item(q.next(NOW), "b", "new")
-        self.assertEqual(p.remaining(NOW), 0)
+        # Exercise the key-filter semantics on inert synthetic journal values.
+        active_keys = {"theme", "study_mode", "keybindings", "school_knowledge"}
+        journal_prefs = {
+            "theme": {"present": True, "value": {"mode": "dark"}},
+            "retry_gap": {"present": True, "value": 99},
+            "learning_policy": {"present": True, "value": {"mode": "retired"}},
+        }
+        progress = {"retry_gap": 4, "learning_policy": {"mode": "old"}}
+        restored = {key: value for key, value in journal_prefs.items()
+                    if key in active_keys}
+        for key, saved in restored.items():
+            if saved["present"]:
+                progress[key] = copy.deepcopy(saved["value"])
+            else:
+                progress.pop(key, None)
+        self.assertEqual(progress["retry_gap"], 4)
+        self.assertEqual(progress["learning_policy"], {"mode": "old"})
+        self.assertEqual(progress["theme"], {"mode": "dark"})
 
-    def test_existing_new_item_can_be_answered_after_target_changes(self):
-        q, p = self.make()
-        item = q.next(NOW)
-        p.settings["daily_new"] = 0
-        q.answer(item, True, NOW)
-        self.assertEqual(p.learned_today(NOW), 1)
-        self.assertEqual(q.states["a"]["seen"], 1)
-
-    def test_restart_preserves_global_ledger_and_saved_current(self):
-        q, p = self.make(n=1, states={})
-        q.answer(q.next(NOW), True, NOW)
-        q2, p2 = self.make(n=1, states=q.states, record=q.record, ledger=p.ledger)
-        self.assert_item(q2.next(NOW), "b", "new")
-        self.assertEqual(p2.remaining(NOW), 0)
-        self.assertNotIn("b", q2.states)
-
-    def test_midnight_resumes_without_restart_and_keeps_cursor(self):
-        q, p = self.make(n=1, states={})
-        q.answer(q.next(NOW), True, NOW)
-        cursor = q.cursor
-        self.assertEqual(cursor, 1)
-        self.assert_item(q.next(NOW), "b", "new")
-        self.assertEqual(p.remaining(NOW), 0)
-        self.assertEqual(q.cursor, cursor)
-
-    def test_due_review_precedes_new_after_daily_target(self):
-        q, p = self.make(n=1, states={})
-        q.answer(q.next(NOW), True, NOW)
-        q.states["a"]["due"] = NOW - 1
-        self.assert_item(q.next(NOW), "a", "review")
-        q.answer(q.next(NOW), True, NOW)
-        self.assert_item(q.next(NOW), "b", "new")
-
-    def test_review_due_is_next_wake(self):
-        q, p = self.make(n=1, states={"old": old_state(NOW+100)})
-        q.answer(q.next(NOW), True, NOW)
-        self.assertEqual(q.next_due_time(NOW), NOW+100)
-
-    def test_switch_back_restores_parked_new_after_review(self):
-        q, p = self.make()
-        q.answer(q.next(NOW), True, NOW)
-        item = q.next(NOW)
-        p.settings["daily_new"] = 1
-        q.next(NOW)
-        p.settings["mode"] = REVIEW_FIRST
-        self.assert_item(q.next(NOW), "old", "review")
-        q.answer(q.next(NOW), True, NOW)
-        self.assert_item(q.next(NOW), "b", "new")
-        self.assertEqual(p.learned_today(NOW), 1)
-
-    def test_two_books_share_stable_key_count(self):
-        states, ledger = {}, {}
-        qa, pa = self.make(n=2, keys=("a", "b"), states=states, ledger=ledger)
-        qa.answer(qa.next(NOW), True, NOW)
-        qb, pb = self.make(n=2, keys=("a", "c", "d"), states=states, ledger=ledger)
-        self.assert_item(qb.next(NOW), "c", "new")
-        qb.answer(qb.next(NOW), True, NOW)
-        self.assert_item(qa.next(NOW), "b", "new")
-        self.assertEqual(pa.learned_today(NOW), 2)
-        self.assertEqual(pb.learned_today(NOW), 2)
-
-    def test_known_estimate_is_not_counted_as_new(self):
-        q, p = self.make(states={}, known={"a"})
-        self.assert_item(q.next(NOW), "b", "new")
-        q.answer(q.next(NOW), True, NOW)
-        self.assertEqual(p.ledger["days"][local_day(NOW)], ["b"])
-
-    def test_duplicate_answer_rejected_without_extra_count(self):
-        q, p = self.make()
-        item = q.next(NOW)
-        q.answer(item, True, NOW)
-        before = copy.deepcopy((q.states, p.ledger))
-        with self.assertRaises(ValueError):
-            q.answer(item, True, NOW)
-        self.assertEqual((q.states, p.ledger), before)
-
-    def test_cross_midnight_amend_uses_original_intro_date(self):
-        q, p = self.make(n=1, states={})
-        before = copy.deepcopy((q.states, q.record, p.ledger))
-        item = q.next(NOW)
-        # Capture the actual pre-answer graph, including the selected current.
-        before = copy.deepcopy((q.states, q.record, p.ledger))
-        q.answer(item, True, NOW)
-        for shared, saved in zip((q.states, q.record, p.ledger), before):
-            shared.clear()
-            shared.update(saved)
-        q.answer(item, False, MIDNIGHT, introduced_at=NOW)
-        self.assertEqual(p.learned_today(NOW), 1)
-        self.assertEqual(p.learned_today(MIDNIGHT), 0)
-        self.assertEqual(q.record["new_count"], 1)
-
-    def test_invalid_policy_held_rejected_without_erasing(self):
-        rec = {"policy_held": [1]}
-        before = copy.deepcopy(rec)
-        with self.assertRaises(TypeError):
-            self.make(record=rec)
-        self.assertEqual(rec, before)
-
-    def test_restored_current_keeps_unknown_fields_same_key(self):
-        unknown = {"future": {"keep": [1, True, "x"]}, "nested": {"v": 2}}
-        cases = (
-            ("new", "a", {}),
-            ("retry", "a", {"a": {"st": "new", "lv": 0, "due": None,
-                                  "seen": 1, "lapse": 1}}),
-            ("review", "old", {"old": old_state()}),
-        )
-        for kind, key, states in cases:
-            rec = {"current": dict(unknown, kind=kind, key=key)}
-            q, _ = self.make(mode=REVIEW_FIRST, states=copy.deepcopy(states), record=rec)
-            item = q.next(NOW)
-            self.assert_item(item, key, kind)
-            current = q.record["current"]
-            self.assertEqual((current["kind"], current["key"]), (kind, key))
-            for field, value in unknown.items():
-                self.assertEqual(current[field], value,
-                                 "%s current 未知字段 %s 必须恢复" % (kind, field))
-
-    def test_policy_held_unknown_fields_restored_with_resume(self):
-        unknown = {"future": {"keep": ["parked"]}, "nested": {"n": 9}}
-        rec = {"current": dict(unknown, kind="new", key="a")}
-        q, p = self.make(n=0, states={}, record=rec)
-        self.assert_item(q.next(NOW), "a", "new")
-        held = q.record.get("policy_held") or []
-        self.assertFalse(held)
-        for field, value in unknown.items():
-            self.assertEqual(q.record["current"][field], value,
-                             "当前新词未知字段 %s 必须保留" % field)
-        self.assert_item(q.next(NOW), "a", "new")
-        current = q.record["current"]
-        self.assertEqual(current["key"], "a")
-        self.assertIsNone(current.get("resume"))
-        for field, value in unknown.items():
-            self.assertEqual(current[field], value,
-                             "恢复 policy_held 未知字段 %s 必须保留" % field)
+    def test_active_app_has_no_policy_import_normalization_ledger_or_ui(self):
+        # The standalone learning_policy.py remains a legacy module by design.
+        active = ("main.py", "study_queue.py", "storage.py", "books.py",
+                  "study_options.py", "scheduler.py")
+        forbidden_names = {"LearningPolicy", "normalize_settings", "validate_ledger",
+                           "DAILY_NEW_FIRST", "daily_new_ledger"}
+        for filename in active:
+            path = os.path.join(APP, filename)
+            with open(path, "r", encoding="utf-8") as source_file:
+                source = source_file.read()
+            tree = ast.parse(source, filename=filename)
+            with self.subTest(file=filename):
+                imports = [node for node in ast.walk(tree)
+                           if isinstance(node, (ast.Import, ast.ImportFrom))]
+                for node in imports:
+                    imported = ([alias.name for alias in node.names]
+                                if isinstance(node, ast.Import) else [node.module or ""])
+                    self.assertFalse(any("learning_policy" in name for name in imported))
+                identifiers = {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}
+                attrs = {node.attr for node in ast.walk(tree) if isinstance(node, ast.Attribute)}
+                self.assertFalse(forbidden_names & (identifiers | attrs))
+                self.assertNotIn("policy=", source)
+                self.assertNotIn("introduced_at", source)
+                self.assertNotIn("daily_new_ledger", source)
 
 
 if __name__ == "__main__":

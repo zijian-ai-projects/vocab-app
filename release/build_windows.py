@@ -5,30 +5,37 @@
     .build\\venv\\Scripts\\python.exe -B release\\build_windows.py
 
 产物：
-    vocab-app-releases\\v1.4.3\\VocabApp-1.4.3-windows-x64\\   目录式安装包
-    vocab-app-releases\\v1.4.3\\VocabApp-1.4.3-windows-x64.zip
-    vocab-app-releases\\v1.4.3\\SHA256SUMS.txt
+    vocab-app-releases\\learning-patch-20261117\\windows\\VocabApp-1.4.3-windows-x64\\
+    vocab-app-releases\\learning-patch-20261117\\windows\\VocabApp-1.4.3-windows-x64.zip
+    vocab-app-releases\\learning-patch-20261117\\windows\\SHA256SUMS-v1.4.3.txt
 
 约束：
 * 运行资产只按白名单复制，绝不整目录打包；个人记录、恢复文件、日志、
   测试/开发材料一律不进包。
-* 不修改源码树的任何非构建产物；不删除已有发行目录之外的用户文件。
+* 只创建版本化 staging/work/config 与新发行目标；发现既有路径即失败，不覆盖或删除任何档案。
 """
 import hashlib
 import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VERSION = "1.4.3"
-RELEASE_ROOT = os.path.join(ROOT, "vocab-app-releases", "v" + VERSION)
+BUILD_ID = "learning-patch-20261117"
+RELEASE_PARENT = os.path.join(ROOT, "vocab-app-releases", BUILD_ID)
+RELEASE_ROOT = os.path.join(RELEASE_PARENT, "windows")
 DIST_NAME = "VocabApp-%s-windows-x64" % VERSION
+STAGE_NAME = DIST_NAME
 BUILD = os.path.join(ROOT, ".build")
-DIST = os.path.join(BUILD, "win-dist")
-WORK = os.path.join(BUILD, "win-work")
+DIST = os.path.join(BUILD, "win-dist-" + BUILD_ID)
+WORK = os.path.join(BUILD, "win-work-" + BUILD_ID)
 SPEC = os.path.join(ROOT, "release", "vocab_app.spec")
+STAGING_CONFIG = os.path.join(BUILD, "win-config-" + BUILD_ID)
+ARCHIVE_TEMP = os.path.join(RELEASE_ROOT, DIST_NAME + ".zip.tmp")
+SUMS_PATH = os.path.join(RELEASE_ROOT, "SHA256SUMS-v" + VERSION + ".txt")
 
 REQUIRED = (
     "VocabApp.exe",
@@ -130,10 +137,33 @@ def check_environment():
             fail("缺少图标资源：%s" % name)
 
 
+def require_fresh_paths():
+    if VERSION != "1.4.3":
+        fail("Windows 发行版本必须为 1.4.3")
+    for path in (DIST, WORK, STAGING_CONFIG):
+        if os.path.lexists(path):
+            fail("构建路径已存在，拒绝覆盖或删除：" + path)
+    if os.path.lexists(RELEASE_PARENT) and (os.path.islink(RELEASE_PARENT) or
+                                            (hasattr(os.path, "isjunction") and os.path.isjunction(RELEASE_PARENT))):
+        fail("发行父目录为链接，拒绝写入：" + RELEASE_PARENT)
+    if os.path.lexists(RELEASE_ROOT):
+        if os.path.islink(RELEASE_ROOT) or not os.path.isdir(RELEASE_ROOT):
+            fail("版本发行目标不是普通目录，拒绝写入：" + RELEASE_ROOT)
+        allowed = {"安装说明.txt"}
+        entries = set(os.listdir(RELEASE_ROOT))
+        if not entries.issubset(allowed):
+            fail("版本发行目录含非准备说明文件，拒绝写入：" + RELEASE_ROOT)
+        note = os.path.join(RELEASE_ROOT, "安装说明.txt")
+        if "安装说明.txt" in entries and (os.path.islink(note) or not os.path.isfile(note)):
+            fail("准备说明不是普通文件，拒绝写入：" + note)
+
+
 def run_pyinstaller():
-    for path in (DIST, WORK):
-        shutil.rmtree(path, ignore_errors=True)
-    os.makedirs(DIST, exist_ok=True)
+    os.makedirs(DIST)
+    os.makedirs(WORK)
+    os.makedirs(STAGING_CONFIG)
+    config = tempfile.mkdtemp(prefix="pyinstaller-", dir=STAGING_CONFIG)
+    os.environ["PYINSTALLER_CONFIG_DIR"] = config
     command = [
         sys.executable, "-B", "-m", "PyInstaller",
         "--noconfirm", "--clean", "--log-level", "WARN",
@@ -146,7 +176,20 @@ def run_pyinstaller():
         fail("PyInstaller 返回 %d" % result.returncode)
 
 
+def reject_links(root):
+    for base, dirs, files in os.walk(root, followlinks=False):
+        for name in dirs + files:
+            full = os.path.join(base, name)
+            if os.path.islink(full):
+                fail("源或构建产物含链接，拒绝打包：" + full)
+            if hasattr(os.path, "isjunction") and os.path.isjunction(full):
+                fail("源或构建产物含目录联接，拒绝打包：" + full)
+
+
 def check_layout(source):
+    reject_links(source)
+    reject_links(os.path.join(ROOT, "data"))
+    reject_links(os.path.join(ROOT, "assets"))
     for relative in REQUIRED:
         if not os.path.isfile(os.path.join(source, relative)):
             fail("构建产物缺少：" + relative)
@@ -191,15 +234,12 @@ def check_layout(source):
 
 
 def stage_release():
-    target = os.path.join(RELEASE_ROOT, DIST_NAME)
-    if os.path.exists(target):
-        # 只替换仍是干净发行物的目录；一旦运行产生 userdata，必须先由用户另存。
-        check_layout(target)
-        if os.path.islink(target):
-            fail("发行目标是目录链接，拒绝替换：" + target)
-        shutil.rmtree(target)
-    os.makedirs(RELEASE_ROOT, exist_ok=True)
-    shutil.copytree(os.path.join(DIST, "VocabApp"), target)
+    target = os.path.join(RELEASE_ROOT, STAGE_NAME)
+    if os.path.lexists(target) or os.path.lexists(RELEASE_ROOT):
+        fail("发行目录已存在，拒绝覆盖：" + target)
+    os.makedirs(RELEASE_ROOT)
+    shutil.copytree(os.path.join(DIST, "VocabApp"), target, symlinks=True)
+    reject_links(target)
     with open(os.path.join(target, "使用说明.txt"), "w", encoding="utf-8", newline="\r\n") as stream:
         stream.write(USAGE.format(version=VERSION))
     with open(os.path.join(target, "第三方组件与许可.txt"), "w", encoding="utf-8", newline="\r\n") as stream:
@@ -209,36 +249,29 @@ def stage_release():
 
 def zip_release(source):
     archive = os.path.join(RELEASE_ROOT, DIST_NAME + ".zip")
-    if os.path.exists(archive):
-        os.remove(archive)
-    with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as package:
+    if os.path.lexists(archive) or os.path.lexists(ARCHIVE_TEMP):
+        fail("发行压缩包或临时包已存在，拒绝覆盖：" + archive)
+    with zipfile.ZipFile(ARCHIVE_TEMP, "x", zipfile.ZIP_DEFLATED, compresslevel=9) as package:
         for base, dirs, files in os.walk(source):
             dirs.sort()
             for name in sorted(files):
                 full = os.path.join(base, name)
                 relative = os.path.relpath(full, os.path.dirname(source))
                 package.write(full, relative.replace(os.sep, "/"))
+    os.link(ARCHIVE_TEMP, archive)
+    os.unlink(ARCHIVE_TEMP)
     return archive
 
 
 def write_sums(archive):
-    path = os.path.join(RELEASE_ROOT, "SHA256SUMS.txt")
     line = "%s  %s\n" % (sha256_file(archive), os.path.basename(archive))
-    previous = ""
-    if os.path.exists(path):
-        with open(path, encoding="utf-8") as stream:
-            previous = stream.read()
-    basename = os.path.basename(archive)
-    retained = [item for item in previous.splitlines()
-                if len(item.split()) == 2 and item.split()[1] != basename]
-    with open(path, "w", encoding="utf-8", newline="\r\n") as stream:
-        for item in retained:
-            stream.write(item + "\n")
+    with open(SUMS_PATH, "x", encoding="utf-8", newline="\r\n") as stream:
         stream.write(line)
     print("SHA-256：" + line.strip())
 
 
 def main():
+    require_fresh_paths()
     check_environment()
     run_pyinstaller()
     built = os.path.join(DIST, "VocabApp")
