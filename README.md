@@ -46,13 +46,19 @@ Windows 端与 DSH Web 插件是两个独立客户端，学习记录不自动同
 
 ## 截图
 
-以下为仓库已有的 **V1.3.4 历史界面示例**，用于展示刷词、选择题和配色；当前版本的按钮、键位与布局可能不同。
+以下为 **Windows V1.4.3 实际程序截图**，使用独立演示资料目录，不包含个人学习记录。
 
-![词汇卡片与刷词界面](docs/assets/v134-dontknow.png)
+### 刷词卡片
 
-![四选一练习](docs/assets/v134-choice-general.png)
+![V1.4.3 刷词卡片](docs/screenshots/v1.4.3-flashcard.png)
 
-![主题设置](docs/assets/v134-settings-light-off.png)
+### 四选一练习
+
+![V1.4.3 四选一练习](docs/screenshots/v1.4.3-choice.png)
+
+### 主题与学习设置
+
+![V1.4.3 主题与学习设置](docs/screenshots/v1.4.3-settings.png)
 
 ## 许可
 
