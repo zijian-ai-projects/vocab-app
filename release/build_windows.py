@@ -5,9 +5,9 @@
     .build\\venv\\Scripts\\python.exe -B release\\build_windows.py
 
 产物：
-    vocab-app-releases\\learning-patch-20261117\\windows\\VocabApp-1.4.3-windows-x64\\
-    vocab-app-releases\\learning-patch-20261117\\windows\\VocabApp-1.4.3-windows-x64.zip
-    vocab-app-releases\\learning-patch-20261117\\windows\\SHA256SUMS-v1.4.3.txt
+    vocab-app-releases\\Windows\\VocabApp-1.4.3-windows-x64\\
+    vocab-app-releases\\Windows\\VocabApp-1.4.3-windows-x64.zip
+    vocab-app-releases\\Windows\\SHA256SUMS-v1.4.3.txt
 
 约束：
 * 运行资产只按白名单复制，绝不整目录打包；个人记录、恢复文件、日志、
@@ -25,8 +25,8 @@ import zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VERSION = "1.4.3"
 BUILD_ID = "learning-patch-20261117"
-RELEASE_PARENT = os.path.join(ROOT, "vocab-app-releases", BUILD_ID)
-RELEASE_ROOT = os.path.join(RELEASE_PARENT, "windows")
+RELEASE_PARENT = os.path.join(ROOT, "vocab-app-releases")
+RELEASE_ROOT = os.path.join(RELEASE_PARENT, "Windows")
 DIST_NAME = "VocabApp-%s-windows-x64" % VERSION
 STAGE_NAME = DIST_NAME
 BUILD = os.path.join(ROOT, ".build")

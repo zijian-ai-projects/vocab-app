@@ -1528,6 +1528,139 @@ test('header drag starts only on blank/text and forwards to beginDrag', () => {
   assert.equal(calls.beginDrag.length, 1);
 });
 
+for (const collapsed of [false, true]) for (const side of ['default', 'left', 'right']) {
+  test(`host resize restores relative placement without drift: ${collapsed ? 'entry' : 'panel'}, ${side}`, async (t) => {
+    const clock = mockTimeoutClock(t);
+    const requests = mockClientFetch(t, frontView);
+    const original = { width: bundleWindow.innerWidth, height: bundleWindow.innerHeight };
+    bundleWindow.innerWidth = 1400; bundleWindow.innerHeight = 900;
+    const runtime = mountWithHooks('VocabApp');
+    function resize(width, height) {
+      bundleWindow.innerWidth = width; bundleWindow.innerHeight = height;
+      dispatchWindow('resize', {});
+      return runtime.render();
+    }
+    function coordinates(tree) {
+      const node = findByClass(tree, collapsed ? 'dsh-vocab-reopen' : 'dsh-vocab-panel');
+      return { ...node.props.style };
+    }
+    try {
+      let tree = runtime.render(); tree = await flushClient(runtime);
+      if (!collapsed) tree = openOverlay(runtime, clock);
+      if (side !== 'default') {
+        const node = findByClass(tree, collapsed ? 'dsh-vocab-reopen' : 'va-head');
+        const before = coordinates(tree);
+        const x = side === 'left' ? 70 : (collapsed ? 1220 : 866);
+        const y = collapsed ? 664 : 310;
+        node.props.onPointerDown(fakeEvent({ button: 0, pointerId: 31, clientX: 0, clientY: 0,
+          currentTarget: captureSpy().node, target: { closest() { return null; } } }));
+        dispatchWindow('pointermove', { pointerId: 31, clientX: x - parseFloat(before.left), clientY: y - parseFloat(before.top) });
+        dispatchWindow('pointerup', { pointerId: 31 });
+        tree = runtime.render();
+        assert.equal(parseFloat(coordinates(tree).left), x);
+        assert.equal(parseFloat(coordinates(tree).top), y);
+      }
+      const start = coordinates(tree);
+      // Edge offsets, not absolute pixels, must follow the host as it grows.
+      tree = resize(1600, 1100);
+      assert.equal(parseFloat(coordinates(tree).left), parseFloat(start.left) + (side === 'left' ? 0 : 200));
+      assert.equal(parseFloat(coordinates(tree).top), parseFloat(start.top) + 200);
+      assert.deepEqual(coordinates(resize(1400, 900)), start);
+      for (let cycle = 0; cycle < 3; cycle += 1) {
+        // Zero/tiny intermediate sizes must not erase the preferred anchor.
+        for (const [width, height] of [[800, 600], [300, 240], [0, 0], [1000, 700]]) {
+          tree = resize(width, height);
+          const current = coordinates(tree);
+          if (width > 0) {
+            const size = collapsed ? { w: 46, h: 46 }
+              : { w: parseFloat(current.width), h: parseFloat(current.height) };
+            assert.ok(parseFloat(current.left) >= 8 && parseFloat(current.top) >= 8);
+            assert.ok(parseFloat(current.left) + size.w <= width - 8);
+            assert.ok(parseFloat(current.top) + size.h <= height - 8);
+          }
+        }
+        assert.deepEqual(coordinates(resize(1400, 900)), start, 'shrink/restore must not accumulate drift');
+      }
+      assert.equal(requests.length, 1, 'geometry never sends actions or reloads study state');
+    } finally {
+      runtime.unmount(); bundleWindow.innerWidth = original.width; bundleWindow.innerHeight = original.height;
+    }
+    assert.equal(runtime.lateUpdates, 0);
+    assert.equal(clock.pending, 0);
+    assertListenerCount(['resize', 'pointermove', 'pointerup', 'pointercancel'], 0);
+  });
+}
+
+test('resize while collapsed/open preserves one corner, and a later drag replaces the preferred placement', async (t) => {
+  const clock = mockTimeoutClock(t);
+  const requests = mockClientFetch(t, frontView);
+  const original = { width: bundleWindow.innerWidth, height: bundleWindow.innerHeight };
+  bundleWindow.innerWidth = 1400; bundleWindow.innerHeight = 900;
+  const runtime = mountOpenedOverlay(clock);
+  function resize(width, height) {
+    bundleWindow.innerWidth = width; bundleWindow.innerHeight = height;
+    dispatchWindow('resize', {});
+    return runtime.render();
+  }
+  function panelAt(tree, x, y) {
+    const style = findByClass(tree, 'dsh-vocab-panel').props.style;
+    assert.deepEqual(style, { left: x + 'px', top: y + 'px', width: '400px', height: '400px' });
+  }
+  try {
+    let tree = await flushClient(runtime);
+    panelAt(tree, 982, 482);
+    tree = resize(300, 240);
+    findByAriaLabel(tree, '关闭浮层').props.onClick(fakeEvent());
+    tree = resize(1400, 900);
+    assert.deepEqual(findByAriaLabel(tree, '打开背单词浮层').props.style, { left: '1336px', top: '836px' });
+    tree = resize(800, 600);
+    tree = openOverlay(runtime, clock);
+    panelAt(tree, 382, 182);
+    panelAt(resize(1400, 900), 982, 482);
+    // Drag the bubble at a smaller host size: that gesture is the new preference.
+    tree = resize(800, 600);
+    findByAriaLabel(tree, '关闭浮层').props.onClick(fakeEvent());
+    tree = runtime.render();
+    const bubble = findByAriaLabel(tree, '打开背单词浮层');
+    bubble.props.onPointerDown(fakeEvent({ button: 0, pointerId: 32, clientX: 0, clientY: 0, currentTarget: captureSpy().node }));
+    dispatchWindow('pointermove', { pointerId: 32, clientX: 50 - parseFloat(bubble.props.style.left), clientY: 500 - parseFloat(bubble.props.style.top) });
+    dispatchWindow('pointerup', { pointerId: 32 });
+    tree = runtime.render();
+    findByAriaLabel(tree, '打开背单词浮层').props.onClick(fakeEvent()); // suppress native follow-up click
+    tree = resize(1400, 900);
+    assert.deepEqual(findByAriaLabel(tree, '打开背单词浮层').props.style, { left: '50px', top: '800px' });
+    panelAt(openOverlay(runtime, clock), 50, 446);
+    panelAt(resize(800, 600), 50, 146);
+    panelAt(resize(1400, 900), 50, 446);
+    assert.equal(requests.length, 1);
+  } finally {
+    runtime.unmount(); bundleWindow.innerWidth = original.width; bundleWindow.innerHeight = original.height;
+  }
+  assert.equal(clock.pending, 0);
+  assert.equal(runtime.lateUpdates, 0);
+  assertListenerCount(['resize', 'pointermove', 'pointerup', 'pointercancel'], 0);
+});
+
+test('startup in a narrow host keeps the default edge gap when the host expands', async (t) => {
+  const clock = mockTimeoutClock(t);
+  mockClientFetch(t, frontView);
+  const original = { width: bundleWindow.innerWidth, height: bundleWindow.innerHeight };
+  bundleWindow.innerWidth = 300; bundleWindow.innerHeight = 240;
+  const runtime = mountWithHooks('VocabApp');
+  try {
+    runtime.render(); await flushClient(runtime);
+    bundleWindow.innerWidth = 1400; bundleWindow.innerHeight = 900;
+    dispatchWindow('resize', {});
+    const tree = runtime.render();
+    assert.deepEqual(findByAriaLabel(tree, '打开背单词浮层').props.style, { left: '1336px', top: '836px' });
+    const style = findByClass(openOverlay(runtime, clock), 'dsh-vocab-panel').props.style;
+    assert.deepEqual(style, { left: '982px', top: '482px', width: '400px', height: '400px' });
+  } finally {
+    runtime.unmount(); bundleWindow.innerWidth = original.width; bundleWindow.innerHeight = original.height;
+  }
+  assert.equal(clock.pending, 0);
+});
+
 test('title drag restores the fixed mini preset after viewport expansion', async (t) => {
   const requests = mockClientFetch(t, Object.assign({}, frontView, {
     windowSize: 'small', windowPresets: STALE_WINDOW_PRESETS,

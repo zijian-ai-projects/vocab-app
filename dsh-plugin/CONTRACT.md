@@ -42,7 +42,7 @@
 - 每次 Client 挂载默认仅渲染 ClosedEntry 浮动图标（包括首次安装/重新打开/刷新）；GET 成功/失败均不自动展开。单击才打开；关闭/拖动沿用原行为。hidden 仅存在 React 内存，不新增展开偏好、资料迁移或写回；隐藏时不唤醒复习 POST，也不对已锁定测验自动发送 next；展开后保留原 350ms 自动进入下一题。关闭动作通过即时 hiddenRef 同步阻止未提交 React 渲染前的定时回调。
 - 固定迷你 400×400；移除设置页窗口选项。windowSize动作不再接受任何值。既有small/medium/large只读显示为mini，不落盘改窗口字段；不保存自定义几何。
 - Client窄视口可fit，恢复后按档位；长内容可滚动，固定操作不可被裁切。
-- 窗口/入口共享会话内角锚点，均从同一锚点派生；完整窗左/右侧关闭到原矩形左下/右下，拖入口后沿同锚点还原。当前档位/视口变化一致夹紧，位置仍只在React内存，不新增localStorage。标题栏拖动，无边框resize。入口左键单击打开，pointerdown即开始抓取，pointermove即时更新位置，无长按timer；4px仅用于防误开，不阻止小位移跟手。取消/blur/unmount清理监听及capture。
+- 窗口/入口共享会话内角锚点，均从同一锚点派生；完整窗左/右侧关闭到原矩形左下/右下，拖入口后沿同锚点还原。会话内保存距所属左/右边缘与底部的偏移；视口变化只临时夹紧显示锚点，不覆盖首选偏移，缩小再还原时恢复相对位置（完整窗和最小化入口一致）。只有用户拖动才更新首选偏移；窄视口启动也保留默认右下角偏移。位置仍只在React内存，不新增localStorage。标题栏拖动，无边框resize。入口左键单击打开，pointerdown即开始抓取，pointermove即时更新位置，无长按timer；4px仅用于防误开，不阻止小位移跟手。取消/blur/unmount清理监听及capture。
 - empty保留15s GET只读刷新，due到期时发送正常串行POST next自动取复习；busy/stale/错误退避可重试，hidden/切屏/卸载清timer，不在未答题时强制换词。
 - 删除header品牌图标（保留关闭后的入口图标）；原学习页设置移左。NAV返回SVG与标题统一垂直中心。
 - 无compact/compactPreferred/keyBindings/canReset/studyCaption/动态键位编辑状态。

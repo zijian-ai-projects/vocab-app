@@ -1,8 +1,8 @@
 /**
  * 构建 DSH 插件发行包（开发工具，不随插件发布）。
  *
- * 用法：node release/build_plugin.mjs
- * 产物：vocab-app-releases/learning-patch-20261117/dsh/dsh-vocab-app-<version>.tgz
+ * 用法：node release/build_plugin.mjs [--release-dir <新目录>] [--stage-dir <新暂存目录>]
+ * 产物：vocab-app-releases/dsh/dsh-vocab-app-<version>.tgz
  *
  * 只把白名单文件放进 `package/`，词库从 ../data 按需复制，避免在仓库里再存一份
  * 20MB 的数据；个人记录、恢复文件、测试、审计/开发文档不进包，仅随包提供用户 readme.md。
@@ -17,8 +17,17 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.dirname(HERE);
 const PLUGIN = path.join(ROOT, 'dsh-plugin');
-const RELEASE = path.join(ROOT, 'vocab-app-releases', 'learning-patch-20261117', 'dsh');
-const STAGE = path.join(ROOT, '.build', 'plugin-package-learning-patch-20261117');
+const options = {};
+for (let index = 2; index < process.argv.length; index += 2) {
+  const flag = process.argv[index];
+  const value = process.argv[index + 1];
+  if (!['--release-dir', '--stage-dir'].includes(flag) || !value || value.startsWith('--') || options[flag]) {
+    throw new Error('用法：node release/build_plugin.mjs [--release-dir <新目录>] [--stage-dir <新暂存目录>]');
+  }
+  options[flag] = path.resolve(ROOT, value);
+}
+const RELEASE = options['--release-dir'] || path.join(ROOT, 'vocab-app-releases', 'dsh');
+const STAGE = options['--stage-dir'] || path.join(ROOT, '.build', 'plugin-package-learning-patch-20261117');
 const DATA_FILES = ['bank.json', 'books.json', 'phrases.json', 'phrase_books.json', 'level_meanings.json'];
 const REQUIRED = ['package.json', 'index.js', 'client.js', 'cordis.patch.yml', 'icon.svg', 'readme.md'];
 

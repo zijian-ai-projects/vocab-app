@@ -1,2 +1,0 @@
-4e0baba44ce53a40bf6798f50bdc4f40b1228fe3eeff24bbbe043ab6aa76566c  VocabApp-1.4.3-windows-x64.zip
-1b1446c54718eb0114a3fab69c794e5e41a94639db8163016f0d131893dd8d93  dsh-vocab-app-0.1.10.tgz

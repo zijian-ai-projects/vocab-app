@@ -12,7 +12,8 @@ import zipfile
 import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'vocab-app-releases' / 'learning-patch-20261117'
+OUT = ROOT / 'vocab-app-releases'
+PREVIOUS_LAYOUT = ROOT / '.build' / 'release-layout-20261118-1718'
 DATA = ('bank.json', 'books.json', 'phrases.json', 'phrase_books.json', 'level_meanings.json')
 
 
@@ -51,7 +52,9 @@ def pyz_modules(executable):
 
 
 def main():
-    windows = OUT / 'windows' / 'VocabApp-1.4.3-windows-x64.zip'
+    assert {path.name for path in OUT.iterdir()} == {'dsh', 'Windows'}
+    assert all(path.is_dir() and not path.is_symlink() for path in OUT.iterdir())
+    windows = OUT / 'Windows' / 'VocabApp-1.4.3-windows-x64.zip'
     plugin = OUT / 'dsh' / 'dsh-vocab-app-0.1.11.tgz'
     with zipfile.ZipFile(windows) as archive:
         assert archive.testzip() is None
@@ -91,17 +94,19 @@ def main():
     old = {'VocabApp-1.4.3-windows-x64.zip': '4e0baba44ce53a40bf6798f50bdc4f40b1228fe3eeff24bbbe043ab6aa76566c',
            'dsh-vocab-app-0.1.10.tgz': '1b1446c54718eb0114a3fab69c794e5e41a94639db8163016f0d131893dd8d93'}
     for name, value in old.items():
-        assert digest((ROOT / 'vocab-app-releases/v1.4.3' / name).read_bytes()) == value
-    lines = []
+        assert digest((PREVIOUS_LAYOUT / 'v1.4.3' / name).read_bytes()) == value
+    previous = PREVIOUS_LAYOUT / 'learning-patch-20261117'
+    assert digest((previous / 'dsh/dsh-vocab-app-0.1.11.tgz').read_bytes()) == 'fd76a1b48b4985ac0789ba8f124c9ad1e8095fad75114912bfd3cf27780c3ce5'
+    assert windows.read_bytes() == (previous / 'windows' / windows.name).read_bytes()
+    fixed = PREVIOUS_LAYOUT / 'window-position-patch-20261118' / 'dsh' / plugin.name
+    assert plugin.read_bytes() == fixed.read_bytes()
+    assert digest(plugin.read_bytes()) == 'a42b8350f68b49bb9f1d5da8a83fcf2306f4e264d4df639de13ac0470354b976'
     for path in (windows, plugin):
         value = digest(path.read_bytes())
-        sidecar = next(path.parent.glob('SHA256SUMS-*.txt')).read_text(encoding='utf-8').split()[0]
-        assert value == sidecar
+        sidecar = next(path.parent.glob('SHA256SUMS-*.txt')).read_text(encoding='utf-8').split()
+        assert sidecar == [value, path.name]
         print('%s: %d bytes; SHA256 %s' % (path.name, path.stat().st_size, value))
-        lines.append('%s  %s' % (value, path.relative_to(OUT).as_posix()))
-    with (OUT / 'SHA256SUMS.txt').open('x', encoding='utf-8') as stream:
-        stream.write('\n'.join(lines) + '\n')
-    print('PASS: archive integrity, x64 PE headers, Windows embedded code matches current source, versions, plugin exact whitelist, unchanged data, hashes and preserved old archives. No application executed.')
+    print('PASS: only dsh/Windows at release root; archive integrity, x64 PE headers, Windows embedded code matches current source, versions, plugin exact whitelist, unchanged Windows/data, hashes and preserved old archives. No application executed.')
 
 
 if __name__ == '__main__':

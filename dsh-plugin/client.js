@@ -1471,8 +1471,16 @@ window.__ModuleLoader__.load({
       const side = geometry.x + geometry.w / 2 <= viewport.width / 2 ? 'left' : 'right';
       return { side: side, x: side === 'left' ? geometry.x : geometry.x + geometry.w, y: geometry.y + geometry.h };
     }
-    function initialAnchor() {
-      return anchorFromGeometry(initialGeometry());
+    // Preferred placement is stored as edge offsets, not a fitted pixel point.
+    // Only a user drag replaces it; a temporary narrow/zero viewport must not.
+    function placementFromAnchor(anchor) {
+      const viewport = readViewport();
+      return { side: anchor.side, edge: anchor.side === 'left' ? anchor.x : viewport.width - anchor.x,
+        bottom: viewport.height - anchor.y };
+    }
+    function anchorFromPlacement(placement, viewport) {
+      return { side: placement.side, x: placement.side === 'left' ? placement.edge : viewport.width - placement.edge,
+        y: viewport.height - placement.bottom };
     }
     function fitAnchor(anchor, preset) {
       const viewport = readViewport();
@@ -1738,9 +1746,15 @@ window.__ModuleLoader__.load({
     }
 
     function VocabApp() {
-      const anchorState = React.useState(initialAnchor);
-      const anchor = anchorState[0];
-      const setAnchor = anchorState[1];
+      const placementState = React.useState(function () {
+        return { side: 'right', edge: EDGE_GAP, bottom: EDGE_GAP };
+      });
+      const placement = placementState[0];
+      const setPlacement = placementState[1];
+      const viewportState = React.useState(readViewport);
+      const viewport = viewportState[0];
+      const setViewport = viewportState[1];
+      const anchor = anchorFromPlacement(placement, viewport);
       const viewState = React.useState(null);
       const view = viewState[0];
       const setView = viewState[1];
@@ -1775,8 +1789,6 @@ window.__ModuleLoader__.load({
       const geometry = geometryFromAnchor(anchor, windowPreset);
       const entryPos = entryFromAnchor(anchor, windowPreset);
       const rootRef = React.useRef(null);
-      const anchorRef = React.useRef(anchor);
-      anchorRef.current = anchor;
       const geometryRef = React.useRef(geometry);
       geometryRef.current = geometry;
       const hiddenRef = React.useRef(hidden);
@@ -1807,14 +1819,17 @@ window.__ModuleLoader__.load({
         loadState(false);
       }, []);
       React.useEffect(function () {
-        const fit = function () {
+        const measure = function () {
           if (!mountedRef.current) return;
-          setAnchor(function (current) { return fitAnchor(current, windowPreset); });
+          const next = readViewport();
+          setViewport(function (current) {
+            return current.width === next.width && current.height === next.height ? current : next;
+          });
         };
-        fit();
-        window.addEventListener('resize', fit);
-        return function () { window.removeEventListener('resize', fit); };
-      }, [windowPreset.key, windowPreset.width, windowPreset.height]);
+        measure();
+        window.addEventListener('resize', measure);
+        return function () { window.removeEventListener('resize', measure); };
+      }, []);
       // While the host is building the assessment bank, poll GET /state.
       React.useEffect(function () {
         if (startingQuiz || hostScreen !== 'building') return undefined;
@@ -2168,8 +2183,7 @@ window.__ModuleLoader__.load({
               asNumber(moveEvent.clientX, startX) - startX,
               asNumber(moveEvent.clientY, startY) - startY);
             const nextAnchor = fitAnchor(anchorFromGeometry(moved), preset);
-            anchorRef.current = nextAnchor;
-            setAnchor(nextAnchor);
+            setPlacement(placementFromAnchor(nextAnchor));
           }
         };
         const cleanup = function () {
@@ -2223,8 +2237,7 @@ window.__ModuleLoader__.load({
           open: showPanel,
           onMove: function (x, y) {
             const nextAnchor = anchorFromEntry({ x: x, y: y }, currentWindowPreset(viewRef.current));
-            anchorRef.current = nextAnchor;
-            setAnchor(nextAnchor);
+            setPlacement(placementFromAnchor(nextAnchor));
           },
         }));
       }
