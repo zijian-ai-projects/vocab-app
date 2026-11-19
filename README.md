@@ -48,9 +48,15 @@ Windows 端与 DSH Web 插件是两个独立客户端，学习记录不自动同
 
 以下为 **Windows V1.4.3 实际程序截图**，使用独立演示资料目录，不包含个人学习记录。
 
+### 词书选择
+
+![V1.4.3 词书分类](docs/screenshots/v143-current.png)
+
+![V1.4.3 词书列表](docs/screenshots/v143-books.png)
+
 ### 刷词卡片
 
-![V1.4.3 刷词卡片](docs/screenshots/v1.4.3-flashcard.png)
+![V1.4.3 刷词卡片](docs/screenshots/v143-study.png)
 
 ### 四选一练习
 
